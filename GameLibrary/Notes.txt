@@ -1,0 +1,33 @@
+﻿[ Collision Group Assignments ]
+	All physicsobjects - Collision group 10.
+	PlayerBody - Collision group 10.
+	WheelBody - Collision group 12.
+
+
+
+[ Questions ]
+	Should grabbing the ladder grabbing be togglable or should the player have to hold the button.
+
+
+
+[ Random Notes ]
+	It may be a bit of a weird thing to do but because some features use percentage modifers on the X,Y of thumbsticks, we may have to use them also on the FPS for sprite animation for players.
+
+	Use pythagoras to find the max size of the level. AB^2 + BC^2 = CA^2. 1500~ large, 1000 medium, 700~ small 
+
+
+
+
+[ To do ]
+
+	player jumping (cap speed due to forces),
+
+	Save states (things that need saving: unlocked rooms, current unlocked gear, collectables >> HUB state(?)),
+
+	graphics/sound menus,
+
+	implement sound cues (probably one of the last things to do),
+
+	Fix ladder so it doesn't directly change the level specified 'CanRotate'.
+
+	FIX: Holding a direction and grabbing the ladder immediately drops the player.

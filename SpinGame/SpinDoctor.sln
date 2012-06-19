@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpinDoctor", "SpinDoctor\SpinDoctor\SpinDoctor.csproj", "{B87893C5-92A4-45A7-B313-BD20BF1521A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpinDoctorContent", "SpinDoctor\SpinDoctorContent\SpinDoctorContent.contentproj", "{B80D7A5E-0696-4422-BD8D-FAE685F29483}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugView XNA", "..\DebugView XNA\DebugView XNA.csproj", "{FC7845FA-13FE-4FF8-822A-A577F3F59B00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer Physics XNA", "..\Farseer Physics Engine 3.3 XNA\Farseer Physics XNA.csproj", "{0A850700-1ABB-4288-A391-6726B90EBEB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameLibrary", "..\GameLibrary\GameLibrary.csproj", "{C9FD0115-96DC-4928-BFAC-45826E9E35FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Development|x86 = Development|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B87893C5-92A4-45A7-B313-BD20BF1521A5}.Debug|x86.ActiveCfg = Debug|x86
+		{B87893C5-92A4-45A7-B313-BD20BF1521A5}.Debug|x86.Build.0 = Debug|x86
+		{B87893C5-92A4-45A7-B313-BD20BF1521A5}.Development|x86.ActiveCfg = Development|x86
+		{B87893C5-92A4-45A7-B313-BD20BF1521A5}.Development|x86.Build.0 = Development|x86
+		{B87893C5-92A4-45A7-B313-BD20BF1521A5}.Release|x86.ActiveCfg = Release|x86
+		{B87893C5-92A4-45A7-B313-BD20BF1521A5}.Release|x86.Build.0 = Release|x86
+		{B80D7A5E-0696-4422-BD8D-FAE685F29483}.Debug|x86.ActiveCfg = Debug|x86
+		{B80D7A5E-0696-4422-BD8D-FAE685F29483}.Development|x86.ActiveCfg = Debug|x86
+		{B80D7A5E-0696-4422-BD8D-FAE685F29483}.Release|x86.ActiveCfg = Release|x86
+		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Debug|x86.ActiveCfg = Debug|x86
+		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Debug|x86.Build.0 = Debug|x86
+		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Development|x86.ActiveCfg = Development|x86
+		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Development|x86.Build.0 = Development|x86
+		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Release|x86.ActiveCfg = Release|x86
+		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Release|x86.Build.0 = Release|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Debug|x86.ActiveCfg = Debug|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Debug|x86.Build.0 = Debug|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Development|x86.ActiveCfg = Development|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Development|x86.Build.0 = Development|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|x86.ActiveCfg = Release|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|x86.Build.0 = Release|x86
+		{C9FD0115-96DC-4928-BFAC-45826E9E35FF}.Debug|x86.ActiveCfg = Debug|x86
+		{C9FD0115-96DC-4928-BFAC-45826E9E35FF}.Debug|x86.Build.0 = Debug|x86
+		{C9FD0115-96DC-4928-BFAC-45826E9E35FF}.Development|x86.ActiveCfg = Development|x86
+		{C9FD0115-96DC-4928-BFAC-45826E9E35FF}.Development|x86.Build.0 = Development|x86
+		{C9FD0115-96DC-4928-BFAC-45826E9E35FF}.Release|x86.ActiveCfg = Release|x86
+		{C9FD0115-96DC-4928-BFAC-45826E9E35FF}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

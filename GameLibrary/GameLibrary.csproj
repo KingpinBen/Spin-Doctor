@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{C9FD0115-96DC-4928-BFAC-45826E9E35FF}</ProjectGuid>
+    <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GameLibrary</RootNamespace>
+    <AssemblyName>GameLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
+    <XnaPlatform>Windows</XnaPlatform>
+    <XnaProfile>HiDef</XnaProfile>
+    <XnaCrossPlatformGroupID>9bfa34f9-ecb2-44af-8f43-077a0042765d</XnaCrossPlatformGroupID>
+    <XnaOutputType>Library</XnaOutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;EDITOR</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>false</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <PlatformTarget>x86</PlatformTarget>
+    <XnaCompressContent>true</XnaCompressContent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Development|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Development\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Avatar, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Storage, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assists\Audio.cs" />
+    <Compile Include="Assists\ConvertUnits.cs" />
+    <Compile Include="Assists\DevDisplay.cs" />
+    <Compile Include="Assists\FileLoc.cs" />
+    <Compile Include="Assists\Fonts.cs" />
+    <Compile Include="Assists\Input.cs" />
+    <Compile Include="Assists\PrimGrid.cs" />
+    <Compile Include="Assists\PrimitiveBatch.cs" />
+    <Compile Include="Assists\SpinAssist.cs" />
+    <Compile Include="Drawing\Camera.cs" />
+    <Compile Include="Drawing\AnimatedText.cs" />
+    <Compile Include="Drawing\Decal.cs" />
+    <Compile Include="Drawing\FrameAnimation.cs" />
+    <Compile Include="Drawing\FullscreenPicture.cs" />
+    <Compile Include="Drawing\HUD.cs" />
+    <Compile Include="Drawing\Particle.cs" />
+    <Compile Include="Drawing\TextString.cs" />
+    <Compile Include="Drawing\Level\LevelBackdrop.cs" />
+    <Compile Include="Managers\Decal_Manager.cs" />
+    <Compile Include="Managers\Particle_Manager.cs" />
+    <Compile Include="Managers\Sprite_Manager.cs" />
+    <Compile Include="Objects\DynamicObject.cs" />
+    <Compile Include="Objects\Prefabs\BouncePad.cs" />
+    <Compile Include="Objects\Prefabs\Collectable.cs" />
+    <Compile Include="Drawing\Level\Level.cs" />
+    <Compile Include="Drawing\Sprite.cs" />
+    <Compile Include="Objects\Prefabs\Ladder.cs" />
+    <Compile Include="Objects\Prefabs\MovingPlatform.cs" />
+    <Compile Include="Objects\Prefabs\Note.cs" />
+    <Compile Include="Objects\Prefabs\OneSidedPlatform.cs" />
+    <Compile Include="Objects\Prefabs\ParticleEmitter.cs" />
+    <Compile Include="Objects\Prefabs\Piston.cs" />
+    <Compile Include="Objects\Prefabs\PullableObject.cs" />
+    <Compile Include="Objects\Prefabs\PushingPlatform.cs" />
+    <Compile Include="Objects\Prefabs\RotateRoomButton.cs" />
+    <Compile Include="Objects\Prefabs\Saw.cs" />
+    <Compile Include="Objects\Triggers\ChangeLevelZone.cs" />
+    <Compile Include="Objects\Triggers\Door.cs" />
+    <Compile Include="Objects\Triggers\Spike.cs" />
+    <Compile Include="Objects\Triggers\Trigger.cs" />
+    <Compile Include="Objects\Triggers\TriggerOnce.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Objects\Character.cs" />
+    <Compile Include="Drawing\Level\Gears.cs" />
+    <Compile Include="Objects\PhysicsObject.cs" />
+    <Compile Include="Objects\Player.cs" />
+    <Compile Include="Objects\Prefabs\Rope.cs" />
+    <Compile Include="Objects\Prefabs\RotatingPlatform.cs" />
+    <Compile Include="Objects\StaticObject.cs" />
+    <Compile Include="Screens\GamePlayScreen.cs" />
+    <Compile Include="Screens\LoadingScreen.cs" />
+    <Compile Include="Screens\Menu\GameMenu.cs" />
+    <Compile Include="Screens\Menu\GraphicsScreen.cs" />
+    <Compile Include="Screens\Menu\MenuOption.cs" />
+    <Compile Include="Screens\Menu\MenuScreen.cs" />
+    <Compile Include="Screens\Messages\ConfirmBox.cs" />
+    <Compile Include="Screens\Messages\MessageOverlay.cs" />
+    <Compile Include="Screens\Screen.cs" />
+    <Compile Include="Managers\Screen_Manager.cs" />
+    <Compile Include="Screens\Splash\DevSplashScreen.cs" />
+    <Compile Include="Screens\Splash\IntroScreen.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DebugView XNA\DebugView XNA.csproj">
+      <Project>{FC7845FA-13FE-4FF8-822A-A577F3F59B00}</Project>
+      <Name>DebugView XNA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Farseer Physics Engine 3.3 XNA\Farseer Physics XNA.csproj">
+      <Project>{0A850700-1ABB-4288-A391-6726B90EBEB9}</Project>
+      <Name>Farseer Physics XNA</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Notes.txt" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <!--
+      To modify your build process, add your task inside one of the targets below and uncomment it. 
+      Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+    -->
+</Project>
