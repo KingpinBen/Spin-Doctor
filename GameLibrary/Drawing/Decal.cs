@@ -39,6 +39,7 @@ namespace GameLibrary.Drawing
         #endregion
 
         #region Properties
+#if EDITOR
         [ContentSerializerIgnore]
         public float Width
         {
@@ -46,11 +47,8 @@ namespace GameLibrary.Drawing
             {
                 return _width;
             }
-#if EDITOR
+
             set
-#else
-            protected set
-#endif
             {
                 _width = value;
             }
@@ -62,11 +60,7 @@ namespace GameLibrary.Drawing
             {
                 return _height;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _height = value;
             }
@@ -78,11 +72,7 @@ namespace GameLibrary.Drawing
             {
                 return _position;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _position = value;
             }
@@ -94,11 +84,7 @@ namespace GameLibrary.Drawing
             {
                 return _flip;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _flip = value;
             }
@@ -110,12 +96,10 @@ namespace GameLibrary.Drawing
             {
                 return _decalAsset;
             }
-#if EDITOR
             set
             {
                 _decalAsset = value;
             }
-#endif
         }
         [ContentSerializerIgnore]
         public float ZLayer
@@ -124,12 +108,10 @@ namespace GameLibrary.Drawing
             {
                 return _zLayer;
             }
-#if EDITOR
             set
             {
                 _zLayer = value;
             }
-#endif
         }
         [ContentSerializerIgnore]
         public float Rotation
@@ -138,12 +120,10 @@ namespace GameLibrary.Drawing
             {
                 return _rotation;
             }
-#if EDITOR
             set
             {
                 _rotation = value;
             }
-#endif
         }
         [ContentSerializerIgnore]
         public float Scale
@@ -152,12 +132,10 @@ namespace GameLibrary.Drawing
             {
                 return _scale;
             }
-#if EDITOR
             set
             {
                 _scale = value;
             }
-#endif
         }
         [ContentSerializerIgnore]
         public Color Tint
@@ -166,14 +144,12 @@ namespace GameLibrary.Drawing
             {
                 return _tint;
             }
-#if EDITOR
             set
             {
                 _tint = value;
             }
-#endif
         }
-
+#endif
         #endregion
 
         public Decal() { }
@@ -195,8 +171,8 @@ namespace GameLibrary.Drawing
 
         public void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._decalTexture, this.Position, null, Color.White, this.Rotation, new Vector2(_decalTexture.Width / 2, _decalTexture.Height / 2), 
-                this.Scale, this.FlipEffect, this.ZLayer);
+            sb.Draw(this._decalTexture, this._position, null, this._tint, this._rotation, new Vector2(this._decalTexture.Width / 2, this._decalTexture.Height / 2), 
+                this._scale, this._flip, this._zLayer);
         }
     }
 }
