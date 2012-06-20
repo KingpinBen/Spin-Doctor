@@ -279,22 +279,46 @@ namespace GameLibrary.Objects
 
             if (_movementDirection == Direction.Horizontal)
             {
-                axis = new Vector2(-1, 0);
+                if (_endPosition.X < _position.X)
+                {
+                    axis = new Vector2(-1, 0);
+                }
+                else
+                {
+                    axis = new Vector2(1, 0);
+                }
             }
             else if (_movementDirection == Direction.Vertical)
             {
-                axis = new Vector2(0, -1);
+                if (_endPosition.Y < _position.Y)
+                {
+                    axis = new Vector2(0, 1);
+                }
+                else
+                {
+                    axis = new Vector2(0, -1);
+                }
             }
 
             this._prismaticJoint = JointFactory.CreateFixedPrismaticJoint(world, this.Body, ConvertUnits.ToSimUnits(this.Position), axis);
 
             if (_movementDirection == Direction.Horizontal)
             {
-                this._prismaticJoint.UpperLimit = -ConvertUnits.ToSimUnits(_endPosition.X - Position.X);
+                this._prismaticJoint.UpperLimit = ConvertUnits.ToSimUnits(_endPosition.X - Position.X);
+
+                if (axis.X == -1)
+                {
+                    this._prismaticJoint.UpperLimit *= -1;
+                }
             }
             else if (_movementDirection == Direction.Vertical)
             {
-                this._prismaticJoint.UpperLimit = -ConvertUnits.ToSimUnits(_endPosition.Y - Position.Y); //12.5f;
+                this._prismaticJoint.UpperLimit = ConvertUnits.ToSimUnits(_endPosition.Y - Position.Y);
+
+                if (axis.Y == 1)
+                {
+                    this._prismaticJoint.UpperLimit *= -1;
+                }
             }
             else 
                 throw new Exception("Invalid direction in serializing on dynamicObject");

@@ -177,9 +177,14 @@ namespace GameLibrary.Drawing
 
         public void Load(ContentManager Content)
         {
-            this._decalTexture = Content.Load<Texture2D>(AssetLocation);
+            this._decalTexture = Content.Load<Texture2D>(_decalAsset);
+#if EDITOR
             this.Width = _decalTexture.Width;
             this.Height = _decalTexture.Height;
+#else
+
+#endif
+            this._origin = new Vector2(this._decalTexture.Width / 2, this._decalTexture.Height / 2);
         }
 
         public void Draw(SpriteBatch sb)

@@ -75,9 +75,9 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Update
-        public void Update(bool levelRotating)
+        public void Update(GameTime gameTime)
         {
-            if (levelRotating)
+            if (Camera.LevelRotating)
                 GearRotation = (float)-Camera.Rotation * 3;
             else
                 GearRotation = 0.0f;

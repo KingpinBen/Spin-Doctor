@@ -99,8 +99,9 @@ namespace SpinEditor
                                 xnA_RenderControl1.levelDimensions = alteredRoomSize;
                                 STATIC_EDITOR_MODE.levelInstance.RoomDimensions = alteredRoomSize;
 
-                                //  Load the background texture
+                                //  Load the background texture and attach it to the level.
                                 xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
+                                STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
 
                                 STATIC_EDITOR_MODE.levelInstance.RoomType = RoomForm.roomType;
 

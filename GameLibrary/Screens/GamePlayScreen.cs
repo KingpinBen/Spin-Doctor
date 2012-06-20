@@ -145,6 +145,9 @@ namespace GameLibrary.Screens
         #endregion
 
         #region Draw
+#if EDITOR
+
+#else
         public override void Draw(SpriteBatch sb)
         {
             if (gamePlayEffect != null)
@@ -196,6 +199,7 @@ namespace GameLibrary.Screens
             }
             sb.End();
         }
+#endif
         #endregion
 
         #region HandleInput

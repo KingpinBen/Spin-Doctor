@@ -66,8 +66,8 @@ namespace GameLibrary.Drawing
 
         [ContentSerializer]
         private List<PhysicsObject> physicsObjectsList;
-        [ContentSerializer]
-        private bool _levelRotates;
+        //[ContentSerializer]
+        //private bool _levelRotates;
         [ContentSerializer]
         private Vector2 _spawnLocation = Vector2.Zero;
         [ContentSerializer]
@@ -77,7 +77,7 @@ namespace GameLibrary.Drawing
         [ContentSerializer]
         private Decal_Manager _decalManager;
         [ContentSerializer]
-        private Vector2 roomDimensions;
+        private Vector2 _roomDimensions;
         [ContentSerializer]
         private string _backgroundFile;
         [ContentSerializer]
@@ -93,11 +93,11 @@ namespace GameLibrary.Drawing
         {
             get
             {
-                return roomDimensions;
+                return _roomDimensions;
             }
             set
             {
-                roomDimensions = value;
+                _roomDimensions = value;
             }
         }
         [ContentSerializerIgnore]
@@ -110,18 +110,6 @@ namespace GameLibrary.Drawing
             set
             {
                 _backgroundFile = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public bool CanLevelRotate
-        {
-            get 
-            { 
-                return _levelRotates; 
-            }
-            set
-            {
-                _levelRotates = value;
             }
         }
         [ContentSerializerIgnore]
@@ -192,9 +180,21 @@ namespace GameLibrary.Drawing
         {
             get
             {
-                return roomDimensions;
+                return _roomDimensions;
             }
-        }
+        }        
+        //[ContentSerializerIgnore]
+        //public bool CanLevelRotate
+        //{
+        //    get 
+        //    { 
+        //        return _levelRotates; 
+        //    }
+        //    protected set
+        //    {
+        //        _levelRotates = value;
+        //    }
+        //}
 #endif
 
         [ContentSerializerIgnore]
@@ -238,7 +238,7 @@ namespace GameLibrary.Drawing
             this.SetupCamera();
             Player.Instance.Load(_content, world, _spawnLocation, true);
             
-            this._levelBackdrop.Load(_content, roomDimensions, _roomTheme, _backgroundFile);
+            this._levelBackdrop.Load(_content, _roomDimensions, _roomTheme, _backgroundFile);
 
             if (_roomType != RoomTypeEnum.NonRotating)
             {
@@ -264,7 +264,10 @@ namespace GameLibrary.Drawing
         #region Update
         public void Update(GameTime gameTime)
         {
-            _player.Update(gameTime);
+#if EDITOR
+
+#else
+            Player.Instance.Update(gameTime);
 
             for (int i = physicsObjectsList.Count; i > 0; i--)
             {
@@ -273,14 +276,17 @@ namespace GameLibrary.Drawing
 
             if (_roomType != RoomTypeEnum.NonRotating)
             {
-                _gears.Update(_levelRotates);
+                _gears.Update(gameTime);
             }
+#endif
         }
         #endregion
 
         #region Draw Calls
+#if EDITOR
 
-        #region DrawBG
+#else
+        #region Draw NonRotating
         public void DrawBackground(SpriteBatch sb)
         {
             if (_roomType == RoomTypeEnum.NonRotating)
@@ -294,7 +300,7 @@ namespace GameLibrary.Drawing
         }
         #endregion
 
-        #region Draw
+        #region Draw Gameplay
         public void DrawGameplay(SpriteBatch sb)
         {
             this._decalManager.Draw(sb);
@@ -315,7 +321,7 @@ namespace GameLibrary.Drawing
             }
         }
         #endregion
-
+#endif
         #endregion
 
         #region Private Methods
@@ -323,10 +329,14 @@ namespace GameLibrary.Drawing
         void SetupCamera()
         {
             float largestLevelDimension = 0;
+            bool canRotate = false;
 
-            largestLevelDimension = (float)Math.Sqrt((int)(roomDimensions.X * roomDimensions.X) + (int)(roomDimensions.Y * roomDimensions.Y));
+            largestLevelDimension = (float)Math.Sqrt((int)(_roomDimensions.X * _roomDimensions.X) + (int)(_roomDimensions.Y * _roomDimensions.Y));
 
-            Camera.Load(this._levelRotates, largestLevelDimension / 2);
+            if (this._roomType == RoomTypeEnum.Rotating)
+                canRotate = true;
+
+            Camera.Load(canRotate, largestLevelDimension / 2);
         }
 
         #endregion

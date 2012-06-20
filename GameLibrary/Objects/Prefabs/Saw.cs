@@ -19,7 +19,7 @@
 //--    
 //-------------------------------------------------------------------------------
 
-//#define Development
+#define Development
 
 using System;
 using System.Collections.Generic;
@@ -54,9 +54,15 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Properties
+
+#if EDITOR
         [ContentSerializerIgnore]
         public override Vector2 EndPosition
         {
+            get
+            {
+                return _endPosition;
+            }
             set
             {
                 if (MovementDirection == Direction.Horizontal)
@@ -70,6 +76,19 @@ namespace GameLibrary.Objects
             }
         }
 
+        [ContentSerializerIgnore]
+        public string TouchedSawBladeAsset
+        {
+            get
+            {
+                return _bloodiedTextureAsset;
+            }
+            set
+            {
+                _bloodiedTextureAsset = value;
+            }
+        }
+#else
         [ContentSerializerIgnore]
         public Texture2D TextureToUse
         {
@@ -93,12 +112,6 @@ namespace GameLibrary.Objects
             {
                 return _bloodiedTextureAsset;
             }
-#if EDITOR
-            set
-            {
-                _bloodiedTextureAsset = value;
-            }
-#endif
         }
 
         [ContentSerializerIgnore]
@@ -109,17 +122,19 @@ namespace GameLibrary.Objects
                 return _touched;
             }
         }
+#endif
 
         #endregion
 
         #region Constructor
         public Saw() : base() { }
 
-        public void Init(Vector2 position, float width, string tex, string texblood)
+        public void Init(Vector2 position, string tex, string texblood)
         {
-            base.Init(position, width, tex);
+            base.Init(position, tex);
 
-            _bloodiedTextureAsset = texblood;
+            this._bloodiedTextureAsset = texblood;
+            this._motorSpeed = 5;
         }
         #endregion
 
@@ -136,8 +151,8 @@ namespace GameLibrary.Objects
             return;
 #else
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
-            this.wallDecalEnd = content.Load<Texture2D>("Assets/Sprites/Textures/Saw/sawDecalEndPiece");
-            this.wallDecalMiddle = content.Load<Texture2D>("Assets/Sprites/Textures/Saw/sawDecalMiddlePiece");
+            this.wallDecalEnd = content.Load<Texture2D>("Assets/Sprites/Textures/Saw/i_sawDecalEndPiece");
+            this.wallDecalMiddle = content.Load<Texture2D>("Assets/Sprites/Textures/Saw/i_sawDecalMiddlePiece");
 
             if (_movementDirection == Direction.Horizontal)
             {
@@ -164,16 +179,25 @@ namespace GameLibrary.Objects
 
         public override void Update(GameTime gameTime)
         {
-            _rotation += 0.3f;
+#if EDITOR
 
-            if (_rotation >= 4)
+#else
+            if (this.PrismaticJoint.MotorSpeed != 0)
             {
-                _rotation -= 4;
+                _rotation += 0.3f;
+
+                if (_rotation >= 4)
+                {
+                    _rotation -= 4;
+                }
+
+                
             }
-            
             base.Update(gameTime);
+#endif
         }
 
+        #region Draw
 #if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -209,6 +233,7 @@ namespace GameLibrary.Objects
 
         }
 #endif
+        #endregion
 
         #region Private Methods
 
