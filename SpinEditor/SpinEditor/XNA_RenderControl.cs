@@ -46,14 +46,12 @@ namespace SpinEditor
 
         private Texture2D crosshair;
 
-        private PrimitiveBatch grid;
+        private PrimitiveBatch primBatch;
         private float xySpacing;
         private int xLineCount;
         private int yLineCount;
         private float xOffset;
         private float yOffset;
-
-        private PrimitiveBatch movements;
 
         #endregion
 
@@ -89,8 +87,7 @@ namespace SpinEditor
 
             crosshair = contentMan.Load<Texture2D>("9pxCrosshair");
 
-            grid = new PrimitiveBatch(GraphicsDevice);
-            movements = new PrimitiveBatch(GraphicsDevice);
+            primBatch = new PrimitiveBatch(GraphicsDevice);
 
             RefreshGrid();
 
@@ -175,31 +172,13 @@ namespace SpinEditor
                 }
                 #endregion
 
-                #region PhysicsObjectList Draw
+                #region Draw PhysicsObjects and Decals
                 if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count > 0)
                 {
                     
                     for (int i = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i > 0; i--)
                     {
                         STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Draw(spriteBatch);
-
-                        if (hideOverlay)
-                        {
-                            continue;
-                        }
-
-                        if (STATIC_EDITOR_MODE.selectedObjectIndices.Count > 0)
-                        {
-                            for (int j = 0; j < STATIC_EDITOR_MODE.selectedObjectIndices.Count; j++)
-                            {
-                                if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i - 1 && STATIC_EDITOR_MODE.selectedObjectIndices[j].Type == OBJECT_TYPE.Physics)
-                                {
-                                    spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Position,
-                                        new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Width, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Height),
-                                        Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Origin, 1.0f, SpriteEffects.None, 0f);
-                                }
-                            }
-                        }
                     }
                 }
 
@@ -213,11 +192,32 @@ namespace SpinEditor
 
                 #endregion
 
+                #region Draw Selection Overlay
+                if (!hideOverlay)
+                {
+                    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+                    {
+                        if (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type == OBJECT_TYPE.Physics)
+                        {
+                            spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position,
+                                        new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height),
+                                        Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Origin, 1.0f, SpriteEffects.None, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].zLayer + 0.01f);
+                        }
+                        else if (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type == OBJECT_TYPE.Decal)
+                        {
+                            spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position,
+                                        new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height),
+                                        Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Origin, 1.0f, SpriteEffects.None, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].ZLayer + 0.01f);
+                        }
+                    }
+                }
+                #endregion
+
                 spriteBatch.End();
                 #endregion
 
                 #region Movement paths
-                movements.Begin(PrimitiveType.LineList);
+                primBatch.Begin(PrimitiveType.LineList);
                 {
                     Vector2 offset = new Vector2((GraphicsDevice.Viewport.Width / 2 / Camera.Zoom) - Camera.Pos.X, (GraphicsDevice.Viewport.Height / 2 / Camera.Zoom) - Camera.Pos.Y);
                     for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
@@ -226,36 +226,36 @@ namespace SpinEditor
                         if (t.BaseType == typeof(DynamicObject))
                         {
                             DynamicObject dyObj = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
-                            movements.AddVertex((dyObj.Position + offset) * Camera.Zoom, Color.Red);
-                            movements.AddVertex((dyObj.EndPosition + offset) * Camera.Zoom, Color.Red);
+                            primBatch.AddVertex((dyObj.Position + offset) * Camera.Zoom, Color.Red);
+                            primBatch.AddVertex((dyObj.EndPosition + offset) * Camera.Zoom, Color.Red);
 
                         }
 
                         if (t == typeof(Rope))
                         {
                             Rope ropeObj = (Rope)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
-                            movements.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);
-                            movements.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Green);
+                            primBatch.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);
+                            primBatch.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Green);
                         }
                     }
                 }
-                movements.End();
+                primBatch.End();
                 #endregion
 
                 #region Grid
-                grid.Begin(PrimitiveType.LineList);
+                primBatch.Begin(PrimitiveType.LineList);
                 for (int i = 0; i < xLineCount + 2; i++)
                 {
-                    grid.AddVertex(new Vector2(xOffset + xySpacing * i, 0), Color.White * 0.2f);
-                    grid.AddVertex(new Vector2(xOffset + xySpacing * i, GraphicsDevice.Viewport.Height), Color.White * 0.2f);
+                    primBatch.AddVertex(new Vector2(xOffset + xySpacing * i, 0), Color.White * 0.2f);
+                    primBatch.AddVertex(new Vector2(xOffset + xySpacing * i, GraphicsDevice.Viewport.Height), Color.White * 0.2f);
 
                 }
                 for (int i = 0; i < yLineCount + 2; i++)
                 {
-                    grid.AddVertex(new Vector2(0, yOffset + xySpacing * i), Color.White * 0.2f);
-                    grid.AddVertex(new Vector2(GraphicsDevice.Viewport.Width, yOffset + xySpacing * i), Color.White * 0.2f);
+                    primBatch.AddVertex(new Vector2(0, yOffset + xySpacing * i), Color.White * 0.2f);
+                    primBatch.AddVertex(new Vector2(GraphicsDevice.Viewport.Width, yOffset + xySpacing * i), Color.White * 0.2f);
                 }
-                grid.End();
+                primBatch.End();
 
                 #endregion
 
@@ -313,7 +313,7 @@ namespace SpinEditor
         #region Update Grid Methods
         void WindowChangedSize(object sender, EventArgs e)
         {
-            grid = new GameLibrary.Assists.PrimitiveBatch(this.GraphicsDevice);
+            primBatch = new GameLibrary.Assists.PrimitiveBatch(this.GraphicsDevice);
         }
 
         void RefreshGrid()

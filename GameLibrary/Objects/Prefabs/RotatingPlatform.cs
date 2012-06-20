@@ -88,7 +88,7 @@ namespace GameLibrary.Objects
             return;
 
 #endif
-            
+      
             SetUpPhysics(world);
             GetRotationFromOrientation();
         }

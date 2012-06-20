@@ -108,7 +108,6 @@ namespace GameLibrary.Objects
         public override void Init(Vector2 StartVec, string texLoc)
         {
             base.Init(StartVec, 0, 0, texLoc);
-            this._endPosition = StartVec + new Vector2(0, 100);
             this.ChainCount = 10;
 
             this._textureAsset = texLoc;
@@ -119,14 +118,14 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
             endTexture = content.Load<Texture2D>("Assets/Sprites/Textures/Rope/ropeEnd");
-
+            Texture = content.Load<Texture2D>(_textureAsset);
 #if EDITOR
             this.Width = endTexture.Width;
             this.Height = endTexture.Height;
+            this._endPosition = this._position + new Vector2(0, Texture.Height * ChainCount);
 
             return;
 #endif
-            Texture = content.Load<Texture2D>(_textureAsset);
             this.World = world;
             SetUpPhysics(world);
         }

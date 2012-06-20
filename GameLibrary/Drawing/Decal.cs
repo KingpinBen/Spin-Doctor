@@ -22,6 +22,8 @@ namespace GameLibrary.Drawing
         [ContentSerializer]
         private Vector2 _position;
         [ContentSerializer]
+        private Vector2 _origin;
+        [ContentSerializer]
         private string _decalAsset;
         [ContentSerializer]
         private float _scale;
@@ -149,6 +151,14 @@ namespace GameLibrary.Drawing
                 _tint = value;
             }
         }
+        [ContentSerializerIgnore]
+        public Vector2 Origin
+        {
+            get
+            {
+                return _origin;
+            }
+        }
 #endif
         #endregion
 
@@ -174,7 +184,7 @@ namespace GameLibrary.Drawing
 
         public void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._decalTexture, this._position, null, this._tint, this._rotation, new Vector2(this._height / 2, this._height / 2), 
+            sb.Draw(this._decalTexture, this._position, null, this._tint, this._rotation, this._origin, 
                 this._scale, this._flip, this._zLayer);
         }
     }
