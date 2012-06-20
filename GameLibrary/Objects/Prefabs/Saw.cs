@@ -54,6 +54,21 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Properties
+        [ContentSerializerIgnore]
+        public override Vector2 EndPosition
+        {
+            set
+            {
+                if (MovementDirection == Direction.Horizontal)
+                {
+                    _endPosition = new Vector2(value.X, _position.Y);
+                }
+                else
+                {
+                    _endPosition = new Vector2(_position.X, value.X);
+                }
+            }
+        }
 
         [ContentSerializerIgnore]
         public Texture2D TextureToUse
@@ -114,10 +129,10 @@ namespace GameLibrary.Objects
             
             this.Texture = content.Load<Texture2D>(_textureAsset);
             this._origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+            
+#if EDITOR
             this.Width = this.Texture.Width;
             this.Height = this.Texture.Height;
-
-#if EDITOR
             return;
 #else
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
@@ -159,14 +174,18 @@ namespace GameLibrary.Objects
             base.Update(gameTime);
         }
 
+#if EDITOR
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+        }
+#else
+
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, Color.White, 
                 TextureRotation, Origin, 1.0f, SpriteEffects.None, zLayer); 
 
-#if EDITOR
-            return;
-#else
             sb.Draw(wallDecalEnd, this.Position, null, Color.White, _decalRotation,
                 new Vector2(this.wallDecalEnd.Width / 2, this.wallDecalEnd.Height / 2), 1.0f, SpriteEffects.None, zLayer - 0.01f);
             sb.Draw(wallDecalEnd, this.EndPosition, null, Color.White, (float)Math.PI + _decalRotation,
@@ -187,8 +206,9 @@ namespace GameLibrary.Objects
             sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit) + (this.MovingToStart == false).ToString(), this.Position - new Vector2(0, 500), Color.Red);
             sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation <= this.PrismaticJoint.LowerLimit) + (this.MovingToStart == true).ToString(), this.Position - new Vector2(0, 485), Color.Red);
 #endif
-#endif
+
         }
+#endif
 
         #region Private Methods
 

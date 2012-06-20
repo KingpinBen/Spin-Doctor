@@ -55,68 +55,69 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Properties
-        public Direction MovementDirection
+
+#if EDITOR
+        [ContentSerializerIgnore]
+        public virtual Direction MovementDirection
         {
             get
             {
                 return _movementDirection;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _movementDirection = value;
             }
         }
-
-        public float MotorSpeed
+        [ContentSerializerIgnore]
+        public virtual float MotorSpeed
         {
             get
             {
                 return _motorSpeed;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _motorSpeed = value;
             }
         }
-
-        public Vector2 EndPosition
+        [ContentSerializerIgnore]
+        public virtual Vector2 EndPosition
         {
             get
             {
                 return _endPosition;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _endPosition = value;
             }
         }
-
-        public bool StartsMoving
+        [ContentSerializerIgnore]
+        public virtual bool StartsMoving
         {
-            get { return _startsMoving; }
-#if EDITOR
+            get
+            {
+                return _startsMoving;
+            }
             set
-#else
-            protected set
-#endif
             {
                 _startsMoving = value;
             }
         }
-
-#if !EDITOR
+        [ContentSerializerIgnore]
+        public virtual float TimeToReverse
+        {
+            get 
+            { 
+                return _timeToReverse; 
+            }
+            set
+            {
+                _timeToReverse = value;
+            }
+        }
+#else
         [ContentSerializerIgnore]
         public FixedPrismaticJoint PrismaticJoint
         {
@@ -130,24 +131,75 @@ namespace GameLibrary.Objects
                 _prismaticJoint = value;
             }
         }
-#endif
+        [ContentSerializerIgnore]
+        public bool MovingToStart
+        {
+            get
+            {
+                return _currentMovingDirection;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual Direction MovementDirection
+        {
+            get
+            {
+                return _movementDirection;
+            }
+            protected set
+            {
+                _movementDirection = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual float MotorSpeed
+        {
+            get
+            {
+                return _motorSpeed;
+            }
+            protected set
+            {
+                _motorSpeed = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual Vector2 EndPosition
+        {
+            get
+            {
+                return _endPosition;
+            }
+            protected set
+            {
+                _endPosition = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual bool StartsMoving
+        {
+            get
+            {
+                return _startsMoving;
+            }
+            protected set
+            {
+                _startsMoving = value;
+            }
+        }
+        [ContentSerializerIgnore]
         public float TimeToReverse
         {
-            get { return _timeToReverse; }
-#if EDITOR
-            set
-#else
+            get
+            {
+                return _timeToReverse;
+            }
             protected set
-#endif
             {
                 _timeToReverse = value;
             }
         }
-
-        public bool MovingToStart
-        {
-            get { return _currentMovingDirection; }
-        }
+#endif
         #endregion
 
         #region Constructor

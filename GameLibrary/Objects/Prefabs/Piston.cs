@@ -113,13 +113,11 @@ namespace GameLibrary.Objects
             secondBodyTexture = content.Load<Texture2D>(secondBodyTexAsset);
             endBodyTexture = content.Load<Texture2D>(endBodyTexAsset);
 
+#if EDITOR
             this._width = Texture.Width;
             this._height = Texture.Height;
-
-#if EDITOR
             return;
-#endif
-
+#else
             this.CreateBodies(world);
             this._isMoving = this.StartsMoving;
 
@@ -131,16 +129,22 @@ namespace GameLibrary.Objects
             {
                 this._prismaticJoint.MotorSpeed = MotorSpeed;
             }
+#endif
         }
         #endregion
 
         #region Update
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+
+#else
             base.Update(gameTime);
 
             HandleExtraJoint(gameTime, firstBodyJoint);
             HandleExtraJoint(gameTime, secondBodyJoint);
+#endif
+            
         }
         #endregion
 
@@ -198,6 +202,10 @@ namespace GameLibrary.Objects
 
         void CreateBodies(World world)
         {
+#if EDITOR
+
+#else
+
             Vector2 baseTexture = new Vector2(ConvertUnits.ToSimUnits(this.Texture.Width), ConvertUnits.ToSimUnits(this.Texture.Height));
             Vector2 Texture1 = new Vector2(ConvertUnits.ToSimUnits(this.firstBodyTexture.Width), ConvertUnits.ToSimUnits(this.firstBodyTexture.Height));
             Vector2 Texture2 = new Vector2(ConvertUnits.ToSimUnits(this.secondBodyTexture.Width), ConvertUnits.ToSimUnits(this.secondBodyTexture.Height));
@@ -272,11 +280,15 @@ namespace GameLibrary.Objects
             this.firstBody.IgnoreCollisionWith(this.endBody);
             this.firstBody.IgnoreCollisionWith(this.secondBody);
             this.secondBody.IgnoreCollisionWith(this.endBody);
+#endif
 
         }
 
         void HandleExtraJoint(GameTime gameTime, FixedPrismaticJoint joint)
         {
+#if EDITOR
+
+#else
             if ((joint.JointTranslation >= joint.UpperLimit && !this.MovingToStart) ||
                 (joint.JointTranslation <= joint.LowerLimit && this.MovingToStart))
             {
@@ -292,6 +304,7 @@ namespace GameLibrary.Objects
                     joint.MotorSpeed = MotorSpeed;
                 }
             }
+#endif
         }
         #endregion
     }
