@@ -65,6 +65,7 @@ namespace GameLibrary.Objects
 
         #region Properties
 
+        [ContentSerializerIgnore]
         public Vector2 EndPosition
         {
             get { return _endPosition; }
@@ -77,7 +78,7 @@ namespace GameLibrary.Objects
                 _endPosition = value;
             }
         }
-
+        [ContentSerializerIgnore]
         public int ChainCount
         {
             get { return _chainCount; }
@@ -89,21 +90,22 @@ namespace GameLibrary.Objects
             {
                 _chainCount = value;
             }
-        }
-
+        }        
+#if EDITOR
+        [ContentSerializerIgnore]
+        public override float Height { get; set; }
+        [ContentSerializerIgnore]
+        public override float Width { get; set; }
+#endif
         #endregion
 
         #region Constructor
         /// <summary>
         /// A rope is fixed to a point at one end
         /// </summary>
-        public Rope() 
-            : base()
-        {
+        public Rope() : base() { }
 
-        }
-
-        public void Init(Vector2 StartVec, string texLoc)
+        public override void Init(Vector2 StartVec, string texLoc)
         {
             base.Init(StartVec, 0, 0, texLoc);
             this._endPosition = StartVec + new Vector2(0, 100);
@@ -116,13 +118,15 @@ namespace GameLibrary.Objects
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            Texture  = content.Load<Texture2D>(_textureAsset);
             endTexture = content.Load<Texture2D>("Assets/Sprites/Textures/Rope/ropeEnd");
 
 #if EDITOR
+            this.Width = endTexture.Width;
+            this.Height = endTexture.Height;
+
             return;
 #endif
-
+            Texture = content.Load<Texture2D>(_textureAsset);
             this.World = world;
             SetUpPhysics(world);
         }
@@ -190,6 +194,14 @@ namespace GameLibrary.Objects
         }
         #endregion
 
+#if EDITOR
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(endTexture, this._position, null, Color.Tomato, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 1.0f, SpriteEffects.None, 1.0f);
+            sb.Draw(endTexture, this._endPosition, null, Color.White, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 0.6f, SpriteEffects.None, 1.0f);
+        }
+#else
+
         #region Draw
         public override void Draw(SpriteBatch sb)
         {
@@ -206,6 +218,7 @@ namespace GameLibrary.Objects
             }
         }
         #endregion
+#endif
 
         #region SetupPhysics
         protected override void SetUpPhysics(World world)

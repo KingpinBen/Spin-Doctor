@@ -221,10 +221,17 @@ namespace SpinEditor
                         Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].GetType();
                         if (t.BaseType == typeof(DynamicObject))
                         {
-                            DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
-                            movements.AddVertex((dyOb.Position + offset) * Camera.Zoom, Color.Red);
-                            movements.AddVertex((dyOb.EndPosition + offset) * Camera.Zoom, Color.Red);
+                            DynamicObject dyObj = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
+                            movements.AddVertex((dyObj.Position + offset) * Camera.Zoom, Color.Red);
+                            movements.AddVertex((dyObj.EndPosition + offset) * Camera.Zoom, Color.Red);
 
+                        }
+
+                        if (t == typeof(Rope))
+                        {
+                            Rope ropeObj = (Rope)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
+                            movements.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);
+                            movements.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Green);
                         }
                     }
                 }

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -190,7 +189,7 @@ namespace SpinEditor
         #endregion
 
         #region XNA RENDER CONTROL MOUSE EVENTS
-        private void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
+        void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
         {
             xnA_RenderControl1.UpdateCoOrds();
 
@@ -207,11 +206,12 @@ namespace SpinEditor
                         {
                             if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].AssetLocation != null)
                             {
-                                Microsoft.Xna.Framework.Rectangle BoundingBox = new Microsoft.Xna.Framework.Rectangle(
+                                Rectangle BoundingBox = new Rectangle(
                                     (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width /2),
                                     (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height /2),
                                     (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width,
                                     (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height);
+
                                 if (BoundingBox.Contains(MousePos))
                                 {
                                     lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Physics, i));
@@ -223,11 +223,12 @@ namespace SpinEditor
                         {
                             if (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].AssetLocation != null)
                             {
-                                Microsoft.Xna.Framework.Rectangle BoundingBox = new Microsoft.Xna.Framework.Rectangle(
+                                Rectangle BoundingBox = new Rectangle(
                                     (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width / 2),
                                     (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height / 2),
                                     (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width,
                                     (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height);
+
                                 if (BoundingBox.Contains(MousePos))
                                 {
                                     lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Decal, i));
@@ -341,7 +342,7 @@ namespace SpinEditor
             }
         }
         
-        private void ShiftSelection()
+        void ShiftSelection()
         {
             //If Object is already selected, deselect.
             for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
@@ -356,7 +357,7 @@ namespace SpinEditor
             STATIC_EDITOR_MODE.selectedObjectIndices.Add(lst_ObjectsUnderCursor[0]);
         }
 
-        private void xnA_RenderControl1_MouseDown(object sender, MouseEventArgs e)
+        void xnA_RenderControl1_MouseDown(object sender, MouseEventArgs e)
         {
             Microsoft.Xna.Framework.Point MousePos = get_mouse_vpos();
             STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
@@ -491,14 +492,14 @@ namespace SpinEditor
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(pushPlat);
                         }
                         break;
-                    //case "Rope":
-                    //    {
-                    //        Rope rope = new Rope();
-                    //        rope.Init(Position, tex.Width / 2, texloc0);
-                    //        rope.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                    //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(rope);
-                    //    }
-                    //    break;
+                    case "Rope":
+                        {
+                            Rope rope = new Rope();
+                            rope.Init(Position, texloc0);
+                            rope.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(rope);
+                        }
+                        break;
                     case "Rotate Room Button":
                         {
                             RotateRoomButton rotRoomButton = new RotateRoomButton();
