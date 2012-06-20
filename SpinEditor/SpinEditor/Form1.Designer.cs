@@ -68,6 +68,8 @@
             this.listBox_Assets1 = new System.Windows.Forms.ListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.listBox_Assets2 = new System.Windows.Forms.ListBox();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.listBox_Assets3 = new System.Windows.Forms.ListBox();
             this.panel4 = new System.Windows.Forms.Panel();
             this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE = new System.Windows.Forms.Button();
             this.BUTTON_ROTATE_VIEW_CLOCKWISE = new System.Windows.Forms.Button();
@@ -92,9 +94,12 @@
             this.BUTTON_ALIGN_9 = new System.Windows.Forms.Button();
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideOverlay = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideCoordinates = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideMovementPath = new System.Windows.Forms.ToolStripMenuItem();
             this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.listBox_Assets3 = new System.Windows.Forms.ListBox();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -102,11 +107,11 @@
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ZOOM)).BeginInit();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -114,6 +119,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
+            this.viewToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -129,27 +135,27 @@
             this.saveToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -159,33 +165,33 @@
             this.undoToolStripMenuItem,
             this.redoToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // undoToolStripMenuItem
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // toolStrip1
@@ -211,7 +217,7 @@
             // toolStripLabel1
             // 
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(75, 22);
+            this.toolStripLabel1.Size = new System.Drawing.Size(68, 22);
             this.toolStripLabel1.Text = "Editor Mode:";
             // 
             // BUTTON_EDITOR_MODE_SELECT
@@ -279,7 +285,7 @@
             this.BUTTON_EDIT_ROOM.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_EDIT_ROOM.Image")));
             this.BUTTON_EDIT_ROOM.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.BUTTON_EDIT_ROOM.Name = "BUTTON_EDIT_ROOM";
-            this.BUTTON_EDIT_ROOM.Size = new System.Drawing.Size(122, 22);
+            this.BUTTON_EDIT_ROOM.Size = new System.Drawing.Size(111, 22);
             this.BUTTON_EDIT_ROOM.Text = "Edit Room Properties";
             this.BUTTON_EDIT_ROOM.Click += new System.EventHandler(this.BUTTON_EDIT_ROOM_Click);
             // 
@@ -294,7 +300,7 @@
             this.BUTTON_UNDO.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_UNDO.Image")));
             this.BUTTON_UNDO.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.BUTTON_UNDO.Name = "BUTTON_UNDO";
-            this.BUTTON_UNDO.Size = new System.Drawing.Size(40, 22);
+            this.BUTTON_UNDO.Size = new System.Drawing.Size(36, 22);
             this.BUTTON_UNDO.Text = "Undo";
             this.BUTTON_UNDO.ToolTipText = "Undo last action.";
             this.BUTTON_UNDO.Click += new System.EventHandler(this.BUTTON_UNDO_Click);
@@ -305,7 +311,7 @@
             this.BUTTON_REDO.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_REDO.Image")));
             this.BUTTON_REDO.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.BUTTON_REDO.Name = "BUTTON_REDO";
-            this.BUTTON_REDO.Size = new System.Drawing.Size(38, 22);
+            this.BUTTON_REDO.Size = new System.Drawing.Size(36, 22);
             this.BUTTON_REDO.Text = "Redo";
             this.BUTTON_REDO.ToolTipText = "Redo last undone action.";
             this.BUTTON_REDO.Click += new System.EventHandler(this.BUTTON_REDO_Click);
@@ -485,6 +491,25 @@
             this.listBox_Assets2.Name = "listBox_Assets2";
             this.listBox_Assets2.Size = new System.Drawing.Size(196, 82);
             this.listBox_Assets2.TabIndex = 8;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.listBox_Assets3);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(202, 92);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Tex 4";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // listBox_Assets3
+            // 
+            this.listBox_Assets3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox_Assets3.FormattingEnabled = true;
+            this.listBox_Assets3.Location = new System.Drawing.Point(3, 5);
+            this.listBox_Assets3.Name = "listBox_Assets3";
+            this.listBox_Assets3.Size = new System.Drawing.Size(196, 82);
+            this.listBox_Assets3.TabIndex = 9;
             // 
             // panel4
             // 
@@ -762,10 +787,52 @@
             this.panel2.Size = new System.Drawing.Size(898, 651);
             this.panel2.TabIndex = 13;
             // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ViewMenuHideOverlay,
+            this.ViewMenuHideGrid,
+            this.ViewMenuHideCoordinates,
+            this.ViewMenuHideMovementPath});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // ViewMenuHideOverlay
+            // 
+            this.ViewMenuHideOverlay.Name = "ViewMenuHideOverlay";
+            this.ViewMenuHideOverlay.Size = new System.Drawing.Size(175, 22);
+            this.ViewMenuHideOverlay.Text = "Hide Object Overlay";
+            this.ViewMenuHideOverlay.Click += new System.EventHandler(this.ViewMenuHideOverlay_Click);
+            // 
+            // ViewMenuHideGrid
+            // 
+            this.ViewMenuHideGrid.Name = "ViewMenuHideGrid";
+            this.ViewMenuHideGrid.Size = new System.Drawing.Size(175, 22);
+            this.ViewMenuHideGrid.Text = "Hide Grid";
+            this.ViewMenuHideGrid.Click += new System.EventHandler(this.ViewMenuHideGrid_Click);
+            // 
+            // ViewMenuHideCoordinates
+            // 
+            this.ViewMenuHideCoordinates.Name = "ViewMenuHideCoordinates";
+            this.ViewMenuHideCoordinates.Size = new System.Drawing.Size(175, 22);
+            this.ViewMenuHideCoordinates.Text = "Hide Coordinates";
+            this.ViewMenuHideCoordinates.Click += new System.EventHandler(this.ViewMenuHideCoordinates_Click);
+            // 
+            // ViewMenuHideMovementPath
+            // 
+            this.ViewMenuHideMovementPath.Name = "ViewMenuHideMovementPath";
+            this.ViewMenuHideMovementPath.Size = new System.Drawing.Size(175, 22);
+            this.ViewMenuHideMovementPath.Text = "Hide Movement Lines";
+            this.ViewMenuHideMovementPath.Click += new System.EventHandler(this.ViewMenuHideMovementPath_Click);
+            // 
             // xnA_RenderControl1
             // 
             this.xnA_RenderControl1.Camera = null;
             this.xnA_RenderControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.xnA_RenderControl1.HideOverlay = false;
+            this.xnA_RenderControl1.levelBackground = null;
+            this.xnA_RenderControl1.levelDimensions = new Microsoft.Xna.Framework.Vector2(0F, 0F);
             this.xnA_RenderControl1.Location = new System.Drawing.Point(0, 0);
             this.xnA_RenderControl1.Name = "xnA_RenderControl1";
             this.xnA_RenderControl1.Size = new System.Drawing.Size(898, 651);
@@ -773,25 +840,6 @@
             this.xnA_RenderControl1.Text = "xnA_RenderControl1";
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
-            // 
-            // tabPage4
-            // 
-            this.tabPage4.Controls.Add(this.listBox_Assets3);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(202, 92);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Tex 4";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // listBox_Assets3
-            // 
-            this.listBox_Assets3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox_Assets3.FormattingEnabled = true;
-            this.listBox_Assets3.Location = new System.Drawing.Point(3, 5);
-            this.listBox_Assets3.Name = "listBox_Assets3";
-            this.listBox_Assets3.Size = new System.Drawing.Size(196, 82);
-            this.listBox_Assets3.TabIndex = 9;
             // 
             // Form1
             // 
@@ -816,13 +864,13 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
+            this.tabPage4.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ZOOM)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.panel2.ResumeLayout(false);
-            this.tabPage4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -896,6 +944,11 @@
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.ListBox listBox_Assets3;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ViewMenuHideOverlay;
+        private System.Windows.Forms.ToolStripMenuItem ViewMenuHideGrid;
+        private System.Windows.Forms.ToolStripMenuItem ViewMenuHideCoordinates;
+        private System.Windows.Forms.ToolStripMenuItem ViewMenuHideMovementPath;
 
 
     }

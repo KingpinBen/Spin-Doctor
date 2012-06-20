@@ -24,16 +24,23 @@ namespace SpinEditor
 {
     public partial class Form1 : Form
     {
+        #region Properties
         public static List<ObjectIndex> ListThing
         {
             get { return lst_ObjectsUnderCursor; }
         }
+        #endregion
+
+        #region Fields
 
         static List<ObjectIndex> lst_ObjectsUnderCursor;
         Vector2 mouseDown = Vector2.Zero;
         Vector2 mouseUp= Vector2.Zero;
         bool containsMouse = false;
         bool dragReleased = true;
+        #endregion
+
+        #region Constructor and Load
 
         public Form1()
         {
@@ -129,6 +136,7 @@ namespace SpinEditor
             }
         }
 
+        #endregion
 
         #region TOOLSTRIP FILE MENU
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -199,7 +207,7 @@ namespace SpinEditor
         }
         #endregion
 
-        #region XNA RENDER CONTROL MOUSE EVENTS
+        #region Input
         void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
         {
             xnA_RenderControl1.UpdateCoOrds();
@@ -2322,7 +2330,7 @@ namespace SpinEditor
             Point topLeftPoint = xnA_RenderControl1.Camera.GetTopLeftCameraPoint(xnA_RenderControl1.GraphicsDevice);
 
             Point mousePoint =
-                new Microsoft.Xna.Framework.Point(
+                new Point(
                     (int)(Mouse.GetState().X / xnA_RenderControl1.Camera.Zoom + topLeftPoint.X),
                     (int)(Mouse.GetState().Y / xnA_RenderControl1.Camera.Zoom + topLeftPoint.Y));
             return (mousePoint);
@@ -2480,6 +2488,31 @@ namespace SpinEditor
                 listBox_Assets3.SelectedItem = "PistonEnd";
             }
         }
+        #endregion
+
+        #region View Toolstrip
+
+        void ViewMenuHideOverlay_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideOverlay.Checked = !ViewMenuHideOverlay.Checked;
+            xnA_RenderControl1.HideOverlay = ViewMenuHideOverlay.Checked;
+        }
+        void ViewMenuHideCoordinates_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideCoordinates.Checked = !ViewMenuHideCoordinates.Checked;
+            xnA_RenderControl1.HideCoordinates = ViewMenuHideCoordinates.Checked;
+        }
+        void ViewMenuHideMovementPath_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideMovementPath.Checked = !ViewMenuHideMovementPath.Checked;
+            xnA_RenderControl1.HideMovementPath = ViewMenuHideMovementPath.Checked;
+        }
+        void ViewMenuHideGrid_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideGrid.Checked = !ViewMenuHideGrid.Checked;
+            xnA_RenderControl1.HideGrid = ViewMenuHideGrid.Checked;
+        }
+
         #endregion
 
         #endregion

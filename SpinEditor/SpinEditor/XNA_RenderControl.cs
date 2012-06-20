@@ -40,8 +40,7 @@ namespace SpinEditor
         string worldCoOrds = "";
 
         public bool bDoNotDraw = false;
-        bool hideOverlay;
-
+        
         public Camera2D Camera { get; set; }
 
         private Texture2D crosshair;
@@ -52,6 +51,15 @@ namespace SpinEditor
         private int yLineCount;
         private float xOffset;
         private float yOffset;
+
+        #endregion
+
+        #region Properties
+
+        public bool HideOverlay { get; set; }
+        public bool HideCoordinates { get; set; }
+        public bool HideMovementPath { get; set; }
+        public bool HideGrid { get; set; }
 
         #endregion
 
@@ -128,11 +136,6 @@ namespace SpinEditor
             STATIC_EDITOR_MODE.oldState = STATIC_EDITOR_MODE.keyState;
             STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
 
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.F1) && STATIC_EDITOR_MODE.oldState.IsKeyUp(Microsoft.Xna.Framework.Input.Keys.F1))
-            {
-                hideOverlay = !hideOverlay;
-            }
-
             if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
             {
                 Camera.Zoom += 0.01f;
@@ -193,7 +196,7 @@ namespace SpinEditor
                 #endregion
 
                 #region Draw Selection Overlay
-                if (!hideOverlay)
+                if (!HideOverlay)
                 {
                     for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
                     {
@@ -217,46 +220,51 @@ namespace SpinEditor
                 #endregion
 
                 #region Movement paths
-                primBatch.Begin(PrimitiveType.LineList);
+                if (!HideMovementPath)
                 {
-                    Vector2 offset = new Vector2((GraphicsDevice.Viewport.Width / 2 / Camera.Zoom) - Camera.Pos.X, (GraphicsDevice.Viewport.Height / 2 / Camera.Zoom) - Camera.Pos.Y);
-                    for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+                    primBatch.Begin(PrimitiveType.LineList);
                     {
-                        Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].GetType();
-                        if (t.BaseType == typeof(DynamicObject))
+                        Vector2 offset = new Vector2((GraphicsDevice.Viewport.Width / 2 / Camera.Zoom) - Camera.Pos.X, (GraphicsDevice.Viewport.Height / 2 / Camera.Zoom) - Camera.Pos.Y);
+                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
                         {
-                            DynamicObject dyObj = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
-                            primBatch.AddVertex((dyObj.Position + offset) * Camera.Zoom, Color.Red);
-                            primBatch.AddVertex((dyObj.EndPosition + offset) * Camera.Zoom, Color.Red);
+                            Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].GetType();
+                            if (t.BaseType == typeof(DynamicObject))
+                            {
+                                DynamicObject dyObj = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
+                                primBatch.AddVertex((dyObj.Position + offset) * Camera.Zoom, Color.Red);
+                                primBatch.AddVertex((dyObj.EndPosition + offset) * Camera.Zoom, Color.Red);
 
-                        }
+                            }
 
-                        if (t == typeof(Rope))
-                        {
-                            Rope ropeObj = (Rope)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
-                            primBatch.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);
-                            primBatch.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Green);
+                            if (t == typeof(Rope))
+                            {
+                                Rope ropeObj = (Rope)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
+                                primBatch.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);
+                                primBatch.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Green);
+                            }
                         }
                     }
+                    primBatch.End();
                 }
-                primBatch.End();
                 #endregion
 
                 #region Grid
-                primBatch.Begin(PrimitiveType.LineList);
-                for (int i = 0; i < xLineCount + 2; i++)
+                if (!HideGrid)
                 {
-                    primBatch.AddVertex(new Vector2(xOffset + xySpacing * i, 0), Color.White * 0.2f);
-                    primBatch.AddVertex(new Vector2(xOffset + xySpacing * i, GraphicsDevice.Viewport.Height), Color.White * 0.2f);
+                    primBatch.Begin(PrimitiveType.LineList);
+                    for (int i = 0; i < xLineCount + 2; i++)
+                    {
+                        primBatch.AddVertex(new Vector2(xOffset + xySpacing * i, 0), Color.White * 0.2f);
+                        primBatch.AddVertex(new Vector2(xOffset + xySpacing * i, GraphicsDevice.Viewport.Height), Color.White * 0.2f);
 
+                    }
+                    for (int i = 0; i < yLineCount + 2; i++)
+                    {
+                        primBatch.AddVertex(new Vector2(0, yOffset + xySpacing * i), Color.White * 0.2f);
+                        primBatch.AddVertex(new Vector2(GraphicsDevice.Viewport.Width, yOffset + xySpacing * i), Color.White * 0.2f);
+                    }
+                    primBatch.End();
                 }
-                for (int i = 0; i < yLineCount + 2; i++)
-                {
-                    primBatch.AddVertex(new Vector2(0, yOffset + xySpacing * i), Color.White * 0.2f);
-                    primBatch.AddVertex(new Vector2(GraphicsDevice.Viewport.Width, yOffset + xySpacing * i), Color.White * 0.2f);
-                }
-                primBatch.End();
-
                 #endregion
 
                 #region Screen Rotation Point
@@ -272,38 +280,38 @@ namespace SpinEditor
                 #endregion
 
                 #region Text
-                spriteBatch.Begin();
-                spriteBatch.DrawString(font, "Local Co-ords: ",
-                    Microsoft.Xna.Framework.Vector2.Zero,
-                    Microsoft.Xna.Framework.Color.White);
+                    if (!HideCoordinates)
+                    {
+                        spriteBatch.Begin();
+                        spriteBatch.DrawString(font, "Local Co-ords: ",
+                             Microsoft.Xna.Framework.Vector2.Zero,
+                                        Microsoft.Xna.Framework.Color.White);
 
-                spriteBatch.DrawString(font, localCoOrds,
-                    new Microsoft.Xna.Framework.Vector2(0, 20),
-                    Microsoft.Xna.Framework.Color.White);
+                        spriteBatch.DrawString(font, localCoOrds,
+                                            new Microsoft.Xna.Framework.Vector2(0, 20),
+                                            Microsoft.Xna.Framework.Color.White);
 
-                spriteBatch.DrawString(font, "World Co-ords: ",
-                    new Microsoft.Xna.Framework.Vector2(0, 40),
-                    Microsoft.Xna.Framework.Color.White);
+                        spriteBatch.DrawString(font, "World Co-ords: ",
+                                     new Microsoft.Xna.Framework.Vector2(0, 40),
+                                     Microsoft.Xna.Framework.Color.White);
+                        spriteBatch.DrawString(font, worldCoOrds,
+                               new Microsoft.Xna.Framework.Vector2(0, 60),
+                         Microsoft.Xna.Framework.Color.White);
 
-                spriteBatch.DrawString(font, worldCoOrds,
-                    new Microsoft.Xna.Framework.Vector2(0, 60),
-                    Microsoft.Xna.Framework.Color.White);
+                        spriteBatch.DrawString(font, "x: " + this.Width + "   y: " + this.Height,
+                       new Microsoft.Xna.Framework.Vector2(0, 80),
+                       Microsoft.Xna.Framework.Color.White);
 
-                spriteBatch.DrawString(font, "x: " + this.Width + "   y: " + this.Height,
-                    new Microsoft.Xna.Framework.Vector2(0, 80),
-                    Microsoft.Xna.Framework.Color.White);
+                        if (gameTime != null)
+                        {
+                            spriteBatch.DrawString(font, gameTime.TotalGameTime.Seconds.ToString(),
+                                new Microsoft.Xna.Framework.Vector2(0, 100),
+                                Microsoft.Xna.Framework.Color.White);
+                        }
 
-                if (gameTime != null)
-                {
-                    spriteBatch.DrawString(font, gameTime.TotalGameTime.Seconds.ToString(),
-                        new Microsoft.Xna.Framework.Vector2(0, 100),
-                        Microsoft.Xna.Framework.Color.White);
-                }
-
-                spriteBatch.End();
+                        spriteBatch.End();
+                    }
                 #endregion
-                
-                //Draw_DebugData();
 
                 UpdateTime();
             }
