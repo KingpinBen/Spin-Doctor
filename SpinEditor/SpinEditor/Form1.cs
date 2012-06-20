@@ -79,6 +79,9 @@ namespace SpinEditor
                         case (System.Windows.Forms.DialogResult.Yes):
                             {
                                 canContinue = OpenFile();
+                                if (!canContinue)
+                                    continue;
+
                                 xnA_RenderControl1.bDoNotDraw = false;
                             }
                             break;
@@ -129,7 +132,7 @@ namespace SpinEditor
             OpenFile();
         }
 
-        private bool OpenFile()
+        bool OpenFile()
         {
             openFileDialog1.Filter = "Xml files|*.xml";
 
@@ -140,13 +143,15 @@ namespace SpinEditor
                     using (XmlTextReader input = new XmlTextReader(stream))
                     {
                         xnA_RenderControl1.bDoNotDraw = true;
-                        STATIC_EDITOR_MODE.levelInstance = IntermediateSerializer.Deserialize<GameLibrary.Drawing.Level>(input, null);
+                        STATIC_EDITOR_MODE.levelInstance = IntermediateSerializer.Deserialize<Level>(input, null);
 
                         for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
                         {
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Load(STATIC_EDITOR_MODE.contentMan, STATIC_EDITOR_MODE.world);
+                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                         }
 
+                        xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
+                        xnA_RenderControl1.levelDimensions = STATIC_EDITOR_MODE.levelInstance.RoomDimensions;
                         xnA_RenderControl1.bDoNotDraw = false;
 
                         Update_undoArray();
@@ -195,7 +200,7 @@ namespace SpinEditor
         {
             xnA_RenderControl1.UpdateCoOrds();
 
-            Microsoft.Xna.Framework.Point MousePos = get_mouse_vpos();
+            Point MousePos = get_mouse_vpos();
 
             lst_ObjectsUnderCursor.Clear();
 
@@ -522,7 +527,7 @@ namespace SpinEditor
                         {
                             if (listBox_Assets1.SelectedItem == null) return;
                             Saw sawBlade = new Saw();
-                            sawBlade.Init(Position, tex.Width, texloc0, texloc1);
+                            sawBlade.Init(Position, texloc0, texloc1);
                             sawBlade.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(sawBlade);
                         }
@@ -573,6 +578,8 @@ namespace SpinEditor
         #endregion 
 
         #region EDITOR MODE SELECTION
+
+        #region Change to Select Mode
         private void BUTTON_EDITOR_MODE_SELECT_Click(object sender, EventArgs e)
         {
             if (!BUTTON_EDITOR_MODE_SELECT.Checked)
@@ -585,7 +592,9 @@ namespace SpinEditor
             BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = BUTTON_EDIT_ROOM.Checked = false;
             Handle_Property_Grid_Items();
         }
+        #endregion
 
+        #region Change to Move Mode
         private void BUTTON_EDITOR_MODE_MOVE_Click(object sender, EventArgs e)
         {
             if (!BUTTON_EDITOR_MODE_MOVE.Checked)
@@ -598,7 +607,9 @@ namespace SpinEditor
             BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = BUTTON_EDIT_ROOM.Checked = false;
             Handle_Property_Grid_Items();
         }
+        #endregion
 
+        #region Change to Place Mode
         private void BUTTON_EDITOR_MODE_PLACE_Click(object sender, EventArgs e)
         {
             if (!BUTTON_EDITOR_MODE_PLACE.Checked)
@@ -611,7 +622,9 @@ namespace SpinEditor
             BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDIT_ROOM.Checked = false;
             Handle_Property_Grid_Items();
         }
+        #endregion
 
+        #region Show Room Properties
         private void BUTTON_EDIT_ROOM_Click(object sender, EventArgs e)
         {
             BUTTON_EDIT_ROOM.Checked = true;
@@ -623,6 +636,7 @@ namespace SpinEditor
         }
         #endregion
 
+        #region Delete Selected Item(s)
         void BUTTON_DELETE_Click(object sender, EventArgs e)
         {
             if (Is_Something_Selected())
@@ -651,9 +665,12 @@ namespace SpinEditor
                 Update_undoArray();
             }
         }
+        #endregion
 
-        #region UNDO/REDO
-        private void Update_undoArray()
+        #endregion
+
+        #region Undo/Redo
+        void Update_undoArray()
         {
             if (STATIC_EDITOR_MODE.arrayLength - 1 > STATIC_EDITOR_MODE.arrayIndex)
             {
@@ -684,7 +701,7 @@ namespace SpinEditor
             STATIC_EDITOR_MODE.arrayIndex = STATIC_EDITOR_MODE.arrayLength - 1;
         }
 
-        private void Undo()
+        void Undo()
         {
             if (STATIC_EDITOR_MODE.arrayIndex > 0)
             {
@@ -696,7 +713,7 @@ namespace SpinEditor
             }
         }
 
-        private void Redo()
+        void Redo()
         {
             if (STATIC_EDITOR_MODE.arrayLength - 1 > STATIC_EDITOR_MODE.arrayIndex)
             {
@@ -707,13 +724,13 @@ namespace SpinEditor
             }
         }
 
-        private void BUTTON_UNDO_Click(object sender, EventArgs e) { Undo(); }
-        private void BUTTON_REDO_Click(object sender, EventArgs e) { Redo(); }
-        private void undoToolStripMenuItem_Click(object sender, EventArgs e) { Undo(); }
-        private void redoToolStripMenuItem_Click(object sender, EventArgs e) { Redo(); }
+        void BUTTON_UNDO_Click(object sender, EventArgs e) { Undo(); }
+        void BUTTON_REDO_Click(object sender, EventArgs e) { Redo(); }
+        void undoToolStripMenuItem_Click(object sender, EventArgs e) { Undo(); }
+        void redoToolStripMenuItem_Click(object sender, EventArgs e) { Redo(); }
         #endregion
 
-        #region Align
+        #region Align Methods
         private void BUTTON_IMPORT_ASSET_Click(object sender, EventArgs e)
         {
             // Default to the directory which contains our content files
@@ -2295,15 +2312,15 @@ namespace SpinEditor
 
         #endregion
 
-        #region CAMERA
+        #region Camera Methods
         public Microsoft.Xna.Framework.Point get_mouse_vpos()
         {
-            Microsoft.Xna.Framework.Point topLeftPoint = xnA_RenderControl1.Camera.GetTopLeftCameraPoint(xnA_RenderControl1.GraphicsDevice);
+            Point topLeftPoint = xnA_RenderControl1.Camera.GetTopLeftCameraPoint(xnA_RenderControl1.GraphicsDevice);
 
-            Microsoft.Xna.Framework.Point mousePoint =
+            Point mousePoint =
                 new Microsoft.Xna.Framework.Point(
-                    (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().X / xnA_RenderControl1.Camera.Zoom + topLeftPoint.X),
-                    (int)(Microsoft.Xna.Framework.Input.Mouse.GetState().Y / xnA_RenderControl1.Camera.Zoom + topLeftPoint.Y));
+                    (int)(Mouse.GetState().X / xnA_RenderControl1.Camera.Zoom + topLeftPoint.X),
+                    (int)(Mouse.GetState().Y / xnA_RenderControl1.Camera.Zoom + topLeftPoint.Y));
             return (mousePoint);
         }
 
@@ -2378,6 +2395,8 @@ namespace SpinEditor
             return false;
         }
 
+        #region Texture List Methods
+
         private void Refresh_XNB_Asset_List()
         {
             listBox_Assets0.Items.Clear();
@@ -2402,6 +2421,7 @@ namespace SpinEditor
             }
         }
 
+        #region Update TextureList to match changed object type
         private void listBox_Classes_SelectedIndexChanged(object sender, EventArgs e)
         {
             #region Selected-Class Texture Switch
@@ -2456,5 +2476,7 @@ namespace SpinEditor
                 listBox_Assets3.SelectedItem = "PistonEnd";
             }
         }
+        #endregion
+        #endregion
     }
 }

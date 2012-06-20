@@ -237,7 +237,8 @@ namespace GameLibrary.Drawing
             Init();
             this.SetupCamera();
             Player.Instance.Load(_content, world, _spawnLocation, true);
-            
+
+            this._levelBackdrop.Tint = this._backgroundTint;
             this._levelBackdrop.Load(_content, _roomDimensions, _roomTheme, _backgroundFile);
 
             if (_roomType != RoomTypeEnum.NonRotating)
