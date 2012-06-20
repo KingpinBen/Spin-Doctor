@@ -167,16 +167,18 @@ namespace SpinEditor
                 #region Objects and selection overlay
                 spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, Camera.get_transformation(new Vector2(this.Width, this.Height)));
 
+                #region Draw the Level Background
                 if (levelBackground != null)
                 {
                     spriteBatch.Draw(levelBackground, new Rectangle(-(int)levelDimensions.X / 2, -(int)levelDimensions.Y / 2, (int)levelDimensions.X, (int)levelDimensions.Y),
-                    new Rectangle(0, 0, (int)this.levelDimensions.X, (int)this.levelDimensions.Y), Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 1.0f);
+                        new Rectangle(0, 0, (int)this.levelDimensions.X, (int)this.levelDimensions.Y), Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 1.0f);
                 }
+                #endregion
 
+                #region PhysicsObjectList Draw
                 if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count > 0)
                 {
-                    Microsoft.Xna.Framework.Color color = Microsoft.Xna.Framework.Color.Red * 0.0f;
-
+                    
                     for (int i = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i > 0; i--)
                     {
                         STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Draw(spriteBatch);
@@ -190,25 +192,27 @@ namespace SpinEditor
                         {
                             for (int j = 0; j < STATIC_EDITOR_MODE.selectedObjectIndices.Count; j++)
                             {
-                                if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index != i - 1 || STATIC_EDITOR_MODE.selectedObjectIndices[j].Type != OBJECT_TYPE.Physics)
-                                    color = Microsoft.Xna.Framework.Color.Red * 0.0f;
-                                else
+                                if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i - 1 && STATIC_EDITOR_MODE.selectedObjectIndices[j].Type == OBJECT_TYPE.Physics)
                                 {
-                                    color = Microsoft.Xna.Framework.Color.Green * 0.8f;
-                                    break;
+                                    spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Position,
+                                        new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Width, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Height),
+                                        Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Origin, 1.0f, SpriteEffects.None, 0f);
                                 }
                             }
                         }
-
-                        //Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].GetType();
-                        //Color newcolor = Color.Red;
-                        //spriteBatch.DrawString(font, t.BaseType.ToString(), STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Position, newcolor);
-
-                        spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Position,
-                            new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Width, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Height),
-                            color, 0f, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Origin, 1.0f, SpriteEffects.None, 0f);
                     }
                 }
+
+                if (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count > 0)
+                {
+                    for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
+                    {
+                        STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Draw(spriteBatch);
+                    }
+                }
+
+                #endregion
+
                 spriteBatch.End();
                 #endregion
 

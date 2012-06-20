@@ -94,7 +94,8 @@ namespace SpinEditor
 
                                 //  Generate the correct roomsize for the background for size comparison
                                 Vector2 alteredRoomSize = RoomForm.roomSize;
-                                alteredRoomSize *= 79;
+                                //  multiply by one paper unit:
+                                alteredRoomSize *= 158 / 4;
                                 xnA_RenderControl1.levelDimensions = alteredRoomSize;
                                 STATIC_EDITOR_MODE.levelInstance.RoomDimensions = alteredRoomSize;
 
@@ -508,14 +509,14 @@ namespace SpinEditor
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(rotRoomButton);
                         }
                         break;
-                    //case "Rotating Platform":
-                    //    {
-                    //        RotatingPlatform rotPlat = new RotatingPlatform();
-                    //        rotPlat.Init(Position, tex.Width, tex.Height, texloc0);
-                    //        rotPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                    //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(rotPlat);
-                    //    }
-                    //    break;
+                    case "Rotating Platform":
+                        {
+                            RotatingPlatform rotPlat = new RotatingPlatform();
+                            rotPlat.Init(Position, texloc0);
+                            rotPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(rotPlat);
+                        }
+                        break;
                     case "Saw Blade":
                         {
                             if (listBox_Assets1.SelectedItem == null) return;
@@ -2427,7 +2428,7 @@ namespace SpinEditor
                     STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Rope/";
                     break;
                 case "Rotating Platform":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Platforms/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Environment/";
                     break;
                 case "Saw Blade":
                     STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Saw/";

@@ -65,12 +65,7 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Constructor
-        public RotatingPlatform() 
-            : base()
-        {
-            
-        }
-        #endregion
+        public RotatingPlatform() : base() { }
 
         public override void Init(Vector2 position, string tex)
         {
@@ -78,6 +73,7 @@ namespace GameLibrary.Objects
 
             this._rotatesWithLevel = true;
         }
+        #endregion
 
         #region LoadContent
         /// <summary>
@@ -86,8 +82,13 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
             this.Texture = content.Load<Texture2D>(this._textureAsset);
-            this.Origin = new Vector2(this.Texture.Width / 2, this.Texture.Height / 2);
+            this.Width = this.Texture.Width;
+            this.Height = this.Texture.Height;
+#if EDITOR
+            return;
 
+#endif
+            
             SetUpPhysics(world);
             GetRotationFromOrientation();
         }
@@ -105,6 +106,13 @@ namespace GameLibrary.Objects
             this.Body.Rotation = -(float)Camera.Rotation;
         }
         #endregion
+
+#if EDITOR
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(this.Texture, this.Position, null, this.Tint, TextureRotation, new Vector2(this.Texture.Width / 2, this.Texture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
+        }
+#endif
 
         #region new methods
 

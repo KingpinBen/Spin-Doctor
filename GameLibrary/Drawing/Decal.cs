@@ -162,16 +162,19 @@ namespace GameLibrary.Drawing
             this._decalAsset = assetLoc;
             this._zLayer = 0.4f;
             this._flip = SpriteEffects.None;
+            this._tint = Color.White * 1.0f;
         }
 
         public void Load(ContentManager Content)
         {
             this._decalTexture = Content.Load<Texture2D>(AssetLocation);
+            this.Width = _decalTexture.Width;
+            this.Height = _decalTexture.Height;
         }
 
         public void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._decalTexture, this._position, null, this._tint, this._rotation, new Vector2(this._decalTexture.Width / 2, this._decalTexture.Height / 2), 
+            sb.Draw(this._decalTexture, this._position, null, this._tint, this._rotation, new Vector2(this._height / 2, this._height / 2), 
                 this._scale, this._flip, this._zLayer);
         }
     }
