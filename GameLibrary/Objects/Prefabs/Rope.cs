@@ -117,7 +117,7 @@ namespace GameLibrary.Objects
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            endTexture = content.Load<Texture2D>("Assets/Sprites/Textures/Rope/ropeEnd");
+            endTexture = content.Load<Texture2D>("Assets/Images/Textures/Rope/ropeEnd");
             Texture = content.Load<Texture2D>(_textureAsset);
 #if EDITOR
             this.Width = endTexture.Width;

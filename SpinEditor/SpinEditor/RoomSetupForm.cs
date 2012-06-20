@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using GameLibrary.Drawing;
 using Microsoft.Xna.Framework;
+using System.IO;
 
 namespace SpinEditor
 {
@@ -110,7 +111,7 @@ namespace SpinEditor
                 MessageBox.Show("Put a texture name in for the background.");
                 return false;
             }
-            rearWall = "Assets/Sprites/Textures/RoomSetup/" + rearWall;
+            rearWall = "Assets/Images/Textures/RoomSetup/" + rearWall;
 
             return true;
         }

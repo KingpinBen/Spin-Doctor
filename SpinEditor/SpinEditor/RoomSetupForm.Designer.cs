@@ -41,7 +41,6 @@
             this.typeComboBox = new System.Windows.Forms.ComboBox();
             this.BUTTON_CREATE_ROOM = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.BUTTON_LOAD_ROOM = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
@@ -62,7 +61,6 @@
             this.groupBox1.Controls.Add(this.typeComboBox);
             this.groupBox1.Controls.Add(this.BUTTON_CREATE_ROOM);
             this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(5, 32);
             this.groupBox1.Name = "groupBox1";
@@ -74,7 +72,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(61, 146);
+            this.label7.Location = new System.Drawing.Point(51, 146);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(121, 13);
             this.label7.TabIndex = 15;
@@ -207,15 +205,6 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Room Size";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(65, 74);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(112, 13);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "(2 units per paper unit)";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -268,7 +257,6 @@
         private System.Windows.Forms.ComboBox typeComboBox;
         private System.Windows.Forms.Button BUTTON_CREATE_ROOM;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button BUTTON_LOAD_ROOM;
     }

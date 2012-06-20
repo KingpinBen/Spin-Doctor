@@ -68,6 +68,7 @@ namespace SpinEditor
             Align_Relative.SelectedItem = "Last Selected";
             Rotate_Relative.SelectedItem = "As Group";
 
+            #region Room Setup Form
             bool canContinue = false;
             using (RoomSetupForm RoomForm = new RoomSetupForm())
             {
@@ -98,19 +99,18 @@ namespace SpinEditor
                                 //  Generate the correct roomsize for the background for size comparison
                                 Vector2 alteredRoomSize = RoomForm.roomSize;
                                 //  multiply by one paper unit:
-                                alteredRoomSize *= 158 / 4;
+                                alteredRoomSize *= 79;
                                 xnA_RenderControl1.levelDimensions = alteredRoomSize;
                                 STATIC_EDITOR_MODE.levelInstance.RoomDimensions = alteredRoomSize;
 
-                                //  Load the background texture and attach it to the level.
-                                xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
-                                STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
-
+                                Update_undoArray();
                                 STATIC_EDITOR_MODE.levelInstance.RoomType = RoomForm.roomType;
 
-                                Update_undoArray();
-                                xnA_RenderControl1.bDoNotDraw = false;
-                                //STATIC_EDITOR_MODE.levelInstance.RoomTheme = RoomForm.roomTheme;
+                                //  Load the background texture and attach it to the level.
+                                STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
+
+
+                                xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
                             }
                             break;
                         default:
@@ -121,8 +121,12 @@ namespace SpinEditor
                     }
                 }
             }
+            #endregion
 
-            if (STATIC_EDITOR_MODE.levelInstance != null) xnA_RenderControl1.bDoNotDraw = false;
+            if (STATIC_EDITOR_MODE.levelInstance != null)
+            {
+                xnA_RenderControl1.bDoNotDraw = false;
+            }
         }
 
 
@@ -2428,40 +2432,40 @@ namespace SpinEditor
             switch (listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString())
             {
                 case "Decal":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Decal/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Decal/";
                     break;
                 case "Door":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Doors/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Doors/";
                     break;
                 case "Ladder":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Ladder/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Ladder/";
                     break;
                 case "Moving Platform":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Platforms/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
                     break;
                 case "One-Sided Platform":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Platforms/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
                     break;
                 case "Piston":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Piston/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Piston/";
                     break;
                 case "Rope":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Rope/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Rope/";
                     break;
                 case "Rotating Platform":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Environment/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
                     break;
                 case "Saw Blade":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Saw/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Saw/";
                     break;
                 case "Spikes":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Spikes/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Spikes/";
                     break;
                 case "Static Object":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/Environment/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
                     break;
                 default:
-                        STATIC_CONTBUILDER.textureLoc = "Assets/Sprites/Textures/";
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/";
                     break;
             }
             #endregion
@@ -2477,6 +2481,7 @@ namespace SpinEditor
             }
         }
         #endregion
+
         #endregion
     }
 }

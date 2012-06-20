@@ -68,7 +68,7 @@ namespace SpinEditor
             contentMan = new ContentManager(Services, "Content");
             STATIC_EDITOR_MODE.contentMan = this.contentMan;
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = contentMan.Load<SpriteFont>("hudFont");
+            font = contentMan.Load<SpriteFont>("Assets/Fonts/Debug");
 
             randomizer = new Random();
 
@@ -79,13 +79,13 @@ namespace SpinEditor
             //  Hook the idle event to constantly redraw our animation
             //  Application.Idle += delegate { Invalidate(); };
 
-            debugOverlay = contentMan.Load<Texture2D>("Assets/Sprites/Basics/BlankPixel");
+            debugOverlay = contentMan.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
 
             //  hook the mouse to the XNA graphic display control
             if (Mouse.WindowHandle != this.Handle)
                 Mouse.WindowHandle = this.Handle;
 
-            crosshair = contentMan.Load<Texture2D>("9pxCrosshair");
+            crosshair = contentMan.Load<Texture2D>("Assets/Other/Dev/9pxCrosshair");
 
             primBatch = new PrimitiveBatch(GraphicsDevice);
 
