@@ -132,7 +132,10 @@ namespace GameLibrary.Objects
             protected set
 #endif
             {
-                _height = value;
+                if (_orientation == Orientation.Up || _orientation == Orientation.Down)
+                    _height = value;
+                else
+                    _height = value;
             }
         }
         [ContentSerializerIgnore]
@@ -151,7 +154,10 @@ namespace GameLibrary.Objects
 
 #endif
             {
-                _width = value;
+                if (_orientation == Orientation.Up || _orientation == Orientation.Down)
+                    _width = value;
+                else
+                    _height = value;
             }
         }
         [ContentSerializerIgnore]

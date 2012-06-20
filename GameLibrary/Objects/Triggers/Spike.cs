@@ -32,8 +32,9 @@ namespace GameLibrary.Objects.Triggers
 
 #if EDITOR
             return;
-#endif
+#else
             this.SetUpTrigger(world);
+#endif
         }
 
         public override void Draw(SpriteBatch sb)

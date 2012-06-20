@@ -74,6 +74,55 @@ namespace GameLibrary.Objects
 
         #region Properties
 
+#if EDITOR
+        [ContentSerializerIgnore]
+        public new Direction Orientation
+        {
+            get
+            {
+                return _orientation;
+            }
+            set
+            {
+                _orientation = value;
+                GetRotationFromOrientation();
+            }
+        }
+        [ContentSerializerIgnore]
+        public override float Height
+        {
+            get
+            {
+                if (Orientation == Direction.Horizontal)
+                    return _width;
+                return _height * _climbableSections;
+            }
+            set { }
+        }
+        [ContentSerializerIgnore]
+        public override float Width
+        {
+            get
+            {
+                if (Orientation == Direction.Horizontal)
+                    return _height * _climbableSections;
+                return _width;
+            }
+            set { }
+        }
+        [ContentSerializerIgnore]
+        public int Bars
+        {
+            get
+            {
+                return _climbableSections;
+            }
+            set
+            {
+                _climbableSections = value;
+            }
+        }
+#else
         [ContentSerializerIgnore]
         public bool PlayerInRange
         {
@@ -90,13 +139,6 @@ namespace GameLibrary.Objects
             {
                 return _orientation;
             }
-#if EDITOR
-            set
-            {
-                _orientation = value;
-                GetRotationFromOrientation();
-            }
-#endif
         }
 
         [ContentSerializerIgnore]
@@ -108,15 +150,6 @@ namespace GameLibrary.Objects
                     return _width * _climbableSections;
                 return _height * _climbableSections;
             }
-#if EDITOR
-            set
-            {
-                //if (Orientation == Direction.Horizontal)
-                //    _width = value;
-                //else
-                //    _height = value;
-            }
-#endif
         }
 
         [ContentSerializerIgnore]
@@ -127,24 +160,6 @@ namespace GameLibrary.Objects
                 if (Orientation == Direction.Horizontal)
                     return _height * _climbableSections;
                 return _width;
-            }
-#if EDITOR
-            set
-            {
-                //if (Orientation == Direction.Horizontal)
-                //    _height = value;
-                //else
-                //    _width = value;
-            }
-#endif
-        }
-
-        [ContentSerializerIgnore]
-        public override float TextureRotation
-        {
-            get
-            {
-                return _rotation;
             }
         }
 
@@ -168,14 +183,27 @@ namespace GameLibrary.Objects
             {
                 return _climbableSections;
             }
-#if EDITOR
-            set
-            {
-                _climbableSections = value;
-            }
-#endif
         }
+#endif
 
+        [ContentSerializerIgnore]
+        public override float TextureRotation
+        {
+            get
+            {
+                return _rotation;
+            }
+            set { }
+        }
+        [ContentSerializerIgnore]
+        public override Vector2 Origin
+        {
+            get
+            {
+                return new Vector2(this.Texture.Width / 2, this.Texture.Height / 2);
+            }
+            protected set { }
+        }
         #endregion
 
         #region Constructor
@@ -222,14 +250,19 @@ namespace GameLibrary.Objects
                 this._width = 10;
 
             editorTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
-            return;
-#endif
+#else
             this.SetupPhysics(world);
+#endif
         }
         #endregion
 
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+
+#else
+
+
             if (_orientation == Direction.Vertical && (Camera.UpIs == upIs.Left || Camera.UpIs == upIs.Right)) return;
             if (_orientation == Direction.Horizontal && (Camera.UpIs == upIs.Up || Camera.UpIs == upIs.Down)) return;
 
@@ -247,6 +280,7 @@ namespace GameLibrary.Objects
             //  Make sure the player isnt grabbing the ladder if they aren't climbing.
             if (Player.Instance.PlayerState != pState.Climbing && Grabbed)
                 DisconnectPlayer();
+#endif
         }
 
         #region Collisions
@@ -303,13 +337,18 @@ namespace GameLibrary.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this.editorTexture, Position - new Vector2(this.editorTexture.Width / 2, this.Height / 2),
-                new Rectangle(0, 0, (int)this.editorTexture.Width, (int)Height),
-                Color.White * 0.3f, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
+            //sb.Draw(this.editorTexture, Position - new Vector2(this.Width / 4, this.Height / 2),
+            //    new Rectangle(0, 0, (int)this.Width / 2, (int)Height),
+            //    Color.White * 0.3f, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
 
             sb.Draw(this.Texture, Position,
-                new Rectangle(0, 0, (int)this.Width, (int)this.Height),
-                this.Tint, this.TextureRotation, new Vector2(this.Width / 2, this.Height / 2), 1.0f, SpriteEffects.None, zLayer);
+                new Rectangle(0, 0, (int)this._width, (int)this._height * _climbableSections),
+                this.Tint, this.TextureRotation, Vector2.Zero, 1.0f, SpriteEffects.None, zLayer);
+
+            if (Orientation == Direction.Horizontal)
+            {
+
+            }
         }
 #else
 
@@ -339,11 +378,15 @@ namespace GameLibrary.Objects
         /// </summary>
         private void DisconnectPlayer()
         {
+#if EDITOR
+
+#else
             this.Grabbed = false;
 
             Camera.AllowRotation = true;
             Player.Instance.ToggleBodies(true);
             Player.Instance.ForceFall();
+#endif
         }
 
         /// <summary>
@@ -351,6 +394,9 @@ namespace GameLibrary.Objects
         /// </summary>
         private void ConnectPlayer()
         {
+#if EDITOR
+
+#else
             if (Camera.LevelRotating) return;
 
             Vector2 Moveto = Vector2.Zero;
@@ -371,6 +417,7 @@ namespace GameLibrary.Objects
             }
 
             Player.Instance.JoinLadder(ConvertUnits.ToSimUnits(Moveto));
+#endif
         }
         #endregion
 
