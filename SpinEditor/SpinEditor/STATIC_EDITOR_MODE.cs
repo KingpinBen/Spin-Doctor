@@ -48,8 +48,11 @@ namespace SpinEditor
         public static int arrayMax = 100;
         public static int arrayIndex = -1;
 
-        public static KeyboardState keyState = Keyboard.GetState();
-        public static KeyboardState oldState;
+        public static KeyboardState keyboardCurrentState = Keyboard.GetState();
+        public static KeyboardState keyboardOldState;
+
+        public static MouseState mouseCurrentState = Mouse.GetState();
+        public static MouseState mouseOldState;
 
     }
 }

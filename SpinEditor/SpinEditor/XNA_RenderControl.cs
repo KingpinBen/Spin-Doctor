@@ -73,9 +73,7 @@ namespace SpinEditor
             randomizer = new Random();
             Camera = new Camera2D();
 
-            //  Hook some events,
-            this.SizeChanged += WindowChangedSize;
-            this.ClientSizeChanged += WindowChangedSize;
+            
 
             //  hook the mouse to the XNA graphic display control,
             if (Mouse.WindowHandle != this.Handle)
@@ -96,6 +94,8 @@ namespace SpinEditor
             timer.Start();
             total.Start();
         }
+
+        
         #endregion
 
         #region Updates
@@ -121,8 +121,6 @@ namespace SpinEditor
 
             elapsed.Reset();
             elapsed.Start();
-
-            
         }
 
         #region Tick
@@ -312,12 +310,12 @@ namespace SpinEditor
         #endregion
 
         #region Update Grid Methods
-        void WindowChangedSize(object sender, EventArgs e)
+        public void WindowChangedSize(object sender, EventArgs e)
         {
             primBatch = new PrimitiveBatch(this.GraphicsDevice);
         }
 
-        void RefreshGrid()
+        public void RefreshGrid()
         {
             xySpacing = 32 * Camera.Zoom;
             xLineCount = (int)Math.Ceiling(this.GraphicsDevice.Viewport.Width / xySpacing);

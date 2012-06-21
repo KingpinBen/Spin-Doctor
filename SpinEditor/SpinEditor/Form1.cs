@@ -62,6 +62,11 @@ namespace SpinEditor
 
             //  Allows access to public methods from xna_renderControl, such as Update().
             xnA_RenderControl1.form1 = this;
+
+            //  Hook some events,
+            this.SizeChanged += xnA_RenderControl1.WindowChangedSize;
+            this.ClientSizeChanged += xnA_RenderControl1.WindowChangedSize;
+            this.MouseWheel += new MouseEventHandler(XNA_RenderControl_MouseWheel);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -298,7 +303,7 @@ namespace SpinEditor
                 {
                     case "Decal":
                         {
-                            if (!STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                            if (!STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
                             {
                                 STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
                             }
@@ -307,7 +312,7 @@ namespace SpinEditor
                         break;
                     case "Physics":
                         {
-                            if (!STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                            if (!STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
                             {
                                 STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
                             }
@@ -701,7 +706,7 @@ namespace SpinEditor
         void xnA_RenderControl1_MouseDown(object sender, MouseEventArgs e)
         {
             Microsoft.Xna.Framework.Point MousePos = get_mouse_vpos();
-            STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
+            STATIC_EDITOR_MODE.keyboardCurrentState = Keyboard.GetState();
 
             switch (STATIC_EDITOR_MODE.ED_MODE)
             {
@@ -710,7 +715,7 @@ namespace SpinEditor
                         if (lst_ObjectsUnderCursor.Count > 0)
                         {
                             //carry out depth tests or other logic here if we are mousing over more than one object
-                            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                            if (STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
                             {
                                 ShiftSelection();
                             }
@@ -2554,14 +2559,14 @@ namespace SpinEditor
         }
 
         #region Scrollbars
-        private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
+        void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
             xnA_RenderControl1.Camera.Pos = new Microsoft.Xna.Framework.Vector2(xnA_RenderControl1.Camera.Pos.X, vScrollBar1.Value);
 
             this.Refresh();
         }
 
-        private void hScrollBar1_Scroll(object sender, ScrollEventArgs e)
+        void hScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
             xnA_RenderControl1.Camera.Pos = new Microsoft.Xna.Framework.Vector2(hScrollBar1.Value, xnA_RenderControl1.Camera.Pos.Y);
 
@@ -2577,21 +2582,73 @@ namespace SpinEditor
 
         void CheckInput(GameTime gameTime)
         {
-            STATIC_EDITOR_MODE.oldState = STATIC_EDITOR_MODE.keyState;
-            STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
+            STATIC_EDITOR_MODE.mouseCurrentState = Mouse.GetState();
+            STATIC_EDITOR_MODE.keyboardCurrentState = Keyboard.GetState();
 
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Q))
             {
                 SwitchToSelectMode();
             }
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.W))
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.W))
             {
                 SwitchToMoveMode();
             }
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.E))
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.E))
             {
                 SwitchToPlaceMode();
             }
+
+            
+
+            STATIC_EDITOR_MODE.keyboardOldState = STATIC_EDITOR_MODE.keyboardCurrentState;
+            STATIC_EDITOR_MODE.mouseOldState = STATIC_EDITOR_MODE.mouseCurrentState;
+        }
+
+        void XNA_RenderControl_MouseWheel(object sender, MouseEventArgs e)
+        {
+            int num = 0;
+            if (e.Delta > 0)
+                num = 1;
+            else if (e.Delta < 0)
+                num = -1;
+
+            if (STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt))
+            {
+                xnA_RenderControl1.Camera.Zoom += (0.03f * num);
+            }
+            else if (STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+            {
+                if (num == 1)
+                {
+                    this.hScrollBar1.Value -= 5;
+                    this.hScrollBar1_Scroll(null, null);
+                }
+                else
+                {
+                    this.hScrollBar1.Value += 5;
+                    this.hScrollBar1_Scroll(null, null);
+                }
+            }
+            else
+            {
+                if (num == 1)
+                {
+                    vScrollBar1.Value -= 5;
+                    this.vScrollBar1_Scroll(null, null);
+                }
+                else
+                {
+                    vScrollBar1.Value += 5;
+                    this.vScrollBar1_Scroll(null, null);
+                }
+            }
+        }
+
+        bool CheckNewKey(Microsoft.Xna.Framework.Input.Keys key)
+        {
+            if (STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(key) && STATIC_EDITOR_MODE.keyboardOldState.IsKeyUp(key))
+                return true;
+            return false;
         }
 
         #endregion
