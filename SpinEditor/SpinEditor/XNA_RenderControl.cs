@@ -21,36 +21,32 @@ namespace SpinEditor
     public class XNA_RenderControl : GraphicsDeviceControl
     {
         #region Fields
+
         Stopwatch elapsed = new Stopwatch();
         Stopwatch total = new Stopwatch();
         Timer timer;
-
         GameTime gameTime; //create the game time using the above values
-
-        public ContentManager contentMan;
         SpriteBatch spriteBatch;
         SpriteFont font;
         Random randomizer;
-        public Color backgroundCol = Color.CornflowerBlue;
-        private Texture2D debugOverlay;
-        public Texture2D levelBackground { get; set; }
-        public Vector2 levelDimensions { get; set; }
+        Texture2D debugOverlay;
+        Texture2D crosshair;
+        PrimitiveBatch primBatch;
 
+        int xLineCount;
+        int yLineCount;
+        float xOffset;
+        float yOffset;
+        float xySpacing;
         string localCoOrds = "";
         string worldCoOrds = "";
 
-        public bool bDoNotDraw = false;
-        
+        public Texture2D levelBackground { get; set; }
+        public Vector2 levelDimensions { get; set; }
+        public ContentManager contentMan { get; set; }
         public Camera2D Camera { get; set; }
-
-        private Texture2D crosshair;
-
-        private PrimitiveBatch primBatch;
-        private float xySpacing;
-        private int xLineCount;
-        private int yLineCount;
-        private float xOffset;
-        private float yOffset;
+        public Form1 form1 { get; set; }
+        public bool bDoNotDraw = false;
 
         #endregion
 
@@ -70,88 +66,71 @@ namespace SpinEditor
         /// </summary>
         protected override void Initialize()
         {
+            //  Initialize,
+            contentMan = new ContentManager(Services, "Content");
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            primBatch = new PrimitiveBatch(GraphicsDevice);
+            randomizer = new Random();
+            Camera = new Camera2D();
+
+            //  Hook some events,
             this.SizeChanged += WindowChangedSize;
             this.ClientSizeChanged += WindowChangedSize;
 
-            contentMan = new ContentManager(Services, "Content");
-            STATIC_EDITOR_MODE.contentMan = this.contentMan;
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = contentMan.Load<SpriteFont>("Assets/Fonts/Debug");
-
-            randomizer = new Random();
-
-            Camera = new Camera2D();
-            Camera.Pos = new Vector2(0, 0);
-
-
-            //  Hook the idle event to constantly redraw our animation
-            //  Application.Idle += delegate { Invalidate(); };
-
-            debugOverlay = contentMan.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
-
-            //  hook the mouse to the XNA graphic display control
+            //  hook the mouse to the XNA graphic display control,
             if (Mouse.WindowHandle != this.Handle)
                 Mouse.WindowHandle = this.Handle;
 
+            //  Load some things to content,
+            debugOverlay = contentMan.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
             crosshair = contentMan.Load<Texture2D>("Assets/Other/Dev/9pxCrosshair");
+            font = contentMan.Load<SpriteFont>("Assets/Fonts/Debug");
 
-            primBatch = new PrimitiveBatch(GraphicsDevice);
-
+            //  Setup the grid initially
             RefreshGrid();
 
-            total.Start();
+            //  Set up tick,
             timer = new Timer();
-            //  Lock to 60fps max.
-            timer.Interval = (int)((1.0f / 60f) * 1000);
+            timer.Interval = (int)((1.0f / 60f) * 1000);//  Lock to 60fps max.
             timer.Tick += new EventHandler(tick);
             timer.Start();
+            total.Start();
         }
         #endregion
 
         #region Updates
         public void UpdateCoOrds()
         {
-            Microsoft.Xna.Framework.Point topLeftPoint = Camera.GetTopLeftCameraPoint(GraphicsDevice);
+            Point topLeftPoint = Camera.GetTopLeftCameraPoint(GraphicsDevice);
 
             localCoOrds = "X: " + Mouse.GetState().X +
                         "  Y: " + Mouse.GetState().Y;
 
             worldCoOrds = "X: " + (int)(Mouse.GetState().X / Camera.Zoom  + topLeftPoint.X) +
                         "  Y: " + (int)(Mouse.GetState().Y / Camera.Zoom  + topLeftPoint.Y);
-
         }
 
         void UpdateTime()
         {
             RefreshGrid();
-
+            
             // create the game time using these values
             gameTime = new GameTime(total.Elapsed, elapsed.Elapsed, false);
 
+            form1.Update(gameTime);
+
             elapsed.Reset();
             elapsed.Start();
-
-            STATIC_EDITOR_MODE.world.Step((float)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.001));
-
-            STATIC_EDITOR_MODE.oldState = STATIC_EDITOR_MODE.keyState;
-            STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
-
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
-            {
-                Camera.Zoom += 0.01f;
-            }
-
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.E))
-            {
-                Camera.Zoom -= 0.01f;
-            }
         }
 
+        #region Tick
         void tick(object sender, EventArgs e)
         {
             this.Invalidate();
 
         }
+        #endregion
+
         #endregion
 
         #region Draw
@@ -162,7 +141,9 @@ namespace SpinEditor
         {
             if (!bDoNotDraw)
             {
-                GraphicsDevice.Clear(backgroundCol);
+                UpdateTime();
+
+                GraphicsDevice.Clear(Color.CornflowerBlue);
 
                 #region Objects and selection overlay
                 spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, Camera.get_transformation(new Vector2(this.Width, this.Height)));
@@ -284,36 +265,32 @@ namespace SpinEditor
                     {
                         spriteBatch.Begin();
                         spriteBatch.DrawString(font, "Local Co-ords: ",
-                             Microsoft.Xna.Framework.Vector2.Zero,
-                                        Microsoft.Xna.Framework.Color.White);
-
+                             Vector2.Zero,
+                             Color.White);
                         spriteBatch.DrawString(font, localCoOrds,
-                                            new Microsoft.Xna.Framework.Vector2(0, 20),
-                                            Microsoft.Xna.Framework.Color.White);
-
+                            new Vector2(0, 20),
+                            Color.White);
                         spriteBatch.DrawString(font, "World Co-ords: ",
-                                     new Microsoft.Xna.Framework.Vector2(0, 40),
-                                     Microsoft.Xna.Framework.Color.White);
+                            new Vector2(0, 40),
+                            Color.White);
                         spriteBatch.DrawString(font, worldCoOrds,
-                               new Microsoft.Xna.Framework.Vector2(0, 60),
-                         Microsoft.Xna.Framework.Color.White);
+                            new Vector2(0, 60),
+                            Color.White);
 
                         spriteBatch.DrawString(font, "x: " + this.Width + "   y: " + this.Height,
-                       new Microsoft.Xna.Framework.Vector2(0, 80),
-                       Microsoft.Xna.Framework.Color.White);
+                        new Vector2(0, 80),
+                        Color.White);
 
                         if (gameTime != null)
                         {
                             spriteBatch.DrawString(font, gameTime.TotalGameTime.Seconds.ToString(),
-                                new Microsoft.Xna.Framework.Vector2(0, 100),
-                                Microsoft.Xna.Framework.Color.White);
+                                new Vector2(0, 100),
+                                Color.White);
                         }
 
                         spriteBatch.End();
                     }
                 #endregion
-
-                UpdateTime();
             }
         }
         #endregion
@@ -321,7 +298,7 @@ namespace SpinEditor
         #region Update Grid Methods
         void WindowChangedSize(object sender, EventArgs e)
         {
-            primBatch = new GameLibrary.Assists.PrimitiveBatch(this.GraphicsDevice);
+            primBatch = new PrimitiveBatch(this.GraphicsDevice);
         }
 
         void RefreshGrid()

@@ -53,20 +53,22 @@ namespace SpinEditor
 
             lst_ObjectsUnderCursor = new List<ObjectIndex>();
 
-            hScrollBar1.Minimum = -(xnA_RenderControl1.Width / 2);
-            vScrollBar1.Minimum = -(xnA_RenderControl1.Height / 2);
+            hScrollBar1.Minimum = -2000;
+            vScrollBar1.Minimum = -2000;
 
-            hScrollBar1.Maximum = (xnA_RenderControl1.Width / 2);
-            vScrollBar1.Maximum = (xnA_RenderControl1.Height / 2);
+            hScrollBar1.Maximum = 2000;
+            vScrollBar1.Maximum = 2000;
 
             Handle_Property_Grid_Items();
+
+            xnA_RenderControl1.form1 = this;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             ZOOM.Value = (decimal)(xnA_RenderControl1.Camera.Zoom * 100);
 
-            Refresh_XNB_Asset_List();
+            //Refresh_XNB_Asset_List();
 
             listBox_Classes.SelectedIndex = 0;
             listBox_Assets0.SelectedItem = "icon";
@@ -138,285 +140,24 @@ namespace SpinEditor
 
         #endregion
 
-        #region TOOLSTRIP FILE MENU
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        public void Update(GameTime gameTime)
         {
-            OpenFile();
-        }
-
-        bool OpenFile()
-        {
-            openFileDialog1.Filter = "Xml files|*.xml";
-
-            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                using (FileStream stream = new FileStream(openFileDialog1.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    using (XmlTextReader input = new XmlTextReader(stream))
-                    {
-                        xnA_RenderControl1.bDoNotDraw = true;
-                        STATIC_EDITOR_MODE.levelInstance = IntermediateSerializer.Deserialize<Level>(input, null);
-
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
-                        {
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                        }
-
-                        xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
-                        xnA_RenderControl1.levelDimensions = STATIC_EDITOR_MODE.levelInstance.RoomDimensions;
-                        xnA_RenderControl1.bDoNotDraw = false;
-
-                        Update_undoArray();
-
-                        MessageBox.Show("Level Loaded!", "Level loaded info box", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return true;
-                    }
-                }
-            }
-            else
-            {   
-                //  If no level is selected/found, it just goes back to main menu form.
-                MessageBox.Show("No file selected.");
-                return false;
-            }
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            saveFileDialog1.Filter = "Xml files|*.xml";
-            saveFileDialog1.AddExtension = true;
-
-            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                XmlWriterSettings settings = new XmlWriterSettings();
-                settings.ConformanceLevel = ConformanceLevel.Auto;
-                settings.Indent = true;
-                settings.NewLineHandling = NewLineHandling.Entitize;
-                settings.NewLineOnAttributes = true;
-
-                using (XmlWriter writer = XmlWriter.Create(saveFileDialog1.FileName, settings))
-                {
-                    IntermediateSerializer.Serialize(writer, STATIC_EDITOR_MODE.levelInstance, null);
-                }
-            }
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-        #endregion
-
-        #region Input
-        void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
-        {
-            xnA_RenderControl1.UpdateCoOrds();
-
-            Point MousePos = get_mouse_vpos();
-
-            lst_ObjectsUnderCursor.Clear();
-
-            switch (STATIC_EDITOR_MODE.ED_MODE)
-            {
-                case EDITOR_MODE.SELECT:
-                    {
-                        #region Handle Objects Under Cursor
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
-                        {
-                            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].AssetLocation != null)
-                            {
-                                Rectangle BoundingBox = new Rectangle(
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width /2),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height /2),
-                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width,
-                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height);
-
-                                if (BoundingBox.Contains(MousePos))
-                                {
-                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Physics, i));
-                                }
-                            }
-                        }
-
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
-                        {
-                            if (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].AssetLocation != null)
-                            {
-                                Rectangle BoundingBox = new Rectangle(
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width / 2),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height / 2),
-                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width,
-                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height);
-
-                                if (BoundingBox.Contains(MousePos))
-                                {
-                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Decal, i));
-                                }
-                            }
-                        }
-
-                        //int topIndexZ = 0;
-                        //for (int j = 0; j < lst_ObjectsUnderCursor.Count; j++)
-                        //{
-                        //    if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[j]].zLayer > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[topIndexZ]].zLayer)
-                        //    {
-                        //        topIndexZ = j;
-                        //    }
-                        //}
-                        #endregion
-                    }
-                    break;
-                case EDITOR_MODE.MOVE:
-                    {
-                        #region Handle Moving Objects
-                        if (Is_Something_Selected())
-                        {
-                            for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0 && containsMouse == false; i--)
-                            {
-                                Microsoft.Xna.Framework.Rectangle newRect = new Microsoft.Xna.Framework.Rectangle();
-                                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-                                {
-                                    case (OBJECT_TYPE.Physics):
-                                        {
-                                            newRect = new Microsoft.Xna.Framework.Rectangle(
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
-                                        }
-                                        break;
-                                    case (OBJECT_TYPE.Decal):
-                                        {
-                                            newRect = new Microsoft.Xna.Framework.Rectangle(
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
-                                        }
-                                        break;
-                                }
-
-                                if (newRect.Contains(MousePos))
-                                {
-                                    containsMouse = true;
-                                }
-                            }
-
-                            if (containsMouse == true && Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
-                            {
-                                if (mouseDown != Vector2.Zero)
-                                {
-                                    Vector2 moveDis = new Vector2(get_mouse_vpos().X, get_mouse_vpos().Y);
-                                    moveDis -= mouseDown;
-                                    for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0; i--)
-                                    {
-                                        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-                                        {
-                                            case (OBJECT_TYPE.Physics):
-                                                {
-                                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
-                                                    Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
-                                                    if (t.BaseType == typeof(DynamicObject))
-                                                    {
-                                                        DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
-                                                        dyOb.EndPosition += moveDis;
-                                                        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index] = dyOb;
-                                                    }
-                                                }
-                                                break;
-                                            case (OBJECT_TYPE.Decal):
-                                                {
-                                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
-                                                }
-                                                break;
-                                        }
-                                    }
-                                    mouseDown = Vector2.Zero;
-                                }
-                                    
-                                if (mouseDown == Vector2.Zero)
-                                {
-                                    mouseDown = new Vector2(get_mouse_vpos().X, get_mouse_vpos().Y);
-                                }
-                                
-                                dragReleased = false;
-                            }
-                            
-                            if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
-                            {
-                                mouseDown = Vector2.Zero;
-                                containsMouse = false;
-
-                                if (dragReleased == false)
-                                {
-                                    dragReleased = true;
-                                    Update_undoArray();
-                                    Handle_Property_Grid_Items();
-                                }
-                            }
-                        }
-                        #endregion
-                    }
-                    break;
-            }
-        }
-        
-        void ShiftSelection()
-        {
-            //If Object is already selected, deselect.
-            for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-            {
-                if (lst_ObjectsUnderCursor[0].Index == STATIC_EDITOR_MODE.selectedObjectIndices[i].Index && lst_ObjectsUnderCursor[0].Type == STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-                {
-                    STATIC_EDITOR_MODE.selectedObjectIndices.Remove(lst_ObjectsUnderCursor[0]);
-                    return;
-                }
-            }
-            //If Object is not already selected, add to selection.
-            STATIC_EDITOR_MODE.selectedObjectIndices.Add(lst_ObjectsUnderCursor[0]);
-        }
-
-        void xnA_RenderControl1_MouseDown(object sender, MouseEventArgs e)
-        {
-            Microsoft.Xna.Framework.Point MousePos = get_mouse_vpos();
+            STATIC_EDITOR_MODE.oldState = STATIC_EDITOR_MODE.keyState;
             STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
 
-            switch (STATIC_EDITOR_MODE.ED_MODE)
+            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
             {
-                case EDITOR_MODE.SELECT:
-                    {
-                        if (lst_ObjectsUnderCursor.Count > 0)
-                        {
-                            //carry out depth tests or other logic here if we are mousing over more than one object
-                            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
-                            {
-                                ShiftSelection();
-                            }
-                            else
-                            {
-                                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-                                STATIC_EDITOR_MODE.selectedObjectIndices.Add(lst_ObjectsUnderCursor[0]);
-                            }
-                        }
-                        else
-                        {
-                            //nothing under cursor so deselect any selected objects
-                            STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-                        }
-                    }
-                    break;
-                case EDITOR_MODE.PLACE:
-                    {
-                        CreateObject(listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString(), new Vector2(MousePos.X, MousePos.Y));
-
-                        Update_undoArray();
-                    }
-                    break;
+                SwitchToSelectMode();
             }
-
-            Handle_Property_Grid_Items();
+            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.W))
+            {
+                SwitchToMoveMode();
+            }
+            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.E))
+            {
+                SwitchToPlaceMode();
+            }
         }
-        #endregion
 
         #region Create an Object
         private void CreateObject(string Type, Vector2 Position)
@@ -589,98 +330,6 @@ namespace SpinEditor
         }
         #endregion 
 
-        #region EDITOR MODE SELECTION
-
-        #region Change to Select Mode
-        private void BUTTON_EDITOR_MODE_SELECT_Click(object sender, EventArgs e)
-        {
-            if (!BUTTON_EDITOR_MODE_SELECT.Checked)
-            {
-                BUTTON_EDITOR_MODE_SELECT.Checked = true;
-
-                STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.SELECT;
-            }
-
-            BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = BUTTON_EDIT_ROOM.Checked = false;
-            Handle_Property_Grid_Items();
-        }
-        #endregion
-
-        #region Change to Move Mode
-        private void BUTTON_EDITOR_MODE_MOVE_Click(object sender, EventArgs e)
-        {
-            if (!BUTTON_EDITOR_MODE_MOVE.Checked)
-            {
-                BUTTON_EDITOR_MODE_MOVE.Checked = true;
-
-                STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.MOVE;
-            }
-
-            BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = BUTTON_EDIT_ROOM.Checked = false;
-            Handle_Property_Grid_Items();
-        }
-        #endregion
-
-        #region Change to Place Mode
-        private void BUTTON_EDITOR_MODE_PLACE_Click(object sender, EventArgs e)
-        {
-            if (!BUTTON_EDITOR_MODE_PLACE.Checked)
-            {
-                BUTTON_EDITOR_MODE_PLACE.Checked = true;
-
-                STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.PLACE;
-            }
-
-            BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDIT_ROOM.Checked = false;
-            Handle_Property_Grid_Items();
-        }
-        #endregion
-
-        #region Show Room Properties
-        private void BUTTON_EDIT_ROOM_Click(object sender, EventArgs e)
-        {
-            BUTTON_EDIT_ROOM.Checked = true;
-
-            STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.EDIT_LEVEL;
-
-            BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = false;
-            Handle_Property_Grid_Items();
-        }
-        #endregion
-
-        #region Delete Selected Item(s)
-        void BUTTON_DELETE_Click(object sender, EventArgs e)
-        {
-            if (Is_Something_Selected())
-            {
-                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count; i > 0; i--)
-                {
-                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Type)
-                    {
-                        case (OBJECT_TYPE.Physics):
-                            {
-                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
-                            }
-                            break;
-                        case (OBJECT_TYPE.Decal):
-                            {
-                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
-                            }
-                            break;
-                    }
-                }
-
-                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-                //STATIC_EDITOR_MODE.selectedObjectIndex = -1;
-                propertyGrid1.SelectedObject = false;
-
-                Update_undoArray();
-            }
-        }
-        #endregion
-
-        #endregion
-
         #region Undo/Redo
         void Update_undoArray()
         {
@@ -741,6 +390,487 @@ namespace SpinEditor
         void undoToolStripMenuItem_Click(object sender, EventArgs e) { Undo(); }
         void redoToolStripMenuItem_Click(object sender, EventArgs e) { Redo(); }
         #endregion
+
+        #region Events
+
+        #region View
+
+        void ViewMenuHideOverlay_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideOverlay.Checked = !ViewMenuHideOverlay.Checked;
+            xnA_RenderControl1.HideOverlay = ViewMenuHideOverlay.Checked;
+        }
+        void ViewMenuHideCoordinates_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideCoordinates.Checked = !ViewMenuHideCoordinates.Checked;
+            xnA_RenderControl1.HideCoordinates = ViewMenuHideCoordinates.Checked;
+        }
+        void ViewMenuHideMovementPath_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideMovementPath.Checked = !ViewMenuHideMovementPath.Checked;
+            xnA_RenderControl1.HideMovementPath = ViewMenuHideMovementPath.Checked;
+        }
+        void ViewMenuHideGrid_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideGrid.Checked = !ViewMenuHideGrid.Checked;
+            xnA_RenderControl1.HideGrid = ViewMenuHideGrid.Checked;
+        }
+
+        #endregion
+
+        #region File
+
+        #region Save
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.Filter = "Xml files|*.xml";
+            saveFileDialog1.AddExtension = true;
+
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.ConformanceLevel = ConformanceLevel.Auto;
+                settings.Indent = true;
+                settings.NewLineHandling = NewLineHandling.Entitize;
+                settings.NewLineOnAttributes = true;
+
+                using (XmlWriter writer = XmlWriter.Create(saveFileDialog1.FileName, settings))
+                {
+                    IntermediateSerializer.Serialize(writer, STATIC_EDITOR_MODE.levelInstance, null);
+                }
+            }
+        }
+        #endregion
+
+        #region Open
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFile();
+        }
+        #endregion
+
+        #region Exit
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+        #endregion
+
+        #endregion
+
+        #region Editting Mode Select
+
+        #region Change to Select Mode
+        private void BUTTON_EDITOR_MODE_SELECT_Click(object sender, EventArgs e)
+        {
+            SwitchToSelectMode();
+        }
+        #endregion
+
+        #region Change to Move Mode
+        private void BUTTON_EDITOR_MODE_MOVE_Click(object sender, EventArgs e)
+        {
+            SwitchToMoveMode();
+        }
+        #endregion
+
+        #region Change to Place Mode
+        private void BUTTON_EDITOR_MODE_PLACE_Click(object sender, EventArgs e)
+        {
+            SwitchToPlaceMode();
+        }
+        #endregion
+
+        #region Show Room Properties
+        private void BUTTON_EDIT_ROOM_Click(object sender, EventArgs e)
+        {
+            BUTTON_EDIT_ROOM.Checked = true;
+
+            STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.EDIT_LEVEL;
+
+            BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = false;
+            Handle_Property_Grid_Items();
+        }
+        #endregion
+
+        #region Delete Selected Item(s)
+        void BUTTON_DELETE_Click(object sender, EventArgs e)
+        {
+            if (Is_Something_Selected())
+            {
+                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count; i > 0; i--)
+                {
+                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Type)
+                    {
+                        case (OBJECT_TYPE.Physics):
+                            {
+                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
+                            }
+                            break;
+                        case (OBJECT_TYPE.Decal):
+                            {
+                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
+                            }
+                            break;
+                    }
+                }
+
+                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                //STATIC_EDITOR_MODE.selectedObjectIndex = -1;
+                propertyGrid1.SelectedObject = false;
+
+                Update_undoArray();
+            }
+        }
+        #endregion
+
+        #region SubMethods
+
+        void SwitchToSelectMode()
+        {
+            if (!BUTTON_EDITOR_MODE_SELECT.Checked)
+            {
+                BUTTON_EDITOR_MODE_SELECT.Checked = true;
+
+                STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.SELECT;
+            }
+
+            BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = BUTTON_EDIT_ROOM.Checked = false;
+            Handle_Property_Grid_Items();
+        }
+
+        void SwitchToMoveMode()
+        {
+            if (!BUTTON_EDITOR_MODE_MOVE.Checked)
+            {
+                BUTTON_EDITOR_MODE_MOVE.Checked = true;
+
+                STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.MOVE;
+            }
+
+            BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = BUTTON_EDIT_ROOM.Checked = false;
+            Handle_Property_Grid_Items();
+        }
+
+        void SwitchToPlaceMode()
+        {
+            if (!BUTTON_EDITOR_MODE_PLACE.Checked)
+            {
+                BUTTON_EDITOR_MODE_PLACE.Checked = true;
+
+                STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.PLACE;
+            }
+
+            BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDIT_ROOM.Checked = false;
+            Handle_Property_Grid_Items();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Input
+
+        void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
+        {
+            xnA_RenderControl1.UpdateCoOrds();
+
+            Point MousePos = get_mouse_vpos();
+
+            lst_ObjectsUnderCursor.Clear();
+
+            switch (STATIC_EDITOR_MODE.ED_MODE)
+            {
+                case EDITOR_MODE.SELECT:
+                    {
+                        #region Handle Objects Under Cursor
+                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+                        {
+                            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].AssetLocation != null)
+                            {
+                                Rectangle BoundingBox = new Rectangle(
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width / 2),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height / 2),
+                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width,
+                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height);
+
+                                if (BoundingBox.Contains(MousePos))
+                                {
+                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Physics, i));
+                                }
+                            }
+                        }
+
+                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
+                        {
+                            if (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].AssetLocation != null)
+                            {
+                                Rectangle BoundingBox = new Rectangle(
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width / 2),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height / 2),
+                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width,
+                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height);
+
+                                if (BoundingBox.Contains(MousePos))
+                                {
+                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Decal, i));
+                                }
+                            }
+                        }
+
+                        //int topIndexZ = 0;
+                        //for (int j = 0; j < lst_ObjectsUnderCursor.Count; j++)
+                        //{
+                        //    if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[j]].zLayer > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[topIndexZ]].zLayer)
+                        //    {
+                        //        topIndexZ = j;
+                        //    }
+                        //}
+                        #endregion
+                    }
+                    break;
+                case EDITOR_MODE.MOVE:
+                    {
+                        #region Handle Moving Objects
+                        if (Is_Something_Selected())
+                        {
+                            for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0 && containsMouse == false; i--)
+                            {
+                                Microsoft.Xna.Framework.Rectangle newRect = new Microsoft.Xna.Framework.Rectangle();
+                                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                                {
+                                    case (OBJECT_TYPE.Physics):
+                                        {
+                                            newRect = new Microsoft.Xna.Framework.Rectangle(
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
+                                        }
+                                        break;
+                                    case (OBJECT_TYPE.Decal):
+                                        {
+                                            newRect = new Microsoft.Xna.Framework.Rectangle(
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
+                                        }
+                                        break;
+                                }
+
+                                if (newRect.Contains(MousePos))
+                                {
+                                    containsMouse = true;
+                                }
+                            }
+
+                            if (containsMouse == true && Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+                            {
+                                if (mouseDown != Vector2.Zero)
+                                {
+                                    Vector2 moveDis = new Vector2(get_mouse_vpos().X, get_mouse_vpos().Y);
+                                    moveDis -= mouseDown;
+                                    for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0; i--)
+                                    {
+                                        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                                        {
+                                            case (OBJECT_TYPE.Physics):
+                                                {
+                                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
+                                                    Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
+                                                    if (t.BaseType == typeof(DynamicObject))
+                                                    {
+                                                        DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
+                                                        dyOb.EndPosition += moveDis;
+                                                        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index] = dyOb;
+                                                    }
+                                                }
+                                                break;
+                                            case (OBJECT_TYPE.Decal):
+                                                {
+                                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    mouseDown = Vector2.Zero;
+                                }
+
+                                if (mouseDown == Vector2.Zero)
+                                {
+                                    mouseDown = new Vector2(get_mouse_vpos().X, get_mouse_vpos().Y);
+                                }
+
+                                dragReleased = false;
+                            }
+
+                            if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
+                            {
+                                mouseDown = Vector2.Zero;
+                                containsMouse = false;
+
+                                if (dragReleased == false)
+                                {
+                                    dragReleased = true;
+                                    Update_undoArray();
+                                    Handle_Property_Grid_Items();
+                                }
+                            }
+                        }
+                        #endregion
+                    }
+                    break;
+            }
+        }
+
+        void xnA_RenderControl1_MouseDown(object sender, MouseEventArgs e)
+        {
+            Microsoft.Xna.Framework.Point MousePos = get_mouse_vpos();
+            STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
+
+            switch (STATIC_EDITOR_MODE.ED_MODE)
+            {
+                case EDITOR_MODE.SELECT:
+                    {
+                        if (lst_ObjectsUnderCursor.Count > 0)
+                        {
+                            //carry out depth tests or other logic here if we are mousing over more than one object
+                            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                            {
+                                ShiftSelection();
+                            }
+                            else
+                            {
+                                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                                STATIC_EDITOR_MODE.selectedObjectIndices.Add(lst_ObjectsUnderCursor[0]);
+                            }
+                        }
+                        else
+                        {
+                            //nothing under cursor so deselect any selected objects
+                            STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                        }
+                    }
+                    break;
+                case EDITOR_MODE.PLACE:
+                    {
+                        CreateObject(listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString(), new Vector2(MousePos.X, MousePos.Y));
+
+                        Update_undoArray();
+                    }
+                    break;
+            }
+
+            Handle_Property_Grid_Items();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        bool OpenFile()
+        {
+            openFileDialog1.Filter = "Xml files|*.xml";
+
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                using (FileStream stream = new FileStream(openFileDialog1.FileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    using (XmlTextReader input = new XmlTextReader(stream))
+                    {
+                        xnA_RenderControl1.bDoNotDraw = true;
+                        STATIC_EDITOR_MODE.levelInstance = IntermediateSerializer.Deserialize<Level>(input, null);
+
+                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+                        {
+                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        }
+
+                        xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
+                        xnA_RenderControl1.levelDimensions = STATIC_EDITOR_MODE.levelInstance.RoomDimensions;
+                        xnA_RenderControl1.bDoNotDraw = false;
+
+                        Update_undoArray();
+
+                        MessageBox.Show("Level Loaded!", "Level loaded info box", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                //  If no level is selected/found, it just goes back to main menu form.
+                MessageBox.Show("No file selected.");
+                return false;
+            }
+        }
+
+        void Handle_Property_Grid_Items()
+        {
+            if (STATIC_EDITOR_MODE.ED_MODE == EDITOR_MODE.EDIT_LEVEL)
+            {
+                propertyGrid1.SelectedObject = STATIC_EDITOR_MODE.levelInstance;
+            }
+            else
+            {
+                if (Is_Something_Selected())
+                {
+                    List<object> theStuff = new List<object>();
+
+                    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+                    {
+                        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                        {
+                            case (OBJECT_TYPE.Physics):
+                                {
+                                    theStuff.Add(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index]);
+                                }
+                                break;
+                            case (OBJECT_TYPE.Decal):
+                                {
+                                    theStuff.Add(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index]);
+                                }
+                                break;
+                        }
+                    }
+
+                    propertyGrid1.SelectedObjects = theStuff.ToArray();
+                }
+                else
+                {
+                    propertyGrid1.SelectedObject = false;
+                }
+            }
+
+            propertyGrid1.RefreshTabs(PropertyTabScope.Component);
+        }
+
+        bool Is_Something_Selected()
+        {
+            if (STATIC_EDITOR_MODE.selectedObjectIndices.Count > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        void ShiftSelection()
+        {
+            //If Object is already selected, deselect.
+            for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+            {
+                if (lst_ObjectsUnderCursor[0].Index == STATIC_EDITOR_MODE.selectedObjectIndices[i].Index && lst_ObjectsUnderCursor[0].Type == STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                {
+                    STATIC_EDITOR_MODE.selectedObjectIndices.Remove(lst_ObjectsUnderCursor[0]);
+                    return;
+                }
+            }
+            //If Object is not already selected, add to selection.
+            STATIC_EDITOR_MODE.selectedObjectIndices.Add(lst_ObjectsUnderCursor[0]);
+        }
 
         #region Align Methods
         private void BUTTON_IMPORT_ASSET_Click(object sender, EventArgs e)
@@ -2324,89 +2454,6 @@ namespace SpinEditor
 
         #endregion
 
-        #region Camera Methods
-        public Microsoft.Xna.Framework.Point get_mouse_vpos()
-        {
-            Point topLeftPoint = xnA_RenderControl1.Camera.GetTopLeftCameraPoint(xnA_RenderControl1.GraphicsDevice);
-
-            Point mousePoint =
-                new Point(
-                    (int)(Mouse.GetState().X / xnA_RenderControl1.Camera.Zoom + topLeftPoint.X),
-                    (int)(Mouse.GetState().Y / xnA_RenderControl1.Camera.Zoom + topLeftPoint.Y));
-            return (mousePoint);
-        }
-
-        #region Scrollbars
-        private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
-        {
-            xnA_RenderControl1.Camera.Pos = new Microsoft.Xna.Framework.Vector2(xnA_RenderControl1.Camera.Pos.X, vScrollBar1.Value);
-
-            this.Refresh();
-        }
-
-        private void hScrollBar1_Scroll(object sender, ScrollEventArgs e)
-        {
-            xnA_RenderControl1.Camera.Pos = new Microsoft.Xna.Framework.Vector2(hScrollBar1.Value, xnA_RenderControl1.Camera.Pos.Y);
-
-            this.Refresh();
-        }
-        #endregion
-
-        private void ZOOM_ValueChanged(object sender, EventArgs e)
-        {
-            xnA_RenderControl1.Camera.Zoom = (float)ZOOM.Value / 100;
-        }
-        #endregion
-
-        private void Handle_Property_Grid_Items()
-        {
-            if (STATIC_EDITOR_MODE.ED_MODE == EDITOR_MODE.EDIT_LEVEL)
-            {
-                propertyGrid1.SelectedObject = STATIC_EDITOR_MODE.levelInstance;
-            }
-            else
-            {
-                if (Is_Something_Selected())
-                {
-                    List<object> theStuff = new List<object>();
-
-                    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-                    {
-                        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-                        {
-                            case (OBJECT_TYPE.Physics):
-                                {
-                                    theStuff.Add(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index]);
-                                }
-                                break;
-                            case (OBJECT_TYPE.Decal):
-                                {
-                                    theStuff.Add(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index]);
-                                }
-                                break;
-                        }
-                    }
-
-                    propertyGrid1.SelectedObjects = theStuff.ToArray();
-                }
-                else
-                {
-                    propertyGrid1.SelectedObject = false;
-                }
-            }
-
-            propertyGrid1.RefreshTabs(PropertyTabScope.Component);
-        }
-
-        private bool Is_Something_Selected()
-        {
-            if (STATIC_EDITOR_MODE.selectedObjectIndices.Count > 0)
-            {
-                return true;
-            }
-            return false;
-        }
-
         #region Texture List Methods
 
         private void Refresh_XNB_Asset_List()
@@ -2490,29 +2537,40 @@ namespace SpinEditor
         }
         #endregion
 
-        #region View Toolstrip
+        #endregion
 
-        void ViewMenuHideOverlay_Click(object sender, EventArgs e)
+        #region Camera Methods
+        Point get_mouse_vpos()
         {
-            ViewMenuHideOverlay.Checked = !ViewMenuHideOverlay.Checked;
-            xnA_RenderControl1.HideOverlay = ViewMenuHideOverlay.Checked;
-        }
-        void ViewMenuHideCoordinates_Click(object sender, EventArgs e)
-        {
-            ViewMenuHideCoordinates.Checked = !ViewMenuHideCoordinates.Checked;
-            xnA_RenderControl1.HideCoordinates = ViewMenuHideCoordinates.Checked;
-        }
-        void ViewMenuHideMovementPath_Click(object sender, EventArgs e)
-        {
-            ViewMenuHideMovementPath.Checked = !ViewMenuHideMovementPath.Checked;
-            xnA_RenderControl1.HideMovementPath = ViewMenuHideMovementPath.Checked;
-        }
-        void ViewMenuHideGrid_Click(object sender, EventArgs e)
-        {
-            ViewMenuHideGrid.Checked = !ViewMenuHideGrid.Checked;
-            xnA_RenderControl1.HideGrid = ViewMenuHideGrid.Checked;
+            Point topLeftPoint = xnA_RenderControl1.Camera.GetTopLeftCameraPoint(xnA_RenderControl1.GraphicsDevice);
+
+            Point mousePoint =
+                new Point(
+                    (int)(Mouse.GetState().X / xnA_RenderControl1.Camera.Zoom + topLeftPoint.X),
+                    (int)(Mouse.GetState().Y / xnA_RenderControl1.Camera.Zoom + topLeftPoint.Y));
+            return (mousePoint);
         }
 
+        #region Scrollbars
+        private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
+        {
+            xnA_RenderControl1.Camera.Pos = new Microsoft.Xna.Framework.Vector2(xnA_RenderControl1.Camera.Pos.X, vScrollBar1.Value);
+
+            this.Refresh();
+        }
+
+        private void hScrollBar1_Scroll(object sender, ScrollEventArgs e)
+        {
+            xnA_RenderControl1.Camera.Pos = new Microsoft.Xna.Framework.Vector2(hScrollBar1.Value, xnA_RenderControl1.Camera.Pos.Y);
+
+            this.Refresh();
+        }
+        #endregion
+
+        private void ZOOM_ValueChanged(object sender, EventArgs e)
+        {
+            xnA_RenderControl1.Camera.Zoom = (float)ZOOM.Value / 100;
+        }
         #endregion
 
         #endregion

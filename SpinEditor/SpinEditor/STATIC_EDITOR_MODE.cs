@@ -32,7 +32,7 @@ namespace SpinEditor
         public static EDITOR_MODE ED_MODE = EDITOR_MODE.EDIT_LEVEL;
         public static ALIGN_ANCHOR ALIGN_TO = ALIGN_ANCHOR.LAST;
 
-        public static ContentManager contentMan;
+        //public static ContentManager contentMan;
 
         public static GameLibrary.Drawing.Level levelInstance;
 

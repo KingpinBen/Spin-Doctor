@@ -314,11 +314,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Environment\Basic Platform.png">
-      <Name>Basic Platform</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Assets\Images\Textures\Environment\Cog 12T.png">
       <Name>Cog 12T</Name>
       <Importer>TextureImporter</Importer>
@@ -434,11 +429,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Pad.png">
-      <Name>Pad</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Assets\Images\Textures\Piston\Piston Base.png">
       <Name>Piston Base</Name>
       <Importer>TextureImporter</Importer>
@@ -544,16 +534,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Saw\sawDecalEndPiece.png">
-      <Name>sawDecalEndPiece</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Saw\sawDecalMiddlePiece.png">
-      <Name>sawDecalMiddlePiece</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Assets\Images\Textures\Spikes\smallSpike.png">
       <Name>smallSpike</Name>
       <Importer>TextureImporter</Importer>
@@ -586,26 +566,6 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\Spikes\spikes_2.png">
       <Name>spikes_2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Switch\Switch Box.png">
-      <Name>Switch Box</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Switch\Valve.png">
-      <Name>Valve</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Switch\valveHandle.png">
-      <Name>valveHandle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Vent\Steam Vent.png">
-      <Name>Steam Vent</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -681,7 +641,47 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Images\Textures\Platforms\" />
+    <Compile Include="Assets\Images\Textures\Saw\i_sawDecalEndPiece.png">
+      <Name>i_sawDecalEndPiece</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Saw\i_sawDecalMiddlePiece.png">
+      <Name>i_sawDecalMiddlePiece</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Images\Textures\Switch\Switch Box.png">
+      <Name>Switch Box</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Switch\Valve.png">
+      <Name>Valve</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Switch\valveHandle.png">
+      <Name>valveHandle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Images\Textures\Vent\Steam Vent.png">
+      <Name>Steam Vent</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Images\Textures\Vent\Pad.png">
+      <Name>Pad</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
