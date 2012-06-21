@@ -249,7 +249,7 @@ namespace GameLibrary.Objects
         public override void Update(GameTime gameTime)
         {
 #if EDITOR
-
+            
 #else
             if (_orientation == Direction.Vertical && (Camera.UpIs == upIs.Left || Camera.UpIs == upIs.Right))
             {
@@ -280,56 +280,6 @@ namespace GameLibrary.Objects
 #endif
         }
 
-        #region Collisions
-        /// <summary>
-        /// When the player separates from the body we'll need to set the player as 
-        /// out of range of the body and disconnect the player from it. We'll need to disconnect
-        /// the player in case they go higher than the ladder.
-        /// </summary>
-        protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
-        {
-            //  Whichever body just separated, remove it form the list.
-            TouchingBodies.Remove(fixtureB);
-
-            //  If the list isn't empty, go no further.
-            if (TouchingBodies.Count > 0)
-            {
-                return;
-            }
-
-            //  Initiate disconnecting the player.
-            _inGrabbingRange = false;
-
-            if (_grabbed)
-            {
-                DisconnectPlayer();
-            }
-        }
-        /// <summary>
-        /// Set the player in range to enable climbing
-        /// </summary>
-        protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
-        {
-            //  If the list doesn't already have this fixture as touching the Body, add it.
-            if (!TouchingBodies.Contains(fixtureB))
-            {
-                TouchingBodies.Add(fixtureB);
-            }
-
-            //  If they can already grab the rope, no need to continue.
-            if (_inGrabbingRange)
-            {
-                return true;
-            }
-            else
-            {
-                _inGrabbingRange = true;
-            }
-
-            return true;
-        }
-        #endregion
-
         #region Draw Calls
 #if EDITOR
         public override void Draw(SpriteBatch sb)
@@ -344,7 +294,7 @@ namespace GameLibrary.Objects
 
             sb.Draw(this._texture, Position,
                 new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
-                this.Tint, this.TextureRotation, this.Origin, 1.0f, SpriteEffects.None, zLayer);
+                this.Tint, this.TextureRotation, new Vector2(this._texture.Width / 2, (this._texture.Height * _climbableSections) / 2), 1.0f, SpriteEffects.None, zLayer);
 
         }
 #else
@@ -446,8 +396,58 @@ namespace GameLibrary.Objects
             if (Orientation == Direction.Vertical)
                 _rotation = 0;
             else
-                _rotation = MathHelper.PiOver2;
+                _rotation = -MathHelper.PiOver2;
         }
+
+        #region Collisions
+        /// <summary>
+        /// When the player separates from the body we'll need to set the player as 
+        /// out of range of the body and disconnect the player from it. We'll need to disconnect
+        /// the player in case they go higher than the ladder.
+        /// </summary>
+        protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
+        {
+            //  Whichever body just separated, remove it form the list.
+            TouchingBodies.Remove(fixtureB);
+
+            //  If the list isn't empty, go no further.
+            if (TouchingBodies.Count > 0)
+            {
+                return;
+            }
+
+            //  Initiate disconnecting the player.
+            _inGrabbingRange = false;
+
+            if (_grabbed)
+            {
+                DisconnectPlayer();
+            }
+        }
+        /// <summary>
+        /// Set the player in range to enable climbing
+        /// </summary>
+        protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
+        {
+            //  If the list doesn't already have this fixture as touching the Body, add it.
+            if (!TouchingBodies.Contains(fixtureB))
+            {
+                TouchingBodies.Add(fixtureB);
+            }
+
+            //  If they can already grab the rope, no need to continue.
+            if (_inGrabbingRange)
+            {
+                return true;
+            }
+            else
+            {
+                _inGrabbingRange = true;
+            }
+
+            return true;
+        }
+        #endregion
 
         #endregion
     }

@@ -121,6 +121,8 @@ namespace SpinEditor
 
             elapsed.Reset();
             elapsed.Start();
+
+            
         }
 
         #region Tick
@@ -161,6 +163,7 @@ namespace SpinEditor
                 {
                     for (int i = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i > 0; i--)
                     {
+                        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[3].TextureRotation += 0.01f;
                         STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Draw(spriteBatch);
 
                         #region Selection Draw
