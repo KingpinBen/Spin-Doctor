@@ -19,7 +19,7 @@
 //--    
 //-------------------------------------------------------------------------------
 
-//#define Development
+#define Development
 
 using System;
 using System.Collections.Generic;
@@ -134,7 +134,7 @@ namespace GameLibrary.Objects
             base.Init(position, tex);
 
             this._bloodiedTextureAsset = texblood;
-            this._motorSpeed = 5;
+            this._motorSpeed = 0;
         }
         #endregion
 
@@ -218,13 +218,13 @@ namespace GameLibrary.Objects
                 Vector2.Zero, SpriteEffects.None, zLayer - 0.01f);
 
 #if Development
-            sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed " + this.PrismaticJoint.MotorSpeed, 
+            sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed: " + this.PrismaticJoint.MotorSpeed + ". IsMoving: " + this._isMoving, 
                 ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(400, -60), Color.Red);
 
             sb.DrawString(Fonts.DebugFont, "UpL: " + this.PrismaticJoint.UpperLimit + ". LoL: " + this.PrismaticJoint.LowerLimit,
                 ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(400, -45), Color.Red);
 
-            sb.DrawString(Fonts.DebugFont, "Rect: " + _decalRectangle.ToString(), 
+            sb.DrawString(Fonts.DebugFont, "Translation: " + this.PrismaticJoint.JointTranslation.ToString(), 
                 ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(400, -30), Color.Red);
 
             sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit) + (this.MovingToStart == false).ToString(), this.Position - new Vector2(0, 500), Color.Red);

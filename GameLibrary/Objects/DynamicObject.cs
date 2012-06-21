@@ -228,15 +228,19 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        
-#if !EDITOR
         #region Update
         public override void Update(GameTime gameTime)
         {
-            if (!_isMoving) return;
+#if EDITOR
+
+#else
+            if (!_isMoving)
+            {
+                return;
+            }
 
             if  ((this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit && !this.MovingToStart) ||
-                (this.PrismaticJoint.JointTranslation <= this.PrismaticJoint.LowerLimit && this.MovingToStart) ||
+                (this.PrismaticJoint.JointTranslation < this.PrismaticJoint.LowerLimit && this.MovingToStart) ||
                 _elapsedTimer > 0.0f)
             {
                 //  If so zero the speed. Fixes bouncing errors in farseer.
@@ -262,9 +266,11 @@ namespace GameLibrary.Objects
                     this._elapsedTimer = 0.0f;
                 }
             }
+#endif
         }
         #endregion
-#endif
+
+        #region Private Methods
 
         #region Setup Joint
         /// <summary>
@@ -288,15 +294,15 @@ namespace GameLibrary.Objects
                     axis = new Vector2(1, 0);
                 }
             }
-            else if (_movementDirection == Direction.Vertical)
+            else
             {
                 if (_endPosition.Y < _position.Y)
                 {
-                    axis = new Vector2(0, 1);
+                    axis = new Vector2(0, -1);
                 }
                 else
                 {
-                    axis = new Vector2(0, -1);
+                    axis = new Vector2(0, 1);
                 }
             }
 
@@ -304,31 +310,39 @@ namespace GameLibrary.Objects
 
             if (_movementDirection == Direction.Horizontal)
             {
-                this._prismaticJoint.UpperLimit = ConvertUnits.ToSimUnits(_endPosition.X - Position.X);
-
-                if (axis.X == -1)
-                {
-                    this._prismaticJoint.UpperLimit *= -1;
-                }
+                this._prismaticJoint.UpperLimit = Math.Abs(ConvertUnits.ToSimUnits(_endPosition.X - Position.X));
             }
-            else if (_movementDirection == Direction.Vertical)
+            else
             {
-                this._prismaticJoint.UpperLimit = ConvertUnits.ToSimUnits(_endPosition.Y - Position.Y);
-
-                if (axis.Y == 1)
-                {
-                    this._prismaticJoint.UpperLimit *= -1;
-                }
+                this._prismaticJoint.UpperLimit = Math.Abs(ConvertUnits.ToSimUnits(_endPosition.Y - Position.Y));
             }
-            else 
-                throw new Exception("Invalid direction in serializing on dynamicObject");
 
             this._prismaticJoint.LowerLimit = 0.0f;
             this._prismaticJoint.LimitEnabled = true;
             this._prismaticJoint.MotorEnabled = true;
             this._prismaticJoint.MaxMotorForce = float.MaxValue;
-            this._prismaticJoint.MotorSpeed = this.MotorSpeed;
+
+            if (_startsMoving)  
+                this._prismaticJoint.MotorSpeed = this.MotorSpeed;
         }
+        #endregion
+
+        public void ToggleMotor()
+        {
+#if EDITOR
+
+#else
+            if (_isMoving)
+            {
+                this.PrismaticJoint.MotorSpeed = 0.0f;
+            }
+            else
+            {
+                this.PrismaticJoint.MotorSpeed = _motorSpeed;
+            }
+#endif
+        }
+
         #endregion
 
     }

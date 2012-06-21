@@ -70,6 +70,27 @@ namespace GameLibrary.Objects.Triggers
                 nextLevel = value;
             }
         }
+        [ContentSerializerIgnore]
+        public override Orientation Orientation
+        {
+            get
+            {
+                return _orientation;
+            }
+            set
+            {
+                _orientation = value;
+                _rotation = SpinAssist.RotationByOrientation(_orientation);
+            }
+        }
+        public override float TextureRotation
+        {
+            get
+            {
+                return base.TextureRotation;
+            }
+            set { }
+        }
         #endregion
 
         #region Constructor
@@ -79,12 +100,14 @@ namespace GameLibrary.Objects.Triggers
 
         }
 
-        public void Init(Vector2 position, int levelLinkID, string texLoc)
+        public override void Init(Vector2 position, string texLoc)
         {
-            this.nextLevel = levelLinkID;
+            this.nextLevel = 0;
             this._textureAsset = texLoc;
             this.ShowHelp = true;
-            base.Init(position, 30, 30);
+            this._tint = Color.White;
+            this._position = position;
+            this._message = " to use.";
         }
         #endregion
 
@@ -93,27 +116,44 @@ namespace GameLibrary.Objects.Triggers
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
 
-            base.Load(content, world);
+#if EDITOR
+            this.Width = this._texture.Width;
+            this.Height = this._texture.Height;
+#else
+            this.TriggerWidth = 30;
+            this.TriggerHeight = 30;
+#endif
 
-            this._rotation = SpinAssist.RotationByOrientation(_orientation);
+            base.Load(content, world);
         }
         #endregion
 
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+
+#else
             if (Input.Interact() && Triggered)
             {
                 Screen_Manager.LoadLevel(nextLevel);
             }
 
             base.Update(gameTime);
+#endif
         }
 
         #region Draw
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._texture, this._position, null, _tint, this._rotation, new Vector2(this._texture.Width / 2, this._texture.Height), 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, new Rectangle(
+                (int)(this._position.X),
+                (int)(this._position.Y),
+                (int)(_width),
+                (int)(_height)),
+                null, this._tint, this._rotation, 
+                new Vector2(this._texture.Width/ 2, this._texture.Height/2), 
+                SpriteEffects.None, this.zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)
@@ -126,9 +166,14 @@ namespace GameLibrary.Objects.Triggers
 #endif
         #endregion
 
+        #region Private Methods
+
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR
+            return true;
+#else
             if (!TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);
@@ -160,10 +205,14 @@ namespace GameLibrary.Objects.Triggers
             if (this.ShowHelp && !HUD.ShowPopup) HUD.ShowOnScreenMessage(true, " to use.");
 
             return true;
+#endif
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
+#if EDITOR
+
+#else
             this.TouchingFixtures.Remove(fixtureB);
 
             if (TouchingFixtures.Count == 0)
@@ -173,7 +222,29 @@ namespace GameLibrary.Objects.Triggers
             }
             else 
                 return;
+#endif
         }
+        #endregion
+
+        protected override void SetUpTrigger(World world)
+        {
+            this.Body = BodyFactory.CreateRectangle(world, 
+                ConvertUnits.ToSimUnits(TriggerWidth), 
+                ConvertUnits.ToSimUnits(TriggerHeight), 
+                1.0f);
+
+            //  Change the position to it's above the lowest point of the doors
+            //  texture
+            this.Body.Position = _position + SpinAssist.ModifyVectorByOrientation(
+                new Vector2(0,(this._height / 2) - (TriggerHeight / 2)), 
+                this._orientation);
+
+            this.Body.IsSensor = true;
+            this.Body.OnCollision += Body_OnCollision;
+            this.Body.OnSeparation += Body_OnSeparation;
+            //this.Body.CollisionCategories = Category.Cat10;
+        }
+
         #endregion
     }
 }

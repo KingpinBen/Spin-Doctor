@@ -26,6 +26,8 @@ namespace GameLibrary.Objects.Triggers
 
         public override void Load(ContentManager content, World world)
         {
+#if EDITOR
+#else
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this.Width), ConvertUnits.ToSimUnits(this.Height), 1.0f);
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.BodyType = BodyType.Static;
@@ -35,13 +37,18 @@ namespace GameLibrary.Objects.Triggers
             this.Body.OnSeparation += Body_OnSeparation;
 
             this.Triggered = false;
+            
+#endif
             this.ShowHelp = false;
         }
 
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+#else
             if (Triggered)
                 Screen_Manager.LoadLevel(nextLevel);
+#endif
         }
 
         public override void Draw(SpriteBatch sb)

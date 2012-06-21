@@ -80,7 +80,6 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        #region Load
         public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
@@ -96,19 +95,20 @@ namespace GameLibrary.Objects
 
             this._origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
         }
-        #endregion
 
-        #region Update
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+
+#else
             //LookAtMeSprite.Update(gameTime);
 
             if (Input.Interact() && Triggered)
             {
                 CreatePopUp();
             }
+#endif
         }
-        #endregion
 
         #region Draw
         public override void Draw(SpriteBatch sb)
@@ -123,9 +123,12 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        #region CreatePopup
+        #region Private Methods
+
         private void CreatePopUp()
         {
+#if EDITOR
+#else
             MessageOverlay newOverlay = new MessageOverlay(MessageType.FullScreen, 1);
             newOverlay.Load();
 
@@ -134,12 +137,15 @@ namespace GameLibrary.Objects
             HUD.ShowOnScreenMessage(false);
             this.Triggered = false;
             this.BeenCollected = true;
+#endif
         }
-        #endregion
 
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR 
+            return true;
+#else
             if (BeenCollected)
             {
                 return true;
@@ -148,7 +154,10 @@ namespace GameLibrary.Objects
             base.Body_OnCollision(fixtureA, fixtureB, contact);
 
             return true;
+#endif
         }
+        #endregion
+
         #endregion
     }
 }

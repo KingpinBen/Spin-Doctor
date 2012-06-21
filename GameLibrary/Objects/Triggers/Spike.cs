@@ -70,6 +70,9 @@ namespace GameLibrary.Objects.Triggers
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR
+            return true;
+#else
             if (!TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);
@@ -81,14 +84,19 @@ namespace GameLibrary.Objects.Triggers
             }
 
             return true;
+#endif
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
+#if EDITOR
+
+#else
             if (TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Remove(fixtureB);
             }
+#endif
         }
         #endregion
 

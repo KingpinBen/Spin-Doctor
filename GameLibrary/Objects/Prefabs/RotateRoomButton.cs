@@ -151,9 +151,10 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        #region Update
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+#else
             if (!Triggered && !_aboutToRotate)
             {
                 return;
@@ -189,8 +190,8 @@ namespace GameLibrary.Objects
                     _aboutToRotate = false;
                 }
             }
+#endif
         }
-        #endregion
 
         #region Draw
 

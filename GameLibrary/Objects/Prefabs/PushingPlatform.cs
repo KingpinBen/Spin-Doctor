@@ -145,9 +145,10 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        #region Update
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+#else
             _elapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
 
             if (Triggered)
@@ -185,8 +186,8 @@ namespace GameLibrary.Objects
                     _elapsed = 0;
                 }
             }
+#endif
         }
-        #endregion
 
         #region Draw
         public override void Draw(SpriteBatch sb)
@@ -205,6 +206,9 @@ namespace GameLibrary.Objects
         #region CreateSprite
         private void CreateSprite(ContentManager Content)
         {
+#if EDITOR
+
+#else
             _exhaustSprite = new Sprite();
             _exhaustSprite.Init(new Point(68, 64), new Point(14, 1), 1);
             _exhaustSprite.Position = this.Position;
@@ -216,29 +220,40 @@ namespace GameLibrary.Objects
             _exhaustSprite.TimesToPlay = 1;
             _exhaustSprite.Texture = Content.Load<Texture2D>(_exhaustTextureAsset);
             _exhaustSprite.Load();
+#endif
         }
         #endregion
 
         #region Collisions
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
+#if EDITOR
+#else
             TouchingFixtures.Remove(fixtureB);
+#endif
         }
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR
+            return true;
+#else
             if (!TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);
             }
 
             return true;
+#endif
         }
         #endregion
 
         #region SetupTrigger
         protected override void SetUpTrigger(World world)
         {
+#if EDITOR
+
+#else
             Vector2 bodyPos = Vector2.Zero;
             bodyPos.Y -= this._texture.Height + (_height / 2);
             bodyPos = SpinAssist.ModifyVectorByOrientation(bodyPos, _orientation);
@@ -250,12 +265,15 @@ namespace GameLibrary.Objects
             this.Body.IgnoreCollisionWith(Player.Instance.Body);
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
-
+#endif
         }
         #endregion
 
         private void ApplyForces()
         {
+#if EDITOR
+
+#else
             Vector2 dir = SpinAssist.ModifyVectorByOrientation(new Vector2(0, -100), _orientation);
             dir.Normalize();
             dir *= 15;
@@ -270,8 +288,7 @@ namespace GameLibrary.Objects
 
                 TouchingFixtures[i].Body.ApplyForce(dir);
             }
-
-            
+#endif            
         }
 
         #endregion

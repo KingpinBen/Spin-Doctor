@@ -180,7 +180,7 @@ namespace SpinEditor
                     case "Door":
                         {
                             Door door = new Door();
-                            door.Init(Position, 0, texloc0);
+                            door.Init(Position, texloc0);
                             door.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(door);
                         }

@@ -48,23 +48,27 @@ namespace GameLibrary.Objects.Triggers
 
         [ContentSerializer]
         private bool _showHelp;
-        [ContentSerializerIgnore]
-        private bool _triggered;
         [ContentSerializer]
         private float _triggerWidth;
         [ContentSerializer]
         private float _triggerHeight;
-        [ContentSerializerIgnore]
-        protected List<Fixture> TouchingFixtures = new List<Fixture>();
         [ContentSerializer]
         protected string _message = " to use.";
+
 #if EDITOR
         private Texture2D _devTexture;
+#else
+        [ContentSerializerIgnore]
+        protected List<Fixture> TouchingFixtures = new List<Fixture>();
+        [ContentSerializerIgnore]
+        private bool _triggered;
 #endif
 
         #endregion
 
         #region Properties
+
+#if EDITOR
         [ContentSerializerIgnore]
         public bool ShowHelp
         {
@@ -72,33 +76,11 @@ namespace GameLibrary.Objects.Triggers
             {
                 return _showHelp;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _showHelp = value;
             }
         }
-
-        [ContentSerializerIgnore]
-        public bool Triggered
-        {
-            get
-            {
-                return _triggered;
-            }
-#if EDITOR
-            set
-#else
-            protected set
-#endif
-            {
-                _triggered = value;
-            }
-        }
-
         [ContentSerializerIgnore]
         public float TriggerWidth
         {
@@ -106,16 +88,11 @@ namespace GameLibrary.Objects.Triggers
             {
                 return _triggerWidth;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _triggerWidth = value;
             }
         }
-
         [ContentSerializerIgnore]
         public float TriggerHeight
         {
@@ -123,16 +100,11 @@ namespace GameLibrary.Objects.Triggers
             {
                 return _triggerHeight;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _triggerHeight = value;
             }
         }
-
         [ContentSerializerIgnore]
         public virtual string Message
         {
@@ -140,16 +112,73 @@ namespace GameLibrary.Objects.Triggers
             {
                 return _message;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _message = value;
             }
         }
-
+#else
+        [ContentSerializerIgnore]
+        public virtual string Message
+        {
+            get
+            {
+                return _message;
+            }
+            protected set
+            {
+                _message = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public bool ShowHelp
+        {
+            get
+            {
+                return _showHelp;
+            }
+            protected set
+            {
+                _showHelp = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public bool Triggered
+        {
+            get
+            {
+                return _triggered;
+            }
+            protected set
+            {
+                _triggered = value;
+            }
+        }
+                [ContentSerializerIgnore]
+        public float TriggerWidth
+        {
+            get
+            {
+                return _triggerWidth;
+            }
+            protected set
+            {
+                _triggerWidth = value;
+            }
+        }
+                [ContentSerializerIgnore]
+        public float TriggerHeight
+        {
+            get
+            {
+                return _triggerHeight;
+            }
+            protected set
+            {
+                _triggerHeight = value;
+            }
+        }
+#endif
         #endregion
 
         #region Constructor
@@ -170,6 +199,7 @@ namespace GameLibrary.Objects.Triggers
             this._width = tWidth;
             this._height = tHeight;
             this._position = position;
+            this._tint = Color.White;
             this.ShowHelp = true;
             this.Message = " to use.";
         }
@@ -181,7 +211,6 @@ namespace GameLibrary.Objects.Triggers
 #if EDITOR
             _devTexture = content.Load
                 <Texture2D>(FileLoc.DevTexture());
-
 #else
             //  Adds a space if there isn't one. Used to place the words correctly in the hud.
             //  Should really go in the editor... Remind Sam.
@@ -213,18 +242,23 @@ namespace GameLibrary.Objects.Triggers
         #endregion
 
         #region Draw
+#if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            #region EDITOR
-            #if EDITOR
-
+            sb.Draw(_devTexture, Position,
+                new Rectangle(0, 0, (int)Width, (int)Height),
+                Color.White, Body.Rotation, new Vector2(this.Width/2, this.Height/2), 1f, SpriteEffects.None, 0f);
+        }
+#else
+        public override void Draw(SpriteBatch sb)
+        {
+#if Development
             sb.Draw(_devTexture, ConvertUnits.ToDisplayUnits(Body.Position),
                 new Rectangle(0, 0, (int)Width, (int)Height),
                 Color.White, Body.Rotation, new Vector2(this.Width/2, this.Height/2), 1f, SpriteEffects.None, 0f);
-
-            #endif
-            #endregion
+#endif
         }
+#endif
         #endregion
 
         #region Protected/Private Methods
@@ -245,6 +279,9 @@ namespace GameLibrary.Objects.Triggers
         /// <returns></returns>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR
+            return true;
+#else
             if (!TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);
@@ -261,10 +298,14 @@ namespace GameLibrary.Objects.Triggers
             }
 
             return true;
+#endif
+
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
+#if EDITOR
+#else
             if (TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Remove(fixtureB);
@@ -279,6 +320,7 @@ namespace GameLibrary.Objects.Triggers
                     HUD.ShowOnScreenMessage(false);
                 }
             }
+#endif
         }
         #endregion
 
@@ -289,7 +331,6 @@ namespace GameLibrary.Objects.Triggers
             trigPos.Y -= Height / 2;
 
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_triggerWidth), ConvertUnits.ToSimUnits(_triggerHeight), 0f);
-            this.Body.BodyType = BodyType.Static;
             this.Body.Position = ConvertUnits.ToSimUnits(trigPos);
             this.Body.IsSensor = true;
             //this.Body.CollidesWith = Category.Cat10;

@@ -310,9 +310,9 @@ namespace GameLibrary.Objects
 #endif
             #endregion
 
-            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position) - new Vector2(Width / 2, Height / 2),
+            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
                 new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
-                this.Tint, this.TextureRotation, Vector2.Zero, 1.0f, SpriteEffects.None, zLayer);
+                this.Tint, this.TextureRotation, new Vector2(this._texture.Width / 2, (this._texture.Height * _climbableSections) / 2), 1.0f, SpriteEffects.None, zLayer);
         }
 #endif
         #endregion
@@ -379,7 +379,7 @@ namespace GameLibrary.Objects
             if (Orientation == Direction.Vertical)
                 this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(_height * _climbableSections), ConvertUnits.ToSimUnits(_mass));
             else
-                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth * _climbableSections), ConvertUnits.ToSimUnits(_height / 4), ConvertUnits.ToSimUnits(_mass));
+                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_height * _climbableSections), ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(_mass));
 
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.IsSensor = true;
