@@ -107,7 +107,7 @@ namespace GameLibrary.Objects
 
         public override void Init(Vector2 StartVec, string texLoc)
         {
-            base.Init(StartVec, 0, 0, texLoc);
+            base.Init(StartVec, texLoc);
             this.ChainCount = 10;
 
             this._textureAsset = texLoc;
@@ -119,6 +119,7 @@ namespace GameLibrary.Objects
         {
             endTexture = content.Load<Texture2D>("Assets/Images/Textures/Rope/ropeEnd");
             _texture = content.Load<Texture2D>(_textureAsset);
+
 #if EDITOR
             this.Width = endTexture.Width;
             this.Height = endTexture.Height;

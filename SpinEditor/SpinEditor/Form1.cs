@@ -766,6 +766,11 @@ namespace SpinEditor
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                         }
 
+                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
+                        {
+                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Load(xnA_RenderControl1.contentMan);
+                        }
+
                         
                         xnA_RenderControl1.bDoNotDraw = false;
 
