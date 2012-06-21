@@ -32,6 +32,7 @@ using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using FarseerPhysics.Dynamics.Contacts;
+using Microsoft.Xna.Framework.Graphics;
 #endregion
 
 namespace GameLibrary.Objects
@@ -67,5 +68,15 @@ namespace GameLibrary.Objects
 #endif
         }
         #endregion
+
+#if EDITOR
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(this._texture, this._position,
+                new Rectangle(0, 0, (int)_width, (int)_height), this._tint, this.TextureRotation, new Vector2(_width / 2, _height / 2), 1.0f, SpriteEffects.None, this._zLayer);
+        }
+#else
+
+#endif
     }
 }

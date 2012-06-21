@@ -274,6 +274,9 @@ namespace GameLibrary.Objects
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR
+            return true;
+#else
             if (!TouchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.Body.FixtureList[0])
             {
                 TouchingFixtures.Add(fixtureB);
@@ -282,11 +285,16 @@ namespace GameLibrary.Objects
             }
 
             return true;
+#endif
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
+#if EDITOR
+
+#else
             TouchingFixtures.Remove(fixtureB);
+#endif
         }
 
         #endregion

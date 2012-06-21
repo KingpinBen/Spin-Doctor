@@ -126,7 +126,7 @@ namespace GameLibrary.Objects
                 if (_orientation == Orientation.Up || _orientation == Orientation.Down)
                     _height = value;
                 else
-                    _height = value;
+                    _width = value;
             }
         }
         [ContentSerializerIgnore]
@@ -474,6 +474,7 @@ namespace GameLibrary.Objects
             this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
 
 #if EDITOR
+            //  To fix it regenerating the values when loading them in the editor
             if (this.Width == 0.0f || this.Height == 0.0f)
             {
                 this.Width = this._texture.Width;
