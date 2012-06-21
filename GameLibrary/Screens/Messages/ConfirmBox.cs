@@ -47,7 +47,7 @@ namespace GameLibrary.Screens.Messages
             this.fontWidth = Font.MeasureString(Text).X;
             this.fontHeight = Font.MeasureString("A").Y;
 
-            _texture = Content.Load<Texture2D>("Assets/Sprites/Basics/gradient");
+            _texture = Content.Load<Texture2D>("Assets/Images/Basics/gradient");
 
             Vector2 screenCentre = Screen_Manager.Viewport / 2;
             Vector2 offset = new Vector2(50, 0);

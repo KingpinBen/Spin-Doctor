@@ -62,16 +62,10 @@ namespace GameLibrary.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            #region Editor & Dev
-#if EDITOR
-            displayTexture = content.Load<Texture2D>(FileLoc.DevTexture());
-            return;
-#endif
+#if EDITOR || Developement
 
-#if Development
             displayTexture = content.Load<Texture2D>(FileLoc.DevTexture());
-#endif
-            #endregion
+#else
 
             this.Body = BodyFactory.CreateBody(world);
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
@@ -89,6 +83,7 @@ namespace GameLibrary.Objects
             //  Apply it after attaching the fixture so it applies to all fixtures
             //  without having to redo it to newer ones later.
             this.Body.Friction = 3.0f;
+#endif
         }
 
         public override void Update(GameTime gameTime)

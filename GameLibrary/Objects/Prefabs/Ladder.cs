@@ -147,7 +147,7 @@ namespace GameLibrary.Objects
             get
             {
                 if (Orientation == Direction.Horizontal)
-                    return _width * _climbableSections;
+                    return -_width;
                 return _height * _climbableSections;
             }
         }
@@ -158,7 +158,7 @@ namespace GameLibrary.Objects
             get
             {
                 if (Orientation == Direction.Horizontal)
-                    return _height * _climbableSections;
+                    return -_height * _climbableSections;
                 return _width;
             }
         }
@@ -343,7 +343,7 @@ namespace GameLibrary.Objects
             //    this.Tint, this.TextureRotation, Vector2.Zero, 1.0f, SpriteEffects.None, zLayer);
 
             sb.Draw(this._texture, Position,
-                new Rectangle(0, 0, (int)-_width, -(int)_height * _climbableSections),
+                new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
                 this.Tint, this.TextureRotation, this.Origin, 1.0f, SpriteEffects.None, zLayer);
 
         }
@@ -360,8 +360,8 @@ namespace GameLibrary.Objects
 #endif
             #endregion
 
-            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(Width / 2, Height / 2),
-                new Rectangle(0, 0, (int)-_width, (int)-_height),
+            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position) - new Vector2(Width / 2, Height / 2),
+                new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
                 this.Tint, this.TextureRotation, Vector2.Zero, 1.0f, SpriteEffects.None, zLayer);
         }
 #endif
@@ -421,15 +421,15 @@ namespace GameLibrary.Objects
         #region Setup Body
         private void SetupPhysics(World world)
         {
-            float newWidth = Width;
+            float newWidth = _width;
             //  If the width is negative, make it positive.
             if (newWidth < 0)
                 newWidth *= -1;
 
             if (Orientation == Direction.Vertical)
-                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(Height), ConvertUnits.ToSimUnits(_mass));
+                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(_height * _climbableSections), ConvertUnits.ToSimUnits(_mass));
             else
-                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth), ConvertUnits.ToSimUnits(Height / 4), ConvertUnits.ToSimUnits(_mass));
+                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth * _climbableSections), ConvertUnits.ToSimUnits(_height / 4), ConvertUnits.ToSimUnits(_mass));
 
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.IsSensor = true;

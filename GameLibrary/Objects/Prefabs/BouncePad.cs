@@ -74,10 +74,10 @@ namespace GameLibrary.Objects
  	        base.Load(content, world);
 
 #if EDITOR
-            return;
-#endif
 
+#else
             this.Body.Restitution = _restitution;
+#endif
         }
         #endregion
 

@@ -124,10 +124,10 @@ namespace GameLibrary.Objects
             this.Height = endTexture.Height;
             this._endPosition = this._position + new Vector2(0, _texture.Height * ChainCount);
 
-            return;
-#endif
+#else
             this.World = world;
             SetUpPhysics(world);
+#endif
         }
         #endregion
 

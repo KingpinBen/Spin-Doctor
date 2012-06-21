@@ -45,13 +45,13 @@ namespace GameLibrary.Objects
         }
 
 
-        public virtual void Init(Vector2 position, float radius, string tex)
+        public override void Init(Vector2 position, float radius, string tex)
         {
             base.Init(position, radius, tex);
             this._mass = 1000.0f;
         }
 
-        public virtual void Init(Vector2 position, float width, float height, string tex)
+        public override void Init(Vector2 position, float width, float height, string tex)
         {
             base.Init(position, width, height, tex);
             this._mass = 1000.0f;

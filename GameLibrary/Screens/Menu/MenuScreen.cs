@@ -56,7 +56,6 @@ namespace GameLibrary.Screens.Menu
 
         protected bool isPopUp;
 
-        private ContentManager _content;
         private SpriteFont _font;
 
         public SpriteFont Font
@@ -69,17 +68,6 @@ namespace GameLibrary.Screens.Menu
             protected set
             {
                 _font = value;
-            }
-        }
-        public ContentManager Content
-        {
-            get
-            {
-                return _content;
-            }
-            protected set
-            {
-                _content = value;
             }
         }
         public Point SelectionOption
@@ -121,7 +109,7 @@ namespace GameLibrary.Screens.Menu
 
         public override void Unload()
         {
-            _content.Unload();
+            Content.Unload();
         }
 
         #region Update

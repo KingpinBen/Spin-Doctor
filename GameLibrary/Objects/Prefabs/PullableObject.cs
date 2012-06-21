@@ -61,15 +61,15 @@ namespace GameLibrary.Objects
             base.Load(content, world);
 
 #if EDITOR
-            return;
-#endif
 
+#else
             CircleShape fixture = new CircleShape(ConvertUnits.ToSimUnits(Width / 1.5), 0.0f);
             this.Body.CreateFixture(fixture);
             this.Body.FixtureList[1].IsSensor = true;
 
             this.Body.FixtureList[1].Body.OnCollision += Body_OnCollision;
             this.Body.FixtureList[1].Body.OnSeparation += Body_OnSeparation;
+#endif
         }
         #endregion
 

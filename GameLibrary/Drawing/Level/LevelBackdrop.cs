@@ -38,7 +38,6 @@ namespace GameLibrary.Drawing
         private Texture2D _levelBackground;
         Point roomDimensions;
         Color backgroundTint;
-        Rectangle roomRectangle;
 
         public Color Tint
         {

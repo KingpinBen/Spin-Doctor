@@ -61,7 +61,7 @@ namespace GameLibrary.Drawing
         private Player _player;
         private ContentManager _content;
         private Gears _gears;
-        private bool _initialized;
+        private bool _initialized = false;
         private LevelBackdrop _levelBackdrop;
 
         [ContentSerializer]

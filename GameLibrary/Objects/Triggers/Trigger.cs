@@ -23,9 +23,6 @@
 //--    
 //-------------------------------------------------------------------------------
 
-//#define EDITOR
-//#define Development
-
 #region Using Statements
 using System;
 using System.Collections.Generic;
@@ -181,14 +178,11 @@ namespace GameLibrary.Objects.Triggers
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            #region Development
 #if EDITOR
             _devTexture = content.Load
                 <Texture2D>(FileLoc.DevTexture());
-            return;
-#endif
-            #endregion
 
+#else
             //  Adds a space if there isn't one. Used to place the words correctly in the hud.
             //  Should really go in the editor... Remind Sam.
             if (ShowHelp)
@@ -207,6 +201,7 @@ namespace GameLibrary.Objects.Triggers
             this.Triggered = false;
 
             SetUpTrigger(world);
+#endif
         }
         #endregion
 
