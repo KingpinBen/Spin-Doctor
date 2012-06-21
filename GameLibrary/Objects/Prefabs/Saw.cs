@@ -71,7 +71,7 @@ namespace GameLibrary.Objects
                 }
                 else
                 {
-                    _endPosition = new Vector2(_position.X, value.X);
+                    _endPosition = new Vector2(_position.X, value.Y);
                 }
             }
         }
