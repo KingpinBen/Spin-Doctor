@@ -141,14 +141,8 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
-
-            this._texture = content.Load<Texture2D>(_textureAsset);
-            this._origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
-            
 #if EDITOR
-            this.Width = this._texture.Width;
-            this.Height = this._texture.Height;
-            return;
+
 #else
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
             this.wallDecalEnd = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalEndPiece");
@@ -190,8 +184,6 @@ namespace GameLibrary.Objects
                 {
                     _rotation -= 4;
                 }
-
-                
             }
             base.Update(gameTime);
 #endif

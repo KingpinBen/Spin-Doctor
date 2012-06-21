@@ -771,7 +771,6 @@ namespace SpinEditor
                             STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Load(xnA_RenderControl1.contentMan);
                         }
 
-                        
                         xnA_RenderControl1.bDoNotDraw = false;
 
                         Update_undoArray();

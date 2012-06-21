@@ -23,7 +23,6 @@
 //--    
 //-------------------------------------------------------------------------------
 
-//#define EDITOR
 //#define Development
 
 #region Using Statements
@@ -54,6 +53,7 @@ namespace GameLibrary.Objects.Triggers
         #endregion
 
         #region Properties
+#if EDITOR
         [ContentSerializerIgnore]
         public int NextLevel
         {
@@ -61,11 +61,7 @@ namespace GameLibrary.Objects.Triggers
             {
                 return nextLevel;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 nextLevel = value;
             }
@@ -83,14 +79,9 @@ namespace GameLibrary.Objects.Triggers
                 _rotation = SpinAssist.RotationByOrientation(_orientation);
             }
         }
-        public override float TextureRotation
-        {
-            get
-            {
-                return base.TextureRotation;
-            }
-            set { }
-        }
+#else
+
+#endif
         #endregion
 
         #region Constructor
@@ -122,9 +113,9 @@ namespace GameLibrary.Objects.Triggers
 #else
             this.TriggerWidth = 30;
             this.TriggerHeight = 30;
+            this.SetUpTrigger(world);
 #endif
 
-            base.Load(content, world);
         }
         #endregion
 

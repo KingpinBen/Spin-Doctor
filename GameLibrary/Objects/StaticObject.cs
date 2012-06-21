@@ -57,7 +57,9 @@ namespace GameLibrary.Objects
         {
             base.Load(content, world);
 
-#if !EDITOR
+#if EDITOR
+
+#else
             this.Body.BodyType = BodyType.Static;
             this.Body.Friction = 1.0f;
             this.Body.IgnoreCCD = true;

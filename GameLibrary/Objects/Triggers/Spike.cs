@@ -8,11 +8,15 @@ using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework.Graphics;
 using GameLibrary.Assists;
 using FarseerPhysics.Dynamics.Contacts;
+using FarseerPhysics.Factories;
 
 namespace GameLibrary.Objects.Triggers
 {
-    public class Spike : Trigger
+    public class Spike : StaticObject
     {
+        [ContentSerializerIgnore]
+        private List<Fixture> TouchingFixtures = new List<Fixture>();
+
         public Spike()
             : base()
         {
@@ -22,47 +26,51 @@ namespace GameLibrary.Objects.Triggers
         public override void Init(Vector2 position,  string tex)
         {
             base.Init(position, tex);
-            this.ShowHelp = false;
-            this._message = "NOT USED.";
         }
 
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
+            this._origin = new Vector2(_texture.Width / 2, _texture.Height);
 
 #if EDITOR
-            return;
+
 #else
-            this.SetUpTrigger(world);
+            this.SetUpPhysics(world);
+            this.GetRotationFromOrientation();
 #endif
         }
 
         #region Draw
 #if EDITOR
-
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(_texture, new Rectangle((int)_position.X, (int)_position.Y, (int)_width,(int)_height), new Rectangle(0, 0, (int)_width, (int)_height),
+                Color.White, this.TextureRotation, new Vector2(_texture.Width/2, _texture.Height/2), SpriteEffects.None, this.zLayer);
+        }
 #else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
-                null, Tint, this.Body.Rotation, Origin, 1.0f, SpriteEffects.None, zLayer);
+            sb.Draw(this._texture, new Rectangle((int)(Position.X), (int)(Position.Y), (int)_width, (int)_height),
+                new Rectangle(0,0,(int)_width, (int)_height), this.Tint, this.TextureRotation, new Vector2(_width/2, _height/2), SpriteEffects.None, zLayer);
         }
 #endif
         #endregion
 
         #region Private Methods
 
-        protected override void SetUpTrigger(World world)
+        protected override void SetUpPhysics(World world)
         {
-            TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass));
+            //TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass));
 
-            this.Origin = input.Origin;
+            //this.Origin = input.Origin;
+            //this.Body = input.Body;
 
-            this.Body = input.Body;
+            this.Body = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height), ConvertUnits.ToSimUnits(5), ConvertUnits.ToSimUnits(5), 3, ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Static;
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
             this.Body.IsSensor = true;
-            this.Body.Rotation = SpinAssist.RotationByOrientation(_orientation);
-
+            //this.Body.Rotation = SpinAssist.RotationByOrientation(_orientation);
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
         }

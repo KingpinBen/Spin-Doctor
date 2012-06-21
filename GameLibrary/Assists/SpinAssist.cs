@@ -43,12 +43,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace GameLibrary.Assists
 {
-    public struct TexVertOutput
-    {
-        public Vector2 Origin;
-        public Body Body;
-    }
-
     public static class SpinAssist
     {
         private static Random staticRandom = new Random();
@@ -84,7 +78,7 @@ namespace GameLibrary.Assists
             Vector2 Scale = new Vector2(ConvertUnits.ToSimUnits(scale), ConvertUnits.ToSimUnits(scale));
             verts.Scale(ref Scale);
 
-            //verts = SimplifyTools.ReduceByDistance(verts, 2f);
+            //verts = SimplifyTools.ReduceByDistance(verts, f);
 
             Body body = BodyFactory.CreateCompoundPolygon(world, BayazitDecomposer.ConvexPartition(verts), mass);
             body.BodyType = BodyType.Dynamic;

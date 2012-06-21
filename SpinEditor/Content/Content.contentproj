@@ -539,13 +539,13 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Spikes\Spike x 3.png">
-      <Name>Spike x 3</Name>
+    <Compile Include="Assets\Images\Textures\Spikes\Spike3.png">
+      <Name>Spike3</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Spikes\Spike x 6.png">
-      <Name>Spike x 6</Name>
+    <Compile Include="Assets\Images\Textures\Spikes\Spike6.png">
+      <Name>Spike6</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

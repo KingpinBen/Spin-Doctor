@@ -208,6 +208,7 @@ namespace GameLibrary.Objects.Triggers
         #region Load
         public override void Load(ContentManager content, World world)
         {
+            base.Load(content, world);
 #if EDITOR
             _devTexture = content.Load
                 <Texture2D>(FileLoc.DevTexture());

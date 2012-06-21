@@ -115,6 +115,7 @@
     <Compile Include="Assists\PrimGrid.cs" />
     <Compile Include="Assists\PrimitiveBatch.cs" />
     <Compile Include="Assists\SpinAssist.cs" />
+    <Compile Include="Assists\TexVertOutput.cs" />
     <Compile Include="Drawing\Camera.cs" />
     <Compile Include="Drawing\AnimatedText.cs" />
     <Compile Include="Drawing\Decal.cs" />

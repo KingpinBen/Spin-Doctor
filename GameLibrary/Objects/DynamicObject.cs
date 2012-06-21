@@ -27,6 +27,7 @@ using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Factories;
 using FarseerPhysics.Dynamics;
 using GameLibrary.Assists;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GameLibrary.Objects
 {
@@ -218,7 +219,11 @@ namespace GameLibrary.Objects
         /// <param name="world"></param>
         public override void Load(ContentManager content, World world)
         {
-            base.Load(content, world);
+            if (this._textureAsset != "")
+                _texture = content.Load<Texture2D>(this._textureAsset);
+
+            this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+
 #if EDITOR
 
 #else
@@ -230,7 +235,6 @@ namespace GameLibrary.Objects
                 _isMoving = true;
             }
 #endif
-
         }
         #endregion
 

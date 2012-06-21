@@ -28,8 +28,6 @@
 //--    
 //--------------------------------------------------------------------------
 
-#define EDITOR
-
 #region Using Statements
 using System;
 using Microsoft.Xna.Framework.Graphics;
@@ -256,8 +254,6 @@ namespace GameLibrary.Objects
             }
         }
 #else
-
-
         [ContentSerializerIgnore]
         public virtual Vector2 Position
         {
@@ -265,11 +261,7 @@ namespace GameLibrary.Objects
             {
                 return _position;
             }
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 _position = value;
             }
@@ -283,11 +275,7 @@ namespace GameLibrary.Objects
                     return _height;
                 return _width;
             }
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 if (_orientation == Orientation.Up || _orientation == Orientation.Down)
                     _height = value;
@@ -304,12 +292,7 @@ namespace GameLibrary.Objects
                     return _width;
                 return _height;
             }
-#if EDITOR
-            set
-#else
             protected set
-
-#endif
             {
                 if (_orientation == Orientation.Up || _orientation == Orientation.Down)
                     _width = value;
@@ -324,11 +307,7 @@ namespace GameLibrary.Objects
             {
                 return _mass;
             }
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 _mass = value;
             }
@@ -340,11 +319,7 @@ namespace GameLibrary.Objects
             {
                 return _textureAsset;
             }
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 _textureAsset = value;
             }
@@ -369,12 +344,7 @@ namespace GameLibrary.Objects
             {
                 return _tint;
             }
-
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 _tint = value;
             }
@@ -386,11 +356,7 @@ namespace GameLibrary.Objects
             {
                 return _zLayer;
             }
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 _zLayer = value;
             }
@@ -398,18 +364,6 @@ namespace GameLibrary.Objects
         [ContentSerializerIgnore]
         public virtual float TextureRotation
         {
-#if EDITOR
-            get
-            {
-                if (_useBodyRotation)
-                    return 0;
-                return _rotation;
-            }
-            set
-            {
-                _rotation = MathHelper.ToRadians(value);
-            }
-#else
             get
             {
 
@@ -421,7 +375,6 @@ namespace GameLibrary.Objects
             {
                 _rotation = value;
             }
-#endif
         }
         [ContentSerializerIgnore]
         public Texture2D Texture
@@ -430,11 +383,7 @@ namespace GameLibrary.Objects
             {
                 return _texture;
             }
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 _texture = value;
             }
@@ -446,11 +395,7 @@ namespace GameLibrary.Objects
             {
                 return _useBodyRotation;
             }
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 _useBodyRotation = value;
             }
@@ -462,11 +407,7 @@ namespace GameLibrary.Objects
             {
                 return _orientation;
             }
-#if EDITOR
-            set
-#else
             protected set
-#endif
             {
                 _orientation = value;
                 GetRotationFromOrientation();
@@ -512,10 +453,11 @@ namespace GameLibrary.Objects
 
         public virtual void Init(Vector2 position, string tex)
         {
-            this.Position = position;
+            this._position = position;
             this._textureAsset = tex;
-            this.Mass = 20;
+            this._mass = 20;
             this.Tint = Color.White;
+            this._zLayer = 0.1f;
         }
         #endregion
 
@@ -532,8 +474,11 @@ namespace GameLibrary.Objects
             this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
 
 #if EDITOR
-            this.Width = this._texture.Width;
-            this.Height = this._texture.Height;
+            if (this.Width == 0.0f || this.Height == 0.0f)
+            {
+                this.Width = this._texture.Width;
+                this.Height = this._texture.Height;
+            }
 #else
             SetUpPhysics(world);
 #endif
@@ -630,7 +575,7 @@ namespace GameLibrary.Objects
             else if (_orientation == Orientation.Left)
                 _rotation = MathHelper.PiOver2;
             else if (_orientation == Orientation.Right)
-                _rotation = MathHelper.Pi + MathHelper.PiOver2;
+                _rotation = -MathHelper.PiOver2;
         }
     }
 }

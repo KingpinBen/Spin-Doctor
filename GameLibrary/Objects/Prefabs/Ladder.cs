@@ -216,7 +216,8 @@ namespace GameLibrary.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            base.Load(content, world);
+            //base.Load(content, world);
+            this._texture = content.Load<Texture2D>(_textureAsset);
 
 #if EDITOR
             if (this._texture.Height > 10)
