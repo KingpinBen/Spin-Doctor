@@ -204,29 +204,19 @@ namespace GameLibrary.Objects
 
         }
 
-        public override void Init(Vector2 position, float height, string texLoc)
+        public override void Init(Vector2 position, string texLoc)
         {
-            this._height = height;
-            this._width = 20;
-            this._position = position;
-            this._tint = Color.White;
-            this._textureAsset = texLoc;
-            this._mass = 10.0f;
+            base.Init(position, texLoc);
+
             this._useBodyRotation = false;
             this._orientation = Direction.Vertical;
             this._climbableSections = 1;
         }
         #endregion
 
-        #region Load and Setup
         public override void Load(ContentManager content, World world)
         {
-            this._texture = content.Load<Texture2D>(_textureAsset);
-
-            //  Ladder grows up
-            this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
-            this._width = this._texture.Width;
-
+            base.Load(content, world);
 
 #if EDITOR
             if (this._texture.Height > 10)
@@ -244,7 +234,6 @@ namespace GameLibrary.Objects
             this.SetupPhysics(world);
 #endif
         }
-        #endregion
 
         public override void Update(GameTime gameTime)
         {

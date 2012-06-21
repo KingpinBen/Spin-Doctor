@@ -152,7 +152,7 @@ namespace GameLibrary.Objects.Triggers
                 (int)(_width),
                 (int)(_height)),
                 null, this._tint, this._rotation, 
-                new Vector2(this._texture.Width/ 2, this._texture.Height/2), 
+                new Vector2(this._texture.Width / 2, this._texture.Height / 2), 
                 SpriteEffects.None, this.zLayer);
         }
 #else
@@ -161,7 +161,11 @@ namespace GameLibrary.Objects.Triggers
 #if Development
             sb.DrawString(Fonts.DebugFont, "Touching: " + TouchingFixtures.Count, ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(0, -70), Color.Blue, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0.0f);
 #endif
-            sb.Draw(Texture, ConvertUnits.ToDisplayUnits(this.Body.Position) + SpinAssist.ModifyVectorByOrientation(new Vector2(0, Height / 2), this._orientation), null, Color.White, _rotation, new Vector2(Texture.Width / 2, Texture.Height), 1f, SpriteEffects.None, zLayer);
+            sb.Draw(Texture, new Rectangle(
+                (int)(this._position.X),
+                (int)(this._position.Y),
+                (int)(_width),
+                (int)(_height)), null, Color.White, _rotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), SpriteEffects.None, zLayer);
         }
 #endif
         #endregion
@@ -235,9 +239,9 @@ namespace GameLibrary.Objects.Triggers
 
             //  Change the position to it's above the lowest point of the doors
             //  texture
-            this.Body.Position = _position + SpinAssist.ModifyVectorByOrientation(
+            this.Body.Position = ConvertUnits.ToSimUnits(_position + SpinAssist.ModifyVectorByOrientation(
                 new Vector2(0,(this._height / 2) - (TriggerHeight / 2)), 
-                this._orientation);
+                this._orientation));
 
             this.Body.IsSensor = true;
             this.Body.OnCollision += Body_OnCollision;

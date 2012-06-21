@@ -42,18 +42,12 @@ namespace GameLibrary.Objects
         public StaticObject()
             : base()
         {
+
         }
 
-
-        public override void Init(Vector2 position, float radius, string tex)
+        public override void Init(Vector2 position, string tex)
         {
-            base.Init(position, radius, tex);
-            this._mass = 1000.0f;
-        }
-
-        public override void Init(Vector2 position, float width, float height, string tex)
-        {
-            base.Init(position, width, height, tex);
+            base.Init(position, tex);
             this._mass = 1000.0f;
         }
         #endregion

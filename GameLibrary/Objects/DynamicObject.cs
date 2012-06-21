@@ -218,6 +218,10 @@ namespace GameLibrary.Objects
         /// <param name="world"></param>
         public override void Load(ContentManager content, World world)
         {
+            base.Load(content, world);
+#if EDITOR
+
+#else
             this._elapsedTimer = 0.0f;
             this._currentMovingDirection = false;
 
@@ -225,6 +229,8 @@ namespace GameLibrary.Objects
             {
                 _isMoving = true;
             }
+#endif
+
         }
         #endregion
 

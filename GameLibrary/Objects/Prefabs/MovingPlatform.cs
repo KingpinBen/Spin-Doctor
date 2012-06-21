@@ -44,9 +44,9 @@ namespace GameLibrary.Objects
 
         }
 
-        public override void Init(Vector2 position, float width, float height, string tex)
+        public override void Init(Vector2 position, string tex)
         {
-            base.Init(position, width, height, tex);
+            base.Init(position, tex);
 
             this._movementDirection = Direction.Horizontal;
             this._endPosition = this.Position;
@@ -60,7 +60,6 @@ namespace GameLibrary.Objects
             this.Origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
 
 #if EDITOR
-
 #else
             SetUpPhysics(world);
 #endif

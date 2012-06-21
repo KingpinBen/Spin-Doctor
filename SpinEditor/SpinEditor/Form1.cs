@@ -188,7 +188,7 @@ namespace SpinEditor
                     case "Ladder":
                         {
                             Ladder ladder = new Ladder();
-                            ladder.Init(Position, 100, texloc0);
+                            ladder.Init(Position, texloc0);
                             ladder.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(ladder);
                         }
@@ -196,7 +196,7 @@ namespace SpinEditor
                     case "Moving Platform":
                         {
                             MovingPlatform movPlat = new MovingPlatform();
-                            movPlat.Init(Position, tex.Width, tex.Height, texloc0);
+                            movPlat.Init(Position, texloc0);
                             movPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(movPlat);
                         }
@@ -285,7 +285,7 @@ namespace SpinEditor
                     case "Static Object":
                         {
                             StaticObject staticObj = new StaticObject();
-                            staticObj.Init(Position, tex.Width, tex.Height, texloc0);
+                            staticObj.Init(Position, texloc0);
                             staticObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(staticObj);
                         }
@@ -412,22 +412,7 @@ namespace SpinEditor
         #region Save
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveFileDialog1.Filter = "Xml files|*.xml";
-            saveFileDialog1.AddExtension = true;
-
-            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                XmlWriterSettings settings = new XmlWriterSettings();
-                settings.ConformanceLevel = ConformanceLevel.Auto;
-                settings.Indent = true;
-                settings.NewLineHandling = NewLineHandling.Entitize;
-                settings.NewLineOnAttributes = true;
-
-                using (XmlWriter writer = XmlWriter.Create(saveFileDialog1.FileName, settings))
-                {
-                    IntermediateSerializer.Serialize(writer, STATIC_EDITOR_MODE.levelInstance, null);
-                }
-            }
+            SaveFile();
         }
         #endregion
 
@@ -797,6 +782,28 @@ namespace SpinEditor
                 MessageBox.Show("No file selected.");
                 return false;
             }
+        }
+
+        bool SaveFile()
+        {
+            saveFileDialog1.Filter = "Xml files|*.xml";
+            saveFileDialog1.AddExtension = true;
+
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.ConformanceLevel = ConformanceLevel.Auto;
+                settings.Indent = true;
+                settings.NewLineHandling = NewLineHandling.Entitize;
+                settings.NewLineOnAttributes = true;
+
+                using (XmlWriter writer = XmlWriter.Create(saveFileDialog1.FileName, settings))
+                {
+                    IntermediateSerializer.Serialize(writer, STATIC_EDITOR_MODE.levelInstance, null);
+                }                
+            }
+
+            return true;
         }
 
         void Handle_Property_Grid_Items()

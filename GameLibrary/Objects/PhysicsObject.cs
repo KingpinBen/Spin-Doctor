@@ -517,32 +517,9 @@ namespace GameLibrary.Objects
             this.Mass = 20;
             this.Tint = Color.White;
         }
-
-        public virtual void Init(Vector2 position, float width, float height, string tex)
-        {
-            this._position = position;
-            this._mass = 20.0f;
-            this._tint = Color.White;
-            this._width = width;
-            this._height = height;
-            this._textureAsset = tex;
-            //this._scale = 1.0f;
-        }
-
-        /// <summary>
-        /// Use to make circles
-        /// </summary>
-        public virtual void Init(Vector2 position, float radius, string tex)
-        {
-            this._position = position;
-            this._width = radius;
-            this._tint = Color.White;
-            this._mass = 20.0f;
-            this._textureAsset = tex;
-        }
         #endregion
 
-        #region LoadContent
+        #region Load
         /// <summary>
         /// Load object game content
         /// </summary>
@@ -554,14 +531,21 @@ namespace GameLibrary.Objects
 
             this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
 
+#if EDITOR
+            this.Width = this._texture.Width;
+            this.Height = this._texture.Height;
+#else
             SetUpPhysics(world);
+#endif
             //GetRotationFromOrientation();
         }
         #endregion
 
-        #region Update
         public virtual void Update(GameTime gameTime)
         {
+#if EDITOR
+
+#else
             if (!Camera.LevelRotating)
             {
                 return;
@@ -571,8 +555,8 @@ namespace GameLibrary.Objects
             {
                 this.Body.Awake = true;
             }
+#endif
         }
-        #endregion
 
         #region Draw
         /// <summary>
@@ -628,11 +612,6 @@ namespace GameLibrary.Objects
         #region Collisions
         protected virtual bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (fixtureA.Body.BodyType == BodyType.Static && fixtureB.Body.BodyType == BodyType.Static)
-            {
-                return false;
-            }
-
             return true;
         }
 

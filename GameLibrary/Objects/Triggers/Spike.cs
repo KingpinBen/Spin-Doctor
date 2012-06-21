@@ -19,9 +19,9 @@ namespace GameLibrary.Objects.Triggers
 
         }
 
-        public override void Init(Vector2 position, float width, float height, string tex)
+        public override void Init(Vector2 position,  string tex)
         {
-            base.Init(position, width, height, tex);
+            base.Init(position, tex);
             this.ShowHelp = false;
             this._message = "NOT USED.";
         }
