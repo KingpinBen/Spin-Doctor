@@ -194,18 +194,16 @@ namespace GameLibrary.Objects
         }
         #endregion
 
+        #region Draw
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(endTexture, this._position, null, Color.Tomato, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 1.0f, SpriteEffects.None, 1.0f);
-            sb.Draw(endTexture, this._endPosition, null, Color.White, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 0.6f, SpriteEffects.None, 1.0f);
+            sb.Draw(endTexture, this._position, null, Color.Tomato, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(endTexture, this._endPosition, null, Color.White, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 0.6f, SpriteEffects.None, this.zLayer);
         }
 #else
-
-        #region Draw
         public override void Draw(SpriteBatch sb)
         {
-
             sb.Draw(endTexture, ConvertUnits.ToDisplayUnits(_pathBodies[0].Position), null,
                     Tint, _pathBodies[0].Rotation, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 1f,
                     SpriteEffects.None, zLayer);
@@ -217,8 +215,9 @@ namespace GameLibrary.Objects
                     SpriteEffects.None, zLayer);
             }
         }
-        #endregion
+        
 #endif
+        #endregion
 
         #region SetupPhysics
         protected override void SetUpPhysics(World world)
@@ -227,28 +226,16 @@ namespace GameLibrary.Objects
             _ropePath.Add(ConvertUnits.ToSimUnits(this._position));
             _ropePath.Add(ConvertUnits.ToSimUnits(this._endPosition));
 
-            float height = ConvertUnits.ToSimUnits(this._texture.Height / 2);//  0.3
             float width = ConvertUnits.ToSimUnits(this._texture.Width / 2);//    0.2
+            float height = ConvertUnits.ToSimUnits(this._texture.Height / 2);//  0.3
+            float extraRoom = ConvertUnits.ToSimUnits(2.0f);
 
-            PolygonShape shape = new PolygonShape(PolygonTools.CreateCircle(height / 2, 8), 1.0f);
+            PolygonShape shape = new PolygonShape(PolygonTools.CreateCircle(height, 8), ConvertUnits.ToSimUnits(_mass));
             _pathBodies = PathManager.EvenlyDistributeShapesAlongPath(world, _ropePath, shape, BodyType.Dynamic, ChainCount);
 
-            foreach (Body chain in _pathBodies)
-            {
-                chain.Friction = 0.2f;
-            }
-
-            JointFactory.CreateFixedRevoluteJoint(world, _pathBodies[0], new Vector2(0, 0), _pathBodies[0].Position);
-            PathManager.AttachBodiesWithRevoluteJoint(world, _pathBodies, new Vector2(0f, height), new Vector2(0f, -height), false, true);
-
-            //for (int i = 0; i < _pathBodies.Count - 1; i++)
-            //{
-            //    RevoluteJoint joint = new RevoluteJoint(_pathBodies[i], _pathBodies[i + 1], new Vector2(0, height), new Vector2(0, -height));
-            //    //joint.LimitEnabled = true;
-            //    joint.MaxMotorTorque = float.MaxValue;
-            //    joint.CollideConnected = true;
-            //    world.AddJoint(joint);
-            //}
+            FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, _pathBodies[0], new Vector2(0, 0), _pathBodies[0].Position);
+            fixedJoint.MaxMotorTorque = 0f;
+            PathManager.AttachBodiesWithRevoluteJoint(world, _pathBodies, new Vector2(0f, height + extraRoom), new Vector2(0f, -(height + extraRoom)), false, true);
         }
         #endregion
     }

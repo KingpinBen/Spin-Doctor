@@ -170,7 +170,7 @@ namespace GameLibrary.Screens
             }
             sb.End();
 
-            sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null, Camera.TransformMatrix());
+            sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, Camera.TransformMatrix());
             {
                 Level.DrawGameplay(sb);
                 Sprite_Manager.Draw(sb);

@@ -270,7 +270,7 @@ namespace GameLibrary.Objects
 
             spriteBatch.Draw(CurrentAnimation.CurrentAnimationTexture,
             this.TexturePosition, CurrentAnimation.CurrentRect, Color.White,
-            this.mainBody.Rotation, CurrentAnimation.FrameOrigin, 0.43f, LookingDirection, 0.1f);
+            this.mainBody.Rotation, CurrentAnimation.FrameOrigin, 0.43f, LookingDirection, 0.3f);
         } 
         #endregion
 

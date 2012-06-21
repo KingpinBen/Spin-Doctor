@@ -122,6 +122,16 @@ namespace GameLibrary.Objects
                 _climbableSections = value;
             }
         }
+        
+        [ContentSerializerIgnore]
+        public override float TextureRotation
+        {
+            get
+            {
+                return _rotation;
+            }
+            set { }
+        }
 #else
         [ContentSerializerIgnore]
         public bool PlayerInRange
@@ -185,16 +195,6 @@ namespace GameLibrary.Objects
             }
         }
 #endif
-
-        [ContentSerializerIgnore]
-        public override float TextureRotation
-        {
-            get
-            {
-                return _rotation;
-            }
-            set { }
-        }
         #endregion
 
         #region Constructor

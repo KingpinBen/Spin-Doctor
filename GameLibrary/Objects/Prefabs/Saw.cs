@@ -19,7 +19,7 @@
 //--    
 //-------------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 using System;
 using System.Collections.Generic;
@@ -41,16 +41,19 @@ namespace GameLibrary.Objects
         #region Fields
         [ContentSerializer]
         private string _bloodiedTextureAsset;
-        [ContentSerializerIgnore]
+
+#if EDITOR
+
+#else
         private Texture2D _bloodiedTexture;
-        [ContentSerializerIgnore]
-        private bool _touched = false;
-        [ContentSerializerIgnore]
-        private List<Fixture> TouchingFixtures = new List<Fixture>();
-        private Texture2D wallDecalEnd;
-        private Texture2D wallDecalMiddle;
-        private float _decalRotation;
+        private Texture2D _wallDecalEnd;
+        private Texture2D _wallDecalMiddle;
         private Rectangle _decalRectangle;
+        private List<Fixture> TouchingFixtures = new List<Fixture>();
+        //private Vector2 
+        private bool _touched = false;
+        private float _decalRotation;        
+#endif
         #endregion
 
         #region Properties
@@ -145,27 +148,52 @@ namespace GameLibrary.Objects
 
 #else
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
-            this.wallDecalEnd = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalEndPiece");
-            this.wallDecalMiddle = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalMiddlePiece");
+            this._wallDecalEnd = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalEndPiece");
+            this._wallDecalMiddle = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalMiddlePiece");
 
+            #region Sort out the wall indents
             if (_movementDirection == Direction.Horizontal)
             {
                 _decalRotation = -MathHelper.PiOver2;
 
-                _decalRectangle = new Rectangle(
-                (int)EndPosition.X + this.wallDecalEnd.Width / 2,
-                (int)EndPosition.Y + this.wallDecalEnd.Height / 2,
-                (int)(this.wallDecalEnd.Height),
-                (int)(Position.X - EndPosition.X - this.wallDecalEnd.Width));
+                if (EndPosition.X > Position.X)
+                {
+                    _decalRectangle = new Rectangle(
+                        -(int)Math.Abs(Position.X),
+                        -(int)Math.Abs(Position.Y + this._wallDecalEnd.Height / 2),
+                        (int)(this._wallDecalEnd.Height),
+                        (int)Math.Abs(EndPosition.X - Position.X));
+                }
+                else
+                {
+                    _decalRectangle = new Rectangle(
+                        -(int)Math.Abs(EndPosition.X),
+                        -(int)Math.Abs(EndPosition.Y + this._wallDecalEnd.Height / 2),
+                        (int)this._wallDecalEnd.Height,
+                        (int)Math.Abs(Position.X - EndPosition.X));
+                }
             }
             else
             {
-                _decalRectangle = new Rectangle(
-                (int)EndPosition.X - this.wallDecalEnd.Width / 2,
-                (int)EndPosition.Y + this.wallDecalEnd.Height / 2,
-                (int)(this.wallDecalEnd.Width),
-                (int)(Position.Y - EndPosition.Y) - this.wallDecalEnd.Height);
+                if (EndPosition.Y > Position.Y)
+                {
+                    _decalRectangle = new Rectangle(
+                        (int)Position.X - this._wallDecalEnd.Width / 2,
+                        (int)Position.Y,
+                        (int)(this._wallDecalEnd.Width),
+                        (int)(EndPosition.Y - Position.Y));
+                }
+                else
+                {
+                    _decalRectangle = new Rectangle(
+                        (int)EndPosition.X - this._wallDecalEnd.Width / 2,
+                        (int)EndPosition.Y,
+                        (int)(this._wallDecalEnd.Width),
+                        (int)(Position.Y - EndPosition.Y));
+                }
+
             }
+            #endregion
 
             this.SetUpPhysics(world);
 #endif
@@ -196,17 +224,16 @@ namespace GameLibrary.Objects
             base.Draw(spriteBatch);
         }
 #else
-
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, Color.White, 
                 TextureRotation, Origin, 1.0f, SpriteEffects.None, zLayer); 
 
-            sb.Draw(wallDecalEnd, this.Position, null, Color.White, _decalRotation,
-                new Vector2(this.wallDecalEnd.Width / 2, this.wallDecalEnd.Height / 2), 1.0f, SpriteEffects.None, zLayer - 0.01f);
-            sb.Draw(wallDecalEnd, this.EndPosition, null, Color.White, (float)Math.PI + _decalRotation,
-                new Vector2(this.wallDecalEnd.Width / 2, this.wallDecalEnd.Height / 2), 1.0f, SpriteEffects.None, zLayer - 0.01f);
-            sb.Draw(wallDecalMiddle, _decalRectangle, null, Color.White, _decalRotation,
+            sb.Draw(_wallDecalEnd, this.Position, null, Color.White, _decalRotation,
+                new Vector2(this._wallDecalEnd.Width / 2, this._wallDecalEnd.Height / 2), 1.0f, SpriteEffects.None, zLayer - 0.01f);
+            sb.Draw(_wallDecalEnd, this.EndPosition, null, Color.White, (float)Math.PI + _decalRotation,
+                new Vector2(this._wallDecalEnd.Width / 2, this._wallDecalEnd.Height / 2), 1.0f, SpriteEffects.None, zLayer - 0.01f);
+            sb.Draw(_wallDecalMiddle, _decalRectangle, null, Color.White, _decalRotation,
                 Vector2.Zero, SpriteEffects.None, zLayer - 0.01f);
 
 #if Development
@@ -222,7 +249,6 @@ namespace GameLibrary.Objects
             sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit) + (this.MovingToStart == false).ToString(), this.Position - new Vector2(0, 500), Color.Red);
             sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation <= this.PrismaticJoint.LowerLimit) + (this.MovingToStart == true).ToString(), this.Position - new Vector2(0, 485), Color.Red);
 #endif
-
         }
 #endif
         #endregion

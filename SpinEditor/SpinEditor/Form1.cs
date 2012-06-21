@@ -158,18 +158,19 @@ namespace SpinEditor
         {
             if ((listBox_Classes.SelectedItem != null) && (listBox_Assets0.SelectedItem != null))
             {
+                //  All textures are loaded inside each object.
                 string texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
                 string texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets0.SelectedIndex].ToString();
                 string texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets0.SelectedIndex].ToString();
                 string texloc3 = STATIC_CONTBUILDER.textureLoc + listBox_Assets3.Items[listBox_Assets0.SelectedIndex].ToString();
-                Texture2D tex = xnA_RenderControl1.contentMan.Load<Texture2D>(texloc0);
 
+                #region Object Types
                 switch (Type)
                 {
                     //case "Bounce Pad":
                     //    {
                     //        BouncePad bouncePad = new BouncePad();
-                    //        bouncePad.Init(Position, tex.Width, tex.Height, texloc0);
+                    //        bouncePad.Init(Position, texloc0);
                     //        bouncePad.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                     //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(bouncePad);
                     //    }
@@ -298,6 +299,7 @@ namespace SpinEditor
                     default:
                         return;
                 }
+                #endregion
 
                 switch (Type)
                 {
@@ -2597,8 +2599,6 @@ namespace SpinEditor
             {
                 SwitchToPlaceMode();
             }
-
-            
 
             STATIC_EDITOR_MODE.keyboardOldState = STATIC_EDITOR_MODE.keyboardCurrentState;
             STATIC_EDITOR_MODE.mouseOldState = STATIC_EDITOR_MODE.mouseCurrentState;
