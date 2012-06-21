@@ -118,11 +118,11 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
             endTexture = content.Load<Texture2D>("Assets/Images/Textures/Rope/ropeEnd");
-            Texture = content.Load<Texture2D>(_textureAsset);
+            _texture = content.Load<Texture2D>(_textureAsset);
 #if EDITOR
             this.Width = endTexture.Width;
             this.Height = endTexture.Height;
-            this._endPosition = this._position + new Vector2(0, Texture.Height * ChainCount);
+            this._endPosition = this._position + new Vector2(0, _texture.Height * ChainCount);
 
             return;
 #endif
@@ -226,8 +226,8 @@ namespace GameLibrary.Objects
             _ropePath.Add(ConvertUnits.ToSimUnits(this._position));
             _ropePath.Add(ConvertUnits.ToSimUnits(this._endPosition));
 
-            float height = ConvertUnits.ToSimUnits(this.Texture.Height / 2);//  0.3
-            float width = ConvertUnits.ToSimUnits(this.Texture.Width / 2);//    0.2
+            float height = ConvertUnits.ToSimUnits(this._texture.Height / 2);//  0.3
+            float width = ConvertUnits.ToSimUnits(this._texture.Width / 2);//    0.2
 
             PolygonShape shape = new PolygonShape(PolygonTools.CreateCircle(height / 2, 8), 1.0f);
             _pathBodies = PathManager.EvenlyDistributeShapesAlongPath(world, _ropePath, shape, BodyType.Dynamic, ChainCount);

@@ -195,15 +195,6 @@ namespace GameLibrary.Objects
             }
             set { }
         }
-        [ContentSerializerIgnore]
-        public override Vector2 Origin
-        {
-            get
-            {
-                return new Vector2(this.Texture.Width / 2, this.Texture.Height / 2);
-            }
-            protected set { }
-        }
         #endregion
 
         #region Constructor
@@ -230,22 +221,21 @@ namespace GameLibrary.Objects
         #region Load and Setup
         public override void Load(ContentManager content, World world)
         {
-            this.Texture = content.Load<Texture2D>
-                (_textureAsset);
+            this._texture = content.Load<Texture2D>(_textureAsset);
 
             //  Ladder grows up
-            this._origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
-            this._width = this.Texture.Width;
+            this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+            this._width = this._texture.Width;
 
 
 #if EDITOR
-            if (this.Texture.Height > 10)
-                this._height = this.Texture.Height;
+            if (this._texture.Height > 10)
+                this._height = this._texture.Height;
             else
                 this._height = 10;
 
-            if (this.Texture.Width > 10)
-                this._width = this.Texture.Width;
+            if (this._texture.Width > 10)
+                this._width = this._texture.Width;
             else
                 this._width = 10;
 
@@ -261,10 +251,15 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
+            if (_orientation == Direction.Vertical && (Camera.UpIs == upIs.Left || Camera.UpIs == upIs.Right))
+            {
+                return;
+            }
 
-
-            if (_orientation == Direction.Vertical && (Camera.UpIs == upIs.Left || Camera.UpIs == upIs.Right)) return;
-            if (_orientation == Direction.Horizontal && (Camera.UpIs == upIs.Up || Camera.UpIs == upIs.Down)) return;
+            if (_orientation == Direction.Horizontal && (Camera.UpIs == upIs.Up || Camera.UpIs == upIs.Down))
+            {
+                return;
+            }
 
             if (_inGrabbingRange)
             {
@@ -279,7 +274,9 @@ namespace GameLibrary.Objects
 
             //  Make sure the player isnt grabbing the ladder if they aren't climbing.
             if (Player.Instance.PlayerState != pState.Climbing && Grabbed)
+            {
                 DisconnectPlayer();
+            }
 #endif
         }
 
@@ -341,14 +338,14 @@ namespace GameLibrary.Objects
             //    new Rectangle(0, 0, (int)this.Width / 2, (int)Height),
             //    Color.White * 0.3f, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
 
-            sb.Draw(this.Texture, Position,
-                new Rectangle(0, 0, (int)this._width, (int)this._height * _climbableSections),
-                this.Tint, this.TextureRotation, Vector2.Zero, 1.0f, SpriteEffects.None, zLayer);
+            //sb.Draw(this.Texture, Position,
+            //    new Rectangle(0, 0, (int)Width, (int)Height),
+            //    this.Tint, this.TextureRotation, Vector2.Zero, 1.0f, SpriteEffects.None, zLayer);
 
-            if (Orientation == Direction.Horizontal)
-            {
+            sb.Draw(this._texture, Position,
+                new Rectangle(0, 0, (int)-_width, -(int)_height * _climbableSections),
+                this.Tint, this.TextureRotation, this.Origin, 1.0f, SpriteEffects.None, zLayer);
 
-            }
         }
 #else
 
@@ -363,7 +360,7 @@ namespace GameLibrary.Objects
 #endif
             #endregion
 
-            sb.Draw(this.Texture, ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(Width / 2, Height / 2),
+            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(Width / 2, Height / 2),
                 new Rectangle(0, 0, (int)-_width, (int)-_height),
                 this.Tint, this.TextureRotation, Vector2.Zero, 1.0f, SpriteEffects.None, zLayer);
         }

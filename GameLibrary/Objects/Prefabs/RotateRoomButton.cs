@@ -137,16 +137,17 @@ namespace GameLibrary.Objects
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            this.Texture = content.Load<Texture2D>(_textureAsset);
-            this._width = Texture.Width / 2;
-            this._height = Texture.Height / 2;
-            this._origin = new Vector2(_width, _height);
-
-#if EDITOR
-            return;
-#endif
+            this._texture = content.Load<Texture2D>(_textureAsset);
+            this._origin = new Vector2(_width / 2, _height / 2);
             this._message = " to rotate " + RDirection;
             base.Load(content, world);
+
+#if EDITOR
+            this._width = this._texture.Width / 2;
+            this._height = this._texture.Height / 2;
+#else
+
+#endif
         }
         #endregion
 
@@ -196,7 +197,7 @@ namespace GameLibrary.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
- 	        sb.Draw(this.Texture, Position, null, this.Tint, 0.0f, this.Origin, 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, 0.0f, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
         }
 
 #else

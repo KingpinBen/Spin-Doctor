@@ -19,7 +19,7 @@
 //--    
 //-------------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 using System;
 using System.Collections.Generic;
@@ -141,18 +141,18 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
-            
-            this.Texture = content.Load<Texture2D>(_textureAsset);
-            this._origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+
+            this._texture = content.Load<Texture2D>(_textureAsset);
+            this._origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
             
 #if EDITOR
-            this.Width = this.Texture.Width;
-            this.Height = this.Texture.Height;
+            this.Width = this._texture.Width;
+            this.Height = this._texture.Height;
             return;
 #else
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
-            this.wallDecalEnd = content.Load<Texture2D>("Assets/Sprites/Textures/Saw/i_sawDecalEndPiece");
-            this.wallDecalMiddle = content.Load<Texture2D>("Assets/Sprites/Textures/Saw/i_sawDecalMiddlePiece");
+            this.wallDecalEnd = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalEndPiece");
+            this.wallDecalMiddle = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalMiddlePiece");
 
             if (_movementDirection == Direction.Horizontal)
             {
@@ -240,7 +240,7 @@ namespace GameLibrary.Objects
         protected override void SetUpPhysics(World world)
         {
             this.Body = BodyFactory.CreateCircle(world,
-                ConvertUnits.ToSimUnits(this.Texture.Width / 2),
+                ConvertUnits.ToSimUnits(this._texture.Width / 2),
                 ConvertUnits.ToSimUnits(_mass));
 
             this.Body.BodyType = BodyType.Dynamic;

@@ -37,6 +37,11 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideOverlay = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideCoordinates = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideMovementPath = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -94,11 +99,6 @@
             this.BUTTON_ALIGN_9 = new System.Windows.Forms.Button();
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewMenuHideOverlay = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewMenuHideGrid = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewMenuHideCoordinates = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewMenuHideMovementPath = new System.Windows.Forms.ToolStripMenuItem();
             this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -135,27 +135,27 @@
             this.saveToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -165,33 +165,72 @@
             this.undoToolStripMenuItem,
             this.redoToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // undoToolStripMenuItem
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(99, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ViewMenuHideOverlay,
+            this.ViewMenuHideGrid,
+            this.ViewMenuHideCoordinates,
+            this.ViewMenuHideMovementPath});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // ViewMenuHideOverlay
+            // 
+            this.ViewMenuHideOverlay.Name = "ViewMenuHideOverlay";
+            this.ViewMenuHideOverlay.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideOverlay.Text = "Hide Object Overlay";
+            this.ViewMenuHideOverlay.Click += new System.EventHandler(this.ViewMenuHideOverlay_Click);
+            // 
+            // ViewMenuHideGrid
+            // 
+            this.ViewMenuHideGrid.Name = "ViewMenuHideGrid";
+            this.ViewMenuHideGrid.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideGrid.Text = "Hide Grid";
+            this.ViewMenuHideGrid.Click += new System.EventHandler(this.ViewMenuHideGrid_Click);
+            // 
+            // ViewMenuHideCoordinates
+            // 
+            this.ViewMenuHideCoordinates.Name = "ViewMenuHideCoordinates";
+            this.ViewMenuHideCoordinates.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideCoordinates.Text = "Hide Coordinates";
+            this.ViewMenuHideCoordinates.Click += new System.EventHandler(this.ViewMenuHideCoordinates_Click);
+            // 
+            // ViewMenuHideMovementPath
+            // 
+            this.ViewMenuHideMovementPath.Name = "ViewMenuHideMovementPath";
+            this.ViewMenuHideMovementPath.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideMovementPath.Text = "Hide Movement Lines";
+            this.ViewMenuHideMovementPath.Click += new System.EventHandler(this.ViewMenuHideMovementPath_Click);
             // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // toolStrip1
@@ -217,7 +256,7 @@
             // toolStripLabel1
             // 
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(68, 22);
+            this.toolStripLabel1.Size = new System.Drawing.Size(75, 22);
             this.toolStripLabel1.Text = "Editor Mode:";
             // 
             // BUTTON_EDITOR_MODE_SELECT
@@ -285,7 +324,7 @@
             this.BUTTON_EDIT_ROOM.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_EDIT_ROOM.Image")));
             this.BUTTON_EDIT_ROOM.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.BUTTON_EDIT_ROOM.Name = "BUTTON_EDIT_ROOM";
-            this.BUTTON_EDIT_ROOM.Size = new System.Drawing.Size(111, 22);
+            this.BUTTON_EDIT_ROOM.Size = new System.Drawing.Size(122, 22);
             this.BUTTON_EDIT_ROOM.Text = "Edit Room Properties";
             this.BUTTON_EDIT_ROOM.Click += new System.EventHandler(this.BUTTON_EDIT_ROOM_Click);
             // 
@@ -300,7 +339,7 @@
             this.BUTTON_UNDO.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_UNDO.Image")));
             this.BUTTON_UNDO.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.BUTTON_UNDO.Name = "BUTTON_UNDO";
-            this.BUTTON_UNDO.Size = new System.Drawing.Size(36, 22);
+            this.BUTTON_UNDO.Size = new System.Drawing.Size(40, 22);
             this.BUTTON_UNDO.Text = "Undo";
             this.BUTTON_UNDO.ToolTipText = "Undo last action.";
             this.BUTTON_UNDO.Click += new System.EventHandler(this.BUTTON_UNDO_Click);
@@ -311,7 +350,7 @@
             this.BUTTON_REDO.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_REDO.Image")));
             this.BUTTON_REDO.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.BUTTON_REDO.Name = "BUTTON_REDO";
-            this.BUTTON_REDO.Size = new System.Drawing.Size(36, 22);
+            this.BUTTON_REDO.Size = new System.Drawing.Size(38, 22);
             this.BUTTON_REDO.Text = "Redo";
             this.BUTTON_REDO.ToolTipText = "Redo last undone action.";
             this.BUTTON_REDO.Click += new System.EventHandler(this.BUTTON_REDO_Click);
@@ -787,49 +826,15 @@
             this.panel2.Size = new System.Drawing.Size(898, 651);
             this.panel2.TabIndex = 13;
             // 
-            // viewToolStripMenuItem
-            // 
-            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ViewMenuHideOverlay,
-            this.ViewMenuHideGrid,
-            this.ViewMenuHideCoordinates,
-            this.ViewMenuHideMovementPath});
-            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
-            this.viewToolStripMenuItem.Text = "View";
-            // 
-            // ViewMenuHideOverlay
-            // 
-            this.ViewMenuHideOverlay.Name = "ViewMenuHideOverlay";
-            this.ViewMenuHideOverlay.Size = new System.Drawing.Size(175, 22);
-            this.ViewMenuHideOverlay.Text = "Hide Object Overlay";
-            this.ViewMenuHideOverlay.Click += new System.EventHandler(this.ViewMenuHideOverlay_Click);
-            // 
-            // ViewMenuHideGrid
-            // 
-            this.ViewMenuHideGrid.Name = "ViewMenuHideGrid";
-            this.ViewMenuHideGrid.Size = new System.Drawing.Size(175, 22);
-            this.ViewMenuHideGrid.Text = "Hide Grid";
-            this.ViewMenuHideGrid.Click += new System.EventHandler(this.ViewMenuHideGrid_Click);
-            // 
-            // ViewMenuHideCoordinates
-            // 
-            this.ViewMenuHideCoordinates.Name = "ViewMenuHideCoordinates";
-            this.ViewMenuHideCoordinates.Size = new System.Drawing.Size(175, 22);
-            this.ViewMenuHideCoordinates.Text = "Hide Coordinates";
-            this.ViewMenuHideCoordinates.Click += new System.EventHandler(this.ViewMenuHideCoordinates_Click);
-            // 
-            // ViewMenuHideMovementPath
-            // 
-            this.ViewMenuHideMovementPath.Name = "ViewMenuHideMovementPath";
-            this.ViewMenuHideMovementPath.Size = new System.Drawing.Size(175, 22);
-            this.ViewMenuHideMovementPath.Text = "Hide Movement Lines";
-            this.ViewMenuHideMovementPath.Click += new System.EventHandler(this.ViewMenuHideMovementPath_Click);
-            // 
             // xnA_RenderControl1
             // 
             this.xnA_RenderControl1.Camera = null;
+            this.xnA_RenderControl1.contentMan = null;
             this.xnA_RenderControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.xnA_RenderControl1.form1 = null;
+            this.xnA_RenderControl1.HideCoordinates = false;
+            this.xnA_RenderControl1.HideGrid = false;
+            this.xnA_RenderControl1.HideMovementPath = false;
             this.xnA_RenderControl1.HideOverlay = false;
             this.xnA_RenderControl1.levelBackground = null;
             this.xnA_RenderControl1.levelDimensions = new Microsoft.Xna.Framework.Vector2(0F, 0F);

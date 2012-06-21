@@ -91,11 +91,11 @@ namespace GameLibrary.Objects.Triggers
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            Texture = content.Load<Texture2D>(_textureAsset);
+            this._texture = content.Load<Texture2D>(_textureAsset);
 
             base.Load(content, world);
 
-            _rotation = SpinAssist.RotationByOrientation(_orientation);
+            this._rotation = SpinAssist.RotationByOrientation(_orientation);
         }
         #endregion
 
@@ -113,7 +113,7 @@ namespace GameLibrary.Objects.Triggers
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Texture, this.Position, null, _tint, this._rotation, new Vector2(Texture.Width / 2, Texture.Height), 1.0f, SpriteEffects.None, zLayer);
+            sb.Draw(this._texture, this._position, null, _tint, this._rotation, new Vector2(this._texture.Width / 2, this._texture.Height), 1.0f, SpriteEffects.None, this.zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)

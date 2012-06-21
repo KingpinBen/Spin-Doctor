@@ -159,10 +159,27 @@ namespace SpinEditor
                 #region Draw PhysicsObjects and Decals
                 if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count > 0)
                 {
-                    
                     for (int i = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i > 0; i--)
                     {
                         STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Draw(spriteBatch);
+
+                        #region Selection Draw
+                        if (!HideOverlay && STATIC_EDITOR_MODE.selectedObjectIndices.Count > 0)
+                        {
+                            for (int j = 0; j < STATIC_EDITOR_MODE.selectedObjectIndices.Count; j++)
+                            {
+                                if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Type == OBJECT_TYPE.Physics)
+                                {
+                                    if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i - 1)
+                                    {
+                                        spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Position,
+                                            new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Width, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Height),
+                                            Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Origin, 1.0f, SpriteEffects.None, 0.0f);
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
                     }
                 }
 
@@ -171,30 +188,27 @@ namespace SpinEditor
                     for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
                     {
                         STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Draw(spriteBatch);
+
+                        #region Selection Draw
+                        if (!HideOverlay && STATIC_EDITOR_MODE.selectedObjectIndices.Count > 0)
+                        {
+                            for (int j = 0; j < STATIC_EDITOR_MODE.selectedObjectIndices.Count; j++)
+                            {
+                                if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Type == OBJECT_TYPE.Decal)
+                                {
+                                    if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i - 1)
+                                    {
+                                        spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[j].Position,
+                                            new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[j].Width, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[j].Height),
+                                            Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[j].Origin, 1.0f, SpriteEffects.None, 0.0f);
+                                    }
+                                }
+                            }
+                        }
+                        #endregion
                     }
                 }
 
-                #endregion
-
-                #region Draw Selection Overlay
-                if (!HideOverlay)
-                {
-                    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-                    {
-                        if (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type == OBJECT_TYPE.Physics)
-                        {
-                            spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position,
-                                        new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height),
-                                        Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Origin, 1.0f, SpriteEffects.None, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].zLayer + 0.01f);
-                        }
-                        else if (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type == OBJECT_TYPE.Decal)
-                        {
-                            spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position,
-                                        new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height),
-                                        Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Origin, 1.0f, SpriteEffects.None, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].ZLayer + 0.01f);
-                        }
-                    }
-                }
                 #endregion
 
                 spriteBatch.End();

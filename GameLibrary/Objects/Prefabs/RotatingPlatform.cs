@@ -81,16 +81,15 @@ namespace GameLibrary.Objects
         /// </summary>
         public override void Load(ContentManager content, World world)
         {
-            this.Texture = content.Load<Texture2D>(this._textureAsset);
-            this.Width = this.Texture.Width;
-            this.Height = this.Texture.Height;
-#if EDITOR
-            return;
-
-#endif
-      
-            SetUpPhysics(world);
+            this._texture = content.Load<Texture2D>(this._textureAsset);
+            this.Width = this._texture.Width;
+            this.Height = this._texture.Height;
             GetRotationFromOrientation();
+#if EDITOR
+
+#else
+            SetUpPhysics(world);
+#endif
         }
         #endregion
 
@@ -108,9 +107,11 @@ namespace GameLibrary.Objects
         #endregion
 
 #if EDITOR
+
+#else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this.Texture, this.Position, null, this.Tint, TextureRotation, new Vector2(this.Texture.Width / 2, this.Texture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
         }
 #endif
 
@@ -131,7 +132,7 @@ namespace GameLibrary.Objects
              * unfortunately may need redoing again.
              */
 
-            TexVertOutput input = SpinAssist.TexToVert(world, this.Texture, ConvertUnits.ToSimUnits(this._mass));
+            TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass));
 
             this.Origin = input.Origin;
 

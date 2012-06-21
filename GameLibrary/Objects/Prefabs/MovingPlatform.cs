@@ -48,18 +48,22 @@ namespace GameLibrary.Objects
         {
             base.Init(position, width, height, tex);
 
-            this.MovementDirection = Direction.Horizontal;
-            this.EndPosition = this.Position;
-            this.StartsMoving = false;
-            this.MotorSpeed = 3.0f;
+            this._movementDirection = Direction.Horizontal;
+            this._endPosition = this.Position;
+            this._startsMoving = false;
+            this._motorSpeed = 3.0f;
         }
 
         public override void Load(ContentManager content, World world)
         {
-            this.Texture = content.Load<Texture2D>(_textureAsset);
-            this.Origin = new Vector2(this.Texture.Width / 2, this.Texture.Height / 2);
+            this._texture = content.Load<Texture2D>(_textureAsset);
+            this.Origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
 
+#if EDITOR
+
+#else
             SetUpPhysics(world);
+#endif
         }
 
         public override void Update(GameTime gameTime)

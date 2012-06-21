@@ -282,12 +282,14 @@ namespace GameLibrary.Objects
         {
             _content.Unload();
 
-            Texture2D running = _content.Load<Texture2D>("Assets/Sprites/Spritesheets/Running-Sheet");
-            Texture2D idle = _content.Load<Texture2D>("Assets/Sprites/Spritesheets/Idle1-Sheet");
-            Texture2D falling = _content.Load<Texture2D>("Assets/Sprites/Spritesheets/Falling-Sheet");
-            Texture2D jumping = _content.Load<Texture2D>("Assets/Sprites/Spritesheets/New-Jump-SHEET-");
-            Texture2D climbing = _content.Load<Texture2D>("Assets/Sprites/Spritesheets/Ladder-Sheet");
-            Texture2D death = _content.Load<Texture2D>("Assets/Sprites/Spritesheets/DeathSpriteSheet");
+            string spriteSheetLocation = "Assets/Images/Spritesheets/";
+
+            Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "Running-Sheet");
+            Texture2D idle = _content.Load<Texture2D>(spriteSheetLocation + "Idle1-Sheet");
+            Texture2D falling = _content.Load<Texture2D>(spriteSheetLocation + "Falling-Sheet");
+            Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "New-Jump-SHEET-");
+            Texture2D climbing = _content.Load<Texture2D>(spriteSheetLocation + "Ladder-Sheet");
+            Texture2D death = _content.Load<Texture2D>(spriteSheetLocation + "DeathSpriteSheet");
 
             CurrentAnimationName = "Run";
             Animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));

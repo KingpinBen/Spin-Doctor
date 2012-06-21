@@ -89,19 +89,19 @@ namespace GameLibrary.Drawing
             switch (roomType)
             {
                 case RoomThemeEnum.General:
-                    this._roomShell = content.Load<Texture2D>("Assets/Sprites/Textures/RoomSetup/RingWood");
+                    this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
                     break;
 
                 case RoomThemeEnum.Industrial:
-                    this._roomShell = content.Load<Texture2D>("Assets/Sprites/Textures/RoomSetup/RingWood");
+                    this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
                     break;
 
                 case RoomThemeEnum.Medical:
-                    this._roomShell = content.Load<Texture2D>("Assets/Sprites/Textures/RoomSetup/RingWood");
+                    this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
                     break;
 
                 case RoomThemeEnum.Study:
-                    this._roomShell = content.Load<Texture2D>("Assets/Sprites/Textures/RoomSetup/RingWood");
+                    this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
                     break;
             }
         }

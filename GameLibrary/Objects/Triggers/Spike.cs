@@ -23,12 +23,12 @@ namespace GameLibrary.Objects.Triggers
         {
             base.Init(position, width, height, tex);
             this.ShowHelp = false;
-            this.Message = "NOT USED.";
+            this._message = "NOT USED.";
         }
 
         public override void Load(ContentManager content, World world)
         {
-            this.Texture = content.Load<Texture2D>(_textureAsset);
+            this._texture = content.Load<Texture2D>(_textureAsset);
 
 #if EDITOR
             return;
@@ -37,15 +37,23 @@ namespace GameLibrary.Objects.Triggers
 #endif
         }
 
+        #region Draw
+#if EDITOR
+
+#else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this.Texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
+            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
                 null, Tint, this.Body.Rotation, Origin, 1.0f, SpriteEffects.None, zLayer);
         }
+#endif
+        #endregion
+
+        #region Private Methods
 
         protected override void SetUpTrigger(World world)
         {
-            TexVertOutput input = SpinAssist.TexToVert(world, this.Texture, ConvertUnits.ToSimUnits(this._mass));
+            TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass));
 
             this.Origin = input.Origin;
 
@@ -59,6 +67,7 @@ namespace GameLibrary.Objects.Triggers
             this.Body.OnSeparation += Body_OnSeparation;
         }
 
+        #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
             if (!TouchingFixtures.Contains(fixtureB))
@@ -81,5 +90,8 @@ namespace GameLibrary.Objects.Triggers
                 TouchingFixtures.Remove(fixtureB);
             }
         }
+        #endregion
+
+        #endregion
     }
 }

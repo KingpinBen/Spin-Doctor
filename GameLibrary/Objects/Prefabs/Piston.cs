@@ -107,15 +107,15 @@ namespace GameLibrary.Objects
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            Texture = content.Load<Texture2D>(_textureAsset);
+            this._texture = content.Load<Texture2D>(_textureAsset);
 
             firstBodyTexture = content.Load<Texture2D>(firstBodyTexAsset);
             secondBodyTexture = content.Load<Texture2D>(secondBodyTexAsset);
             endBodyTexture = content.Load<Texture2D>(endBodyTexAsset);
 
 #if EDITOR
-            this._width = Texture.Width;
-            this._height = Texture.Height;
+            this._width = this._texture.Width;
+            this._height = this._texture.Height;
             return;
 #else
             this.CreateBodies(world);
@@ -152,9 +152,9 @@ namespace GameLibrary.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-                sb.Draw(Texture, Position, null,
-                Color.White, this.Body.Rotation, this.Origin, 1.0f,
-                SpriteEffects.None, zLayer);
+            sb.Draw(this._texture, _position, null,
+                this._tint, this.Body.Rotation, this._origin, 1.0f,
+                SpriteEffects.None, this.zLayer);
         }
 
 #else

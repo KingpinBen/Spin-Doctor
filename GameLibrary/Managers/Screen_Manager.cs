@@ -86,8 +86,7 @@ namespace GameLibrary.Managers
             : base(game)
         {
             Game = game;
-            Content = new ContentManager(game.Services);
-            Content.RootDirectory = "Content";
+            Content = new ContentManager(game.Services, "Content");
         }
         #endregion
 

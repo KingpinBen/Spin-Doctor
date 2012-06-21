@@ -130,14 +130,18 @@ namespace GameLibrary.Objects
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            this.Texture = content.Load
-                <Texture2D>(this._textureAsset);
+            this._texture = content.Load<Texture2D>(this._textureAsset);
             this._origin = new Vector2
-                (Texture.Width / 2, Texture.Height);
+                (this._texture.Width / 2, this._texture.Height);
 
-            this.SetUpTrigger(world);
             this.GetRotationFromOrientation();
+
+#if EDITOR
+
+#else
+            this.SetUpTrigger(world);
             this.CreateSprite(content);
+#endif
         }
         #endregion
 
@@ -187,7 +191,7 @@ namespace GameLibrary.Objects
         #region Draw
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(Texture, Position, null, _tint, this.TextureRotation, Origin, 1f, SpriteEffects.None, zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, this._origin, 1f, SpriteEffects.None, this.zLayer);
 
 #if Development
             sb.DrawString(Fonts.DebugFont, "Count: " + TouchingFixtures.Count, this.Position + new Vector2(0, 50), Color.Red);
@@ -236,7 +240,7 @@ namespace GameLibrary.Objects
         protected override void SetUpTrigger(World world)
         {
             Vector2 bodyPos = Vector2.Zero;
-            bodyPos.Y -= this.Texture.Height + (_height / 2);
+            bodyPos.Y -= this._texture.Height + (_height / 2);
             bodyPos = SpinAssist.ModifyVectorByOrientation(bodyPos, _orientation);
 
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height), 1.0f); 

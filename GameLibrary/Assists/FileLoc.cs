@@ -8,7 +8,7 @@ namespace GameLibrary.Assists
     public static class FileLoc
     {
         private static string LevelLoc = "Content/Assets/Other/Xml/level";
-        private static string blankPixel = "Assets/Sprites/Basics/BlankPixel";
+        private static string blankPixel = "Assets/Images/Basics/BlankPixel";
         private static string devTexture = "Assets/Other/Dev/Trigger";
 
         public static string Level(int levelID)

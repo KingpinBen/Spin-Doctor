@@ -153,11 +153,11 @@ namespace GameLibrary.Drawing
         {
             get
             {
-                return this._levelBackdrop.Tint;
+                return this._backgroundTint;
             }
             set
             {
-                this._levelBackdrop.Tint = value;
+                this._backgroundTint = value;
             }
         }
 #else
@@ -218,12 +218,13 @@ namespace GameLibrary.Drawing
         {
             this.physicsObjectsList = new List<PhysicsObject>();
             this._decalManager = new Decal_Manager();
-            this._levelBackdrop = new LevelBackdrop();
+            
         }
 
         public void Init()
         {
             this._content = new ContentManager(Screen_Manager.Game.Services, "Content");
+            this._levelBackdrop = new LevelBackdrop();
             this._player = Player.Instance;
             this._initialized = false;
 

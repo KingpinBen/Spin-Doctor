@@ -101,6 +101,163 @@ namespace GameLibrary.Objects
 
         #region Properties
 
+#if EDITOR
+        [ContentSerializerIgnore]
+        public virtual Vector2 Position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+                _position = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual float Height
+        {
+            get
+            {
+                if (_orientation == Orientation.Up || _orientation == Orientation.Down)
+                    return _height;
+                return _width;
+            }
+            set
+            {
+                if (_orientation == Orientation.Up || _orientation == Orientation.Down)
+                    _height = value;
+                else
+                    _height = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual float Width
+        {
+            get
+            {
+                if (_orientation == Orientation.Up || _orientation == Orientation.Down)
+                    return _width;
+                return _height;
+            }
+            set
+            {
+                if (_orientation == Orientation.Up || _orientation == Orientation.Down)
+                    _width = value;
+                else
+                    _height = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual float Mass
+        {
+            get
+            {
+                return _mass;
+            }
+            set
+            {
+                _mass = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual string AssetLocation
+        {
+            get
+            {
+                return _textureAsset;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual Vector2 Origin
+        {
+            get
+            {
+                return new Vector2(this.Width / 2, this.Height / 2);
+            }
+            protected set
+            {
+                _origin = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual Color Tint
+        {
+            get
+            {
+                return _tint;
+            }
+            set
+            {
+                _tint = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual float zLayer
+        {
+            get
+            {
+                return _zLayer;
+            }
+            set
+            {
+                _zLayer = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual float TextureRotation
+        {
+            get
+            {
+                if (_useBodyRotation)
+                    return 0;
+                return _rotation;
+            }
+            set
+            {
+                _rotation = MathHelper.ToRadians(value);
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual bool UseBodyRotation
+        {
+            get
+            {
+                return _useBodyRotation;
+            }
+#if EDITOR
+            set
+#else
+            protected set
+#endif
+            {
+                _useBodyRotation = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public virtual Orientation Orientation
+        {
+            get
+            {
+                return _orientation;
+            }
+            set
+            {
+                _orientation = value;
+                GetRotationFromOrientation();
+            }
+        }
+        [ContentSerializerIgnore]
+        public Texture2D Texture
+        {
+            get
+            {
+                return _texture;
+            }
+        }
+#else
+
+
         [ContentSerializerIgnore]
         public virtual Vector2 Position
         {
@@ -343,7 +500,8 @@ namespace GameLibrary.Objects
         //                _name = value;
         //            }
         //        }
-
+        
+#endif
         #endregion
 
         #region Construct and Initialize
@@ -392,9 +550,9 @@ namespace GameLibrary.Objects
         public virtual void Load(ContentManager content, World world)
         {
             if (this._textureAsset != "")
-                Texture = content.Load<Texture2D>(this._textureAsset);
+                _texture = content.Load<Texture2D>(this._textureAsset);
 
-            this._origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+            this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
 
             SetUpPhysics(world);
             //GetRotationFromOrientation();
@@ -425,7 +583,7 @@ namespace GameLibrary.Objects
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             //  Doesn't strech image. Tiles instead
-            spriteBatch.Draw(Texture, Position,
+            spriteBatch.Draw(_texture, Position,
                 new Rectangle(0, 0, (int)this.Width, (int)this.Height),
                 Tint, TextureRotation, new Vector2(this.Width / 2, this.Height / 2), 1f, SpriteEffects.None, zLayer);
         }

@@ -48,19 +48,19 @@ namespace SpinEditor
 
             STATIC_EDITOR_MODE.world = new World(new Vector2(0, 0));
             
-            //STATIC_EDITOR_MODE.levelInstance = new GameLibrary.Drawing.Level();
+            STATIC_EDITOR_MODE.levelInstance = new GameLibrary.Drawing.Level();
             STATIC_EDITOR_MODE.undoPhysObjArray = new PhysicsObject[STATIC_EDITOR_MODE.arrayMax][];
 
             lst_ObjectsUnderCursor = new List<ObjectIndex>();
 
             hScrollBar1.Minimum = -2000;
             vScrollBar1.Minimum = -2000;
-
             hScrollBar1.Maximum = 2000;
             vScrollBar1.Maximum = 2000;
 
             Handle_Property_Grid_Items();
 
+            //  Allows access to public methods from xna_renderControl, such as Update().
             xnA_RenderControl1.form1 = this;
         }
 
@@ -142,21 +142,10 @@ namespace SpinEditor
 
         public void Update(GameTime gameTime)
         {
-            STATIC_EDITOR_MODE.oldState = STATIC_EDITOR_MODE.keyState;
-            STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
+            CheckInput(gameTime);
 
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
-            {
-                SwitchToSelectMode();
-            }
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.W))
-            {
-                SwitchToMoveMode();
-            }
-            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.E))
-            {
-                SwitchToPlaceMode();
-            }
+            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count > 0)
+                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[0].Update(gameTime);
         }
 
         #region Create an Object
@@ -784,13 +773,15 @@ namespace SpinEditor
                         xnA_RenderControl1.bDoNotDraw = true;
                         STATIC_EDITOR_MODE.levelInstance = IntermediateSerializer.Deserialize<Level>(input, null);
 
+                        xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
+                        xnA_RenderControl1.levelDimensions = STATIC_EDITOR_MODE.levelInstance.RoomDimensions;
+
                         for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
                         {
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                         }
 
-                        xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
-                        xnA_RenderControl1.levelDimensions = STATIC_EDITOR_MODE.levelInstance.RoomDimensions;
+                        
                         xnA_RenderControl1.bDoNotDraw = false;
 
                         Update_undoArray();
@@ -2572,6 +2563,25 @@ namespace SpinEditor
             xnA_RenderControl1.Camera.Zoom = (float)ZOOM.Value / 100;
         }
         #endregion
+
+        void CheckInput(GameTime gameTime)
+        {
+            STATIC_EDITOR_MODE.oldState = STATIC_EDITOR_MODE.keyState;
+            STATIC_EDITOR_MODE.keyState = Keyboard.GetState();
+
+            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Q))
+            {
+                SwitchToSelectMode();
+            }
+            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.W))
+            {
+                SwitchToMoveMode();
+            }
+            if (STATIC_EDITOR_MODE.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.E))
+            {
+                SwitchToPlaceMode();
+            }
+        }
 
         #endregion
     }

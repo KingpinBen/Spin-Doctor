@@ -85,7 +85,7 @@ namespace GameLibrary.Objects
         {
             base.Load(content, world);
 
-            this.Texture = content.Load<Texture2D>(_textureAsset);
+            this._texture = content.Load<Texture2D>(_textureAsset);
 
             //LookAtMeSprite = new Sprite();
             //LookAtMeSprite.Init(new Point(64, 64), new Point(8, 4), -1);
@@ -94,7 +94,7 @@ namespace GameLibrary.Objects
             //LookAtMeSprite.Alpha = 0.7f;
             //LookAtMeSprite.Scale = 1.5f;
 
-            this._origin = new Vector2(Texture.Width / 2, Texture.Height / 2);
+            this._origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
         }
         #endregion
 
@@ -116,7 +116,7 @@ namespace GameLibrary.Objects
             if (!BeenCollected)
             {
                 //LookAtMeSprite.Draw(sb);
-                sb.Draw(Texture, Position, null, Color.White, 0f, Origin, 1f, SpriteEffects.None, 0.01f);
+                sb.Draw(this._texture, this._position, null, this._tint, 0f, this._origin, 1f, SpriteEffects.None, this.zLayer);
             }
 
             base.Draw(sb);
