@@ -48,7 +48,7 @@ namespace SpinEditor
 
             STATIC_EDITOR_MODE.world = new World(new Vector2(0, 0));
             
-            STATIC_EDITOR_MODE.levelInstance = new GameLibrary.Drawing.Level();
+            //STATIC_EDITOR_MODE.levelInstance = new GameLibrary.Drawing.Level();
             STATIC_EDITOR_MODE.undoPhysObjArray = new PhysicsObject[STATIC_EDITOR_MODE.arrayMax][];
 
             lst_ObjectsUnderCursor = new List<ObjectIndex>();
@@ -82,60 +82,7 @@ namespace SpinEditor
             Align_Relative.SelectedItem = "Last Selected";
             Rotate_Relative.SelectedItem = "As Group";
 
-            #region Room Setup Form
-            bool canContinue = false;
-            using (RoomSetupForm RoomForm = new RoomSetupForm())
-            {
-                while (!canContinue)
-                {
-                    DialogResult result = RoomForm.ShowDialog();
-                    switch (result)
-                    {
-                        case (System.Windows.Forms.DialogResult.Yes):
-                            {
-                                canContinue = OpenFile();
-                                if (!canContinue)
-                                    continue;
-
-                                xnA_RenderControl1.bDoNotDraw = false;
-                            }
-                            break;
-                        case (System.Windows.Forms.DialogResult.OK):
-                            {
-                                canContinue = RoomForm.CheckIfComplete();
-                                if (!canContinue)
-                                {
-                                    break;
-                                }
-
-                                STATIC_EDITOR_MODE.levelInstance = new GameLibrary.Drawing.Level();
-
-                                //  Generate the correct roomsize for the background for size comparison
-                                Vector2 alteredRoomSize = RoomForm.roomSize;
-                                //  multiply by one paper unit:
-                                alteredRoomSize *= 79;
-                                xnA_RenderControl1.levelDimensions = alteredRoomSize;
-                                STATIC_EDITOR_MODE.levelInstance.RoomDimensions = alteredRoomSize;
-
-                                Update_undoArray();
-                                STATIC_EDITOR_MODE.levelInstance.RoomType = RoomForm.roomType;
-
-                                //  Load the background texture and attach it to the level.
-                                STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
-
-
-                                xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
-                            }
-                            break;
-                        default:
-                            {
-                                Application.Exit();
-                            }
-                            break;
-                    }
-                }
-            }
-            #endregion
+            NewFile();
 
             if (STATIC_EDITOR_MODE.levelInstance != null)
             {
@@ -811,10 +758,121 @@ namespace SpinEditor
                 using (XmlWriter writer = XmlWriter.Create(saveFileDialog1.FileName, settings))
                 {
                     IntermediateSerializer.Serialize(writer, STATIC_EDITOR_MODE.levelInstance, null);
-                }                
-            }
+                }
 
-            return true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }            
+        }
+
+        #region Check if Open Level
+        /// <summary>
+        /// Checks if a level is currently open and if the client can continue.
+        /// </summary>
+        /// <returns>Is it safe to start a new level.</returns>
+        bool CheckIfOpenLevel()
+        {
+            if (STATIC_EDITOR_MODE.levelInstance != null)
+            {
+                DialogResult result = MessageBox.Show("You currently have an open level. Before you leave, would you like to save?", "Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button3);
+
+                if (result == DialogResult.Yes)
+                {
+                    //  Did it save?
+                    if (SaveFile())
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (result == System.Windows.Forms.DialogResult.No)
+                {
+                    if (MessageBox.Show("Are you sure?", "Are you sure", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+        #endregion
+
+        void NewFile()
+        {
+            if (CheckIfOpenLevel())
+            {
+                STATIC_EDITOR_MODE.levelInstance = new Level();
+                STATIC_EDITOR_MODE.selectedObjectIndices = new List<ObjectIndex>();
+
+                bool canContinue = false;
+                using (RoomSetupForm RoomForm = new RoomSetupForm())
+                {
+                    while (!canContinue)
+                    {
+                        DialogResult result = RoomForm.ShowDialog();
+                        switch (result)
+                        {
+                            case (DialogResult.Yes):
+                                {
+                                    canContinue = OpenFile();
+                                    if (!canContinue)
+                                        continue;
+
+                                    xnA_RenderControl1.bDoNotDraw = false;
+                                }
+                                break;
+                            case (DialogResult.OK):
+                                {
+                                    canContinue = RoomForm.CheckIfComplete();
+                                    if (!canContinue)
+                                    {
+                                        break;
+                                    }
+
+                                    //  Generate the correct roomsize for the background for size comparison
+                                    Vector2 alteredRoomSize = RoomForm.roomSize;
+                                    //  multiply by one paper unit:
+                                    alteredRoomSize *= 79;
+                                    xnA_RenderControl1.levelDimensions = alteredRoomSize;
+                                    STATIC_EDITOR_MODE.levelInstance.RoomDimensions = alteredRoomSize;
+
+                                    Update_undoArray();
+                                    STATIC_EDITOR_MODE.levelInstance.RoomType = RoomForm.roomType;
+
+                                    //  Load the background texture and attach it to the level.
+                                    STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
+
+
+                                    xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
+                                }
+                                break;
+                            default:
+                                {
+                                    canContinue = true;
+                                    Application.Exit();
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
         }
 
         void Handle_Property_Grid_Items()
@@ -2655,5 +2713,10 @@ namespace SpinEditor
         }
 
         #endregion
+
+        private void NewFileToolstripOption_Click(object sender, EventArgs e)
+        {
+            NewFile();
+        }
     }
 }

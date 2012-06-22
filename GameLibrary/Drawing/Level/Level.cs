@@ -166,7 +166,6 @@ namespace GameLibrary.Drawing
         {
             get { return _initialized; }
         }
-
         [ContentSerializerIgnore]
         public ContentManager Content
         {
