@@ -328,10 +328,6 @@ namespace SpinEditor
             }
         }
 
-        void BUTTON_UNDO_Click(object sender, EventArgs e) { Undo(); }
-        void BUTTON_REDO_Click(object sender, EventArgs e) { Redo(); }
-        void undoToolStripMenuItem_Click(object sender, EventArgs e) { Undo(); }
-        void redoToolStripMenuItem_Click(object sender, EventArgs e) { Redo(); }
         #endregion
 
         #region Events
@@ -363,26 +359,54 @@ namespace SpinEditor
 
         #region File
 
-        #region Save
+        private void NewFileToolstripOption_Click(object sender, EventArgs e)
+        {
+            NewFile();
+        }
+
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFile();
         }
-        #endregion
 
-        #region Open
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFile();
         }
-        #endregion
 
-        #region Exit
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
+
         #endregion
+
+        #region Edit
+
+        void BUTTON_UNDO_Click(object sender, EventArgs e)
+        {
+            Undo();
+        }
+
+        void BUTTON_REDO_Click(object sender, EventArgs e)
+        {
+            Redo();
+        }
+
+        void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Undo();
+        }
+
+        void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Redo();
+        }
+
+        void deselectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+        }
 
         #endregion
 
@@ -494,204 +518,6 @@ namespace SpinEditor
         }
 
         #endregion
-
-        #endregion
-
-        #region Input
-
-        void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
-        {
-            xnA_RenderControl1.UpdateCoOrds();
-
-            Point MousePos = get_mouse_vpos();
-
-            lst_ObjectsUnderCursor.Clear();
-
-            switch (STATIC_EDITOR_MODE.ED_MODE)
-            {
-                case EDITOR_MODE.SELECT:
-                    {
-                        #region Handle Objects Under Cursor
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
-                        {
-                            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].AssetLocation != null)
-                            {
-                                Rectangle BoundingBox = new Rectangle(
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width / 2),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height / 2),
-                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width,
-                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height);
-
-                                if (BoundingBox.Contains(MousePos))
-                                {
-                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Physics, i));
-                                }
-                            }
-                        }
-
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
-                        {
-                            if (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].AssetLocation != null)
-                            {
-                                Rectangle BoundingBox = new Rectangle(
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width / 2),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height / 2),
-                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width,
-                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height);
-
-                                if (BoundingBox.Contains(MousePos))
-                                {
-                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Decal, i));
-                                }
-                            }
-                        }
-
-                        //int topIndexZ = 0;
-                        //for (int j = 0; j < lst_ObjectsUnderCursor.Count; j++)
-                        //{
-                        //    if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[j]].zLayer > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[topIndexZ]].zLayer)
-                        //    {
-                        //        topIndexZ = j;
-                        //    }
-                        //}
-                        #endregion
-                    }
-                    break;
-                case EDITOR_MODE.MOVE:
-                    {
-                        #region Handle Moving Objects
-                        if (Is_Something_Selected())
-                        {
-                            for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0 && containsMouse == false; i--)
-                            {
-                                Microsoft.Xna.Framework.Rectangle newRect = new Microsoft.Xna.Framework.Rectangle();
-                                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-                                {
-                                    case (OBJECT_TYPE.Physics):
-                                        {
-                                            newRect = new Microsoft.Xna.Framework.Rectangle(
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
-                                        }
-                                        break;
-                                    case (OBJECT_TYPE.Decal):
-                                        {
-                                            newRect = new Microsoft.Xna.Framework.Rectangle(
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
-                                        }
-                                        break;
-                                }
-
-                                if (newRect.Contains(MousePos))
-                                {
-                                    containsMouse = true;
-                                }
-                            }
-
-                            if (containsMouse == true && Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
-                            {
-                                if (mouseDown != Vector2.Zero)
-                                {
-                                    Vector2 moveDis = new Vector2(get_mouse_vpos().X, get_mouse_vpos().Y);
-                                    moveDis -= mouseDown;
-                                    for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0; i--)
-                                    {
-                                        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-                                        {
-                                            case (OBJECT_TYPE.Physics):
-                                                {
-                                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
-                                                    Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
-                                                    if (t.BaseType == typeof(DynamicObject))
-                                                    {
-                                                        DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
-                                                        dyOb.EndPosition += moveDis;
-                                                        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index] = dyOb;
-                                                    }
-                                                }
-                                                break;
-                                            case (OBJECT_TYPE.Decal):
-                                                {
-                                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
-                                                }
-                                                break;
-                                        }
-                                    }
-                                    mouseDown = Vector2.Zero;
-                                }
-
-                                if (mouseDown == Vector2.Zero)
-                                {
-                                    mouseDown = new Vector2(get_mouse_vpos().X, get_mouse_vpos().Y);
-                                }
-
-                                dragReleased = false;
-                            }
-
-                            if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
-                            {
-                                mouseDown = Vector2.Zero;
-                                containsMouse = false;
-
-                                if (dragReleased == false)
-                                {
-                                    dragReleased = true;
-                                    Update_undoArray();
-                                    Handle_Property_Grid_Items();
-                                }
-                            }
-                        }
-                        #endregion
-                    }
-                    break;
-            }
-        }
-
-        void xnA_RenderControl1_MouseDown(object sender, MouseEventArgs e)
-        {
-            Microsoft.Xna.Framework.Point MousePos = get_mouse_vpos();
-            STATIC_EDITOR_MODE.keyboardCurrentState = Keyboard.GetState();
-
-            switch (STATIC_EDITOR_MODE.ED_MODE)
-            {
-                case EDITOR_MODE.SELECT:
-                    {
-                        if (lst_ObjectsUnderCursor.Count > 0)
-                        {
-                            //carry out depth tests or other logic here if we are mousing over more than one object
-                            if (STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
-                            {
-                                ShiftSelection();
-                            }
-                            else
-                            {
-                                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-                                STATIC_EDITOR_MODE.selectedObjectIndices.Add(lst_ObjectsUnderCursor[0]);
-                            }
-                        }
-                        else
-                        {
-                            //nothing under cursor so deselect any selected objects
-                            STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-                        }
-                    }
-                    break;
-                case EDITOR_MODE.PLACE:
-                    {
-                        CreateObject(listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString(), new Vector2(MousePos.X, MousePos.Y));
-
-                        Update_undoArray();
-                    }
-                    break;
-            }
-
-            Handle_Property_Grid_Items();
-        }
 
         #endregion
 
@@ -2643,26 +2469,202 @@ namespace SpinEditor
         }
         #endregion
 
-        void CheckInput(GameTime gameTime)
+        #endregion
+
+        #region User Input Methods
+
+        void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
         {
-            STATIC_EDITOR_MODE.mouseCurrentState = Mouse.GetState();
+            xnA_RenderControl1.UpdateCoOrds();
+
+            Point MousePos = get_mouse_vpos();
+
+            lst_ObjectsUnderCursor.Clear();
+
+            switch (STATIC_EDITOR_MODE.ED_MODE)
+            {
+                case EDITOR_MODE.SELECT:
+                    {
+                        #region Handle Objects Under Cursor
+                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+                        {
+                            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].AssetLocation != null)
+                            {
+                                Rectangle BoundingBox = new Rectangle(
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width / 2),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height / 2),
+                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width,
+                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height);
+
+                                if (BoundingBox.Contains(MousePos))
+                                {
+                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Physics, i));
+                                }
+                            }
+                        }
+
+                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
+                        {
+                            if (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].AssetLocation != null)
+                            {
+                                Rectangle BoundingBox = new Rectangle(
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width / 2),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height / 2),
+                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width,
+                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height);
+
+                                if (BoundingBox.Contains(MousePos))
+                                {
+                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Decal, i));
+                                }
+                            }
+                        }
+
+                        //int topIndexZ = 0;
+                        //for (int j = 0; j < lst_ObjectsUnderCursor.Count; j++)
+                        //{
+                        //    if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[j]].zLayer > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[topIndexZ]].zLayer)
+                        //    {
+                        //        topIndexZ = j;
+                        //    }
+                        //}
+                        #endregion
+                    }
+                    break;
+                case EDITOR_MODE.MOVE:
+                    {
+                        #region Handle Moving Objects
+                        if (Is_Something_Selected())
+                        {
+                            for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0 && containsMouse == false; i--)
+                            {
+                                Microsoft.Xna.Framework.Rectangle newRect = new Microsoft.Xna.Framework.Rectangle();
+                                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                                {
+                                    case (OBJECT_TYPE.Physics):
+                                        {
+                                            newRect = new Microsoft.Xna.Framework.Rectangle(
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
+                                        }
+                                        break;
+                                    case (OBJECT_TYPE.Decal):
+                                        {
+                                            newRect = new Microsoft.Xna.Framework.Rectangle(
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
+                                        }
+                                        break;
+                                }
+
+                                if (newRect.Contains(MousePos))
+                                {
+                                    containsMouse = true;
+                                }
+                            }
+
+                            if (containsMouse == true && Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+                            {
+                                if (mouseDown != Vector2.Zero)
+                                {
+                                    Vector2 moveDis = new Vector2(get_mouse_vpos().X, get_mouse_vpos().Y);
+                                    moveDis -= mouseDown;
+                                    for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0; i--)
+                                    {
+                                        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                                        {
+                                            case (OBJECT_TYPE.Physics):
+                                                {
+                                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
+                                                    Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
+                                                    if (t.BaseType == typeof(DynamicObject))
+                                                    {
+                                                        DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
+                                                        dyOb.EndPosition += moveDis;
+                                                        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index] = dyOb;
+                                                    }
+                                                }
+                                                break;
+                                            case (OBJECT_TYPE.Decal):
+                                                {
+                                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    mouseDown = Vector2.Zero;
+                                }
+
+                                if (mouseDown == Vector2.Zero)
+                                {
+                                    mouseDown = new Vector2(get_mouse_vpos().X, get_mouse_vpos().Y);
+                                }
+
+                                dragReleased = false;
+                            }
+
+                            if (Microsoft.Xna.Framework.Input.Mouse.GetState().LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
+                            {
+                                mouseDown = Vector2.Zero;
+                                containsMouse = false;
+
+                                if (dragReleased == false)
+                                {
+                                    dragReleased = true;
+                                    Update_undoArray();
+                                    Handle_Property_Grid_Items();
+                                }
+                            }
+                        }
+                        #endregion
+                    }
+                    break;
+            }
+        }
+
+        void xnA_RenderControl1_MouseDown(object sender, MouseEventArgs e)
+        {
+            Microsoft.Xna.Framework.Point MousePos = get_mouse_vpos();
             STATIC_EDITOR_MODE.keyboardCurrentState = Keyboard.GetState();
 
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Q))
+            switch (STATIC_EDITOR_MODE.ED_MODE)
             {
-                SwitchToSelectMode();
-            }
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.W))
-            {
-                SwitchToMoveMode();
-            }
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.E))
-            {
-                SwitchToPlaceMode();
+                case EDITOR_MODE.SELECT:
+                    {
+                        if (lst_ObjectsUnderCursor.Count > 0)
+                        {
+                            //carry out depth tests or other logic here if we are mousing over more than one object
+                            if (STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                            {
+                                ShiftSelection();
+                            }
+                            else
+                            {
+                                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                                STATIC_EDITOR_MODE.selectedObjectIndices.Add(lst_ObjectsUnderCursor[0]);
+                            }
+                        }
+                        else
+                        {
+                            //nothing under cursor so deselect any selected objects
+                            STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                        }
+                    }
+                    break;
+                case EDITOR_MODE.PLACE:
+                    {
+                        CreateObject(listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString(), new Vector2(MousePos.X, MousePos.Y));
+
+                        Update_undoArray();
+                    }
+                    break;
             }
 
-            STATIC_EDITOR_MODE.keyboardOldState = STATIC_EDITOR_MODE.keyboardCurrentState;
-            STATIC_EDITOR_MODE.mouseOldState = STATIC_EDITOR_MODE.mouseCurrentState;
+            Handle_Property_Grid_Items();
         }
 
         void XNA_RenderControl_MouseWheel(object sender, MouseEventArgs e)
@@ -2705,6 +2707,28 @@ namespace SpinEditor
             }
         }
 
+        void CheckInput(GameTime gameTime)
+        {
+            STATIC_EDITOR_MODE.mouseCurrentState = Mouse.GetState();
+            STATIC_EDITOR_MODE.keyboardCurrentState = Keyboard.GetState();
+
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Q))
+            {
+                SwitchToSelectMode();
+            }
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.W))
+            {
+                SwitchToMoveMode();
+            }
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.E))
+            {
+                SwitchToPlaceMode();
+            }
+
+            STATIC_EDITOR_MODE.keyboardOldState = STATIC_EDITOR_MODE.keyboardCurrentState;
+            STATIC_EDITOR_MODE.mouseOldState = STATIC_EDITOR_MODE.mouseCurrentState;
+        }
+
         bool CheckNewKey(Microsoft.Xna.Framework.Input.Keys key)
         {
             if (STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(key) && STATIC_EDITOR_MODE.keyboardOldState.IsKeyUp(key))
@@ -2714,9 +2738,6 @@ namespace SpinEditor
 
         #endregion
 
-        private void NewFileToolstripOption_Click(object sender, EventArgs e)
-        {
-            NewFile();
-        }
+        
     }
 }

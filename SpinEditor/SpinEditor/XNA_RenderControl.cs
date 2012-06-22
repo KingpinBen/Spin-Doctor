@@ -196,11 +196,11 @@ namespace SpinEditor
                             {
                                 if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Type == OBJECT_TYPE.Decal)
                                 {
-                                    if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i - 1)
+                                    if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i)
                                     {
-                                        spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[j].Position,
-                                            new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[j].Width, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[j].Height),
-                                            Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[j].Origin, 1.0f, SpriteEffects.None, 0.0f);
+                                        spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position,
+                                            new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height),
+                                            Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Origin, 1.0f, SpriteEffects.None, 0.0f);
                                     }
                                 }
                             }
