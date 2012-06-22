@@ -73,8 +73,27 @@ namespace GameLibrary.Objects
                 enumDirection = value;
             }
         }
+        [ContentSerializerIgnore]
+        public override string Message
+        {
+            get
+            {
+                return _message;
+            }
+            set
+            {
+            }
+        }
 #else
-
+        [ContentSerializerIgnore]
+        public override string Message
+        {
+            get
+            {
+                return _message;
+            }
+            protected set { }
+        }
         [ContentSerializerIgnore]
         public bool AboutToRotate
         {
@@ -97,16 +116,6 @@ namespace GameLibrary.Objects
             }
         }
 #endif
-
-        [ContentSerializerIgnore]
-        public override string Message
-        {
-            get
-            {
-                return _message;
-            }
-            protected set { }
-        }
 
         #endregion
 

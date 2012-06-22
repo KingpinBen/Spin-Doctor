@@ -241,12 +241,12 @@ namespace GameLibrary.Objects
 #if EDITOR
             
 #else
-            if (_orientation == Direction.Vertical && (Camera.UpIs == upIs.Left || Camera.UpIs == upIs.Right))
+            if (_orientation == Direction.Vertical && (Camera.UpIs == UpIs.Left || Camera.UpIs == UpIs.Right))
             {
                 return;
             }
 
-            if (_orientation == Direction.Horizontal && (Camera.UpIs == upIs.Up || Camera.UpIs == upIs.Down))
+            if (_orientation == Direction.Horizontal && (Camera.UpIs == UpIs.Up || Camera.UpIs == UpIs.Down))
             {
                 return;
             }

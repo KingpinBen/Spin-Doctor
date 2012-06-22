@@ -103,16 +103,16 @@ namespace GameLibrary.Assists
 
             switch (Camera.UpIs)
             {
-                case upIs.Up:
+                case UpIs.Up:
                     tempVec = new Vector2(inVector.X, inVector.Y);
                     break;
-                case upIs.Down:
+                case UpIs.Down:
                     tempVec = new Vector2(-inVector.X, -inVector.Y);
                     break;
-                case upIs.Left:
+                case UpIs.Left:
                     tempVec = new Vector2(-inVector.Y, -inVector.X);
                     break;
-                case upIs.Right:
+                case UpIs.Right:
                     tempVec = new Vector2(inVector.Y, inVector.X);
                     break;
             }

@@ -118,6 +118,8 @@
     <Compile Include="Assists\TexVertOutput.cs" />
     <Compile Include="Drawing\Camera.cs" />
     <Compile Include="Drawing\AnimatedText.cs" />
+    <Compile Include="Drawing\Camera\CameraType.cs" />
+    <Compile Include="Drawing\Camera\WheresUp.cs" />
     <Compile Include="Drawing\Decal.cs" />
     <Compile Include="Drawing\FrameAnimation.cs" />
     <Compile Include="Drawing\FullscreenPicture.cs" />
@@ -129,6 +131,7 @@
     <Compile Include="Managers\Particle_Manager.cs" />
     <Compile Include="Managers\Sprite_Manager.cs" />
     <Compile Include="Objects\DynamicObject.cs" />
+    <Compile Include="Objects\Orientation.cs" />
     <Compile Include="Objects\Prefabs\BouncePad.cs" />
     <Compile Include="Objects\Prefabs\Collectable.cs" />
     <Compile Include="Drawing\Level\Level.cs" />

@@ -226,7 +226,7 @@ namespace SpinEditor
                     case "Piston":
                         {
                             Piston piston = new Piston();
-                            piston.Init(Position, texloc0, texloc1, texloc2, texloc3);
+                            piston.Init(Position, texloc0, texloc1);
                             piston.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                             STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(piston);
                         }

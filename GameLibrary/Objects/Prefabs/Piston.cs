@@ -52,39 +52,103 @@ namespace GameLibrary.Objects
         /// We can't use fixtures and only 1 body unfortunately as all the
         /// bodies will be joined with joints.
         /// </summary>
-        /// 
+        
+#if EDITOR
+        private Texture2D _devTexture;
+#else
         protected Body firstBody;
         protected Body secondBody;
         protected Body endBody;
 
         protected Texture2D firstBodyTexture;
         protected Texture2D secondBodyTexture;
-        protected Texture2D endBodyTexture;
-
+        
         protected FixedPrismaticJoint secondBodyJoint;
         protected FixedPrismaticJoint firstBodyJoint;
+#endif
 
-        [ContentSerializer]
-        private string firstBodyTexAsset;
-        [ContentSerializer]
-        private string secondBodyTexAsset;
+        private Texture2D endBodyTexture;
         [ContentSerializer]
         private string endBodyTexAsset;
+        [ContentSerializer]
+        private bool _isLethal;
 
         #endregion
 
         #region Properties
+#if EDITOR
         [ContentSerializerIgnore]
         public new Vector2 EndPosition
         {
-            get { return _endPosition; }
-
+            get
+            {
+                return _position;
+            }
             //  Internal as the end point should be calculated on texture size.
             internal set
             {
                 _endPosition = value;
             }
         }
+        [ContentSerializerIgnore]
+        public bool IsLethal
+        {
+            get
+            {
+                return _isLethal;
+            }
+            set
+            {
+                _isLethal = value;
+            }
+        }
+        public override Orientation Orientation
+        {
+            get
+            {
+                return base.Orientation;
+            }
+            set
+            {
+                base.Orientation = value;
+
+                if (value == Orientation.Down || value == Orientation.Up)
+                {
+                    _movementDirection = Direction.Vertical;
+                }
+                else
+                {
+                    _movementDirection = Direction.Horizontal;
+                }
+
+            }
+        }
+
+        public override Direction MovementDirection
+        {
+            get
+            {
+                return base.MovementDirection;
+            }
+            set
+            {
+            }
+        }
+#else
+        [ContentSerializerIgnore]
+        public new Vector2 EndPosition
+        {
+            get
+            {
+                return _endPosition;
+            }
+            //  Internal as the end point should be calculated on texture size.
+            internal set
+            {
+                _endPosition = value;
+            }
+        }
+#endif
 
         #endregion
 
@@ -94,13 +158,16 @@ namespace GameLibrary.Objects
         {
         }
 
-        public void Init(Vector2 position, string texLoc0, string texLoc1, string texLoc2, string texLoc3)
+        public void Init(Vector2 position, string basePiece, string endPiece)
         {
-            this._position = position;
-            this._textureAsset = texLoc0;
-            this.firstBodyTexAsset = texLoc1;
-            this.secondBodyTexAsset = texLoc2;
-            this.endBodyTexAsset = texLoc3;
+            base.Init(position, basePiece);
+
+            this.endBodyTexAsset = endPiece;
+            this._mass = 100f;
+            this._motorSpeed = 5.0f;
+            this._startsMoving = true;
+            this._timeToReverse = 1.5f;
+            this._endPosition = position;
         }
         #endregion
 
@@ -108,16 +175,20 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
-
-            firstBodyTexture = content.Load<Texture2D>(firstBodyTexAsset);
-            secondBodyTexture = content.Load<Texture2D>(secondBodyTexAsset);
-            endBodyTexture = content.Load<Texture2D>(endBodyTexAsset);
+            this.endBodyTexture = content.Load<Texture2D>(endBodyTexAsset);
 
 #if EDITOR
-            this._width = this._texture.Width;
-            this._height = this._texture.Height;
-            return;
+            if (_width == 0 || _height == 0)
+            {
+                this._width = this._texture.Width;
+                this._height = this._texture.Height;
+            }
+
+            _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
+            firstBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston2");
+            secondBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston1");
+
             this.CreateBodies(world);
             this._isMoving = this.StartsMoving;
 
@@ -153,10 +224,9 @@ namespace GameLibrary.Objects
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(this._texture, _position, null,
-                this._tint, this.Body.Rotation, this._origin, 1.0f,
+                this._tint, this.TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1.0f,
                 SpriteEffects.None, this.zLayer);
         }
-
 #else
         public override void Draw(SpriteBatch sb)
         {
@@ -179,8 +249,8 @@ namespace GameLibrary.Objects
             //  TODO : Replace the rectangle sizes when we have a final end piece texture. + SpinAssist.ModifyVectorByOrientation(new Vector2(0, 5), this._orientation)
             sb.Draw(endBodyTexture, ConvertUnits.ToDisplayUnits(this.endBody.Position),
                 null, _tint, this.endBody.Rotation,
-                this.Origin,
-                0.98f, SpriteEffects.None, zLayer + 0.03f);
+                this._origin,
+                1.0f, SpriteEffects.None, zLayer + 0.03f);
 
 #if Development
             //  The length of the limit can be set for pixels if it's entered as sim'd units.
@@ -205,7 +275,6 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-
             Vector2 baseTexture = new Vector2(ConvertUnits.ToSimUnits(this.Texture.Width), ConvertUnits.ToSimUnits(this.Texture.Height));
             Vector2 Texture1 = new Vector2(ConvertUnits.ToSimUnits(this.firstBodyTexture.Width), ConvertUnits.ToSimUnits(this.firstBodyTexture.Height));
             Vector2 Texture2 = new Vector2(ConvertUnits.ToSimUnits(this.secondBodyTexture.Width), ConvertUnits.ToSimUnits(this.secondBodyTexture.Height));

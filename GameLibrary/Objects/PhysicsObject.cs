@@ -45,17 +45,6 @@ using FarseerPhysics.Dynamics.Contacts;
 
 namespace GameLibrary.Objects
 {
-    public enum Orientation
-    {
-        Up, Down, Left, Right
-    }
-
-    public enum Direction
-    {
-        Horizontal,
-        Vertical
-    }
-
     public class PhysicsObject
     {
         #region Fields
@@ -457,7 +446,7 @@ namespace GameLibrary.Objects
             this._textureAsset = tex;
             this._mass = 20;
             this.Tint = Color.White;
-            this._zLayer = 0.1f;
+            this._zLayer = 0.2f;
         }
         #endregion
 

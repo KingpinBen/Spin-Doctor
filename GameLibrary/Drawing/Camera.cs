@@ -37,23 +37,11 @@ using GameLibrary.Objects;
 using GameLibrary.Assists;
 using Microsoft.Xna.Framework.Graphics;
 using GameLibrary.Managers;
-
+using GameLibrary.Screens;
 #endregion
 
 namespace GameLibrary.Drawing
 {
-    public enum cameraType
-    {
-        Level,
-        Focus,
-        Free
-    }
-
-    public enum upIs
-    {
-        Up, Down, Left, Right
-    }
-
     public static class Camera
     {
         #region Fields
@@ -77,6 +65,7 @@ namespace GameLibrary.Drawing
 
         #region Properties
 
+        #region Does Level Rotate?
         /// <summary>
         /// Is the level able to rotate?
         /// 
@@ -89,7 +78,9 @@ namespace GameLibrary.Drawing
                 return _levelRotates;
             }
         }
+        #endregion
 
+        #region Allow Rotation
         public static bool AllowRotation
         {
             get
@@ -102,7 +93,9 @@ namespace GameLibrary.Drawing
                 _allowLevelRotation = value;
             }
         }
+        #endregion
 
+        #region Is Level rotating?
         /// <summary>
         /// Is the level currently rotating?
         /// 
@@ -113,10 +106,14 @@ namespace GameLibrary.Drawing
         {
             get { return _levelRotating; }
         }
+        #endregion
 
         public static Vector2 WorldGravity
         {
-            get { return _worldGravity; }
+            get
+            {
+                return _worldGravity;
+            }
             set
             {
                 _worldGravity = value;
@@ -133,8 +130,9 @@ namespace GameLibrary.Drawing
             get { return _cameraPosition; }
         }
 
-        public static cameraType CameraType { get; internal set; }
+        public static CameraType CameraType { get; internal set; }
 
+        #region Able to rotate Delay
         /// <summary>
         /// Delay timer for the rotation.
         /// 
@@ -144,7 +142,9 @@ namespace GameLibrary.Drawing
         {
             get { return _rotateDelayTimer; }
         }
+        #endregion
 
+        #region Current Rotation
         /// <summary>
         /// Current world rotation.
         /// 
@@ -154,7 +154,9 @@ namespace GameLibrary.Drawing
         {
             get { return _worldRotation; }
         }
+        #endregion
 
+        #region Zoom
         /// <summary>
         /// Global zoom.
         /// 
@@ -168,7 +170,9 @@ namespace GameLibrary.Drawing
                 _currentCameraZoom = value;
             }
         }
+        #endregion
 
+        #region Level Size Zoom
         /// <summary>
         /// Holds the particular level target zoom. The normal zoom will probably
         /// or could change during the game/level so it's important for that it's held
@@ -185,13 +189,17 @@ namespace GameLibrary.Drawing
                 _fullLevelZoom = value;
             }
         }
+        #endregion
 
+        #region Rotation still to add
         public static float RotationToAdd
         {
             get { return _rotationToAdd; }
         }
+        #endregion
 
-        public static upIs UpIs { get; internal set; }
+        public static UpIs UpIs { get; internal set; }
+
         public static float LevelDiameter
         {
             get
@@ -207,14 +215,14 @@ namespace GameLibrary.Drawing
         {
             _levelRotates = levelCanRotate;
             AllowRotation = _levelRotates;
-            UpIs = upIs.Up;
+            UpIs = UpIs.Up;
             _largestLevelDimension = LargestLevelDimension;
             //  1000.0f needs to be either the levels width or height
             //  whichever is larger. Pass in by parameter.
             _currentCameraZoom = (Screen_Manager.Viewport.Y / 2.0f) / (LargestLevelDimension * largestDimensionModifier);
             _fullLevelZoom = Zoom;
 
-            CameraType = cameraType.Free;
+            CameraType = CameraType.Free;
             _worldRotation = 0.0f;
             _cameraPosition = LevelOrigin;
             _rotateDelayTimer = 0;
@@ -228,14 +236,14 @@ namespace GameLibrary.Drawing
 
             HandleRotation(gameTime);
 
-            if (CameraType == cameraType.Level && Position != LevelOrigin)
+            if (CameraType == CameraType.Level && Position != LevelOrigin)
             {
                 //  TODO:
                 //  Chase vector from current camera position to Level Origin
 
                 _cameraPosition = LevelOrigin;
             }
-            else if (CameraType == cameraType.Focus)
+            else if (CameraType == CameraType.Focus)
             {
                 //  TODO:
                 //  Create a variablee for target focus.
@@ -244,7 +252,7 @@ namespace GameLibrary.Drawing
             }
 
             #region Free Camera (Development)
-            else if (CameraType == cameraType.Free)
+            else if (CameraType == CameraType.Free)
             {
                 if (Input.GP_RightThumbstick.X != 0)
                     _cameraPosition += SpinAssist.ModifyVectorByUp(new Vector2(Input.GP_RightThumbstick.X * 10, 0));
@@ -271,11 +279,11 @@ namespace GameLibrary.Drawing
             {
                 switch (CameraType)
                 {
-                    case cameraType.Free:
-                        CameraType = cameraType.Level;
+                    case CameraType.Free:
+                        CameraType = CameraType.Level;
                         break;
-                    case cameraType.Level:
-                        CameraType = cameraType.Focus;
+                    case CameraType.Level:
+                        CameraType = CameraType.Focus;
                         break;
                 }
             }
@@ -376,7 +384,7 @@ namespace GameLibrary.Drawing
         }
         #endregion
 
-        public static void ChangeCamera(cameraType type)
+        public static void ChangeCamera(CameraType type)
         {
             CameraType = type;
         }
@@ -393,30 +401,32 @@ namespace GameLibrary.Drawing
 
             switch (UpIs)
             {
-                case upIs.Up:
+                case UpIs.Up:
                     {
-                        UpIs = upIs.Right;
+                        UpIs = UpIs.Right;
                         break;
                     }
 
-                case upIs.Left:
+                case UpIs.Left:
                     {
-                        UpIs = upIs.Up;
+                        UpIs = UpIs.Up;
                         break;
                     }
 
-                case upIs.Down:
+                case UpIs.Down:
                     {
-                        UpIs = upIs.Left;
+                        UpIs = UpIs.Left;
                         break;
                     }
 
-                case upIs.Right:
+                case UpIs.Right:
                     {
-                        UpIs = upIs.Down;
+                        UpIs = UpIs.Down;
                         break;
                     }
             }
+
+            ChangeGravity();
         }
 
         public static void ForceRotateRight()
@@ -429,35 +439,40 @@ namespace GameLibrary.Drawing
 
             switch (UpIs)
             {
-                case upIs.Up:
+                case UpIs.Up:
                     {
-                        UpIs = upIs.Left;
+                        UpIs = UpIs.Left;
                         break;
                     }
 
-                case upIs.Left:
+                case UpIs.Left:
                     {
-                        UpIs = upIs.Down;
+                        UpIs = UpIs.Down;
                         break;
                     }
 
-                case upIs.Down:
+                case UpIs.Down:
                     {
-                        UpIs = upIs.Right;
+                        UpIs = UpIs.Right;
                         break;
                     }
 
-                case upIs.Right:
+                case UpIs.Right:
                     {
-                        UpIs = upIs.Up;
+                        UpIs = UpIs.Up;
                         break;
                     }
             }
+
+            ChangeGravity();
         }
 
         public static void ForceRotateHalf()
         {
-            if (_rotateDelayTimer > 0.0f) return;
+            if (_rotateDelayTimer > 0.0f)
+            {
+                return;
+            }
 
             _rotationToAdd += MathHelper.Pi;
             _levelRotating = true;
@@ -465,27 +480,56 @@ namespace GameLibrary.Drawing
 
             switch (UpIs)
             {
-                case upIs.Up:
+                case UpIs.Up:
                     {
-                        UpIs = upIs.Down;
+                        UpIs = UpIs.Down;
                         break;
                     }
 
-                case upIs.Left:
+                case UpIs.Left:
                     {
-                        UpIs = upIs.Right;
+                        UpIs = UpIs.Right;
                         break;
                     }
 
-                case upIs.Down:
+                case UpIs.Down:
                     {
-                        UpIs = upIs.Up;
+                        UpIs = UpIs.Up;
                         break;
                     }
 
-                case upIs.Right:
+                case UpIs.Right:
                     {
-                        UpIs = upIs.Left;
+                        UpIs = UpIs.Left;
+                        break;
+                    }
+            }
+
+            ChangeGravity();
+        }
+
+        static void ChangeGravity()
+        {
+            switch (UpIs)
+            {
+                case UpIs.Up:
+                    {
+                        GameplayScreen.World.Gravity = new Vector2(0, _gravityForce);
+                        break;
+                    }
+                case UpIs.Down:
+                    {
+                        GameplayScreen.World.Gravity = new Vector2(0, -_gravityForce);
+                        break;
+                    }
+                case UpIs.Left:
+                    {
+                        GameplayScreen.World.Gravity = new Vector2(_gravityForce, 0);
+                        break;
+                    }
+                case UpIs.Right:
+                    {
+                        GameplayScreen.World.Gravity = new Vector2(-_gravityForce, 0);
                         break;
                     }
             }

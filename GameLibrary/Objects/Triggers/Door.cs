@@ -179,22 +179,22 @@ namespace GameLibrary.Objects.Triggers
 
             //if (TouchingFixtures.Count > 0 && this.Triggered) return true;
 
-            if (Camera.UpIs == upIs.Up &&
+            if (Camera.UpIs == UpIs.Up &&
                 _orientation == Orientation.Up)
             {
                 this.Triggered = true;
             }
-            else if (Camera.UpIs == upIs.Down &&
+            else if (Camera.UpIs == UpIs.Down &&
               _orientation == Orientation.Down)
             {
                 this.Triggered = true;
             }
-            else if (Camera.UpIs == upIs.Left &&
+            else if (Camera.UpIs == UpIs.Left &&
               _orientation == Orientation.Right)
             {
                 this.Triggered = true;
             }
-            else if (Camera.UpIs == upIs.Right &&
+            else if (Camera.UpIs == UpIs.Right &&
               _orientation == Orientation.Left)
             {
                 this.Triggered = true;

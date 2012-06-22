@@ -83,10 +83,10 @@ namespace GameLibrary.Screens
         {
             IsInitialized = false;
             World = new World(new Vector2(0, GravityForce));
+            Camera.WorldGravity = World.Gravity;
 
             HUD.Load();
             LoadLevel(LevelID);
-            //Camera.Load(Vector2.Zero, largestLevelDimension);
             IsInitialized = true;
 
             //gamePlayEffect = Content.Load<Effect>("Assets/Effects/BlackAndWhite");
@@ -106,42 +106,37 @@ namespace GameLibrary.Screens
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-#if !EDITOR
+#if EDITOR
+
+#else
             if (!Level.IsInitialized)
             {
                 return;
             }
-#endif
 
             // Updates the world every second. Make it either first or last
             World.Step((float)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.001));
 
             Camera.Update(gameTime);
-
-            Sprite_Manager.Update(gameTime);
-
-            #region Calculate Gravity
-            {
-                float xMath = (float)Math.Sin(Camera.Rotation);
-                float yMath = (float)Math.Cos(Camera.Rotation);
-
-                World.Gravity = new Vector2(xMath * GravityForce, yMath * GravityForce);
-                Camera.WorldGravity = World.Gravity;
-            }
-            #endregion
-
             Level.Update(gameTime);
-
             HandleInput();
 
             #region Camera Fix
             //  Camera fix for non-rotating spritebatches
 
-            if (Camera.CameraType == cameraType.Focus)
+            if (Camera.CameraType == CameraType.Focus)
                 bgRotation = Camera.Rotation;
             else
                 bgRotation = 0f;
             #endregion
+
+            Sprite_Manager.Update(gameTime);
+
+            if (Camera.LevelRotating)
+            {
+                Camera.WorldGravity = World.Gravity;
+            }
+#endif
         }
         #endregion
 

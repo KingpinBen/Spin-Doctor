@@ -429,33 +429,13 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Piston\Piston Base.png">
-      <Name>Piston Base</Name>
+    <Compile Include="Assets\Images\Textures\Piston\i_Piston1.png">
+      <Name>i_Piston1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Piston\Piston Section 1.png">
-      <Name>Piston Section 1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Piston\Piston Section 2.png">
-      <Name>Piston Section 2</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Piston\Piston Top.png">
-      <Name>Piston Top</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Piston\Piston1.png">
-      <Name>Piston1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Piston\Piston2.png">
-      <Name>Piston2</Name>
+    <Compile Include="Assets\Images\Textures\Piston\i_Piston2.png">
+      <Name>i_Piston2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
