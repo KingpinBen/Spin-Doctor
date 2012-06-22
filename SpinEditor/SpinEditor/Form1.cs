@@ -2746,6 +2746,10 @@ namespace SpinEditor
             {
                 SaveFile();
             }
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.D) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+            {
+                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+            }
 
             STATIC_EDITOR_MODE.keyboardOldState = STATIC_EDITOR_MODE.keyboardCurrentState;
             STATIC_EDITOR_MODE.mouseOldState = STATIC_EDITOR_MODE.mouseCurrentState;

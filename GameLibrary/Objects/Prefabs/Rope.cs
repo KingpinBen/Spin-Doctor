@@ -127,7 +127,7 @@ namespace GameLibrary.Objects
         public override void Init(Vector2 StartVec, string texLoc)
         {
             base.Init(StartVec, texLoc);
-            this.ChainCount = 10;
+            this._chainCount = 10;
 
             this._textureAsset = texLoc;
         }
@@ -250,7 +250,7 @@ namespace GameLibrary.Objects
             float extraRoom = ConvertUnits.ToSimUnits(2.0f);
 
             PolygonShape shape = new PolygonShape(PolygonTools.CreateCircle(height, 8), ConvertUnits.ToSimUnits(_mass));
-            _pathBodies = PathManager.EvenlyDistributeShapesAlongPath(world, _ropePath, shape, BodyType.Dynamic, ChainCount);
+            _pathBodies = PathManager.EvenlyDistributeShapesAlongPath(world, _ropePath, shape, BodyType.Dynamic, _chainCount);
 
             FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, _pathBodies[0], new Vector2(0, 0), _pathBodies[0].Position);
             fixedJoint.MaxMotorTorque = 0f;

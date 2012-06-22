@@ -60,6 +60,7 @@ namespace GameLibrary.Drawing
         private static float _rotationToAdd;
         private static float _rotateDelayTimer;
         private static float _largestLevelDimension;
+        private static UpIs _upIs;
 
         #endregion
 
@@ -107,18 +108,6 @@ namespace GameLibrary.Drawing
             get { return _levelRotating; }
         }
         #endregion
-
-        public static Vector2 WorldGravity
-        {
-            get
-            {
-                return _worldGravity;
-            }
-            set
-            {
-                _worldGravity = value;
-            }
-        }
 
         public static Vector2 LevelOrigin
         {
@@ -198,7 +187,18 @@ namespace GameLibrary.Drawing
         }
         #endregion
 
-        public static UpIs UpIs { get; internal set; }
+        public static UpIs UpIs
+        {
+            get
+            {
+                return _upIs;
+            }
+            set
+            {
+                _upIs = value;
+                ChangeGravity();
+            }
+        }
 
         public static float LevelDiameter
         {
@@ -217,11 +217,9 @@ namespace GameLibrary.Drawing
             AllowRotation = _levelRotates;
             UpIs = UpIs.Up;
             _largestLevelDimension = LargestLevelDimension;
-            //  1000.0f needs to be either the levels width or height
-            //  whichever is larger. Pass in by parameter.
             _currentCameraZoom = (Screen_Manager.Viewport.Y / 2.0f) / (LargestLevelDimension * largestDimensionModifier);
             _fullLevelZoom = Zoom;
-
+            
             CameraType = CameraType.Free;
             _worldRotation = 0.0f;
             _cameraPosition = LevelOrigin;

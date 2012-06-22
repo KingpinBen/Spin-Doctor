@@ -38,6 +38,7 @@ using GameLibrary.Drawing;
 using Microsoft.Xna.Framework.Content;
 using GameLibrary.Managers;
 using FarseerPhysics.Dynamics.Contacts;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects.Triggers
@@ -69,7 +70,7 @@ namespace GameLibrary.Objects.Triggers
         #region Properties
 
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public bool ShowHelp
         {
             get
@@ -81,7 +82,7 @@ namespace GameLibrary.Objects.Triggers
                 _showHelp = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public float TriggerWidth
         {
             get
@@ -93,7 +94,7 @@ namespace GameLibrary.Objects.Triggers
                 _triggerWidth = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public float TriggerHeight
         {
             get
@@ -105,7 +106,7 @@ namespace GameLibrary.Objects.Triggers
                 _triggerHeight = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public virtual string Message
         {
             get

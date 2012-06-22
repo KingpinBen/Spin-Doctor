@@ -29,6 +29,7 @@ using GameLibrary.Assists;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects
@@ -44,23 +45,35 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Properties
-        [ContentSerializerIgnore]
+#if EDITOR
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public bool RotatesWithLevel
         {
             get
             {
                 return _rotatesWithLevel;
             }
-
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _rotatesWithLevel = value;
             }
         }
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
+        public override bool UseBodyRotation
+        {
+            get
+            {
+                return base.UseBodyRotation;
+            }
+            internal set
+            {
+                
+            }
+        }
+#else
+
+#endif
+
 
         #endregion
 
@@ -72,6 +85,7 @@ namespace GameLibrary.Objects
             base.Init(position, tex);
 
             this._rotatesWithLevel = true;
+            this._useBodyRotation = true;
         }
         #endregion
 
@@ -81,12 +95,17 @@ namespace GameLibrary.Objects
         /// </summary>
         public override void Load(ContentManager content, World world)
         {
-            this._texture = content.Load<Texture2D>(this._textureAsset);
-            this.Width = this._texture.Width;
-            this.Height = this._texture.Height;
-            GetRotationFromOrientation();
-#if EDITOR
+            if (this._textureAsset != "")
+                _texture = content.Load<Texture2D>(this._textureAsset);
 
+            this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+
+#if EDITOR
+            if (this.Width == 0.0f || this.Height == 0.0f)
+            {
+                this.Width = this._texture.Width;
+                this.Height = this._texture.Height;
+            }
 #else
             SetUpPhysics(world);
 #endif
@@ -97,6 +116,7 @@ namespace GameLibrary.Objects
         public override void Update(GameTime gameTime)
         {
 #if EDITOR
+
 #else
             if (!_rotatesWithLevel)
             {
@@ -110,11 +130,15 @@ namespace GameLibrary.Objects
         #endregion
 
 #if EDITOR
-
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(_texture, _position, null, _tint, 0.0f, _origin, 1.0f, SpriteEffects.None, this._zLayer);
+            sb.Draw(_texture, _position, null, _tint * 0.4f, MathHelper.PiOver2, _origin, 1.0f, SpriteEffects.None, this._zLayer);
+        }
 #else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._texture, this._position, null, this._tint, TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
         }
 #endif
 

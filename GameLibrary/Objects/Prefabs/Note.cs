@@ -24,6 +24,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using GameLibrary.Assists;
+using GameLibrary.Screens.Messages;
+using GameLibrary.Managers;
+using GameLibrary.Drawing;
 
 namespace GameLibrary.Objects
 {

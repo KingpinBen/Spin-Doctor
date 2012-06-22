@@ -50,7 +50,6 @@ namespace GameLibrary.Screens
         #region Fields and Variables
 
         public static World World { get; set; }
-        public static float GravityForce { get; set; }
 
         protected static float bgRotation;
 
@@ -66,7 +65,6 @@ namespace GameLibrary.Screens
         public GameplayScreen(int ID) 
             : base("GamePlayScreen", 0.5f)
         {
-            GravityForce = 120f;
             LevelID = ID;
             this.IsExitable = false;
             Level = new Level();
@@ -82,21 +80,13 @@ namespace GameLibrary.Screens
         public override void Load()
         {
             IsInitialized = false;
-            World = new World(new Vector2(0, GravityForce));
-            Camera.WorldGravity = World.Gravity;
-
             HUD.Load();
-            LoadLevel(LevelID);
-            IsInitialized = true;
-
             //gamePlayEffect = Content.Load<Effect>("Assets/Effects/BlackAndWhite");
             //gamePlayEffect.Parameters["enableMonochrome"].SetValue(false);
 
-            #region Dev
-#if Development
-            DevDisplay.Load(World);
-#endif
-            #endregion
+            LoadLevel(LevelID);
+
+            IsInitialized = true;
 
             FadeIn();
         }
@@ -131,11 +121,6 @@ namespace GameLibrary.Screens
             #endregion
 
             Sprite_Manager.Update(gameTime);
-
-            if (Camera.LevelRotating)
-            {
-                Camera.WorldGravity = World.Gravity;
-            }
 #endif
         }
         #endregion
@@ -219,8 +204,11 @@ namespace GameLibrary.Screens
         /// </summary>
         public static void ReloadLevel()
         {
-#if !EDITOR
-            World = new World(new Vector2(0, GravityForce));
+#if EDITOR
+
+#else
+            World = new World(Vector2.Zero);
+            Camera.UpIs = UpIs.Up;
 
             #region Development
 #if Development
@@ -244,7 +232,6 @@ namespace GameLibrary.Screens
                 Level = IntermediateSerializer.Deserialize<Level>(read, null);
             }
             
-
             Level.Load(World);
 
             HUD.RefreshHUD();

@@ -239,7 +239,7 @@ namespace GameLibrary.Objects
 
                 if (CanJump || CanDoubleJump)
                 {
-                    HandleJumping(-Camera.WorldGravity);
+                    HandleJumping(-GameplayScreen.World.Gravity);
                 }
             }
             #endregion
@@ -373,8 +373,6 @@ namespace GameLibrary.Objects
                 _canDoubleJump = false;
                 this.PlayerState = pState.Jumping;
             }
-
-            
         }
 
         #endregion
@@ -425,13 +423,13 @@ namespace GameLibrary.Objects
                 {
                     ToggleBodies(true);
 
-                    direction = (Camera.WorldGravity / 6f);
+                    direction = (GameplayScreen.World.Gravity / 6f);
                 }
                 else if (Input.GP_LeftThumbstick.Y >= 0.25f)
                 {
                     ToggleBodies(true);
 
-                    direction = -(Camera.WorldGravity / 6f);
+                    direction = -(GameplayScreen.World.Gravity / 6f);
                 }
                 else
                     ToggleBodies(false);
@@ -442,14 +440,14 @@ namespace GameLibrary.Objects
                 {
                     ToggleBodies(true);
 
-                    direction = -(Camera.WorldGravity / 6f);
+                    direction = -(GameplayScreen.World.Gravity / 6f);
                 }
                 else
                 if (Input.S)
                 {
                     ToggleBodies(true);
 
-                    direction = (Camera.WorldGravity / 6f);
+                    direction = (GameplayScreen.World.Gravity / 6f);
                 }
                 else 
                     ToggleBodies(false);
