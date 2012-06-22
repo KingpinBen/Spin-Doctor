@@ -27,7 +27,6 @@ namespace GameLibrary.Objects
 {
     public class Note : Collectable
     {
-
         public Note()
             : base()
         {

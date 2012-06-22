@@ -225,7 +225,11 @@ namespace GameLibrary.Objects
             this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
 
 #if EDITOR
-
+            if (_width == 0 || _height == 0)
+            {
+                this.Width = this._texture.Width;
+                this.Height = this._texture.Height;
+            }
 #else
             this._elapsedTimer = 0.0f;
             this._currentMovingDirection = false;

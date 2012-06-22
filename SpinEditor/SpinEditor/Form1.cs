@@ -2516,6 +2516,9 @@ namespace SpinEditor
                 case "Rope":
                     STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Rope/";
                     break;
+                case "Rotate Room Button":
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Switch/";
+                    break;
                 case "Rotating Platform":
                     STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
                     break;

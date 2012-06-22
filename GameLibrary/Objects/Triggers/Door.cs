@@ -108,8 +108,11 @@ namespace GameLibrary.Objects.Triggers
             this._texture = content.Load<Texture2D>(_textureAsset);
 
 #if EDITOR
-            this.Width = this._texture.Width;
-            this.Height = this._texture.Height;
+            if (_width == 0 || _height == 0)
+            {
+                this.Width = this._texture.Width;
+                this.Height = this._texture.Height;
+            }
 #else
             this.TriggerWidth = 30;
             this.TriggerHeight = 30;

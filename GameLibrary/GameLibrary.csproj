@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;EDITOR</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -143,6 +143,7 @@
     <Compile Include="Objects\Prefabs\PushingPlatform.cs" />
     <Compile Include="Objects\Prefabs\RotateRoomButton.cs" />
     <Compile Include="Objects\Prefabs\Saw.cs" />
+    <Compile Include="Objects\RotateDirection.cs" />
     <Compile Include="Objects\Triggers\ChangeLevelZone.cs" />
     <Compile Include="Objects\Triggers\Door.cs" />
     <Compile Include="Objects\Triggers\Spike.cs" />

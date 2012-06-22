@@ -41,38 +41,23 @@ namespace GameLibrary.Objects
 {
     public class RotateRoomButton : Trigger
     {
-        public enum RotateDirection
-        {
-            CW, CCW
-        }
-
         #region Fields
 
+#if EDITOR
+
+#else
         private bool _aboutToRotate;
         private float _elapsed;
+#endif
 
         [ContentSerializer]
-        private RotateDirection enumDirection = RotateDirection.CW;
+        private RotateDirection enumDirection = RotateDirection.Clockwise;
         [ContentSerializer]
         private float _delayBeforeRotate;
         
         #endregion
 
         #region Properties
-
-        [ContentSerializerIgnore]
-        public string RDirection
-        {
-            get 
-            {
-                if (enumDirection == RotateDirection.CW)
-                {
-                    return "clock-wise";
-                }
-
-                return "counter clock-wise";
-            }
-        }
 
 #if EDITOR
         [ContentSerializerIgnore]
@@ -98,8 +83,21 @@ namespace GameLibrary.Objects
                 return _aboutToRotate;
             }
         }
+        [ContentSerializerIgnore]
+        public string RDirection
+        {
+            get 
+            {
+                if (enumDirection == RotateDirection.Clockwise)
+                {
+                    return "clock-wise";
+                }
+
+                return "counter clock-wise";
+            }
+        }
 #endif
-        #region Message
+
         [ContentSerializerIgnore]
         public override string Message
         {
@@ -107,17 +105,14 @@ namespace GameLibrary.Objects
             {
                 return _message;
             }
+            protected set { }
         }
-        #endregion
 
         #endregion
 
         #region Constructor
 
-        public RotateRoomButton()
-            : base()
-        {
-        }
+        public RotateRoomButton() : base() { }
 
         public override void Init(Vector2 position, string tex)
         {
@@ -125,35 +120,33 @@ namespace GameLibrary.Objects
             this._textureAsset = tex;
             this.Tint = Color.White;
             this._message = "AUTO CHOSEN";
-
-            //  The width and height values are redone in Load due to it using the
-            //  texture to calculate it's size. We do however need a size so the editor
-            //  can manipulate the object (such as translating).
-            this.Width = 50;
-            this.Height = 50;
+            this.TriggerHeight = 25;
+            this.TriggerWidth = 25;
         }
         #endregion
 
-        #region Load
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
             this._origin = new Vector2(_width / 2, _height / 2);
-            this._message = " to rotate " + RDirection;
-            base.Load(content, world);
+            //base.Load(content, world);
 
 #if EDITOR
-            this._width = this._texture.Width / 2;
-            this._height = this._texture.Height / 2;
+            if (_width == 0 || _height == 0)
+            {
+                this._width = this._texture.Width / 2;
+                this._height = this._texture.Height / 2;
+            }
 #else
-
+            this._message = " to rotate " + RDirection;
+            SetUpTrigger(world);
 #endif
         }
-        #endregion
 
         public override void Update(GameTime gameTime)
         {
 #if EDITOR
+
 #else
             if (!Triggered && !_aboutToRotate)
             {
@@ -177,7 +170,7 @@ namespace GameLibrary.Objects
 
                 if (_elapsed >= _delayBeforeRotate)
                 {
-                    if (enumDirection == RotateDirection.CW)
+                    if (enumDirection == RotateDirection.Clockwise)
                     {
                         Camera.ForceRotateRight();
                     }
@@ -198,7 +191,7 @@ namespace GameLibrary.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._texture, this._position, null, this._tint, 0.0f, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
         }
 
 #else

@@ -63,8 +63,8 @@ namespace GameLibrary.Objects
         /// <param name="CR">Radius of the Circle</param>
         public void Load(ContentManager content, Vector2 LC, float CR)
         {
-            _gearsTex = content.Load<Texture2D>("Assets/Sprites/Textures/RoomSetup/gear");
-            _background = content.Load<Texture2D>("Assets/Sprites/Textures/RoomSetup/rock");
+            _gearsTex = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/gear");
+            _background = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/rock");
             float offset = (CR - _gearsTex.Width) + 25f;
 
             TopLeftGear = new Vector2(LC.X - offset, LC.Y - offset);
