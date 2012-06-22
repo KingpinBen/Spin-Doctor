@@ -117,6 +117,8 @@ namespace GameLibrary.Objects
         #region PreSolve Collisions
         protected void PreSolve(Contact contact, ref Manifold oldManifold)
         {
+#if EDITOR
+#else
             Fixture fixtureA = contact.FixtureA;
             Fixture fixtureB = contact.FixtureB;
 
@@ -132,6 +134,7 @@ namespace GameLibrary.Objects
                     }
                 }
             }
+#endif
         }
         #endregion
     }

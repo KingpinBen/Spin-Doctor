@@ -96,6 +96,8 @@ namespace GameLibrary.Objects
         #region Update
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+#else
             if (!_rotatesWithLevel)
             {
                 return;
@@ -103,6 +105,7 @@ namespace GameLibrary.Objects
 
             //  Limit it so it can only be at 1 angle, the level rotation
             this.Body.Rotation = -(float)Camera.Rotation;
+#endif
         }
         #endregion
 
@@ -132,6 +135,9 @@ namespace GameLibrary.Objects
              * unfortunately may need redoing again.
              */
 
+#if EDITOR
+#else
+
             TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass));
 
             this.Origin = input.Origin;
@@ -144,6 +150,7 @@ namespace GameLibrary.Objects
 
             this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, ConvertUnits.ToSimUnits(Vector2.Zero), ConvertUnits.ToSimUnits(this.Position));
             this.revoluteJoint.MaxMotorTorque = float.MaxValue;
+#endif
         }
         #endregion
 

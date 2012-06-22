@@ -257,6 +257,8 @@ namespace GameLibrary.Objects
 
         protected override void SetUpPhysics(World world)
         {
+#if EDITOR
+#else
             this.Body = BodyFactory.CreateCircle(world,
                 ConvertUnits.ToSimUnits(this._texture.Width / 2),
                 ConvertUnits.ToSimUnits(_mass));
@@ -270,6 +272,7 @@ namespace GameLibrary.Objects
 
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+#endif
         }
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)

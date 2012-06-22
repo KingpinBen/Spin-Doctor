@@ -80,10 +80,6 @@ namespace GameLibrary.Objects
         protected Texture2D _texture;
         protected Vector2 _origin;
 
-        //  Body is generated on load so no need to hold it all
-        [ContentSerializerIgnore]
-        public Body Body { get; set; }
-
         #endregion
 
         #region Properties
@@ -148,14 +144,6 @@ namespace GameLibrary.Objects
             }
         }
         [ContentSerializerIgnore]
-        public virtual string AssetLocation
-        {
-            get
-            {
-                return _textureAsset;
-            }
-        }
-        [ContentSerializerIgnore]
         public virtual Vector2 Origin
         {
             get
@@ -212,11 +200,7 @@ namespace GameLibrary.Objects
             {
                 return _useBodyRotation;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
                 _useBodyRotation = value;
             }
@@ -243,6 +227,8 @@ namespace GameLibrary.Objects
             }
         }
 #else
+        [ContentSerializerIgnore]
+        public Body Body { get; set; }
         [ContentSerializerIgnore]
         public virtual Vector2 Position
         {
@@ -527,6 +513,9 @@ namespace GameLibrary.Objects
         /// <param name="mass"></param>
         protected virtual void SetUpPhysics(World world)
         {
+#if EDITOR
+
+#else
             //  This function will have to be changed if we have things that aren't going to be square/rectangles.
             //  Fortunately, Farseer will allow us to use the Texture to find the outline. Haven't tried it with 
             //  full coloured images, only outlines. Will have to research! More demos!
@@ -541,6 +530,7 @@ namespace GameLibrary.Objects
 
             // Default friction the body has when colliding with other objects.
             this.Body.Friction = 5.0f;
+#endif
         }
         #endregion
 

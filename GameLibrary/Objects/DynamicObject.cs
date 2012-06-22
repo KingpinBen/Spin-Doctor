@@ -294,6 +294,8 @@ namespace GameLibrary.Objects
         /// <param name="world"></param>
         protected void SetUpJoint(World world)
         {
+#if EDITOR
+#else
             this._currentMovingDirection = false;
             Vector2 axis = Vector2.Zero;
 
@@ -337,7 +339,10 @@ namespace GameLibrary.Objects
             this._prismaticJoint.MaxMotorForce = float.MaxValue;
 
             if (_startsMoving)  
+            {
                 this._prismaticJoint.MotorSpeed = this.MotorSpeed;
+            }
+#endif
         }
         #endregion
 

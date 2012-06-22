@@ -76,6 +76,8 @@ namespace GameLibrary.Objects
         #region Update
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+#else
             base.Update(gameTime);
 
             if (!_inRange || _locked)
@@ -87,16 +89,20 @@ namespace GameLibrary.Objects
             {
                 Player.Instance.CreateWeldToPlayer(this.Body.FixtureList[0], _contactPoint);
             }
+#endif
         }
         #endregion
 
         #region Draw
+#if EDITOR
+#else
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
 
             spriteBatch.DrawString(Fonts.DebugFont, "InRange: " + _inRange, ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(0, -50), Color.Red);
         }
+#endif
         #endregion
 
         #region Collisions

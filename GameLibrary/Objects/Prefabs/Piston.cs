@@ -34,6 +34,9 @@ using Microsoft.Xna.Framework.Graphics;
 using GameLibrary.Assists;
 using FarseerPhysics.Dynamics.Joints;
 using GameLibrary.Managers;
+using FarseerPhysics.Collision.Shapes;
+using FarseerPhysics.Common;
+using FarseerPhysics.Dynamics.Contacts;
 #endregion
 
 namespace GameLibrary.Objects
@@ -65,6 +68,8 @@ namespace GameLibrary.Objects
         
         protected FixedPrismaticJoint secondBodyJoint;
         protected FixedPrismaticJoint firstBodyJoint;
+
+        protected List<Fixture> TouchingFixtures = new List<Fixture>();
 #endif
 
         private Texture2D endBodyTexture;
@@ -318,6 +323,19 @@ namespace GameLibrary.Objects
             this.endBody.Friction = 1.0f;
             this.endBody.BodyType = BodyType.Dynamic;
 
+            if (_isLethal)
+            {
+                Fixture fix = FixtureFactory.AttachRectangle(
+                    ConvertUnits.ToSimUnits(endBodyTexture.Width - 20), 
+                    ConvertUnits.ToSimUnits(endBodyTexture.Height / 2), 
+                    1.0f, ConvertUnits.ToSimUnits(new Vector2(0, -endBodyTexture.Height / 2)), 
+                    endBody);
+                fix.IsSensor = true;
+                fix.IgnoreCollisionWith(this.endBody.FixtureList[0]);
+                fix.Body.OnCollision += TouchedLethal;
+                fix.Body.OnSeparation += LeftLethal;
+            }
+
             this._prismaticJoint = JointFactory.CreateFixedPrismaticJoint(world, this.endBody, ConvertUnits.ToSimUnits(Position), axis);
             this._prismaticJoint.UpperLimit = Texture1.Y + Texture2.Y;
             this._prismaticJoint.LowerLimit = -(endTexture.Y / 2) + ConvertUnits.ToSimUnits(40);   //  Give a 25 pixel offset on the y when UpIs == Up
@@ -345,12 +363,15 @@ namespace GameLibrary.Objects
 
             this.Body.IgnoreCollisionWith(this.firstBody);
             this.Body.IgnoreCollisionWith(this.secondBody);
-            this.Body.IgnoreCollisionWith(this.endBody);
-            this.firstBody.IgnoreCollisionWith(this.endBody);
             this.firstBody.IgnoreCollisionWith(this.secondBody);
-            this.secondBody.IgnoreCollisionWith(this.endBody);
-#endif
 
+            foreach (Fixture fixture in this.endBody.FixtureList)
+            {
+                fixture.IgnoreCollisionWith(this.Body.FixtureList[0]);
+                fixture.IgnoreCollisionWith(this.firstBody.FixtureList[0]);
+                fixture.IgnoreCollisionWith(this.secondBody.FixtureList[0]);
+            }
+#endif
         }
 
         void HandleExtraJoint(GameTime gameTime, FixedPrismaticJoint joint)
@@ -375,6 +396,20 @@ namespace GameLibrary.Objects
             }
 #endif
         }
+        bool TouchedLethal(Fixture fixtureA, Fixture fixtureB, Contact contact)
+        {
+            if (!TouchingFixtures.Contains(fixtureB) && 
+                (fixtureB == Player.Instance.WheelBody.FixtureList[0] || fixtureB == Player.Instance.Body.FixtureList[0]))
+            {
+                Player.Instance.Kill();
+            }
+            return true;
+        }
+        void LeftLethal(Fixture fixtureA, Fixture fixtureB)
+        {
+            TouchingFixtures.Remove(fixtureB);
+        }
+
         #endregion
     }
 }

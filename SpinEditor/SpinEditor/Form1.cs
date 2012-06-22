@@ -371,7 +371,10 @@ namespace SpinEditor
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFile();
+            if (CheckIfOpenLevel())
+            {
+                OpenFile();
+            }            
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -436,43 +439,14 @@ namespace SpinEditor
         #region Show Room Properties
         private void BUTTON_EDIT_ROOM_Click(object sender, EventArgs e)
         {
-            BUTTON_EDIT_ROOM.Checked = true;
-
-            STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.EDIT_LEVEL;
-
-            BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = false;
-            Handle_Property_Grid_Items();
+            SwitchToRoomProperties();
         }
         #endregion
 
         #region Delete Selected Item(s)
         void BUTTON_DELETE_Click(object sender, EventArgs e)
         {
-            if (Is_Something_Selected())
-            {
-                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count; i > 0; i--)
-                {
-                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Type)
-                    {
-                        case (OBJECT_TYPE.Physics):
-                            {
-                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
-                            }
-                            break;
-                        case (OBJECT_TYPE.Decal):
-                            {
-                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
-                            }
-                            break;
-                    }
-                }
-
-                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-                //STATIC_EDITOR_MODE.selectedObjectIndex = -1;
-                propertyGrid1.SelectedObject = false;
-
-                Update_undoArray();
-            }
+            DeleteSelectedObjects();
         }
         #endregion
 
@@ -515,6 +489,45 @@ namespace SpinEditor
 
             BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDIT_ROOM.Checked = false;
             Handle_Property_Grid_Items();
+        }
+
+        void SwitchToRoomProperties()
+        {
+            BUTTON_EDIT_ROOM.Checked = true;
+
+            STATIC_EDITOR_MODE.ED_MODE = EDITOR_MODE.EDIT_LEVEL;
+
+            BUTTON_EDITOR_MODE_SELECT.Checked = BUTTON_EDITOR_MODE_MOVE.Checked = BUTTON_EDITOR_MODE_PLACE.Checked = false;
+            Handle_Property_Grid_Items();
+        }
+
+        void DeleteSelectedObjects()
+        {
+            if (Is_Something_Selected())
+            {
+                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count; i > 0; i--)
+                {
+                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Type)
+                    {
+                        case (OBJECT_TYPE.Physics):
+                            {
+                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
+                            }
+                            break;
+                        case (OBJECT_TYPE.Decal):
+                            {
+                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
+                            }
+                            break;
+                    }
+                }
+
+                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                //STATIC_EDITOR_MODE.selectedObjectIndex = -1;
+                propertyGrid1.SelectedObject = false;
+
+                Update_undoArray();
+            }
         }
 
         #endregion
@@ -646,6 +659,7 @@ namespace SpinEditor
             {
                 STATIC_EDITOR_MODE.levelInstance = new Level();
                 STATIC_EDITOR_MODE.selectedObjectIndices = new List<ObjectIndex>();
+                SwitchToSelectMode();
 
                 bool canContinue = false;
                 using (RoomSetupForm RoomForm = new RoomSetupForm())
@@ -2488,7 +2502,7 @@ namespace SpinEditor
                         #region Handle Objects Under Cursor
                         for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
                         {
-                            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].AssetLocation != null)
+                            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i] != null)
                             {
                                 Rectangle BoundingBox = new Rectangle(
                                     (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width / 2),
@@ -2724,6 +2738,14 @@ namespace SpinEditor
             {
                 SwitchToPlaceMode();
             }
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Delete))
+            {
+                DeleteSelectedObjects();
+            }
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.S) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+            {
+                SaveFile();
+            }
 
             STATIC_EDITOR_MODE.keyboardOldState = STATIC_EDITOR_MODE.keyboardCurrentState;
             STATIC_EDITOR_MODE.mouseOldState = STATIC_EDITOR_MODE.mouseCurrentState;
@@ -2737,7 +2759,5 @@ namespace SpinEditor
         }
 
         #endregion
-
-        
     }
 }

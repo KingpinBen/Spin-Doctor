@@ -248,7 +248,7 @@ namespace GameLibrary.Objects.Triggers
         {
             sb.Draw(_devTexture, Position,
                 new Rectangle(0, 0, (int)Width, (int)Height),
-                Color.White, Body.Rotation, new Vector2(this.Width/2, this.Height/2), 1f, SpriteEffects.None, 0f);
+                Color.White, this._rotation, new Vector2(this.Width/2, this.Height/2), 1f, SpriteEffects.None, 0f);
         }
 #else
         public override void Draw(SpriteBatch sb)
@@ -328,6 +328,8 @@ namespace GameLibrary.Objects.Triggers
         #region Setup Trigger
         protected virtual void SetUpTrigger(World world)
         {
+#if EDITOR
+#else
             Vector2 trigPos = Position;
             trigPos.Y -= Height / 2;
 
@@ -337,6 +339,7 @@ namespace GameLibrary.Objects.Triggers
             //this.Body.CollidesWith = Category.Cat10;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+#endif
         }
         #endregion
 

@@ -361,6 +361,9 @@ namespace GameLibrary.Objects
         #region Setup Body
         private void SetupPhysics(World world)
         {
+#if EDITOR
+
+#else
             float newWidth = _width;
             //  If the width is negative, make it positive.
             if (newWidth < 0)
@@ -376,7 +379,7 @@ namespace GameLibrary.Objects
             this.Body.CollidesWith = Category.Cat10;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
-
+#endif
         }
 
         #endregion

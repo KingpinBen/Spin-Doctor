@@ -65,11 +65,8 @@ namespace GameLibrary.Objects.Triggers
 
         protected override void SetUpPhysics(World world)
         {
-            //TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass));
-
-            //this.Origin = input.Origin;
-            //this.Body = input.Body;
-
+#if EDITOR
+#else
             this.Body = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height), ConvertUnits.ToSimUnits(5), ConvertUnits.ToSimUnits(5), 3, ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Static;
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
@@ -77,6 +74,7 @@ namespace GameLibrary.Objects.Triggers
             //this.Body.Rotation = SpinAssist.RotationByOrientation(_orientation);
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+#endif
         }
 
         #region Collisions

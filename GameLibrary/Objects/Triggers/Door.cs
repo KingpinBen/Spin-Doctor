@@ -226,6 +226,9 @@ namespace GameLibrary.Objects.Triggers
 
         protected override void SetUpTrigger(World world)
         {
+#if EDITOR
+
+#else
             this.Body = BodyFactory.CreateRectangle(world, 
                 ConvertUnits.ToSimUnits(TriggerWidth), 
                 ConvertUnits.ToSimUnits(TriggerHeight), 
@@ -241,6 +244,7 @@ namespace GameLibrary.Objects.Triggers
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
             //this.Body.CollisionCategories = Category.Cat10;
+#endif
         }
 
         #endregion

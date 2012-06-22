@@ -84,6 +84,9 @@ namespace GameLibrary.Objects
         #region Update
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+
+#else
             if (lastTouched < 0.4)
             {
                 lastTouched += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
@@ -100,16 +103,21 @@ namespace GameLibrary.Objects
                     this.Body.Restitution = _restitution;
                 }
             }
+#endif
         }
         #endregion
 
         #region Draw
+#if EDITOR
+
+#else
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.DrawString(Fonts.DebugFont, "Res: " + this.Body.Restitution + ". Last: " + lastTouched.ToString(), this.Position + new Vector2(0,-100), Color.Red);
 
             base.Draw(spriteBatch);
         }
+#endif
         #endregion
 
         #region Collisions

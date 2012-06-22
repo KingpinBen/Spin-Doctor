@@ -77,11 +77,14 @@ namespace GameLibrary.Objects
 
         protected override void SetUpPhysics(World world)
         {
+#if EDITOR
+#else
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this.Width), ConvertUnits.ToSimUnits(this.Height), ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Dynamic;
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
 
             this.SetUpJoint(world);
+#endif
         }
     }
 }
