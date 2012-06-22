@@ -69,6 +69,7 @@ namespace GameLibrary.Objects
         }
         #endregion
 
+        #region Draw
 #if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -78,5 +79,6 @@ namespace GameLibrary.Objects
 #else
 
 #endif
+        #endregion
     }
 }

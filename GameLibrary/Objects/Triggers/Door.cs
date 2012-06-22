@@ -41,6 +41,7 @@ using Microsoft.Xna.Framework.Content;
 using GameLibrary.Managers;
 using GameLibrary.Drawing;
 using FarseerPhysics.Dynamics.Contacts;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects.Triggers
@@ -54,7 +55,7 @@ namespace GameLibrary.Objects.Triggers
 
         #region Properties
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public int NextLevel
         {
             get
@@ -66,7 +67,7 @@ namespace GameLibrary.Objects.Triggers
                 nextLevel = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public override Orientation Orientation
         {
             get

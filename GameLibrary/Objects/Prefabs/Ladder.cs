@@ -43,6 +43,7 @@ using FarseerPhysics.Factories;
 using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Dynamics.Contacts;
 using GameLibrary.Drawing;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects
@@ -75,7 +76,7 @@ namespace GameLibrary.Objects
         #region Properties
 
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public new Direction Orientation
         {
             get
@@ -88,7 +89,7 @@ namespace GameLibrary.Objects
                 GetRotationFromOrientation();
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
         public override float Height
         {
             get
@@ -99,7 +100,7 @@ namespace GameLibrary.Objects
             }
             set { }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public override float Width
         {
             get
@@ -110,7 +111,7 @@ namespace GameLibrary.Objects
             }
             set { }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public int Bars
         {
             get
@@ -122,8 +123,7 @@ namespace GameLibrary.Objects
                 _climbableSections = value;
             }
         }
-        
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public override float TextureRotation
         {
             get

@@ -196,7 +196,6 @@ namespace GameLibrary.Objects
         }
 
         #region Draw
-
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
@@ -206,7 +205,7 @@ namespace GameLibrary.Objects
 #else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this.Texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this.Tint, 0.0f, this.Origin, 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this.Texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this.Tint, this.TextureRotation, this.Origin, 1.0f, SpriteEffects.None, this.zLayer);
         }
 #endif
         #endregion

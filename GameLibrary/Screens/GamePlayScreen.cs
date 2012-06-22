@@ -142,7 +142,7 @@ namespace GameLibrary.Screens
 
         #region Draw
 #if EDITOR
-
+        
 #else
         public override void Draw(SpriteBatch sb)
         {

@@ -41,6 +41,7 @@ using Microsoft.Xna.Framework.Content;
 using GameLibrary.Managers;
 using GameLibrary.Drawing;
 using FarseerPhysics.Dynamics.Contacts;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects
@@ -85,7 +86,7 @@ namespace GameLibrary.Objects
         #region Properties
 
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual Vector2 Position
         {
             get
@@ -97,7 +98,7 @@ namespace GameLibrary.Objects
                 _position = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual float Height
         {
             get
@@ -114,7 +115,7 @@ namespace GameLibrary.Objects
                     _width = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual float Width
         {
             get
@@ -131,7 +132,7 @@ namespace GameLibrary.Objects
                     _height = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual float Mass
         {
             get
@@ -143,7 +144,7 @@ namespace GameLibrary.Objects
                 _mass = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
         public virtual Vector2 Origin
         {
             get
@@ -155,7 +156,7 @@ namespace GameLibrary.Objects
                 _origin = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual Color Tint
         {
             get
@@ -167,7 +168,7 @@ namespace GameLibrary.Objects
                 _tint = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual float zLayer
         {
             get
@@ -179,7 +180,7 @@ namespace GameLibrary.Objects
                 _zLayer = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual float TextureRotation
         {
             get
@@ -193,7 +194,7 @@ namespace GameLibrary.Objects
                 _rotation = MathHelper.ToRadians(value);
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual bool UseBodyRotation
         {
             get
@@ -205,7 +206,7 @@ namespace GameLibrary.Objects
                 _useBodyRotation = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public virtual Orientation Orientation
         {
             get
@@ -218,7 +219,7 @@ namespace GameLibrary.Objects
                 GetRotationFromOrientation();
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
         public Texture2D Texture
         {
             get

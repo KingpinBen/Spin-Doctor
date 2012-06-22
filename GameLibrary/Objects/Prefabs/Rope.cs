@@ -40,6 +40,7 @@ using GameLibrary.Assists;
 using GameLibrary.Screens;
 using Microsoft.Xna.Framework.Content;
 using GameLibrary.Managers;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects
@@ -65,37 +66,55 @@ namespace GameLibrary.Objects
 
         #region Properties
 
-        [ContentSerializerIgnore]
+
+
+#if EDITOR
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public Vector2 EndPosition
         {
-            get { return _endPosition; }
-#if EDITOR
+            get
+            {
+                return _endPosition;
+            }
             set
-#else
-            protected set
-#endif
             {
                 _endPosition = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
+        public override float Height
+        {
+            get
+            {
+                return 0;
+            }
+            set
+            {
+            }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
+        public override float Width
+        {
+            get
+            {
+                return 0;
+            }
+            set
+            {
+            }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public int ChainCount
         {
-            get { return _chainCount; }
-#if EDITOR
+            get
+            {
+                return _chainCount;
+            }
             set
-#else
-            protected set
-#endif
             {
                 _chainCount = value;
             }
         }        
-#if EDITOR
-        [ContentSerializerIgnore]
-        public override float Height { get; set; }
-        [ContentSerializerIgnore]
-        public override float Width { get; set; }
 #endif
         #endregion
 

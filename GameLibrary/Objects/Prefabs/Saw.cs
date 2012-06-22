@@ -33,6 +33,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Dynamics.Contacts;
+using System.ComponentModel;
 
 namespace GameLibrary.Objects
 {
@@ -59,7 +60,7 @@ namespace GameLibrary.Objects
         #region Properties
 
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public override Vector2 EndPosition
         {
             get
@@ -76,19 +77,6 @@ namespace GameLibrary.Objects
                 {
                     _endPosition = new Vector2(_position.X, value.Y);
                 }
-            }
-        }
-
-        [ContentSerializerIgnore]
-        public string TouchedSawBladeAsset
-        {
-            get
-            {
-                return _bloodiedTextureAsset;
-            }
-            set
-            {
-                _bloodiedTextureAsset = value;
             }
         }
 #else

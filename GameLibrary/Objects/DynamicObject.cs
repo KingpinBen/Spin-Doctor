@@ -28,6 +28,7 @@ using FarseerPhysics.Factories;
 using FarseerPhysics.Dynamics;
 using GameLibrary.Assists;
 using Microsoft.Xna.Framework.Graphics;
+using System.ComponentModel;
 
 namespace GameLibrary.Objects
 {
@@ -58,7 +59,7 @@ namespace GameLibrary.Objects
         #region Properties
 
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public virtual Direction MovementDirection
         {
             get
@@ -70,7 +71,7 @@ namespace GameLibrary.Objects
                 _movementDirection = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public virtual float MotorSpeed
         {
             get
@@ -82,7 +83,7 @@ namespace GameLibrary.Objects
                 _motorSpeed = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public virtual Vector2 EndPosition
         {
             get
@@ -94,7 +95,7 @@ namespace GameLibrary.Objects
                 _endPosition = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public virtual bool StartsMoving
         {
             get
@@ -106,7 +107,7 @@ namespace GameLibrary.Objects
                 _startsMoving = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public virtual float TimeToReverse
         {
             get 

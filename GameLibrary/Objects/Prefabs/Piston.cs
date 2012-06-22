@@ -37,6 +37,7 @@ using GameLibrary.Managers;
 using FarseerPhysics.Collision.Shapes;
 using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics.Contacts;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects
@@ -82,7 +83,8 @@ namespace GameLibrary.Objects
 
         #region Properties
 #if EDITOR
-        [ContentSerializerIgnore]
+        
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public new Vector2 EndPosition
         {
             get
@@ -95,7 +97,7 @@ namespace GameLibrary.Objects
                 _endPosition = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public bool IsLethal
         {
             get
@@ -190,6 +192,7 @@ namespace GameLibrary.Objects
             }
 
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
+            _endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
 #else
             firstBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston2");
             secondBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston1");
@@ -226,11 +229,15 @@ namespace GameLibrary.Objects
 
         #region Draw
 #if EDITOR
+        //  194
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(this._texture, _position, null,
                 this._tint, this.TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1.0f,
                 SpriteEffects.None, this.zLayer);
+
+            sb.Draw(this.endBodyTexture, _endPosition, null, this._tint * 0.5f,
+                this._rotation, new Vector2(this.endBodyTexture.Width / 2, this.endBodyTexture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)
@@ -398,16 +405,24 @@ namespace GameLibrary.Objects
         }
         bool TouchedLethal(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR
+            return true;
+#else
             if (!TouchingFixtures.Contains(fixtureB) && 
                 (fixtureB == Player.Instance.WheelBody.FixtureList[0] || fixtureB == Player.Instance.Body.FixtureList[0]))
             {
                 Player.Instance.Kill();
             }
             return true;
+#endif
         }
         void LeftLethal(Fixture fixtureA, Fixture fixtureB)
         {
+#if EDITOR
+
+#else
             TouchingFixtures.Remove(fixtureB);
+#endif
         }
 
         #endregion

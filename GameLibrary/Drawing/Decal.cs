@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Drawing
@@ -41,7 +42,7 @@ namespace GameLibrary.Drawing
 
         #region Properties
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public float Width
         {
             get
@@ -54,7 +55,7 @@ namespace GameLibrary.Drawing
                 _width = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public float Height
         {
             get
@@ -66,7 +67,7 @@ namespace GameLibrary.Drawing
                 _height = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public Vector2 Position
         {
             get
@@ -78,7 +79,7 @@ namespace GameLibrary.Drawing
                 _position = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public SpriteEffects FlipEffect
         {
             get
@@ -90,19 +91,15 @@ namespace GameLibrary.Drawing
                 _flip = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
         public string AssetLocation
         {
             get
             {
                 return _decalAsset;
             }
-            set
-            {
-                _decalAsset = value;
-            }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public float ZLayer
         {
             get
@@ -114,7 +111,7 @@ namespace GameLibrary.Drawing
                 _zLayer = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public float Rotation
         {
             get
@@ -126,7 +123,7 @@ namespace GameLibrary.Drawing
                 _rotation = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public float Scale
         {
             get
@@ -138,7 +135,7 @@ namespace GameLibrary.Drawing
                 _scale = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public Color Tint
         {
             get
@@ -150,7 +147,7 @@ namespace GameLibrary.Drawing
                 _tint = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
         public Vector2 Origin
         {
             get

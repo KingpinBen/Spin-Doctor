@@ -306,6 +306,7 @@ namespace GameLibrary.Objects.Triggers
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
 #if EDITOR
+
 #else
             if (TouchingFixtures.Contains(fixtureB))
             {

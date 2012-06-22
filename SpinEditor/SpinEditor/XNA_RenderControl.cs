@@ -230,8 +230,7 @@ namespace SpinEditor
                                 primBatch.AddVertex((dyObj.EndPosition + offset) * Camera.Zoom, Color.Red);
 
                             }
-
-                            if (t == typeof(Rope))
+                            else if (t == typeof(Rope))
                             {
                                 Rope ropeObj = (Rope)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
                                 primBatch.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);

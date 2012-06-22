@@ -91,10 +91,6 @@ namespace GameLibrary.Objects
         {
             base.Load(content, world);
 
-            this._texture = content.Load<Texture2D>(_textureAsset);
-
-            this._origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
-
 #if EDITOR
             this.TriggerWidth = 25.0f;
             this.TriggerHeight = 25.0f;
@@ -114,11 +110,6 @@ namespace GameLibrary.Objects
 
 #else
             //LookAtMeSprite.Update(gameTime);
-
-            if (Input.Interact() && Triggered)
-            {
-                CreatePopUp();
-            }
 #endif
         }
 
@@ -145,20 +136,7 @@ namespace GameLibrary.Objects
 
         #region Private Methods
 
-        private void CreatePopUp()
-        {
-#if EDITOR
-#else
-            MessageOverlay newOverlay = new MessageOverlay(MessageType.FullScreen, 1);
-            newOverlay.Load();
-
-            Screen_Manager.AddScreen(newOverlay);
-
-            HUD.ShowOnScreenMessage(false);
-            this.Triggered = false;
-            this.BeenCollected = true;
-#endif
-        }
+        
 
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
