@@ -2481,6 +2481,26 @@ namespace SpinEditor
 
         #endregion
 
+        void CopyPaste()
+        {
+            if (Is_Something_Selected())
+            {
+
+                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count; i > 0; i--)
+                {
+                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Type)
+                    {
+                        case OBJECT_TYPE.Physics:
+                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index].Clone());
+                            break;
+                        case OBJECT_TYPE.Decal:
+                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Add(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index].Clone());
+                            break;
+                    }
+                }
+            }
+        }
+
         #region User Input Methods
 
         void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
@@ -2753,6 +2773,11 @@ namespace SpinEditor
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.D) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
             {
                 STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+            }
+
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.V) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+            {
+                CopyPaste();
             }
 
             #region Undo / Redo

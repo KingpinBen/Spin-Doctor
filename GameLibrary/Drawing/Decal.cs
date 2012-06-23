@@ -12,7 +12,7 @@ using System.ComponentModel;
 
 namespace GameLibrary.Drawing
 {
-    public class Decal
+    public class Decal : ICloneable
     {
         #region Fields
         [ContentSerializer]
@@ -187,6 +187,16 @@ namespace GameLibrary.Drawing
         {
             sb.Draw(this._decalTexture, this._position, null, this._tint, this._rotation, this._origin, 
                 this._scale, this._flip, this._zLayer);
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        public Decal Clone()
+        {
+            return (Decal)this.MemberwiseClone();
         }
     }
 }

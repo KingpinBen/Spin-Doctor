@@ -46,7 +46,7 @@ using System.ComponentModel;
 
 namespace GameLibrary.Objects
 {
-    public class PhysicsObject
+    public class PhysicsObject : ICloneable
     {
         #region Fields
 
@@ -562,6 +562,16 @@ namespace GameLibrary.Objects
                 _rotation = MathHelper.PiOver2;
             else if (_orientation == Orientation.Right)
                 _rotation = -MathHelper.PiOver2;
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
+
+        public PhysicsObject Clone()
+        {
+            return (PhysicsObject)this.MemberwiseClone();
         }
     }
 }
