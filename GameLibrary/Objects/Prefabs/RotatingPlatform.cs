@@ -65,7 +65,7 @@ namespace GameLibrary.Objects
             {
                 return base.UseBodyRotation;
             }
-            internal set
+            set
             {
                 
             }

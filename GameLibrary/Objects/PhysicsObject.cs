@@ -177,7 +177,12 @@ namespace GameLibrary.Objects
             }
             set
             {
-                _zLayer = value;
+                if (value == 0)
+                    _zLayer = 0.01f;
+                else if (value == 1)
+                    _zLayer = 0.99f;
+                else
+                    _zLayer = value;
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
@@ -433,7 +438,7 @@ namespace GameLibrary.Objects
             this._textureAsset = tex;
             this._mass = 20;
             this.Tint = Color.White;
-            this._zLayer = 0.2f;
+            this._zLayer = 0.01f;
         }
         #endregion
 

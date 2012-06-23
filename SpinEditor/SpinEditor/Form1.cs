@@ -50,7 +50,7 @@ namespace SpinEditor
             
             //STATIC_EDITOR_MODE.levelInstance = new GameLibrary.Drawing.Level();
             STATIC_EDITOR_MODE.undoPhysObjArray = new PhysicsObject[STATIC_EDITOR_MODE.arrayMax][];
-
+            this.MaximizeBox = false;
             lst_ObjectsUnderCursor = new List<ObjectIndex>();
 
             hScrollBar1.Minimum = -2000;
@@ -95,9 +95,6 @@ namespace SpinEditor
         public void Update(GameTime gameTime)
         {
             CheckInput(gameTime);
-
-            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count > 0)
-                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[0].Update(gameTime);
         }
 
         #region Create an Object
@@ -693,14 +690,13 @@ namespace SpinEditor
                                     xnA_RenderControl1.levelDimensions = alteredRoomSize;
                                     STATIC_EDITOR_MODE.levelInstance.RoomDimensions = alteredRoomSize;
 
-                                    Update_undoArray();
                                     STATIC_EDITOR_MODE.levelInstance.RoomType = RoomForm.roomType;
 
                                     //  Load the background texture and attach it to the level.
                                     STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
-
-
                                     xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
+
+                                    Update_undoArray();
                                 }
                                 break;
                             default:
@@ -2726,30 +2722,74 @@ namespace SpinEditor
             STATIC_EDITOR_MODE.mouseCurrentState = Mouse.GetState();
             STATIC_EDITOR_MODE.keyboardCurrentState = Keyboard.GetState();
 
+            #region Editor Toolstrip
+
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Q))
             {
                 SwitchToSelectMode();
             }
+
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.W))
             {
                 SwitchToMoveMode();
             }
+
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.E))
             {
                 SwitchToPlaceMode();
             }
+
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Delete))
             {
                 DeleteSelectedObjects();
             }
+            #endregion
+
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.S) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
             {
                 SaveFile();
             }
+
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.D) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
             {
                 STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
             }
+
+            #region Undo / Redo
+
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Z) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+            {
+                Undo();
+            }
+
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Y) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+            {
+                Redo();
+            }
+            #endregion
+
+            #region Toggles
+
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.F1))
+            {
+                xnA_RenderControl1.HideCoordinates = !xnA_RenderControl1.HideCoordinates;
+            }
+
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.F2))
+            {
+                xnA_RenderControl1.HideGrid = !xnA_RenderControl1.HideGrid;
+            }
+
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.F3))
+            {
+                xnA_RenderControl1.HideMovementPath = !xnA_RenderControl1.HideMovementPath;
+            }
+
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.F4))
+            {
+                xnA_RenderControl1.HideOverlay = !xnA_RenderControl1.HideOverlay;
+            }
+            #endregion
 
             STATIC_EDITOR_MODE.keyboardOldState = STATIC_EDITOR_MODE.keyboardCurrentState;
             STATIC_EDITOR_MODE.mouseOldState = STATIC_EDITOR_MODE.mouseCurrentState;
