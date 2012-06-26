@@ -125,6 +125,8 @@
     <Compile Include="Drawing\FullscreenPicture.cs" />
     <Compile Include="Drawing\HUD.cs" />
     <Compile Include="Drawing\Particle.cs" />
+    <Compile Include="Drawing\Level\RoomThemeEnum.cs" />
+    <Compile Include="Drawing\RoomTypeEnum.cs" />
     <Compile Include="Drawing\TextString.cs" />
     <Compile Include="Drawing\Level\LevelBackdrop.cs" />
     <Compile Include="Managers\Decal_Manager.cs" />

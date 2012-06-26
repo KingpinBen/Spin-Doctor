@@ -44,30 +44,21 @@ using System.Threading;
 
 namespace GameLibrary.Drawing
 {
-    public enum RoomThemeEnum
-    {
-        Industrial, Medical, Study, General
-    }
-
-    public enum RoomTypeEnum
-    {
-        Rotating, NonRotating, Hub
-    }
-    
     public class Level
     {
         #region Fields
+#if EDITOR
 
-        private Player _player;
-        private ContentManager _content;
-        private Gears _gears;
-        private bool _initialized = false;
-        private LevelBackdrop _levelBackdrop;
+#else
+        Player _player;
+        ContentManager _content;
+        Gears _gears;
+        bool _initialized = false;
+        LevelBackdrop _levelBackdrop;
+#endif
 
         [ContentSerializer]
         private List<PhysicsObject> physicsObjectsList;
-        //[ContentSerializer]
-        //private bool _levelRotates;
         [ContentSerializer]
         private Vector2 _spawnLocation = Vector2.Zero;
         [ContentSerializer]
@@ -217,23 +208,27 @@ namespace GameLibrary.Drawing
         {
             this.physicsObjectsList = new List<PhysicsObject>();
             this._decalManager = new Decal_Manager();
-            
         }
 
         public void Init()
         {
+#if EDITOR
+#else
             this._content = new ContentManager(Screen_Manager.Game.Services, "Content");
             this._levelBackdrop = new LevelBackdrop();
             this._player = Player.Instance;
             this._initialized = false;
 
             _gears = new Gears();
+#endif
         }
         #endregion
 
         #region Load and Unload
         public void Load(World world)
         {
+#if EDITOR
+#else
             Init();
             this.SetupCamera();
             Player.Instance.Load(_content, world, _spawnLocation, true);
@@ -254,15 +249,18 @@ namespace GameLibrary.Drawing
             this._decalManager.Load();
 
             _initialized = true;
+#endif
         }
 
         public void Unload()
         {
+#if EDITOR
+#else
             _content.Unload();
+#endif
         }
         #endregion
 
-        #region Update
         public void Update(GameTime gameTime)
         {
 #if EDITOR
@@ -281,7 +279,6 @@ namespace GameLibrary.Drawing
             }
 #endif
         }
-        #endregion
 
         #region Draw Calls
 #if EDITOR

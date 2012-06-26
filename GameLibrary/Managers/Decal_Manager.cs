@@ -42,11 +42,30 @@ namespace GameLibrary.Managers
         #endregion
 
         #region Properties
+#if EDITOR
         [ContentSerializerIgnore]
         public List<Decal> DecalList
         {
-            get { return _decalList; }
+            get
+            {
+                return _decalList;
+            }
+            set
+            {
+                _decalList = value;
+            }
         }
+#else
+        [ContentSerializerIgnore]
+        public List<Decal> DecalList
+        {
+            get
+            {
+                return _decalList;
+            }
+        }
+#endif
+
         #endregion
 
         public Decal_Manager()

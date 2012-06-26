@@ -80,16 +80,9 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.listBox_Assets3 = new System.Windows.Forms.ListBox();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE = new System.Windows.Forms.Button();
-            this.BUTTON_ROTATE_VIEW_CLOCKWISE = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.ZOOM = new System.Windows.Forms.NumericUpDown();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE = new System.Windows.Forms.Button();
-            this.Rotate_Relative = new System.Windows.Forms.ComboBox();
-            this.BUTTON_ROTATE_SELECTION_CLOCKWISE = new System.Windows.Forms.Button();
-            this.label6 = new System.Windows.Forms.Label();
             this.Align_Relative = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.BUTTON_ALIGN_10 = new System.Windows.Forms.Button();
@@ -585,42 +578,12 @@
             // panel4
             // 
             this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel4.Controls.Add(this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE);
-            this.panel4.Controls.Add(this.BUTTON_ROTATE_VIEW_CLOCKWISE);
-            this.panel4.Controls.Add(this.label4);
             this.panel4.Controls.Add(this.label3);
             this.panel4.Controls.Add(this.ZOOM);
-            this.panel4.Location = new System.Drawing.Point(226, 581);
+            this.panel4.Location = new System.Drawing.Point(226, 523);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(214, 58);
+            this.panel4.Size = new System.Drawing.Size(214, 33);
             this.panel4.TabIndex = 28;
-            // 
-            // BUTTON_ROTATE_VIEW_ANTICLOCKWISE
-            // 
-            this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ROTATE_VIEW_ANTICLOCKWISE.Image")));
-            this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE.Location = new System.Drawing.Point(183, 30);
-            this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE.Name = "BUTTON_ROTATE_VIEW_ANTICLOCKWISE";
-            this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE.Size = new System.Drawing.Size(24, 24);
-            this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE.TabIndex = 30;
-            this.BUTTON_ROTATE_VIEW_ANTICLOCKWISE.UseVisualStyleBackColor = true;
-            // 
-            // BUTTON_ROTATE_VIEW_CLOCKWISE
-            // 
-            this.BUTTON_ROTATE_VIEW_CLOCKWISE.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ROTATE_VIEW_CLOCKWISE.Image")));
-            this.BUTTON_ROTATE_VIEW_CLOCKWISE.Location = new System.Drawing.Point(159, 30);
-            this.BUTTON_ROTATE_VIEW_CLOCKWISE.Name = "BUTTON_ROTATE_VIEW_CLOCKWISE";
-            this.BUTTON_ROTATE_VIEW_CLOCKWISE.Size = new System.Drawing.Size(24, 24);
-            this.BUTTON_ROTATE_VIEW_CLOCKWISE.TabIndex = 29;
-            this.BUTTON_ROTATE_VIEW_CLOCKWISE.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(71, 36);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(81, 13);
-            this.label4.TabIndex = 25;
-            this.label4.Text = "Rotate Camera:";
             // 
             // label3
             // 
@@ -664,10 +627,6 @@
             // panel3
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel3.Controls.Add(this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE);
-            this.panel3.Controls.Add(this.Rotate_Relative);
-            this.panel3.Controls.Add(this.BUTTON_ROTATE_SELECTION_CLOCKWISE);
-            this.panel3.Controls.Add(this.label6);
             this.panel3.Controls.Add(this.Align_Relative);
             this.panel3.Controls.Add(this.label5);
             this.panel3.Controls.Add(this.BUTTON_ALIGN_10);
@@ -682,48 +641,8 @@
             this.panel3.Controls.Add(this.BUTTON_ALIGN_5);
             this.panel3.Location = new System.Drawing.Point(226, 374);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(214, 179);
+            this.panel3.Size = new System.Drawing.Size(214, 143);
             this.panel3.TabIndex = 27;
-            // 
-            // BUTTON_ROTATE_SELECTION_ANTICLOCKWISE
-            // 
-            this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ROTATE_SELECTION_ANTICLOCKWISE.Image")));
-            this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE.Location = new System.Drawing.Point(183, 144);
-            this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE.Name = "BUTTON_ROTATE_SELECTION_ANTICLOCKWISE";
-            this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE.Size = new System.Drawing.Size(24, 24);
-            this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE.TabIndex = 30;
-            this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE.UseVisualStyleBackColor = true;
-            this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE.Click += new System.EventHandler(this.BUTTON_ROTATE_SELECTION_ANTICLOCKWISE_Click);
-            // 
-            // Rotate_Relative
-            // 
-            this.Rotate_Relative.FormattingEnabled = true;
-            this.Rotate_Relative.Items.AddRange(new object[] {
-            "As Group",
-            "Per Object"});
-            this.Rotate_Relative.Location = new System.Drawing.Point(53, 147);
-            this.Rotate_Relative.Name = "Rotate_Relative";
-            this.Rotate_Relative.Size = new System.Drawing.Size(101, 21);
-            this.Rotate_Relative.TabIndex = 30;
-            // 
-            // BUTTON_ROTATE_SELECTION_CLOCKWISE
-            // 
-            this.BUTTON_ROTATE_SELECTION_CLOCKWISE.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ROTATE_SELECTION_CLOCKWISE.Image")));
-            this.BUTTON_ROTATE_SELECTION_CLOCKWISE.Location = new System.Drawing.Point(159, 144);
-            this.BUTTON_ROTATE_SELECTION_CLOCKWISE.Name = "BUTTON_ROTATE_SELECTION_CLOCKWISE";
-            this.BUTTON_ROTATE_SELECTION_CLOCKWISE.Size = new System.Drawing.Size(24, 24);
-            this.BUTTON_ROTATE_SELECTION_CLOCKWISE.TabIndex = 29;
-            this.BUTTON_ROTATE_SELECTION_CLOCKWISE.UseVisualStyleBackColor = true;
-            this.BUTTON_ROTATE_SELECTION_CLOCKWISE.Click += new System.EventHandler(this.BUTTON_ROTATE_SELECTION_CLOCKWISE_Click);
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 150);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(39, 13);
-            this.label6.TabIndex = 29;
-            this.label6.Text = "Rotate";
             // 
             // Align_Relative
             // 
@@ -755,7 +674,6 @@
             this.BUTTON_ALIGN_10.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_10.TabIndex = 18;
             this.BUTTON_ALIGN_10.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_10.Click += new System.EventHandler(this.BUTTON_ALIGN_10_Click);
             // 
             // BUTTON_ALIGN_1
             // 
@@ -765,7 +683,6 @@
             this.BUTTON_ALIGN_1.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_1.TabIndex = 13;
             this.BUTTON_ALIGN_1.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_1.Click += new System.EventHandler(this.BUTTON_ALIGN_1_Click);
             // 
             // BUTTON_ALIGN_6
             // 
@@ -775,7 +692,6 @@
             this.BUTTON_ALIGN_6.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_6.TabIndex = 22;
             this.BUTTON_ALIGN_6.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_6.Click += new System.EventHandler(this.BUTTON_ALIGN_6_Click);
             // 
             // BUTTON_ALIGN_2
             // 
@@ -785,7 +701,6 @@
             this.BUTTON_ALIGN_2.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_2.TabIndex = 14;
             this.BUTTON_ALIGN_2.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_2.Click += new System.EventHandler(this.BUTTON_ALIGN_2_Click);
             // 
             // BUTTON_ALIGN_7
             // 
@@ -795,7 +710,6 @@
             this.BUTTON_ALIGN_7.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_7.TabIndex = 21;
             this.BUTTON_ALIGN_7.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_7.Click += new System.EventHandler(this.BUTTON_ALIGN_7_Click);
             // 
             // BUTTON_ALIGN_3
             // 
@@ -805,7 +719,6 @@
             this.BUTTON_ALIGN_3.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_3.TabIndex = 15;
             this.BUTTON_ALIGN_3.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_3.Click += new System.EventHandler(this.BUTTON_ALIGN_3_Click);
             // 
             // BUTTON_ALIGN_8
             // 
@@ -815,7 +728,6 @@
             this.BUTTON_ALIGN_8.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_8.TabIndex = 20;
             this.BUTTON_ALIGN_8.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_8.Click += new System.EventHandler(this.BUTTON_ALIGN_8_Click);
             // 
             // BUTTON_ALIGN_4
             // 
@@ -825,7 +737,6 @@
             this.BUTTON_ALIGN_4.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_4.TabIndex = 16;
             this.BUTTON_ALIGN_4.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_4.Click += new System.EventHandler(this.BUTTON_ALIGN_4_Click);
             // 
             // BUTTON_ALIGN_9
             // 
@@ -835,7 +746,6 @@
             this.BUTTON_ALIGN_9.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_9.TabIndex = 19;
             this.BUTTON_ALIGN_9.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_9.Click += new System.EventHandler(this.BUTTON_ALIGN_9_Click);
             // 
             // BUTTON_ALIGN_5
             // 
@@ -845,7 +755,6 @@
             this.BUTTON_ALIGN_5.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_5.TabIndex = 17;
             this.BUTTON_ALIGN_5.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_5.Click += new System.EventHandler(this.BUTTON_ALIGN_5_Click);
             // 
             // panel2
             // 
@@ -889,7 +798,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Spin EDITOR";
+            this.Text = "Spin Doctor Editor";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -959,15 +868,8 @@
         private System.Windows.Forms.Button BUTTON_ALIGN_5;
         private System.Windows.Forms.NumericUpDown ZOOM;
         public System.Windows.Forms.PropertyGrid propertyGrid1;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Button BUTTON_ROTATE_VIEW_ANTICLOCKWISE;
-        private System.Windows.Forms.Button BUTTON_ROTATE_VIEW_CLOCKWISE;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button BUTTON_ROTATE_SELECTION_ANTICLOCKWISE;
-        private System.Windows.Forms.ComboBox Rotate_Relative;
-        private System.Windows.Forms.Button BUTTON_ROTATE_SELECTION_CLOCKWISE;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;

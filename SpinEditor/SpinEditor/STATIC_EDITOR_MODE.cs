@@ -29,19 +29,19 @@ namespace SpinEditor
 
     public static class STATIC_EDITOR_MODE
     {
-        public static EDITOR_MODE ED_MODE = EDITOR_MODE.EDIT_LEVEL;
-        public static ALIGN_ANCHOR ALIGN_TO = ALIGN_ANCHOR.LAST;
+        public static EDITOR_MODE ED_MODE;
+        public static ALIGN_ANCHOR ALIGN_TO;
 
-        public static GameLibrary.Drawing.Level levelInstance;
+        public static Level levelInstance;
 
         public static World world = new World(Vector2.Zero);
 
-        public static bool bIsSomethingSelected = false;
+        public static bool bIsSomethingSelected;
 
-        public static List<ObjectIndex> selectedObjectIndices = new List<ObjectIndex>();
+        public static List<ObjectIndex> selectedObjectIndices;
         
-        public static List<List<PhysicsObject>> listList = new List<List<PhysicsObject>>();
         public static PhysicsObject[][] undoPhysObjArray;
+        public static Decal[][] undoDecalArray;
         public static int arrayLength = 0;
         public static int arrayMax = 100;
         public static int arrayIndex = -1;
@@ -51,6 +51,16 @@ namespace SpinEditor
 
         public static MouseState mouseCurrentState = Mouse.GetState();
         public static MouseState mouseOldState;
+
+        public static void Setup()
+        {
+            levelInstance = new Level();
+            ALIGN_TO = ALIGN_ANCHOR.LAST;
+            bIsSomethingSelected = false;
+            selectedObjectIndices = new List<ObjectIndex>();
+            undoPhysObjArray = new PhysicsObject[arrayMax][];
+            undoDecalArray = new Decal[arrayMax][];
+        }
 
     }
 }
