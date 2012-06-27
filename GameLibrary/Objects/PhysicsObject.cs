@@ -73,11 +73,8 @@ namespace GameLibrary.Objects
         protected float _rotation;
         [ContentSerializer]
         protected Orientation _orientation;
-        //[ContentSerializer]
-        //protected float _scale;
 
         // Can't serialize Texture2D files. Texture is init'd in Load() anyway.
-        [ContentSerializerIgnore]
         protected Texture2D _texture;
         protected Vector2 _origin;
 
@@ -169,7 +166,7 @@ namespace GameLibrary.Objects
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
-        public virtual float zLayer
+        public float zLayer
         {
             get
             {
@@ -177,12 +174,9 @@ namespace GameLibrary.Objects
             }
             set
             {
-                if (value == 0)
-                    _zLayer = 0.01f;
-                else if (value == 1)
-                    _zLayer = 0.99f;
-                else
-                    _zLayer = value;
+                value = MathHelper.Clamp(value, 0.1f, 0.99f);
+
+                _zLayer = value;
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
@@ -209,6 +203,9 @@ namespace GameLibrary.Objects
             set
             {
                 _useBodyRotation = value;
+
+                if (value)
+                    GetRotationFromOrientation();
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
@@ -434,11 +431,11 @@ namespace GameLibrary.Objects
 
         public virtual void Init(Vector2 position, string tex)
         {
+            this._mass = 20;
             this._position = position;
             this._textureAsset = tex;
-            this._mass = 20;
-            this.Tint = Color.White;
-            this._zLayer = 0.01f;
+            this._tint = Color.White;
+            this._zLayer = 0.01f;            
         }
         #endregion
 
@@ -495,8 +492,10 @@ namespace GameLibrary.Objects
         {
             //  Doesn't strech image. Tiles instead
             spriteBatch.Draw(_texture, Position,
-                new Rectangle(0, 0, (int)this.Width, (int)this.Height),
-                Tint, TextureRotation, new Vector2(this.Width / 2, this.Height / 2), 1f, SpriteEffects.None, zLayer);
+                new Rectangle(0, 0, (int)this._width, (int)this._height),
+                Tint, TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1f, SpriteEffects.None, zLayer);
+
+            
         }
 #else
         public virtual void Draw(SpriteBatch spriteBatch)
@@ -509,14 +508,8 @@ namespace GameLibrary.Objects
 #endif
         #endregion
 
-        #region SetUpPhysics
-        /// <summary>
-        /// Set up the objects physics
-        /// </summary>
-        /// <param name="world"></param>
-        /// <param name="position"></param>
-        /// <param name="shape"></param>
-        /// <param name="mass"></param>
+        #region Private Methods
+
         protected virtual void SetUpPhysics(World world)
         {
 #if EDITOR
@@ -538,7 +531,6 @@ namespace GameLibrary.Objects
             this.Body.Friction = 5.0f;
 #endif
         }
-        #endregion
 
         #region Collisions
         protected virtual bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
@@ -564,6 +556,7 @@ namespace GameLibrary.Objects
                 _rotation = -MathHelper.PiOver2;
         }
 
+        #region Clone
         object ICloneable.Clone()
         {
             return this.Clone();
@@ -573,5 +566,8 @@ namespace GameLibrary.Objects
         {
             return (PhysicsObject)this.MemberwiseClone();
         }
+        #endregion
+
+        #endregion
     }
 }

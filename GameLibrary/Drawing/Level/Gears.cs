@@ -65,12 +65,13 @@ namespace GameLibrary.Objects
         {
             _gearsTex = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/gear");
             _background = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/rock");
-            float offset = (CR - _gearsTex.Width) + 25f;
+            //float offset = (CR - _gearsTex.Width) + 25f;
+            float offset = (CR * 0.5f) + (_gearsTex.Width / 2);
 
-            TopLeftGear = new Vector2(LC.X - offset, LC.Y - offset);
-            TopRightGear = new Vector2(LC.X + offset, LC.Y - offset);
-            BotLeftGear = new Vector2(LC.X - offset, LC.Y + offset);
-            BotRightGear = new Vector2(LC.X + offset, LC.Y + offset);
+            TopLeftGear = Vector2.Zero + new Vector2(-offset, -offset);
+            TopRightGear = Vector2.Zero + new Vector2(offset,-offset);
+            BotLeftGear = Vector2.Zero + new Vector2(-offset, offset);
+            BotRightGear = Vector2.Zero + new Vector2(offset, offset);
         }
         #endregion
 

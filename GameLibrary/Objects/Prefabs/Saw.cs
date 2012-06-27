@@ -42,6 +42,8 @@ namespace GameLibrary.Objects
         #region Fields
         [ContentSerializer]
         private string _bloodiedTextureAsset;
+        [ContentSerializer]
+        float _scale;
 
 #if EDITOR
 
@@ -77,6 +79,18 @@ namespace GameLibrary.Objects
                 {
                     _endPosition = new Vector2(_position.X, value.Y);
                 }
+            }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public float Scale
+        {
+            get
+            {
+                return _scale;
+            }
+            set
+            {
+                _scale = value;
             }
         }
 #else
@@ -126,6 +140,7 @@ namespace GameLibrary.Objects
 
             this._bloodiedTextureAsset = texblood;
             this._motorSpeed = 0;
+            this._scale = 1.0f;
         }
         #endregion
 
@@ -209,13 +224,13 @@ namespace GameLibrary.Objects
 #if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
-            base.Draw(spriteBatch);
+            spriteBatch.Draw(this._texture, this._position, null, this._tint, 0.0f, _origin, _scale, SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, Color.White, 
-                TextureRotation, Origin, 1.0f, SpriteEffects.None, zLayer); 
+                TextureRotation, Origin, _scale, SpriteEffects.None, zLayer); 
 
             sb.Draw(_wallDecalEnd, this.Position, null, Color.White, _decalRotation,
                 new Vector2(this._wallDecalEnd.Width / 2, this._wallDecalEnd.Height / 2), 1.0f, SpriteEffects.None, zLayer - 0.01f);
@@ -248,7 +263,7 @@ namespace GameLibrary.Objects
 #if EDITOR
 #else
             this.Body = BodyFactory.CreateCircle(world,
-                ConvertUnits.ToSimUnits(this._texture.Width / 2),
+                ConvertUnits.ToSimUnits((this._texture.Width / 2) * _scale),
                 ConvertUnits.ToSimUnits(_mass));
 
             this.Body.BodyType = BodyType.Dynamic;

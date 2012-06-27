@@ -172,8 +172,11 @@ namespace SpinEditor
                                 {
                                     if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i - 1)
                                     {
-                                        spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Position,
-                                            new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Width, (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Height),
+                                        spriteBatch.Draw(debugOverlay, 
+                                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Position,
+                                            new Rectangle(0, 0, 
+                                                (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Width,
+                                                (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Height),
                                             Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Origin, 1.0f, SpriteEffects.None, 0.0f);
                                     }
                                 }
@@ -198,9 +201,17 @@ namespace SpinEditor
                                 {
                                     if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i)
                                     {
-                                        spriteBatch.Draw(debugOverlay, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position,
-                                            new Rectangle(0, 0, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width, (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height),
-                                            Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Origin, 1.0f, SpriteEffects.None, 0.0f);
+                                        float width = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width * STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Scale;
+                                        float height = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height * STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Scale;
+
+                                        spriteBatch.Draw(debugOverlay, 
+                                            new Rectangle(
+                                                (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - width * 0.5f),
+                                                (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - height * 0.5f),
+                                                (int)(width),
+                                                (int)(height)),
+                                            new Rectangle(0, 0, (int)width , (int)height),
+                                            Color.Green * 0.3f, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
                                     }
                                 }
                             }

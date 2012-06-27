@@ -80,6 +80,22 @@ namespace GameLibrary.Objects.Triggers
                 _rotation = SpinAssist.RotationByOrientation(_orientation);
             }
         }
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
+        public override float TriggerWidth
+        {
+            get
+            {
+                return base.TriggerWidth;
+            }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
+        public override float TriggerHeight
+        {
+            get
+            {
+                return base.TriggerHeight;
+            }
+        }
 #else
 
 #endif

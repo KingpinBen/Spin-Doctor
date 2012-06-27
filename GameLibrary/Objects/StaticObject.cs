@@ -53,11 +53,9 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        #region Load
         public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
-
 #if EDITOR
 
 #else
@@ -67,18 +65,12 @@ namespace GameLibrary.Objects
             this.Body.IgnoreGravity = true;
 #endif
         }
-        #endregion
 
-        #region Draw
-#if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(this._texture, this._position,
-                new Rectangle(0, 0, (int)_width, (int)_height), this._tint, this.TextureRotation, new Vector2(_width / 2, _height / 2), 1.0f, SpriteEffects.None, this._zLayer);
+            spriteBatch.Draw(_texture, new Rectangle((int)(_position.X - (this.Width * 0.5f)), (int)(_position.Y - (this.Height * 0.5f)), (int)Width, (int)Height),
+                new Rectangle(0, 0, (int)this._width, (int)this._height),
+                Tint, TextureRotation, Vector2.Zero, SpriteEffects.None, zLayer);
         }
-#else
-
-#endif
-        #endregion
     }
 }

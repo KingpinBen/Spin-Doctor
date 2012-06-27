@@ -71,7 +71,7 @@ namespace GameLibrary.Objects.Triggers
 
 #if EDITOR
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
-        public bool ShowHelp
+        public virtual bool ShowHelp
         {
             get
             {
@@ -83,7 +83,7 @@ namespace GameLibrary.Objects.Triggers
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
-        public float TriggerWidth
+        public virtual float TriggerWidth
         {
             get
             {
@@ -95,7 +95,7 @@ namespace GameLibrary.Objects.Triggers
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
-        public float TriggerHeight
+        public virtual float TriggerHeight
         {
             get
             {

@@ -46,6 +46,7 @@ namespace SpinEditor
         {
             InitializeComponent();
 
+            //  Disable fullscreen as it messes up the grid.
             this.MaximizeBox = false;
             lst_ObjectsUnderCursor = new List<ObjectIndex>();
 
@@ -53,8 +54,6 @@ namespace SpinEditor
             vScrollBar1.Minimum = -2000;
             hScrollBar1.Maximum = 2000;
             vScrollBar1.Maximum = 2000;
-
-            
 
             //  Allows access to public methods from xna_renderControl, such as Update().
             xnA_RenderControl1.form1 = this;
@@ -801,8 +800,8 @@ namespace SpinEditor
         //                            {
         //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
         //                                    firstObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2)
-        //                                    - (firstObjTexWidth / 2),
+        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width * 0.5f)
+        //                                    - (firstObjTexWidth * 0.5f),
         //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
         //                            }
         //                            break;
@@ -810,7 +809,7 @@ namespace SpinEditor
         //                            {
         //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
         //                                    firstObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width * 0.5f)
         //                                    - (firstObjTexWidth / 2),
         //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
         //                            }
@@ -2533,15 +2532,15 @@ namespace SpinEditor
                 case EDITOR_MODE.SELECT:
                     {
                         #region Handle Objects Under Cursor
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+                        if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count > 0)
                         {
-                            if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i] != null)
+                            for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
                             {
                                 Rectangle BoundingBox = new Rectangle(
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width / 2),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height / 2),
-                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width,
-                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height);
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width * 0.5f),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height * 0.5f),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height));
 
                                 if (BoundingBox.Contains(MousePos))
                                 {
@@ -2550,15 +2549,18 @@ namespace SpinEditor
                             }
                         }
 
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
+                        if (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count > 0)
                         {
-                            if (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].AssetLocation != null)
+                            for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
                             {
+                                float width = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width * STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Scale;
+                                float height = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height * STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Scale;
+
                                 Rectangle BoundingBox = new Rectangle(
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width / 2),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height / 2),
-                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width,
-                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height);
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - width * 0.5f),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - height * 0.5f),
+                                    (int)width,
+                                    (int)height);
 
                                 if (BoundingBox.Contains(MousePos))
                                 {
@@ -2591,8 +2593,8 @@ namespace SpinEditor
                                     case (OBJECT_TYPE.Physics):
                                         {
                                             newRect = new Microsoft.Xna.Framework.Rectangle(
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width * 0.5f),
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height * 0.5f),
                                                     (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
                                                     (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
                                         }
@@ -2600,8 +2602,8 @@ namespace SpinEditor
                                     case (OBJECT_TYPE.Decal):
                                         {
                                             newRect = new Microsoft.Xna.Framework.Rectangle(
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width * 0.5f),
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height * 0.5f),
                                                     (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
                                                     (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
                                         }
@@ -2844,6 +2846,20 @@ namespace SpinEditor
             return false;
         }
 
+        #endregion
+
+        #region RenderControl Gain Focus
+        /// <summary>
+        /// We need the render control to regain focus after the screen has been selected otherwise it sticks to the last object.
+        /// 
+        /// Having it on mouseover would be too frustrating.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void xnA_RenderControl1_Click(object sender, EventArgs e)
+        {
+            this.xnA_RenderControl1.Focus();
+        }
         #endregion
     }
 }

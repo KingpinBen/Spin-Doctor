@@ -108,6 +108,7 @@ namespace GameLibrary.Drawing
             }
             set
             {
+                value = MathHelper.Clamp(value, 0.1f, 0.99f);
                 _zLayer = value;
             }
         }
@@ -120,7 +121,7 @@ namespace GameLibrary.Drawing
             }
             set
             {
-                _rotation = value;
+                _rotation = MathHelper.ToRadians(value);
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
@@ -174,13 +175,16 @@ namespace GameLibrary.Drawing
         public void Load(ContentManager Content)
         {
             this._decalTexture = Content.Load<Texture2D>(_decalAsset);
+            this._origin = new Vector2(this._decalTexture.Width / 2, this._decalTexture.Height / 2);
 #if EDITOR
-            this.Width = _decalTexture.Width;
-            this.Height = _decalTexture.Height;
+            if (this.Width == 0 || this.Height == 0)
+            {
+                this.Width = _decalTexture.Width;
+                this.Height = _decalTexture.Height;
+            }
 #else
 
 #endif
-            this._origin = new Vector2(this._decalTexture.Width / 2, this._decalTexture.Height / 2);
         }
 
         public void Draw(SpriteBatch sb)
@@ -188,6 +192,8 @@ namespace GameLibrary.Drawing
             sb.Draw(this._decalTexture, this._position, null, this._tint, this._rotation, this._origin, 
                 this._scale, this._flip, this._zLayer);
         }
+
+        #region Private Methods
 
         object ICloneable.Clone()
         {
@@ -198,5 +204,7 @@ namespace GameLibrary.Drawing
         {
             return (Decal)this.MemberwiseClone();
         }
+
+        #endregion
     }
 }

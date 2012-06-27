@@ -56,10 +56,10 @@ namespace GameLibrary.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            this._texture = content.Load<Texture2D>(_textureAsset);
-            this.Origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
+            base.Load(content, world);
 
 #if EDITOR
+
 #else
             SetUpPhysics(world);
 #endif

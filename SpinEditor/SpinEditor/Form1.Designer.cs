@@ -784,6 +784,7 @@
             this.xnA_RenderControl1.Size = new System.Drawing.Size(898, 651);
             this.xnA_RenderControl1.TabIndex = 0;
             this.xnA_RenderControl1.Text = "xnA_RenderControl1";
+            this.xnA_RenderControl1.Click += new System.EventHandler(this.xnA_RenderControl1_Click);
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
             // 

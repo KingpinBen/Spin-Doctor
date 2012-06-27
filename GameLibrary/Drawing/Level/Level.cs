@@ -208,6 +208,11 @@ namespace GameLibrary.Drawing
         {
             this.physicsObjectsList = new List<PhysicsObject>();
             this._decalManager = new Decal_Manager();
+#if EDITOR
+            this._backgroundTint = Color.White;
+#else
+
+#endif
         }
 
         public void Init()

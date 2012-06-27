@@ -20,6 +20,8 @@
 //--    
 //--------------------------------------------------------------------------
 
+#define Development
+
 #region Using Statements
 using System;
 using GameLibrary.Assists;
@@ -150,7 +152,7 @@ namespace GameLibrary.Managers
             }
 
             #region Development
-#if DEBUG
+#if Development
             DevDisplay.Draw(gameTime, stopWatch);
             stopWatch.Reset();
 #endif
