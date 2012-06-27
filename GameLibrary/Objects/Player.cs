@@ -159,7 +159,7 @@ namespace GameLibrary.Objects
             }
 
             //Keeps the body rotation up, moving with the camera.
-            if (Camera.LevelRotating)
+            if (Camera.LevelRotating || (mainBody.Rotation != (float)-Camera.Rotation && PlayerState != pState.Swinging))
             {
                 mainBody.Rotation = (float)-Camera.Rotation;
             }
@@ -460,7 +460,7 @@ namespace GameLibrary.Objects
 
         private void HandleSwinging(GameTime gameTime)
         {
-            
+            mainBody.Rotation = GrabRotation;
         }
 
         private void HandleAir(GameTime gameTime)

@@ -41,6 +41,7 @@ using GameLibrary.Screens;
 using Microsoft.Xna.Framework.Content;
 using GameLibrary.Managers;
 using System.ComponentModel;
+using FarseerPhysics.Dynamics.Contacts;
 #endregion
 
 namespace GameLibrary.Objects
@@ -51,22 +52,19 @@ namespace GameLibrary.Objects
 
         [ContentSerializer]
         private Vector2 _endPosition;
-
         [ContentSerializer]
         private int _chainCount;
 
-        private List<Body> _pathBodies = new List<Body>();
+        private List<Body> _pathBodies;
+        private List<Fixture> _touchedRopeFixtures = new List<Fixture>();
+        private WeldJoint _ropePlayerJoint;
         private bool _inRange;
         private Texture2D endTexture;
+        private RopeJoint _ropeJoint;
 
-        //  We need to keep the world in here to create the grabbing joint
-        //  when it's needed.
-        private World World;
         #endregion
 
         #region Properties
-
-
 
 #if EDITOR
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
@@ -86,10 +84,11 @@ namespace GameLibrary.Objects
         {
             get
             {
-                return 0;
+                return base.Height;
             }
             set
             {
+
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Hidden")]
@@ -97,10 +96,11 @@ namespace GameLibrary.Objects
         {
             get
             {
-                return 0;
+                return base.Width;
             }
             set
             {
+                
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
@@ -127,8 +127,8 @@ namespace GameLibrary.Objects
         public override void Init(Vector2 StartVec, string texLoc)
         {
             base.Init(StartVec, texLoc);
-            this._chainCount = 10;
 
+            this._chainCount = 10;
             this._textureAsset = texLoc;
         }
         #endregion
@@ -140,78 +140,53 @@ namespace GameLibrary.Objects
             _texture = content.Load<Texture2D>(_textureAsset);
 
 #if EDITOR
-            this.Width = endTexture.Width;
-            this.Height = endTexture.Height;
-            this._endPosition = this._position + new Vector2(0, _texture.Height * ChainCount);
-
+            if (this.Width == 0 || this.Height == 0)
+            {
+                this._width = endTexture.Width;
+                this._height = endTexture.Height;
+                this._endPosition = this._position + new Vector2(0, _texture.Height * ChainCount);
+            }
 #else
-            this.World = world;
             SetUpPhysics(world);
 #endif
         }
         #endregion
 
-        #region Update
         public override void Update(GameTime gameTime)
         {
+#if EDITOR
+
+#else
+
             if (Camera.LevelRotating)
             {
-                //  Only awakens the ropes bodies if the last one is asleep
-                //  and the level rotates. The last one will drag the rest.
-                //  saves a bit of time.
-
                 if (_pathBodies[_pathBodies.Count - 1].Awake == false)
                     _pathBodies[_pathBodies.Count - 1].Awake = true;       
             }
 
-            //if (the joint == null)
-            //{
-            //    Player.Instance.GrabRotation = _pathBodies[_pathBodies.Count - 2].Rotation;
+            if (!GameplayScreen.World.JointList.Contains(_ropeJoint))
+            {
+                if (Input.Interact() && _inRange)
+                {
+                    //_ropeBodyRevoluteJoint = new RevoluteJoint(_pathBodies[bodyIndex - 1], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
+                    _ropePlayerJoint = new WeldJoint(_touchedRopeFixtures[_touchedRopeFixtures.Count - 1].Body, Player.Instance.Body, Vector2.Zero, Vector2.Zero);
+                    GameplayScreen.World.AddJoint(_ropePlayerJoint);
 
-            //    if (_inRange && Input.Interact())
-            //    {
-            //        //  Make the joint
-            //        Player.Instance.GrabRope();
-            //    }
-            //}
-            //else
-            //{
-            //    if (Input.Jump())
-            //    {
-            //        //  World.RemoveJoint(the joint);
-                    
-            //    }
-            //}
-
-            ////  The rope already has the fix that the base does, so no point in using it. 
-            ////  Also makes it crash..
-            //  base.Update(gameTime);
+                    _ropeJoint = new RopeJoint(_pathBodies[0], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
+                    _ropeJoint.MaxLength -= 1.0f;
+                    GameplayScreen.World.AddJoint(_ropeJoint);
+                }
+            }
+            else
+            {
+                if (Input.Jump())
+                {
+                    GameplayScreen.World.RemoveJoint(_ropeJoint);
+                    GameplayScreen.World.RemoveJoint(_ropePlayerJoint);
+                }
+            }
+#endif
         }
-        #endregion
-
-        #region Collisions
-        protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
-        {
-            if (fixtureB.Body != Player.Instance.Body)
-                return;
-
-            _inRange = false;
-        }
-
-        protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
-        {
-            if (fixtureB.Body != Player.Instance.Body)
-                return true;
-
-            //if (the joint != null)
-            //{
-            //    return true;
-            //}
-
-            _inRange = true;
-            return true;
-        }
-        #endregion
 
         #region Draw
 #if EDITOR
@@ -238,24 +213,115 @@ namespace GameLibrary.Objects
 #endif
         #endregion
 
+        #region Private Methods
+
         #region SetupPhysics
         protected override void SetUpPhysics(World world)
         {
+            this._pathBodies = new List<Body>();
+
             Path _ropePath = new Path();
             _ropePath.Add(ConvertUnits.ToSimUnits(this._position));
             _ropePath.Add(ConvertUnits.ToSimUnits(this._endPosition));
 
             float width = ConvertUnits.ToSimUnits(this._texture.Width / 2);//    0.2
             float height = ConvertUnits.ToSimUnits(this._texture.Height / 2);//  0.3
-            float extraRoom = ConvertUnits.ToSimUnits(2.0f);
+            //float extraRoom = 0.0f;// = ConvertUnits.ToSimUnits(2.0f);
 
-            PolygonShape shape = new PolygonShape(PolygonTools.CreateCircle(height, 8), ConvertUnits.ToSimUnits(_mass));
-            _pathBodies = PathManager.EvenlyDistributeShapesAlongPath(world, _ropePath, shape, BodyType.Dynamic, _chainCount);
+            //PolygonShape shape = new PolygonShape(PolygonTools.CreateCircle(height, 8), ConvertUnits.ToSimUnits(_mass));
+            PolygonShape rotationPointShape = new PolygonShape(PolygonTools.CreateCircle(height, 8), 100);
+            PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), 20);
+            //_pathBodies = PathManager.EvenlyDistributeShapesAlongPath(world, _ropePath, shape, BodyType.Dynamic, _chainCount);
 
-            FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, _pathBodies[0], new Vector2(0, 0), _pathBodies[0].Position);
-            fixedJoint.MaxMotorTorque = 0f;
-            PathManager.AttachBodiesWithRevoluteJoint(world, _pathBodies, new Vector2(0f, height + extraRoom), new Vector2(0f, -(height + extraRoom)), false, true);
+            Body prevBody = new Body(world); ;
+            for (int i = 0; i < _chainCount; ++i)
+            {
+                Body body = new Body(world);
+                body.BodyType = BodyType.Dynamic;
+                body.Position = ConvertUnits.ToSimUnits(Position) + new Vector2(0, height * i);
+
+                if (i == 0)
+                {
+                    Fixture fixture = body.CreateFixture(rotationPointShape);
+                    fixture.Friction = 0.2f;
+                    fixture.CollisionCategories = Category.Cat1;
+                    fixture.CollidesWith = Category.All & ~Category.Cat2;
+                    body.AngularDamping = 0.4f;
+                    
+                    FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, body, Vector2.Zero, ConvertUnits.ToSimUnits(Position));
+                }
+                else
+                {
+                    Fixture fixture = body.CreateFixture(shape);
+                    fixture.Friction = 0.2f;
+
+                    fixture.CollisionCategories = Category.Cat2;
+                    fixture.CollidesWith = Category.All & ~Category.Cat1;
+
+                    RopeJoint rj = new RopeJoint(prevBody, body, new Vector2(0.0f, height), new Vector2(0.0f, -height / 2));
+
+                    rj.CollideConnected = false;
+                    world.AddJoint(rj);
+
+                    body.OnCollision += Body_OnCollision;
+                    body.OnSeparation += Body_OnSeparation;
+                    body.IsSensor = true;
+                }
+
+                prevBody = body;
+                _pathBodies.Add(body);
+            }
+
+            //FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, _pathBodies[0], new Vector2(0, 0), _pathBodies[0].Position);
+            //fixedJoint.MaxMotorTorque = 0f;
+            //PathManager.AttachBodiesWithRevoluteJoint(world, _pathBodies, new Vector2(0f, height + extraRoom), new Vector2(0f, -(height + extraRoom)), false, true);
+
+            //for (int i = 1; i < _pathBodies.Count; i++)
+            //{
+            //    //_pathBodies[i].CollisionCategories = Category.Cat10;
+            //    _pathBodies[i].IsSensor = true;
+            //    _pathBodies[i].OnCollision += Body_OnCollision;
+            //    _pathBodies[i].OnSeparation += Body_OnSeparation;
+            //}
         }
+        #endregion
+
+        #region Collisions
+        protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
+        {
+            if (fixtureB.Body != Player.Instance.Body)
+            {
+                return;
+            }
+
+            _touchedRopeFixtures.Remove(fixtureA);
+
+            if (_touchedRopeFixtures.Count == 0)
+            {
+                _inRange = false;
+            }
+        }
+
+        protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
+        {
+            if (fixtureB.Body != Player.Instance.Body)
+            {
+                return true;
+            }
+
+            if (!_touchedRopeFixtures.Contains(fixtureA))
+            {
+                _touchedRopeFixtures.Add(fixtureA);
+
+                if (!_inRange)
+                {
+                    _inRange = true;
+                }
+            }
+
+            return true;
+        }
+        #endregion
         #endregion
     }
 }

@@ -368,12 +368,10 @@ namespace SpinEditor
         {
             NewFile();
         }
-
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFile();
         }
-
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (CheckIfOpenLevel())
@@ -381,7 +379,6 @@ namespace SpinEditor
                 OpenFile();
             }            
         }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -395,22 +392,18 @@ namespace SpinEditor
         {
             Undo();
         }
-
         void BUTTON_REDO_Click(object sender, EventArgs e)
         {
             Redo();
         }
-
         void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Undo();
         }
-
         void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Redo();
         }
-
         void deselectAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
@@ -420,40 +413,30 @@ namespace SpinEditor
 
         #region Toolstrip
 
-        #region Change to Select Mode
-        private void BUTTON_EDITOR_MODE_SELECT_Click(object sender, EventArgs e)
+        void BUTTON_EDITOR_MODE_SELECT_Click(object sender, EventArgs e)
         {
             SwitchToSelectMode();
         }
-        #endregion
 
-        #region Change to Move Mode
-        private void BUTTON_EDITOR_MODE_MOVE_Click(object sender, EventArgs e)
+        void BUTTON_EDITOR_MODE_MOVE_Click(object sender, EventArgs e)
         {
             SwitchToMoveMode();
         }
-        #endregion
 
-        #region Change to Place Mode
-        private void BUTTON_EDITOR_MODE_PLACE_Click(object sender, EventArgs e)
+        void BUTTON_EDITOR_MODE_PLACE_Click(object sender, EventArgs e)
         {
             SwitchToPlaceMode();
         }
-        #endregion
 
-        #region Show Room Properties
-        private void BUTTON_EDIT_ROOM_Click(object sender, EventArgs e)
+        void BUTTON_EDIT_ROOM_Click(object sender, EventArgs e)
         {
             SwitchToRoomProperties();
         }
-        #endregion
 
-        #region Delete Selected Item(s)
         void BUTTON_DELETE_Click(object sender, EventArgs e)
         {
             DeleteSelectedObjects();
         }
-        #endregion
 
         #endregion
 
