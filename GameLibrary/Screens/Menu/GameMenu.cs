@@ -21,7 +21,7 @@ namespace GameLibrary.Screens.Menu
             get
             {
                 //  Middle of the screen.
-                return Screen_Manager.Viewport / 2;
+                return new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f;
             }
         }
 
@@ -30,17 +30,16 @@ namespace GameLibrary.Screens.Menu
         public GameMenu()
             : base()
         {
-            MenuArray = new Point(1, 3);
-            SelectionOption = new Point(0, 0);
+            _menuArrayCount = new Point(1, 3);
 
-            MenuItemArray = new MenuOption[MenuArray.X, MenuArray.Y];
+            _menuItemArray = new MenuOption[_menuArrayCount.X, _menuArrayCount.Y];
         }
 
         public override void Load()
         {
             base.Load();
 
-            _headerTexture = Content.Load
+            _headerTexture = _content.Load
                 <Texture2D>("Assets/Other/Game/TitleLogo");
 
             #region Create the menu items
@@ -52,9 +51,9 @@ namespace GameLibrary.Screens.Menu
             MenuOption GotoHub = new MenuOption("Return To Hub", optionType.Opt2, MenuPosition + (fontHeight * 2) + (MenuItemVerticalSpacing * 1));
             MenuOption Quit = new MenuOption("Quit", optionType.Opt3, MenuPosition + (fontHeight * 3) + (MenuItemVerticalSpacing * 2));
 
-            MenuItemArray[0, 0] = Resume;
-            MenuItemArray[0, 1] = GotoHub;
-            MenuItemArray[0, 2] = Quit;
+            _menuItemArray[0, 0] = Resume;
+            _menuItemArray[0, 1] = GotoHub;
+            _menuItemArray[0, 2] = Quit;
             #endregion
         }
 
@@ -68,7 +67,7 @@ namespace GameLibrary.Screens.Menu
             sb.Begin();
 
             base.Draw(sb);
-            sb.Draw(_headerTexture, (Screen_Manager.Viewport / 2) + new Vector2(0, -_headerTexture.Height / 3),
+            sb.Draw(_headerTexture, (new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f) + new Vector2(0, -_headerTexture.Height / 3),
                 null, Color.White, 0f, new Vector2(_headerTexture.Width / 2, _headerTexture.Height / 2),
                 0.6f, SpriteEffects.None, 0f);
 

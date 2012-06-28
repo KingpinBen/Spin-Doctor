@@ -29,10 +29,10 @@ namespace GameLibrary.Screens.Messages
         {
             this.Name = "ConfirmBox";
             this.isPopUp = true;
-            this.MenuArray = new Point(2, 1);
-            this.MenuItemArray = new MenuOption[MenuArray.X, MenuArray.Y];
+            this._menuArrayCount = new Point(2, 1);
+            this._menuItemArray = new MenuOption[_menuArrayCount.X, _menuArrayCount.Y];
 
-            Content = new ContentManager(Screen_Manager.Game.Services, "Content");
+            _content = new ContentManager(Screen_Manager.Game.Services, "Content");
         }
         #endregion
 
@@ -47,16 +47,16 @@ namespace GameLibrary.Screens.Messages
             this.fontWidth = Font.MeasureString(Text).X;
             this.fontHeight = Font.MeasureString("A").Y;
 
-            _texture = Content.Load<Texture2D>("Assets/Images/Basics/gradient");
+            this._texture = _content.Load<Texture2D>("Assets/Images/Basics/gradient");
 
-            Vector2 screenCentre = Screen_Manager.Viewport / 2;
+            Vector2 screenCentre = (new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f);
             Vector2 offset = new Vector2(50, 0);
 
             MenuOption Yes = new MenuOption("Yes", optionType.Opt1, screenCentre - offset);
             MenuOption No =  new MenuOption("No", optionType.Opt2,  screenCentre + offset);
 
-            MenuItemArray[1, 0] = Yes;
-            MenuItemArray[0, 0] = No;
+            this._menuItemArray[1, 0] = Yes;
+            this._menuItemArray[0, 0] = No;
         }
         #endregion
 
@@ -76,14 +76,14 @@ namespace GameLibrary.Screens.Messages
             sb.Begin();
 
             sb.Draw(_texture, new Rectangle(
-                (int)(Screen_Manager.Viewport.X / 2) - 200,
-                (int)(Screen_Manager.Viewport.Y / 2) - 130,
+                (int)(Screen_Manager.GraphicsDevice.Viewport.Width * 0.5f) - 200,
+                (int)(Screen_Manager.GraphicsDevice.Viewport.Height * 0.5f) - 130,
                 400,
                 175), null, Color.SandyBrown);
 
             base.Draw(sb);
 
-            sb.DrawString(Font, this.Text, Screen_Manager.Viewport / 2 + Vector2.UnitY * -100, 
+            sb.DrawString(Font, this.Text, (new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f) + Vector2.UnitY * -100, 
                 Color.White, 0f, new Vector2(fontWidth / 2, fontHeight / 2), 1f, SpriteEffects.None, 0.99f);
 
             sb.End();

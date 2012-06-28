@@ -24,7 +24,7 @@ namespace GameLibrary.Screens
         #endregion
 
         public IntroScreen()
-            : base("IntroScreen", 1)
+            : base("IntroScreen")
         {
 
         }
@@ -54,12 +54,12 @@ namespace GameLibrary.Screens
             if (Input.isGamePad)
             {
                 if (Input.Menu() || Input.GP_A || Input.GP_B)
-                    FadeOut();
+                    Screen_Manager.FadeOut(null);
             }
             else
             {
                 if (Input.Menu() || Input.Space || Input.lMouseButton || Input.Enter)
-                    FadeOut();
+                    Screen_Manager.FadeOut(null);
             }
 
             text.Update(gameTime);
@@ -81,9 +81,6 @@ namespace GameLibrary.Screens
 
             sb.Begin();
             text.Draw(sb);
-
-            if (ScreenState != State.Show)
-                base.Draw(sb);
             sb.End();
         }
         #endregion

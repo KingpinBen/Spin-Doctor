@@ -217,7 +217,7 @@ namespace GameLibrary.Drawing
             AllowRotation = _levelRotates;
             UpIs = UpIs.Up;
             _largestLevelDimension = LargestLevelDimension;
-            _currentCameraZoom = (Screen_Manager.Viewport.Y / 2.0f) / (LargestLevelDimension * largestDimensionModifier);
+            _currentCameraZoom = (Screen_Manager.GraphicsDevice.Viewport.Height * 0.5f) / (LargestLevelDimension * largestDimensionModifier);
             _fullLevelZoom = Zoom;
             
             CameraType = CameraType.Free;
@@ -364,7 +364,7 @@ namespace GameLibrary.Drawing
             Matrix _transform = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0)) *
                                          Matrix.CreateRotationZ((float)_worldRotation) *
                                          Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
-                                         Matrix.CreateTranslation(new Vector3(Screen_Manager.Viewport / 2, 0));
+                                         Matrix.CreateTranslation(new Vector3((new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f), 0));
             return _transform;
         }
         #endregion

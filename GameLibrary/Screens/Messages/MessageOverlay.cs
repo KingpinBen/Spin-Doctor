@@ -55,13 +55,11 @@ namespace GameLibrary.Screens.Messages
         public float Alpha { get; set; }
         public int StringID { get; protected set; }
 
-        private ContentManager content;
         private FullscreenPicture fsp;
 
         public MessageOverlay(MessageType type, int stringID) 
-            : base("New Message", 0f)
+            : base("New Message")
         {
-            this.content = new ContentManager(Screen_Manager.Game.Services, "Content");;
             this.Type = type;
             this.StringID = stringID;
             this.Message = "";
@@ -69,18 +67,18 @@ namespace GameLibrary.Screens.Messages
 
         public override void Load()
         {
-            if (StringID > 0) { FSPLoad(); return; }
+            if (StringID > 0)
+            {
+                fsp = new FullscreenPicture();
+                //  TODO: LINK TO CORRECT POPUP ASSET LOCATION THINGY
+                fsp.Load(_content, "Assets/Other/Dev/invite" + StringID.ToString());
+                fsp.Scale = ((1 / Screen_Manager.GraphicsDevice.Viewport.AspectRatio) * 2) * 0.8f;
 
-            this.Position = new Vector2(Screen_Manager.Graphics.Viewport.Width / 2, (Screen_Manager.Graphics.Viewport.Height / 6) * 5);
-            this.Origin = new Vector2(Fonts.GameFont.MeasureString(Message).X / 2, Fonts.GameFont.MeasureString("Y").Y / 2);
-        }
+                return;
+            }
 
-        public void FSPLoad()
-        {
-            fsp = new FullscreenPicture();
-            //  TODO: LINK TO CORRECT POPUP ASSET LOCATION THINGY
-            fsp.Load(content, "Assets/Other/Dev/invite" + StringID.ToString());
-            fsp.Scale = ((1 / Screen_Manager.Graphics.Viewport.AspectRatio) * 2) * 0.8f;
+            this.Position = new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width * 0.5f, (Screen_Manager.GraphicsDevice.Viewport.Height * 0.17f) * 5);
+            this.Origin = new Vector2(Fonts.GameFont.MeasureString(Message).X * 0.5f, Fonts.GameFont.MeasureString("Y").Y * 0.5f);
         }
 
         public override void Update(GameTime gameTime)

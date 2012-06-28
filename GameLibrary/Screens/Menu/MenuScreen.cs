@@ -49,9 +49,9 @@ namespace GameLibrary.Screens.Menu
     {
         #region Fields/Variables
 
-        public MenuOption[,] MenuItemArray;
+        protected MenuOption[,] _menuItemArray;
 
-        private Point _menuArray;
+        protected Point _menuArrayCount;
         private Point _selectionOption;
 
         protected bool isPopUp;
@@ -81,22 +81,15 @@ namespace GameLibrary.Screens.Menu
                 _selectionOption = value;
             }
         }
-        public Point MenuArray
-        {
-            get { return _menuArray; }
-            protected set
-            {
-                _menuArray = value;
-            }
-        }
+
 
         #endregion
 
         #region Constructor
         public MenuScreen()
-            : base("PauseMenu", 0f)
+            : base("PauseMenu")
         {
-            Content = new ContentManager(Screen_Manager.Game.Services, "Content");
+            _selectionOption = Point.Zero;
         }
         #endregion
 
@@ -107,21 +100,16 @@ namespace GameLibrary.Screens.Menu
         }
         #endregion
 
-        public override void Unload()
-        {
-            Content.Unload();
-        }
-
         #region Update
         public override void Update(GameTime gameTime)
         {
             HandleInput();
 
-            for (int x = 0; x < MenuArray.X; x++)
+            for (int x = 0; x < _menuArrayCount.X; x++)
             {
-                for (int y = 0; y < MenuArray.Y; y++)
+                for (int y = 0; y < _menuArrayCount.Y; y++)
                 {
-                    MenuItemArray[x, y].Update(gameTime);
+                    _menuItemArray[x, y].Update(gameTime);
                 }
             }
         }
@@ -133,16 +121,16 @@ namespace GameLibrary.Screens.Menu
             if (!isPopUp)
             {
                 //  Adds this on top to hide more gameplay.
-                sb.Draw(Screen_Manager.BlackPixel,
-                    new Rectangle(0, 0, (int)Screen_Manager.Viewport.X, (int)Screen_Manager.Viewport.Y),
+                sb.Draw(Screen_Manager.Textures[0],
+                    new Rectangle(0, 0, (int)Screen_Manager.GraphicsDevice.Viewport.Width, (int)Screen_Manager.GraphicsDevice.Viewport.Height),
                     Color.Black * 0.8f);
             }
 
-            for (int x = 0; x < MenuArray.X; x++)
+            for (int x = 0; x < _menuArrayCount.X; x++)
             {
-                for (int y = 0; y < MenuArray.Y; y++)
+                for (int y = 0; y < _menuArrayCount.Y; y++)
                 {
-                    MenuItemArray[x, y].Draw(sb);
+                    _menuItemArray[x, y].Draw(sb);
                 }
             }
         }
@@ -156,16 +144,16 @@ namespace GameLibrary.Screens.Menu
         /// <returns>Menu Item index</returns>
         private void FindMenuOption()
         {
-            for (int x = 0; x < MenuArray.X; x++) 
+            for (int x = 0; x < _menuArrayCount.X; x++) 
             {
-                for (int y = 0; y < MenuArray.Y; y++)
+                for (int y = 0; y < _menuArrayCount.Y; y++)
                 {
-                    int height = MenuItemArray[x, y].Height;
-                    int width = MenuItemArray[x, y].Width;
+                    int height = _menuItemArray[x, y].Height;
+                    int width = _menuItemArray[x, y].Width;
 
                     Rectangle itemArea = new Rectangle(
-                        (int)MenuItemArray[x, y].Position.X - width / 2,
-                        (int)MenuItemArray[x, y].Position.Y - height / 2,
+                        (int)_menuItemArray[x, y].Position.X - width / 2,
+                        (int)_menuItemArray[x, y].Position.Y - height / 2,
                         width, height);
 
                     Vector2 mousePos = Input.Cursor;
@@ -194,7 +182,7 @@ namespace GameLibrary.Screens.Menu
                 if (Input.GP_DPDown)
                 {
                     //  Increment Y selected position
-                    if (SelectionOption.Y + 1 >= MenuArray.Y)
+                    if (SelectionOption.Y + 1 >= _menuArrayCount.Y)
                         selectedOption.Y = 0;
                     else
                         selectedOption.Y++;
@@ -204,7 +192,7 @@ namespace GameLibrary.Screens.Menu
                 {
                     //  Decrement Y selected position
                     if (SelectionOption.Y - 1 < 0)
-                        selectedOption.Y = MenuArray.Y - 1;
+                        selectedOption.Y = _menuArrayCount.Y - 1;
                     else
                         selectedOption.Y--;
                 }
@@ -213,7 +201,7 @@ namespace GameLibrary.Screens.Menu
                 {
                     //  Decrement X selected position
                     if (SelectionOption.X - 1 < 0)
-                        selectedOption.X = MenuArray.X - 1;
+                        selectedOption.X = _menuArrayCount.X - 1;
                     else
                         selectedOption.X--;
                 }
@@ -221,14 +209,14 @@ namespace GameLibrary.Screens.Menu
                 if (Input.GP_DPRight)
                 {
                     //  Increment X selected position
-                    if (SelectionOption.X + 1 >= MenuArray.X)
+                    if (SelectionOption.X + 1 >= _menuArrayCount.X)
                         selectedOption.X = 0;
                     else
                         selectedOption.X++;
                 }
 
                 if (Input.MenuSelect())
-                    CompleteAction(MenuItemArray[SelectionOption.X, SelectionOption.Y].OptionType);
+                    CompleteAction(_menuItemArray[SelectionOption.X, SelectionOption.Y].OptionType);
 
                 if (Input.Return())
                     Screen_Manager.DeleteScreen();
@@ -245,17 +233,17 @@ namespace GameLibrary.Screens.Menu
                 FindMenuOption();
 
                 if (Input.MenuSelect())
-                    CompleteAction(MenuItemArray[SelectionOption.X, SelectionOption.Y].OptionType);
+                    CompleteAction(_menuItemArray[SelectionOption.X, SelectionOption.Y].OptionType);
             }
 
-            for (int x = 0; x < MenuArray.X; x++)
+            for (int x = 0; x < _menuArrayCount.X; x++)
             {
-                for (int y = 0; y < MenuArray.Y; y++)
+                for (int y = 0; y < _menuArrayCount.Y; y++)
                 {
                     if (x == SelectionOption.X && y == SelectionOption.Y)
-                        MenuItemArray[x, y].Highlighted = true;
+                        _menuItemArray[x, y].Highlighted = true;
                     else
-                        MenuItemArray[x, y].Highlighted = false;
+                        _menuItemArray[x, y].Highlighted = false;
                 }
             }
         }

@@ -50,7 +50,7 @@ namespace GameLibrary.Screens
 
         #region Constructor
         public LoadingScreen()
-            : base("LoadingScreen", 0.5f)
+            : base("LoadingScreen")
         {
             content = new ContentManager(Screen_Manager.Game.Services, "Content");
 
@@ -62,8 +62,8 @@ namespace GameLibrary.Screens
         #region Load
         public override void Load()
         {
-            int locx = Screen_Manager.Graphics.Viewport.Width - (int)(102 * sprite.Scale);
-            int locy = Screen_Manager.Graphics.Viewport.Height - (int)(102 * sprite.Scale);
+            int locx = Screen_Manager.GraphicsDevice.Viewport.Width - (int)(102 * sprite.Scale);
+            int locy = Screen_Manager.GraphicsDevice.Viewport.Height - (int)(102 * sprite.Scale);
 
             sprite.Init(new Point(102,102), new Point(8, 1), -1);
             sprite.Scale = 0.4f;
@@ -96,8 +96,8 @@ namespace GameLibrary.Screens
             else
                 ContinueText.Update(gameTime);
 
-            if (!Screen_Manager.LoadingContent && ScreenState == State.Show && Input.Jump())
-                FadeOut();
+            if (!Screen_Manager.LoadingContent && Input.Jump())
+                Screen_Manager.FadeOut(null);
 
             base.Update(gameTime);
         }

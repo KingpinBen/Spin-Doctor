@@ -44,16 +44,16 @@ namespace GameLibrary.Screens
         protected ContentManager content;
 
         public DevSplashScreen(string tex)
-            : base("DeveloperSplashScreen", 2f)
+            : base("DeveloperSplashScreen")
         {
             this._textureLocation = tex;
-            _position = Screen_Manager.Viewport / 2;
+            _position = new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f;
         }
 
         public override void Load()
         {
             _logo = content.Load<Texture2D>(_textureLocation);
-            _origin = new Vector2(_logo.Width / 2, _logo.Height / 2);            
+            _origin = new Vector2(_logo.Width * 0.5f, _logo.Height * 0.5f);           
         }
 
         public override void Unload()
@@ -71,7 +71,7 @@ namespace GameLibrary.Screens
 
         public override void Draw(SpriteBatch sb)
         {
-            Screen_Manager.Graphics.Clear(Color.Black);
+            Screen_Manager.GraphicsDevice.Clear(Color.Black);
 
             sb.Begin();
             sb.Draw(_logo, _position, null, Color.White, 0f, _origin, 0.3f, SpriteEffects.None, 0f);

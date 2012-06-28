@@ -38,57 +38,88 @@ namespace GameLibrary.Managers
 {
     public class Screen_Manager : DrawableGameComponent
     {
-        #region Fields and Variables
+        #region Fields
 
-        public static List<Screen> ScreenList { get; protected set; }
+        static List<Screen> _screenList;
+        static List<Screen> _screensToAdd;
+        static Game _game;
+        static SpriteBatch _spriteBatch;
+        static GraphicsDeviceManager _deviceManager;
+        static ContentManager _content;
+        static Texture2D[] _textures;
+        static bool _loadingContent;
+        static State _currentState;
+        static float _transitionAlpha = 1.0f;
+        const float _transitionTime = 0.6f;
+        static float _transitionPoint = 0;
 
-        public static new Game Game;
-
-        public static ContentManager Content { get; set; }
-
-        public SpriteBatch SpriteBatch { get; internal set; }
-
-        public static GraphicsDevice Graphics
-        {
-            get
-            {
-                return Game.GraphicsDevice;
-            }
-        }
-
-        public static Vector2 Viewport
-        {
-            get 
-            { 
-                return new Vector2(Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height); 
-            }
-        }
-
-        public static float AspectRatio
-        {
-            get 
-            { 
-                return Game.GraphicsDevice.Viewport.AspectRatio; 
-            }
-        }
-
-        public static bool LoadingContent { get; protected set; }
-
-        public static Texture2D BlackPixel { get; protected set; }
-
-#if DEBUG
+#if Development
         Stopwatch stopWatch = new Stopwatch();
 #endif
 
         #endregion
 
+        #region Properties
+        public static new Game Game
+        {
+            get
+            {
+                return _game;
+            }
+            internal set
+            {
+                _game = value;
+            }
+        }
+        public static List<Screen> ScreenList
+        {
+            get
+            {
+                return _screenList;
+            }
+        }
+        public static ContentManager Content
+        {
+            get
+            {
+                return _content;
+            }
+            internal set
+            {
+                _content = value;
+            }
+        }
+        public static GraphicsDevice GraphicsDevice
+        {
+            get
+            {
+                return _game.GraphicsDevice;
+            }
+        }
+        public static bool LoadingContent
+        {
+            get
+            {
+                return _loadingContent;
+            }
+        }
+        public static Texture2D[] Textures
+        {
+            get
+            {
+                return _textures;
+            }
+        }
+        #endregion
+
         #region Constructor
 
-        public Screen_Manager(Game game)
+        public Screen_Manager(Game game, GraphicsDeviceManager graphicsManager)
             : base(game)
         {
             Game = game;
             Content = new ContentManager(game.Services, "Content");
+            _deviceManager = graphicsManager;
         }
         #endregion
 
@@ -98,14 +129,20 @@ namespace GameLibrary.Managers
         /// </summary>
         public void Load()
         {
-            ScreenList = new List<Screen>();
-            SpriteBatch = new SpriteBatch(Game.GraphicsDevice);
+            _screenList = new List<Screen>();
+            _screensToAdd = new List<Screen>();
+            _spriteBatch = new SpriteBatch(_game.GraphicsDevice);
             Input.Load();
             Audio.Load();
             Fonts.Load(Content);
 
-            BlackPixel = Content.Load
+            //  This is an array used for global textures that everything needs. In this
+            //  case, a blank pixel.
+            _textures = new Texture2D[1];
+            _textures[0] = Content.Load
                 <Texture2D>(FileLoc.BlankPixel());
+
+            _currentState = State.FadeIn;
         }
         #endregion
 
@@ -116,12 +153,11 @@ namespace GameLibrary.Managers
         /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
         {
-            // Update the keyboard, mouse and gamepad
             Input.Update(gameTime);
             Audio.Update();
             HUD.Update(gameTime);
 
-            #region Development
+            #region Dev
 #if Development
             DevDisplay.Update(gameTime);
 #endif
@@ -129,8 +165,59 @@ namespace GameLibrary.Managers
 
             ScreenList[ScreenList.Count - 1].Update(gameTime);
 
-            if (LoadingContent && ScreenList[0].IsInitialized)
-                LoadingContent = false;
+            #region Transition Handling
+            //  We only want to do all this if the screen state doesn't equal Show.
+            if (_currentState == State.FadeIn || _currentState == State.FadeOut)
+            {
+                //  If the state is fading in or out, we'll need to modify the alpha
+                //  for the blackscreen. 
+                if (!HandleTransition(gameTime))    //  Have we finished the transition?
+                {
+                    //  No, don't continue.
+                    return;
+                }
+
+                //  We have finished transitioning
+
+                if (_currentState == State.FadeOut) //  If the state is fading out,
+                {
+                    //  Change it to hidden
+                    _currentState = State.Hidden;
+
+                    //  and remove any screens ontop.
+                    for (int i = ScreenList.Count; i > 1; i--)
+                    {
+                        ScreenList.RemoveAt(i - 1);
+                    }
+                }
+                else
+                {
+                    //  If the state was fading in, change it to show.
+                    _currentState = State.Show;
+                }
+            }
+            else if (_currentState == State.Hidden) //  If we'd finished transitioning and we're now hiding
+            {
+                //  We want to add all the screens we want to,
+                for (int i = _screensToAdd.Count - 1; i >= 0; i--)
+                {
+                    _screenList.Add(_screensToAdd[i]);
+                }
+                //  Clear it for the future and start fading in to show
+                //  the new screens.
+                _screensToAdd.Clear();
+                _currentState = State.FadeIn;
+
+                //  If we're supposed to be loading a level
+                if (_loadingContent)
+                {
+                    //  Load it
+                    GameplayScreen.LoadLevel();
+                    //  and allow us to continue.
+                    _loadingContent = false;
+                }
+            }
+            #endregion
         }
 
         #endregion
@@ -142,13 +229,20 @@ namespace GameLibrary.Managers
         /// <param name="sb">Spritebatch</param>
         public override void Draw(GameTime gameTime)
         {
-#if DEBUG
+#if Development
             stopWatch.Start();
 #endif
 
             for (int i = 0; i < ScreenList.Count; i++)
             {
-                ScreenList[i].Draw(SpriteBatch);
+                ScreenList[i].Draw(_spriteBatch);
+            }
+
+            if (_currentState != State.Show)
+            {
+                _spriteBatch.Begin();
+                _spriteBatch.Draw(_textures[0], Vector2.Zero, new Rectangle(0, 0, _game.GraphicsDevice.Viewport.Width, _game.GraphicsDevice.Viewport.Height), Color.Black * _transitionAlpha);
+                _spriteBatch.End();
             }
 
             #region Development
@@ -190,27 +284,61 @@ namespace GameLibrary.Managers
         #region Load Level
         public static void LoadLevel(int id)
         {
-            for (int i = ScreenList.Count; i > 1; i--)
-                ScreenList.RemoveAt(i - 1);
-
-            GameplayScreen.LoadLevel(id);
+            _loadingContent = true;
+            _currentState = State.FadeOut;
 
             LoadingScreen loading = new LoadingScreen();
-            LoadingContent = true;
             loading.Load();
-            ScreenList.Add(loading);
+            _screensToAdd.Add(loading);
+            GameplayScreen.LevelID = id;
         }
         #endregion
 
-        #region GetScreenName
-        /// <summary>
-        /// Returns the name of the screen.
-        /// </summary>
-        /// <param name="i">Use "_screenList.Count-1" for top screen.</param>
-        /// <returns>The string name of the passed screen number</returns>
-        public static string GetScreenName(int i)
+        static bool HandleTransition(GameTime gameTime)
         {
-            return ScreenList[i].Name;
+            float timeInterval = (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+
+            if (_currentState == State.FadeIn)
+            {
+                _transitionAlpha = Math.Max(_transitionAlpha - timeInterval, 0);
+                _transitionPoint += timeInterval;
+
+                if (_transitionPoint >= _transitionTime)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                _transitionAlpha = Math.Min(_transitionAlpha + timeInterval, 1);
+                _transitionPoint -= timeInterval;
+
+                if (_transitionPoint <= 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        #region Fadeout
+        /// <summary>
+        /// Kills all screens above gameplay and allows screens to be put up for after fade.
+        /// Screen shouldn't be loaded but it can be. Just a waste.
+        /// </summary>
+        public static void FadeOut(List<Screen> screensToAdd)
+        {
+            _currentState = State.FadeOut;
+
+            if (screensToAdd != null)
+            {
+                foreach(Screen screen in screensToAdd)
+                {
+                    screen.Load();
+                    _screensToAdd.Add(screen);
+                }
+            }
         }
         #endregion
 
@@ -222,20 +350,6 @@ namespace GameLibrary.Managers
         {
             Content.Dispose();
             Game.Exit();
-        }
-        #endregion
-
-        #region Get Screen State
-        public static string GetScreenState(int i)
-        {
-            return ScreenList[i].ScreenState.ToString();
-        }
-        #endregion
-
-        #region Screen Count
-        public static int GetScreenCount()
-        {
-            return ScreenList.Count;
         }
         #endregion
     }

@@ -32,12 +32,12 @@ namespace GameLibrary.Assists
             xLineCount = x;
             yLineCount = y;
 
-            ScreenSize = Screen_Manager.Viewport;
+            ScreenSize = new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height);
 
             xSpacing = ScreenSize.X / xLineCount;
             ySpacing = ScreenSize.Y / yLineCount;
 
-            pb = new PrimitiveBatch(Screen_Manager.Graphics);
+            pb = new PrimitiveBatch(Screen_Manager.GraphicsDevice);
         }
 
         /// <summary>
@@ -50,12 +50,12 @@ namespace GameLibrary.Assists
             xLineCount = x;
             yLineCount = x;
 
-            ScreenSize = Screen_Manager.Viewport;
+            ScreenSize = new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height);
 
             xSpacing = ScreenSize.X / xLineCount;
             ySpacing = xSpacing;
 
-            pb = new PrimitiveBatch(Screen_Manager.Graphics);
+            pb = new PrimitiveBatch(Screen_Manager.GraphicsDevice);
         }
 
         public void Draw()

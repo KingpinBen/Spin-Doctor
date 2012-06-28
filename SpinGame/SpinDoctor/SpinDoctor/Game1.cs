@@ -52,8 +52,8 @@ namespace SpinDoctor
             Content.RootDirectory = "Content";
 
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferHeight = 1080;
-            _graphics.PreferredBackBufferWidth = 1920;
+            _graphics.PreferredBackBufferHeight = 720;
+            _graphics.PreferredBackBufferWidth = 1280;
             _graphics.PreferMultiSampling = true;
             //_graphics.IsFullScreen = true;
             _graphics.SynchronizeWithVerticalRetrace = true;
@@ -72,15 +72,13 @@ namespace SpinDoctor
             Window.AllowUserResizing = false;
             Window.ClientSizeChanged += ChangeWindowSize;
 
-            _screenMan = new Screen_Manager(this);
+            _screenMan = new Screen_Manager(this, _graphics);
             _screenMan.Load();
             Components.Add(_screenMan);
             
 
             GameplayScreen gamescreen = new GameplayScreen(0);
             Screen_Manager.AddScreen(gamescreen);
-
-            
 
 #if ShowStartUp
             IntroScreen introScreen = new IntroScreen();

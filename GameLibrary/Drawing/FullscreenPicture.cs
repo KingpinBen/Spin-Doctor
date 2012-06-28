@@ -69,7 +69,7 @@ namespace GameLibrary.Drawing
                 (textureLoc);
 
             Origin = new Vector2(texture.Width / 2, texture.Height / 2);
-            Position = new Vector2(Screen_Manager.Viewport.X / 2, Screen_Manager.Viewport.Y / 2);
+            Position = (new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f);
 
             switch (scaleStyle)
             {
@@ -77,21 +77,21 @@ namespace GameLibrary.Drawing
                     {
                         //  Height is by aspect ratio as width is generally always larger than height.
                         //  this is just to make sure it works evenly.
-                        if (texture.Width >= texture.Height * Screen_Manager.AspectRatio)
-                            Scale = (float)Screen_Manager.Viewport.X / (float)texture.Width;
+                        if (texture.Width >= texture.Height * Screen_Manager.GraphicsDevice.Viewport.AspectRatio)
+                            Scale = (float)Screen_Manager.GraphicsDevice.Viewport.Width / (float)texture.Width;
                         else
-                            Scale = (float)Screen_Manager.Viewport.Y / (float)texture.Height;
+                            Scale = (float)Screen_Manager.GraphicsDevice.Viewport.Height / (float)texture.Height;
 
                         break;
                     }
                 case ScaleStyle.MaxHeight:
                     {
-                        Scale = (float)Screen_Manager.Viewport.Y / (float)texture.Height;
+                        Scale = (float)Screen_Manager.GraphicsDevice.Viewport.Height / (float)texture.Height;
                         break;
                     }
                 case ScaleStyle.MaxWidth:
                     {
-                        Scale = (float)Screen_Manager.Viewport.X / (float)texture.Width;
+                        Scale = (float)Screen_Manager.GraphicsDevice.Viewport.Width / (float)texture.Width;
                         break;
                     }
             }

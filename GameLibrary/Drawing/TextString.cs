@@ -103,39 +103,39 @@ namespace GameLibrary.Drawing
                 {
                     case ScreenAnchorLocation.Top:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Center.X, Screen_Manager.Graphics.Viewport.TitleSafeArea.Top);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Center.X, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Top);
                         }
                     case ScreenAnchorLocation.TopLeft:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Left, Screen_Manager.Graphics.Viewport.TitleSafeArea.Top);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Left, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Top);
                         }
                     case ScreenAnchorLocation.TopRight:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Right, Screen_Manager.Graphics.Viewport.TitleSafeArea.Top);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Right, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Top);
                         }
                     case ScreenAnchorLocation.Bottom:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Center.X, Screen_Manager.Graphics.Viewport.TitleSafeArea.Bottom);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Center.X, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Bottom);
                         }
                     case ScreenAnchorLocation.BottomLeft:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Left, Screen_Manager.Graphics.Viewport.TitleSafeArea.Bottom);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Left, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Bottom);
                         }
                     case ScreenAnchorLocation.BottomRight:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Right, Screen_Manager.Graphics.Viewport.TitleSafeArea.Bottom);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Right, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Bottom);
                         }
                     case ScreenAnchorLocation.Left:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Left, Screen_Manager.Graphics.Viewport.TitleSafeArea.Center.Y);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Left, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Center.Y);
                         }
                     case ScreenAnchorLocation.Centre:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Center.X, Screen_Manager.Graphics.Viewport.TitleSafeArea.Center.Y);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Center.X, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Center.Y);
                         }
                     case ScreenAnchorLocation.Right:
                         {
-                            return new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Right, Screen_Manager.Graphics.Viewport.TitleSafeArea.Center.Y);
+                            return new Vector2(Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Right, Screen_Manager.GraphicsDevice.Viewport.TitleSafeArea.Center.Y);
                         }
                 }
                 return Vector2.Zero;

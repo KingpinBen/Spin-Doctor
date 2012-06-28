@@ -54,7 +54,8 @@ namespace GameLibrary.Screens
         protected static float bgRotation;
 
         public static Level Level { get; internal set; }
-        private static int LevelID;
+        public static int LevelID { get; set; }
+        private static new bool IsInitialized = false;
         private GraphicsDevice graphicsDevice;
         private Effect gamePlayEffect;
         private RenderTarget2D RenderTargetEffect;
@@ -63,32 +64,27 @@ namespace GameLibrary.Screens
 
         #region Constructor
         public GameplayScreen(int ID) 
-            : base("GamePlayScreen", 0.5f)
+            : base("GamePlayScreen")
         {
             LevelID = ID;
             this.IsExitable = false;
             Level = new Level();
-            this.graphicsDevice = Screen_Manager.Graphics;
+            this.graphicsDevice = Screen_Manager.GraphicsDevice;
 
             PresentationParameters pp = this.graphicsDevice.PresentationParameters;
 
-            RenderTargetEffect = new RenderTarget2D(Screen_Manager.Graphics, pp.BackBufferWidth, pp.BackBufferHeight);
+            RenderTargetEffect = new RenderTarget2D(Screen_Manager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
         }
         #endregion
 
         #region Load
         public override void Load()
         {
-            IsInitialized = false;
             HUD.Load();
+            LoadLevel();
             //gamePlayEffect = Content.Load<Effect>("Assets/Effects/BlackAndWhite");
             //gamePlayEffect.Parameters["enableMonochrome"].SetValue(false);
 
-            LoadLevel(LevelID);
-
-            IsInitialized = true;
-
-            FadeIn();
         }
         #endregion
 
@@ -137,14 +133,14 @@ namespace GameLibrary.Screens
                 this.graphicsDevice.SetRenderTarget(RenderTargetEffect);
             }
 
-            Screen_Manager.Graphics.Clear(Color.Black);
+            Screen_Manager.GraphicsDevice.Clear(Color.Black);
 
             #region Draw Level
             sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null,
                     Matrix.CreateTranslation(new Vector3(-Camera.Position, 0)) *
                     Matrix.CreateRotationZ(bgRotation) *
                     Matrix.CreateScale(new Vector3(Camera.Zoom, Camera.Zoom, 1)) *
-                    Matrix.CreateTranslation(new Vector3(Screen_Manager.Graphics.Viewport.Width / 2, Screen_Manager.Graphics.Viewport.Height / 2, 0f)));
+                    Matrix.CreateTranslation(new Vector3(Screen_Manager.GraphicsDevice.Viewport.Width * 0.5f, Screen_Manager.GraphicsDevice.Viewport.Height * 0.5f, 0f)));
             {
                 Level.DrawBackground(sb);
             }
@@ -162,7 +158,7 @@ namespace GameLibrary.Screens
             {
                 //  Clear the rendertarget and screen
                 this.graphicsDevice.SetRenderTarget(null);
-                Screen_Manager.Graphics.Clear(Color.Black);
+                Screen_Manager.GraphicsDevice.Clear(Color.Black);
             }
 
             sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
@@ -187,7 +183,9 @@ namespace GameLibrary.Screens
         private void HandleInput()
         {
             if (Player.Instance.PlayerState == pState.Dead && Input.GP_X)
-                ReloadLevel();
+            {
+                LoadLevel();
+            }
 
             if (Input.GP_Start || Input.Escape)
             {
@@ -197,16 +195,12 @@ namespace GameLibrary.Screens
         }
         #endregion
 
-        #region Level loading/reloading
-
-        /// <summary>
-        /// Resets everything in the level
-        /// </summary>
-        public static void ReloadLevel()
+        public static void LoadLevel()
         {
 #if EDITOR
 
 #else
+            IsInitialized = false;
             World = new World(Vector2.Zero);
             Camera.UpIs = UpIs.Up;
 
@@ -235,20 +229,9 @@ namespace GameLibrary.Screens
             Level.Load(World);
 
             HUD.RefreshHUD();
-            Sprite_Manager.Clear();       
+            Sprite_Manager.Clear();
+            IsInitialized = true;
 #endif
         }
-
-        /// <summary>
-        /// Use to change the level
-        /// </summary>
-        /// <param name="ID">The ID of the level to load</param>
-        public static void LoadLevel(int ID)
-        {
-            LevelID = ID;
-
-            ReloadLevel();
-        }
-        #endregion
     }
 }

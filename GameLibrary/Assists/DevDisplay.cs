@@ -74,10 +74,10 @@ namespace GameLibrary.Assists
             Console.Clear();
 
             Console.WriteLine("---------------------[ GENERAL ]---------------------");
-            for (int i = 0; i < Screen_Manager.GetScreenCount(); i++)
+            for (int i = 0; i < Screen_Manager.ScreenList.Count; i++)
             {
                 Console.WriteLine("Screen [" + i + "] = [" + 
-                    Screen_Manager.GetScreenName(i) + "]" + ". TT: "  + Screen_Manager.ScreenList[i].TransitionTime  + ". " + Screen_Manager.ScreenList[i].ScreenState);
+                    Screen_Manager.ScreenList[i].Name + "]" + ".");
             }
 
             Console.Write("FPS: " + frameRate.ToString());
@@ -127,20 +127,19 @@ namespace GameLibrary.Assists
             _debugView.AppendFlags(DebugViewFlags.DebugPanel | DebugViewFlags.AABB | DebugViewFlags.PerformanceGraph | DebugViewFlags.ContactPoints | DebugViewFlags.Controllers);
             _debugView.DefaultShapeColor = Color.Blue;
             _debugView.SleepingShapeColor = Color.LightGray;
-            _debugView.LoadContent(Screen_Manager.Graphics, Screen_Manager.Content);
+            _debugView.LoadContent(Screen_Manager.GraphicsDevice, Screen_Manager.Content);
         }
 
         private static void Draw_DebugData()
         {
-            Matrix projection = Matrix.CreateOrthographicOffCenter(0f, Screen_Manager.Viewport.X / MeterInPixels,
-                Screen_Manager.Viewport.Y / MeterInPixels, 0f, 0f, 1f);
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0f, Screen_Manager.GraphicsDevice.Viewport.Width / MeterInPixels,
+                Screen_Manager.GraphicsDevice.Viewport.Height / MeterInPixels, 0f, 0f, 1f);
 
             Matrix view =
                 Matrix.CreateTranslation(new Vector3((-Camera.Position / MeterInPixels) - Camera.LevelOrigin, 0f)) *
                 Matrix.CreateScale(Camera.Zoom, Camera.Zoom, 0f) *
                 Matrix.CreateRotationZ(Camera.Rotation) *
-                Matrix.CreateTranslation(new Vector3(((Screen_Manager.Viewport / 2) / MeterInPixels), 0f));
-
+                Matrix.CreateTranslation(new Vector3(((new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f) / MeterInPixels), 0f));
             _debugView.RenderDebugData(ref projection, ref view);
         }
         #endregion

@@ -41,13 +41,6 @@ using GameLibrary.Managers;
 
 namespace GameLibrary.Screens
 {
-    //  Hidden is barely used. Check TBD
-    public enum State
-    {
-        FadeIn, FadeOut,
-        Show, Hidden
-    }
-
     public abstract class Screen
     {
         #region Fields and Variables
@@ -65,60 +58,6 @@ namespace GameLibrary.Screens
         }
         private string _name;
         
-        public State ScreenState
-        {
-            get
-            {
-                return _screenState;
-            }
-            protected set
-            {
-                _screenState = value;
-            }
-        }
-        private State _screenState;
-
-        /// <summary>
-        /// Time used for calculating the alpha
-        /// </summary>
-        public float TransitionTime
-        {
-            get
-            {
-                return _timeLeftTransitioning;
-            }
-            internal set
-            {
-                _timeLeftTransitioning = value;
-            }
-        }
-        private float _timeLeftTransitioning;
-        
-        /// <summary>
-        /// Can only be set once. The time used to cause transitions.
-        /// </summary>
-        public float FadeDuration
-        {
-            get
-            {
-                return _fadeDuration;
-            }
-        }
-        private float _fadeDuration = 0;
-
-        public float TransitionAlpha
-        {
-            get
-            {
-                return _transitionFadeAlpha;
-            }
-            internal set
-            {
-                _transitionFadeAlpha = value;
-            }
-        }
-        private float _transitionFadeAlpha;
-
         public bool IsInitialized
         {
             get
@@ -145,20 +84,15 @@ namespace GameLibrary.Screens
         }
         private bool _isExitable = true;
 
-        protected ContentManager Content;
+        protected ContentManager _content;
 
         #endregion
 
         #region Constructor
-        public Screen(string name, float fadeDuration)
+        public Screen(string name)
         {
             this.Name = name;
-            this._fadeDuration = fadeDuration;
-            this.ScreenState = State.FadeIn;
-
-            this.TransitionTime = fadeDuration;
-            this.TransitionAlpha = 1f;
-            this.Content = new ContentManager(Screen_Manager.Game.Services, "Content");
+            this._content = new ContentManager(Screen_Manager.Game.Services, "Content");
         }
         #endregion
 
@@ -169,7 +103,7 @@ namespace GameLibrary.Screens
         #region Unload
         public virtual void Unload()
         {
-
+            _content.Unload();
         }
         #endregion
 
@@ -180,16 +114,7 @@ namespace GameLibrary.Screens
         /// <param name="gameTime">Grab elapsed time</param>
         public virtual void Update(GameTime gameTime)
         {
-            if (ScreenState == State.FadeIn ||
-                ScreenState == State.FadeOut)
-            {
-                HandleTransition(gameTime);
-            }
-            else
-            {
-                return;
-            }
-            
+
         }
         #endregion
 
@@ -200,77 +125,7 @@ namespace GameLibrary.Screens
         /// <param name="SpriteBatch">SpriteBatch</param>
         public virtual void Draw(SpriteBatch sb)
         {
-            if (ScreenState == State.Show) return;
-
-            sb.Draw(Screen_Manager.BlackPixel,
-                new Rectangle( 0, 0, (int)Screen_Manager.Viewport.X, (int)Screen_Manager.Viewport.Y),
-                null, Color.Black * TransitionAlpha);
         }
         #endregion
-
-        #region HandleTransition
-        public void HandleTransition(GameTime gameTime)
-        {
-            // Check if the screen has finished transitioning.
-            if (TransitionTime <= 0)
-            {
-                //  Finished transitioning
-
-                switch (ScreenState)
-                {
-                    case State.FadeIn:
-                        ScreenState = State.Show;
-                        break;
-
-                    case State.FadeOut:
-                        if (IsExitable)
-                        {
-                            Screen_Manager.DeleteScreen();
-                        }
-                        else
-                        {
-                            ScreenState = State.Hidden;
-                        }
-                        break;
-                }
-
-                
-            }
-            else
-            {
-                // Still some time left to transition
-                float fadeSpeed = (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
-                TransitionTime -= fadeSpeed;
-
-                if (ScreenState == State.FadeOut)
-                    TransitionAlpha = Math.Min(TransitionAlpha + fadeSpeed, 1f);
-                else if (ScreenState == State.FadeIn)
-                    TransitionAlpha = Math.Max(TransitionAlpha - fadeSpeed, 0f);
-
-                if (TransitionTime < 0)
-                {
-                    TransitionTime = 0;
-                }
-            }
-        }
-        #endregion
-
-        public void FadeOut()
-        {
-            if (ScreenState == State.Show)
-            {
-                ScreenState = State.FadeOut;
-                TransitionTime = FadeDuration;
-            }
-        }
-
-        public void FadeIn()
-        {
-            if (ScreenState == State.Hidden)
-            {
-                ScreenState = State.FadeIn;
-                TransitionTime = FadeDuration;
-            }
-        }
     }
 }
