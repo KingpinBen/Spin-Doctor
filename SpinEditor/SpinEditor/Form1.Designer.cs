@@ -1,4 +1,5 @@
-﻿namespace SpinEditor
+﻿using System.Windows.Forms;
+namespace SpinEditor
 {
     partial class Form1
     {
@@ -65,20 +66,16 @@
             this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
             this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.listBox_Assets0 = new System.Windows.Forms.ListBox();
             this.BUTTON_IMPORT_ASSET = new System.Windows.Forms.Button();
             this.listBox_Classes = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.listBox_Assets1 = new System.Windows.Forms.ListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.listBox_Assets2 = new System.Windows.Forms.ListBox();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.listBox_Assets3 = new System.Windows.Forms.ListBox();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
             this.ZOOM = new System.Windows.Forms.NumericUpDown();
@@ -97,18 +94,19 @@
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
+            this.listBox_Assets0 = new System.Windows.Forms.ListBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.tabPage4.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ZOOM)).BeginInit();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -410,15 +408,6 @@
             this.propertyGrid1.Size = new System.Drawing.Size(430, 349);
             this.propertyGrid1.TabIndex = 6;
             // 
-            // listBox_Assets0
-            // 
-            this.listBox_Assets0.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox_Assets0.FormattingEnabled = true;
-            this.listBox_Assets0.Location = new System.Drawing.Point(3, 5);
-            this.listBox_Assets0.Name = "listBox_Assets0";
-            this.listBox_Assets0.Size = new System.Drawing.Size(196, 82);
-            this.listBox_Assets0.TabIndex = 7;
-            // 
             // BUTTON_IMPORT_ASSET
             // 
             this.BUTTON_IMPORT_ASSET.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -480,6 +469,7 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.tabControl1);
+            this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.panel3);
             this.panel1.Controls.Add(this.listBox_Classes);
@@ -499,23 +489,11 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(10, 492);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(210, 118);
             this.tabControl1.TabIndex = 6;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.listBox_Assets0);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(202, 92);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Tex 1";
-            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabPage2
             // 
@@ -556,31 +534,12 @@
             this.listBox_Assets2.Size = new System.Drawing.Size(196, 82);
             this.listBox_Assets2.TabIndex = 8;
             // 
-            // tabPage4
-            // 
-            this.tabPage4.Controls.Add(this.listBox_Assets3);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(202, 92);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Tex 4";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // listBox_Assets3
-            // 
-            this.listBox_Assets3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox_Assets3.FormattingEnabled = true;
-            this.listBox_Assets3.Location = new System.Drawing.Point(3, 5);
-            this.listBox_Assets3.Name = "listBox_Assets3";
-            this.listBox_Assets3.Size = new System.Drawing.Size(196, 82);
-            this.listBox_Assets3.TabIndex = 9;
-            // 
             // panel4
             // 
             this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panel4.Controls.Add(this.label3);
             this.panel4.Controls.Add(this.ZOOM);
-            this.panel4.Location = new System.Drawing.Point(226, 523);
+            this.panel4.Location = new System.Drawing.Point(226, 495);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(214, 33);
             this.panel4.TabIndex = 28;
@@ -628,7 +587,6 @@
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panel3.Controls.Add(this.Align_Relative);
-            this.panel3.Controls.Add(this.label5);
             this.panel3.Controls.Add(this.BUTTON_ALIGN_10);
             this.panel3.Controls.Add(this.BUTTON_ALIGN_1);
             this.panel3.Controls.Add(this.BUTTON_ALIGN_6);
@@ -641,7 +599,7 @@
             this.panel3.Controls.Add(this.BUTTON_ALIGN_5);
             this.panel3.Location = new System.Drawing.Point(226, 374);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(214, 143);
+            this.panel3.Size = new System.Drawing.Size(214, 115);
             this.panel3.TabIndex = 27;
             // 
             // Align_Relative
@@ -651,7 +609,7 @@
             "Last Selected",
             "First Selected",
             "Selection"});
-            this.Align_Relative.Location = new System.Drawing.Point(6, 23);
+            this.Align_Relative.Location = new System.Drawing.Point(6, 3);
             this.Align_Relative.Name = "Align_Relative";
             this.Align_Relative.Size = new System.Drawing.Size(202, 21);
             this.Align_Relative.TabIndex = 26;
@@ -660,7 +618,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 7);
+            this.label5.Location = new System.Drawing.Point(229, 358);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(91, 13);
             this.label5.TabIndex = 25;
@@ -669,7 +627,7 @@
             // BUTTON_ALIGN_10
             // 
             this.BUTTON_ALIGN_10.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_10.Image")));
-            this.BUTTON_ALIGN_10.Location = new System.Drawing.Point(174, 97);
+            this.BUTTON_ALIGN_10.Location = new System.Drawing.Point(172, 70);
             this.BUTTON_ALIGN_10.Name = "BUTTON_ALIGN_10";
             this.BUTTON_ALIGN_10.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_10.TabIndex = 18;
@@ -678,7 +636,7 @@
             // BUTTON_ALIGN_1
             // 
             this.BUTTON_ALIGN_1.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_1.Image")));
-            this.BUTTON_ALIGN_1.Location = new System.Drawing.Point(6, 56);
+            this.BUTTON_ALIGN_1.Location = new System.Drawing.Point(6, 30);
             this.BUTTON_ALIGN_1.Name = "BUTTON_ALIGN_1";
             this.BUTTON_ALIGN_1.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_1.TabIndex = 13;
@@ -687,7 +645,7 @@
             // BUTTON_ALIGN_6
             // 
             this.BUTTON_ALIGN_6.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_6.Image")));
-            this.BUTTON_ALIGN_6.Location = new System.Drawing.Point(6, 97);
+            this.BUTTON_ALIGN_6.Location = new System.Drawing.Point(6, 70);
             this.BUTTON_ALIGN_6.Name = "BUTTON_ALIGN_6";
             this.BUTTON_ALIGN_6.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_6.TabIndex = 22;
@@ -696,7 +654,7 @@
             // BUTTON_ALIGN_2
             // 
             this.BUTTON_ALIGN_2.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_2.Image")));
-            this.BUTTON_ALIGN_2.Location = new System.Drawing.Point(48, 56);
+            this.BUTTON_ALIGN_2.Location = new System.Drawing.Point(46, 30);
             this.BUTTON_ALIGN_2.Name = "BUTTON_ALIGN_2";
             this.BUTTON_ALIGN_2.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_2.TabIndex = 14;
@@ -705,7 +663,7 @@
             // BUTTON_ALIGN_7
             // 
             this.BUTTON_ALIGN_7.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_7.Image")));
-            this.BUTTON_ALIGN_7.Location = new System.Drawing.Point(48, 97);
+            this.BUTTON_ALIGN_7.Location = new System.Drawing.Point(46, 70);
             this.BUTTON_ALIGN_7.Name = "BUTTON_ALIGN_7";
             this.BUTTON_ALIGN_7.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_7.TabIndex = 21;
@@ -714,7 +672,7 @@
             // BUTTON_ALIGN_3
             // 
             this.BUTTON_ALIGN_3.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_3.Image")));
-            this.BUTTON_ALIGN_3.Location = new System.Drawing.Point(90, 56);
+            this.BUTTON_ALIGN_3.Location = new System.Drawing.Point(90, 30);
             this.BUTTON_ALIGN_3.Name = "BUTTON_ALIGN_3";
             this.BUTTON_ALIGN_3.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_3.TabIndex = 15;
@@ -723,7 +681,7 @@
             // BUTTON_ALIGN_8
             // 
             this.BUTTON_ALIGN_8.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_8.Image")));
-            this.BUTTON_ALIGN_8.Location = new System.Drawing.Point(90, 97);
+            this.BUTTON_ALIGN_8.Location = new System.Drawing.Point(90, 70);
             this.BUTTON_ALIGN_8.Name = "BUTTON_ALIGN_8";
             this.BUTTON_ALIGN_8.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_8.TabIndex = 20;
@@ -732,7 +690,7 @@
             // BUTTON_ALIGN_4
             // 
             this.BUTTON_ALIGN_4.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_4.Image")));
-            this.BUTTON_ALIGN_4.Location = new System.Drawing.Point(132, 56);
+            this.BUTTON_ALIGN_4.Location = new System.Drawing.Point(132, 30);
             this.BUTTON_ALIGN_4.Name = "BUTTON_ALIGN_4";
             this.BUTTON_ALIGN_4.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_4.TabIndex = 16;
@@ -741,7 +699,7 @@
             // BUTTON_ALIGN_9
             // 
             this.BUTTON_ALIGN_9.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_9.Image")));
-            this.BUTTON_ALIGN_9.Location = new System.Drawing.Point(132, 97);
+            this.BUTTON_ALIGN_9.Location = new System.Drawing.Point(132, 70);
             this.BUTTON_ALIGN_9.Name = "BUTTON_ALIGN_9";
             this.BUTTON_ALIGN_9.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_9.TabIndex = 19;
@@ -750,7 +708,7 @@
             // BUTTON_ALIGN_5
             // 
             this.BUTTON_ALIGN_5.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_5.Image")));
-            this.BUTTON_ALIGN_5.Location = new System.Drawing.Point(174, 56);
+            this.BUTTON_ALIGN_5.Location = new System.Drawing.Point(172, 30);
             this.BUTTON_ALIGN_5.Name = "BUTTON_ALIGN_5";
             this.BUTTON_ALIGN_5.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_5.TabIndex = 17;
@@ -788,6 +746,26 @@
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
             // 
+            // listBox_Assets0
+            // 
+            this.listBox_Assets0.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox_Assets0.FormattingEnabled = true;
+            this.listBox_Assets0.Location = new System.Drawing.Point(3, 5);
+            this.listBox_Assets0.Name = "listBox_Assets0";
+            this.listBox_Assets0.Size = new System.Drawing.Size(196, 82);
+            this.listBox_Assets0.TabIndex = 7;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.listBox_Assets0);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(202, 92);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Tex 1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -808,16 +786,14 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
-            this.tabPage4.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ZOOM)).EndInit();
             this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             this.panel2.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -826,73 +802,71 @@
         #endregion
 
         private XNA_RenderControl xnA_RenderControl1;
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-        private System.Windows.Forms.ToolStripButton BUTTON_EDITOR_MODE_SELECT;
-        private System.Windows.Forms.ToolStripButton BUTTON_EDITOR_MODE_MOVE;
-        private System.Windows.Forms.ToolStripButton BUTTON_EDITOR_MODE_PLACE;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripButton BUTTON_DELETE;
-        private System.Windows.Forms.HScrollBar hScrollBar1;
-        private System.Windows.Forms.VScrollBar vScrollBar1;
-        private System.Windows.Forms.ListBox listBox_Assets0;
-        private System.Windows.Forms.Button BUTTON_IMPORT_ASSET;
-        private System.Windows.Forms.ListBox listBox_Classes;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripButton BUTTON_EDIT_ROOM;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.ComboBox Align_Relative;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button BUTTON_ALIGN_10;
-        private System.Windows.Forms.Button BUTTON_ALIGN_1;
-        private System.Windows.Forms.Button BUTTON_ALIGN_6;
-        private System.Windows.Forms.Button BUTTON_ALIGN_2;
-        private System.Windows.Forms.Button BUTTON_ALIGN_7;
-        private System.Windows.Forms.Button BUTTON_ALIGN_3;
-        private System.Windows.Forms.Button BUTTON_ALIGN_8;
-        private System.Windows.Forms.Button BUTTON_ALIGN_4;
-        private System.Windows.Forms.Button BUTTON_ALIGN_9;
-        private System.Windows.Forms.Button BUTTON_ALIGN_5;
-        private System.Windows.Forms.NumericUpDown ZOOM;
-        public System.Windows.Forms.PropertyGrid propertyGrid1;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.ListBox listBox_Assets1;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.ListBox listBox_Assets2;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripButton BUTTON_UNDO;
-        private System.Windows.Forms.ToolStripButton BUTTON_REDO;
-        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.ListBox listBox_Assets3;
-        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ViewMenuHideOverlay;
-        private System.Windows.Forms.ToolStripMenuItem ViewMenuHideGrid;
-        private System.Windows.Forms.ToolStripMenuItem ViewMenuHideCoordinates;
-        private System.Windows.Forms.ToolStripMenuItem ViewMenuHideMovementPath;
-        private System.Windows.Forms.ToolStripMenuItem NewFileToolstripOption;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem deselectAllToolStripMenuItem;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private ToolStripMenuItem toolsToolStripMenuItem;
+        private ToolStripMenuItem helpToolStripMenuItem;
+        private ToolStrip toolStrip1;
+        private OpenFileDialog openFileDialog1;
+        private SaveFileDialog saveFileDialog1;
+        private ToolStripLabel toolStripLabel1;
+        private ToolStripButton BUTTON_EDITOR_MODE_SELECT;
+        private ToolStripButton BUTTON_EDITOR_MODE_MOVE;
+        private ToolStripButton BUTTON_EDITOR_MODE_PLACE;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton BUTTON_DELETE;
+        private HScrollBar hScrollBar1;
+        private VScrollBar vScrollBar1;
+        private Button BUTTON_IMPORT_ASSET;
+        private ListBox listBox_Classes;
+        private Label label1;
+        private Label label2;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton BUTTON_EDIT_ROOM;
+        private Panel panel1;
+        private Panel panel2;
+        private Panel panel3;
+        private ComboBox Align_Relative;
+        private Label label5;
+        private Button BUTTON_ALIGN_10;
+        private Button BUTTON_ALIGN_1;
+        private Button BUTTON_ALIGN_6;
+        private Button BUTTON_ALIGN_2;
+        private Button BUTTON_ALIGN_7;
+        private Button BUTTON_ALIGN_3;
+        private Button BUTTON_ALIGN_8;
+        private Button BUTTON_ALIGN_4;
+        private Button BUTTON_ALIGN_9;
+        private Button BUTTON_ALIGN_5;
+        private NumericUpDown ZOOM;
+        public PropertyGrid propertyGrid1;
+        private Panel panel4;
+        private Label label3;
+        private TabControl tabControl1;
+        private TabPage tabPage2;
+        private ListBox listBox_Assets1;
+        private TabPage tabPage3;
+        private ListBox listBox_Assets2;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripButton BUTTON_UNDO;
+        private ToolStripButton BUTTON_REDO;
+        private ToolStripMenuItem undoToolStripMenuItem;
+        private ToolStripMenuItem redoToolStripMenuItem;
+        private ToolStripMenuItem viewToolStripMenuItem;
+        private ToolStripMenuItem ViewMenuHideOverlay;
+        private ToolStripMenuItem ViewMenuHideGrid;
+        private ToolStripMenuItem ViewMenuHideCoordinates;
+        private ToolStripMenuItem ViewMenuHideMovementPath;
+        private ToolStripMenuItem NewFileToolstripOption;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripMenuItem deselectAllToolStripMenuItem;
+        private TabPage tabPage1;
+        private ListBox listBox_Assets0;
 
 
     }

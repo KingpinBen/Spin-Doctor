@@ -102,7 +102,6 @@ namespace SpinEditor
                 string texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
                 string texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets0.SelectedIndex].ToString();
                 string texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets0.SelectedIndex].ToString();
-                string texloc3 = STATIC_CONTBUILDER.textureLoc + listBox_Assets3.Items[listBox_Assets0.SelectedIndex].ToString();
 
                 #region Object Types
                 switch (Type)
@@ -252,7 +251,7 @@ namespace SpinEditor
                             STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Decal, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count - 1));
                         }
                         break;
-                    case "Physics":
+                    default:
                         {
                             if (!STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
                             {
@@ -2295,7 +2294,6 @@ namespace SpinEditor
             listBox_Assets0.Items.Clear();
             listBox_Assets1.Items.Clear();
             listBox_Assets2.Items.Clear();
-            listBox_Assets3.Items.Clear();
 
             string[] lst_Files = Directory.GetFiles(STATIC_CONTBUILDER.pathToContent(), "*.xnb", SearchOption.TopDirectoryOnly);
 
@@ -2310,7 +2308,6 @@ namespace SpinEditor
                 listBox_Assets0.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
                 listBox_Assets1.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
                 listBox_Assets2.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
-                listBox_Assets3.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
             }
         }
 
@@ -2363,14 +2360,6 @@ namespace SpinEditor
             #endregion
 
             Refresh_XNB_Asset_List();
-
-            if (listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString() == "Piston")
-            {
-                listBox_Assets0.SelectedItem = "PistonBase";
-                listBox_Assets1.SelectedItem = "Piston2";
-                listBox_Assets2.SelectedItem = "Piston1";
-                listBox_Assets3.SelectedItem = "PistonEnd";
-            }
         }
         #endregion
 
@@ -2777,7 +2766,7 @@ namespace SpinEditor
                 STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
             }
 
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.V) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.C) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
             {
                 CopyPaste();
             }

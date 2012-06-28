@@ -233,11 +233,11 @@ namespace GameLibrary.Objects
                 TextureRotation, Origin, _scale, SpriteEffects.None, zLayer); 
 
             sb.Draw(_wallDecalEnd, this.Position, null, Color.White, _decalRotation,
-                new Vector2(this._wallDecalEnd.Width / 2, this._wallDecalEnd.Height / 2), 1.0f, SpriteEffects.None, zLayer - 0.01f);
+                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, zLayer + 0.01f);
             sb.Draw(_wallDecalEnd, this.EndPosition, null, Color.White, (float)Math.PI + _decalRotation,
-                new Vector2(this._wallDecalEnd.Width / 2, this._wallDecalEnd.Height / 2), 1.0f, SpriteEffects.None, zLayer - 0.01f);
+                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, zLayer + 0.01f);
             sb.Draw(_wallDecalMiddle, _decalRectangle, null, Color.White, _decalRotation,
-                Vector2.Zero, SpriteEffects.None, zLayer - 0.01f);
+                Vector2.Zero, SpriteEffects.None, zLayer + 0.01f);
 
 #if Development
             sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed: " + this.PrismaticJoint.MotorSpeed + ". IsMoving: " + this._isMoving, 
