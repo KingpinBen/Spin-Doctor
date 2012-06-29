@@ -40,7 +40,7 @@ namespace SpinEditor
 
         public static List<ObjectIndex> selectedObjectIndices;
         
-        public static PhysicsObject[][] undoPhysObjArray;
+        public static NodeObject[][] undoObjArray;
         public static Decal[][] undoDecalArray;
         public static int arrayLength = 0;
         public static int arrayMax = 100;
@@ -58,7 +58,7 @@ namespace SpinEditor
             ALIGN_TO = ALIGN_ANCHOR.LAST;
             bIsSomethingSelected = false;
             selectedObjectIndices = new List<ObjectIndex>();
-            undoPhysObjArray = new PhysicsObject[arrayMax][];
+            undoObjArray = new NodeObject[arrayMax][];
             undoDecalArray = new Decal[arrayMax][];
         }
 

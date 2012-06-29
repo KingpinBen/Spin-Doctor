@@ -9,24 +9,52 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using GameLibrary.Assists;
 using GameLibrary.Managers;
+using System.ComponentModel;
 
 namespace GameLibrary.Objects.Triggers
 {
     public class ChangeLevelZone : Door
     {
+        #region Fields
+#if EDITOR
+        Texture2D _devTexture;
+#else
+
+#endif
+        #endregion
+        #region Properties
+#if EDITOR
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
+        public override bool ShowHelp
+        {
+            get
+            {
+                return base.ShowHelp;
+            }
+            set
+            {
+                
+            }
+        }
+#else
+
+#endif
+
+        #endregion
         public ChangeLevelZone() : base() { }
 
-        public virtual void Init(Vector2 position, float width, float height, int nextLevelid)
+        public virtual void Init(Vector2 position)
         {
             this._position = position;
-            this._width = width;
-            this._height = height;
-            this.nextLevel = nextLevelid;
+            this._width = 50;
+            this._height = 50;
+            this._nextLevel = 0;
         }
 
         public override void Load(ContentManager content, World world)
         {
 #if EDITOR
+            _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this.Width), ConvertUnits.ToSimUnits(this.Height), 1.0f);
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
@@ -39,7 +67,7 @@ namespace GameLibrary.Objects.Triggers
             this.Triggered = false;
             
 #endif
-            this.ShowHelp = false;
+            this._showHelp = false;
         }
 
         public override void Update(GameTime gameTime)
@@ -47,12 +75,15 @@ namespace GameLibrary.Objects.Triggers
 #if EDITOR
 #else
             if (Triggered)
-                Screen_Manager.LoadLevel(nextLevel);
+                Screen_Manager.LoadLevel(_nextLevel);
 #endif
         }
 
         public override void Draw(SpriteBatch sb)
         {
+#if EDITOR
+            sb.Draw(_devTexture, this._position, new Rectangle(0,0,(int)Width, (int)Height), Color.White * 0.4f, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, this._zLayer); 
+#endif
         }
     }
 }

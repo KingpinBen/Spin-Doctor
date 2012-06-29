@@ -122,10 +122,12 @@ namespace GameLibrary.Objects
                 if (value == Orientation.Down || value == Orientation.Up)
                 {
                     _movementDirection = Direction.Vertical;
+                    _endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
                 }
                 else
                 {
                     _movementDirection = Direction.Horizontal;
+                    _endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
                 }
 
             }
@@ -192,7 +194,8 @@ namespace GameLibrary.Objects
             }
 
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
-            _endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
+            Orientation = _orientation;
+            //_endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
 #else
             firstBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston2");
             secondBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston1");
@@ -234,10 +237,10 @@ namespace GameLibrary.Objects
         {
             sb.Draw(this._texture, _position, null,
                 this._tint, this.TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1.0f,
-                SpriteEffects.None, this.zLayer);
+                SpriteEffects.None, this._zLayer);
 
             sb.Draw(this.endBodyTexture, _endPosition, null, this._tint * 0.5f,
-                this._rotation, new Vector2(this.endBodyTexture.Width / 2, this.endBodyTexture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
+                this._rotation, new Vector2(this.endBodyTexture.Width / 2, this.endBodyTexture.Height / 2), 1.0f, SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)

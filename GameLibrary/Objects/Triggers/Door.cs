@@ -50,7 +50,7 @@ namespace GameLibrary.Objects.Triggers
     {
         #region Fields
         [ContentSerializer]
-        protected int nextLevel;
+        protected int _nextLevel;
         #endregion
 
         #region Properties
@@ -60,11 +60,11 @@ namespace GameLibrary.Objects.Triggers
         {
             get
             {
-                return nextLevel;
+                return _nextLevel;
             }
             set
             {
-                nextLevel = value;
+                _nextLevel = value;
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
@@ -110,9 +110,9 @@ namespace GameLibrary.Objects.Triggers
 
         public override void Init(Vector2 position, string texLoc)
         {
-            this.nextLevel = 0;
+            this._nextLevel = 0;
             this._textureAsset = texLoc;
-            this.ShowHelp = true;
+            this._showHelp = true;
             this._tint = Color.White;
             this._position = position;
             this._message = " to use.";
@@ -146,7 +146,7 @@ namespace GameLibrary.Objects.Triggers
 #else
             if (Input.Interact() && Triggered)
             {
-                Screen_Manager.LoadLevel(nextLevel);
+                Screen_Manager.LoadLevel(_nextLevel);
             }
 
             base.Update(gameTime);
@@ -164,7 +164,7 @@ namespace GameLibrary.Objects.Triggers
                 (int)(_height)),
                 null, this._tint, this._rotation, 
                 new Vector2(this._texture.Width / 2, this._texture.Height / 2), 
-                SpriteEffects.None, this.zLayer);
+                SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)

@@ -61,7 +61,7 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            SetUpPhysics(world);
+            SetupPhysics(world);
 #endif
         }
 
@@ -75,7 +75,7 @@ namespace GameLibrary.Objects
             base.Draw(spriteBatch);
         }
 
-        protected override void SetUpPhysics(World world)
+        protected override void SetupPhysics(World world)
         {
 #if EDITOR
 #else

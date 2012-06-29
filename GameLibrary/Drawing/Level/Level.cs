@@ -58,7 +58,7 @@ namespace GameLibrary.Drawing
 #endif
 
         [ContentSerializer]
-        private List<PhysicsObject> physicsObjectsList;
+        private List<NodeObject> _objectList;
         [ContentSerializer]
         private Vector2 _spawnLocation = Vector2.Zero;
         [ContentSerializer]
@@ -104,15 +104,15 @@ namespace GameLibrary.Drawing
             }
         }
         [ContentSerializerIgnore]
-        public List<PhysicsObject> PhysicsObjectsList
+        public List<NodeObject> ObjectsList
         {
             get
             {
-                return physicsObjectsList;
+                return _objectList;
             }
             set
             {
-                physicsObjectsList = value;
+                _objectList = value;
             }
         }
         [ContentSerializerIgnore]
@@ -206,7 +206,7 @@ namespace GameLibrary.Drawing
         #region Constructor
         public Level()
         {
-            this.physicsObjectsList = new List<PhysicsObject>();
+            this._objectList = new List<NodeObject>();
             this._decalManager = new Decal_Manager();
 #if EDITOR
             this._backgroundTint = Color.White;
@@ -246,9 +246,9 @@ namespace GameLibrary.Drawing
                 _gears.Load(_content, Vector2.Zero, Camera.LevelDiameter);
             }
 
-            for (int i = 0; i < physicsObjectsList.Count; i++)
+            for (int i = 0; i < this._objectList.Count; i++)
             {
-                physicsObjectsList[i].Load(_content, world);
+                this._objectList[i].Load(_content, world);
             }
 
             this._decalManager.Load();
@@ -273,9 +273,9 @@ namespace GameLibrary.Drawing
 #else
             Player.Instance.Update(gameTime);
 
-            for (int i = physicsObjectsList.Count; i > 0; i--)
+            for (int i = this._objectList.Count; i > 0; i--)
             {
-                physicsObjectsList[i - 1].Update(gameTime);
+                this._objectList[i - 1].Update(gameTime);
             }
 
             if (_roomType != RoomTypeEnum.NonRotating)
@@ -318,9 +318,9 @@ namespace GameLibrary.Drawing
                 this._levelBackdrop.Draw(sb);
             }
 
-            for (int i = physicsObjectsList.Count; i > 0; i--)
+            for (int i = this._objectList.Count; i > 0; i--)
             {
-                this.physicsObjectsList[i - 1].Draw(sb);
+                this._objectList[i - 1].Draw(sb);
             }
         }
         #endregion

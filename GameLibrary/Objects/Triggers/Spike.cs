@@ -40,7 +40,7 @@ namespace GameLibrary.Objects.Triggers
                 this.Height = this._texture.Height;
             }
 #else
-            this.SetUpPhysics(world);
+            this.SetupPhysics(world);
             this.GetRotationFromOrientation();
 #endif
         }
@@ -50,7 +50,7 @@ namespace GameLibrary.Objects.Triggers
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(_texture, new Rectangle((int)_position.X, (int)_position.Y, (int)_width,(int)_height), new Rectangle(0, 0, (int)_width, (int)_height),
-                Color.White, this.TextureRotation, new Vector2(_width / 2, _height / 2), SpriteEffects.None, this.zLayer);
+                Color.White, this.TextureRotation, new Vector2(_width / 2, _height / 2), SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)
@@ -63,9 +63,10 @@ namespace GameLibrary.Objects.Triggers
 
         #region Private Methods
 
-        protected override void SetUpPhysics(World world)
+        protected override void SetupPhysics(World world)
         {
 #if EDITOR
+
 #else
             this.Body = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height), ConvertUnits.ToSimUnits(5), ConvertUnits.ToSimUnits(5), 3, ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Static;

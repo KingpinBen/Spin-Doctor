@@ -9,66 +9,44 @@ namespace GameLibrary.Drawing
     public class Particle
     {
         #region Fields and Properties
-        public Vector2 Position
-        {
-            get
-            {
-                return position;
-            }
-        }
-        private Vector2 position;
+        public Vector2 Position;
+        public Vector2 Acceleration;
+        public Vector2 Velocity;
 
-        public Vector2 Velocity
+        private float _timeLeft;
+        private bool _isAlive;
+        public bool Alive
         {
             get
             {
-                return velocity;
+                return _isAlive;
             }
         }
-        private Vector2 velocity;
-
-        public float Alpha
-        {
-            get
-            {
-                return alpha;
-            }
-        }
-        private float alpha;
-
-        public float Scale
-        {
-            get
-            {
-                return scale;
-            }
-        }
-        private float scale;
-
-        public Color Tint
-        {
-            get
-            {
-                return tint;
-            }
-        }
-        private Color tint;
-
-        public int ParticleTextureIndex
-        {
-            get
-            {
-                return particleTextureIndex;
-            }
-        }
-        private int particleTextureIndex;
         #endregion
 
-        public Particle() { }
-
-        public void Update(GameTime gameTime)
+        public Particle()
         {
+        }
 
+        public void Init(Vector2 position, Vector2 velocity, Vector2 acceleration, float life)
+        {
+            this.Position = position;
+            this.Velocity = velocity;
+            this._isAlive = true;
+            this._timeLeft = life;
+        }
+
+        public void Update(float delta)
+        {
+            Velocity += Acceleration * delta;
+            Position += Velocity * delta;
+
+            _timeLeft -= delta;
+
+            if (_timeLeft <= 0)
+            {
+                this._isAlive = false;
+            }
         }
     }
 }

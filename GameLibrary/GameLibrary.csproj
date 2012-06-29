@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;EDITOR</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -126,6 +126,7 @@
     <Compile Include="Drawing\HUD.cs" />
     <Compile Include="Drawing\Particle.cs" />
     <Compile Include="Drawing\Level\RoomThemeEnum.cs" />
+    <Compile Include="Drawing\ParticleEmitter.cs" />
     <Compile Include="Drawing\RoomTypeEnum.cs" />
     <Compile Include="Drawing\TextString.cs" />
     <Compile Include="Drawing\Level\LevelBackdrop.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Managers\Particle_Manager.cs" />
     <Compile Include="Managers\Sprite_Manager.cs" />
     <Compile Include="Objects\DynamicObject.cs" />
+    <Compile Include="Objects\NodeObject.cs" />
     <Compile Include="Objects\Orientation.cs" />
     <Compile Include="Objects\Prefabs\BouncePad.cs" />
     <Compile Include="Objects\Prefabs\Collectable.cs" />
@@ -142,7 +144,6 @@
     <Compile Include="Objects\Prefabs\MovingPlatform.cs" />
     <Compile Include="Objects\Prefabs\Note.cs" />
     <Compile Include="Objects\Prefabs\OneSidedPlatform.cs" />
-    <Compile Include="Objects\Prefabs\ParticleEmitter.cs" />
     <Compile Include="Objects\Prefabs\Piston.cs" />
     <Compile Include="Objects\Prefabs\PullableObject.cs" />
     <Compile Include="Objects\Prefabs\PushingPlatform.cs" />

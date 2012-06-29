@@ -48,11 +48,11 @@ namespace GameLibrary.Objects.Triggers
         #region Fields
 
         [ContentSerializer]
-        private bool _showHelp;
+        protected bool _showHelp;
         [ContentSerializer]
-        private float _triggerWidth;
+        protected float _triggerWidth;
         [ContentSerializer]
-        private float _triggerHeight;
+        protected float _triggerHeight;
         [ContentSerializer]
         protected string _message = " to use.";
 
@@ -284,7 +284,8 @@ namespace GameLibrary.Objects.Triggers
 #if EDITOR
             return true;
 #else
-            if (!TouchingFixtures.Contains(fixtureB))
+            if (!TouchingFixtures.Contains(fixtureB) && 
+            (fixtureB == Player.Instance.Body.FixtureList[0] || fixtureB == Player.Instance.WheelBody.FixtureList[0]))
             {
                 TouchingFixtures.Add(fixtureB);
             }

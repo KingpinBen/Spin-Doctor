@@ -284,7 +284,7 @@ namespace GameLibrary.Objects
 
             sb.Draw(this._texture, Position,
                 new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
-                this.Tint, this.TextureRotation, new Vector2(this._texture.Width / 2, (this._texture.Height * _climbableSections) / 2), 1.0f, SpriteEffects.None, zLayer);
+                this.Tint, this.TextureRotation, new Vector2(this._texture.Width / 2, (this._texture.Height * _climbableSections) / 2), 1.0f, SpriteEffects.None, this._zLayer);
 
         }
 #else

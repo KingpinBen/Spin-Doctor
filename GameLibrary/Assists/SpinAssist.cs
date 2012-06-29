@@ -170,5 +170,9 @@ namespace GameLibrary.Assists
             return staticRandom.Next(minValue, maxValue);
         }
 
+        public static float GetRandom(float minValue, float maxValue)
+        {
+            return minValue + (float)staticRandom.NextDouble() * (maxValue - minValue);
+        }
     }
 }

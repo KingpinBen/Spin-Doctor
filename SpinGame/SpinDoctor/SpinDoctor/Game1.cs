@@ -52,12 +52,12 @@ namespace SpinDoctor
             Content.RootDirectory = "Content";
 
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferHeight = 720;
-            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 1080;
+            _graphics.PreferredBackBufferWidth = 1920;
             _graphics.PreferMultiSampling = true;
-            //_graphics.IsFullScreen = true;
+            _graphics.IsFullScreen = true;
             _graphics.SynchronizeWithVerticalRetrace = true;
-            IsFixedTimeStep = false;
+            IsFixedTimeStep = true;
             _graphics.ApplyChanges();
 
             this.Window.Title = "Spin Doctor - Development";

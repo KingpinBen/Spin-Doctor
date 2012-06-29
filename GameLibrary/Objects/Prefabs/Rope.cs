@@ -147,7 +147,7 @@ namespace GameLibrary.Objects
                 this._endPosition = this._position + new Vector2(0, _texture.Height * ChainCount);
             }
 #else
-            SetUpPhysics(world);
+            SetupPhysics(world);
 #endif
         }
         #endregion
@@ -192,8 +192,8 @@ namespace GameLibrary.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(endTexture, this._position, null, Color.Tomato, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
-            sb.Draw(endTexture, this._endPosition, null, Color.White, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 0.6f, SpriteEffects.None, this.zLayer);
+            sb.Draw(endTexture, this._position, null, Color.Tomato, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 1.0f, SpriteEffects.None, this._zLayer);
+            sb.Draw(endTexture, this._endPosition, null, Color.White, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 0.6f, SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)
@@ -216,7 +216,7 @@ namespace GameLibrary.Objects
         #region Private Methods
 
         #region SetupPhysics
-        protected override void SetUpPhysics(World world)
+        protected override void SetupPhysics(World world)
         {
             this._pathBodies = new List<Body>();
 

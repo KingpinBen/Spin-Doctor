@@ -296,6 +296,7 @@ namespace GameLibrary.Objects
         protected void SetUpJoint(World world)
         {
 #if EDITOR
+
 #else
             this._currentMovingDirection = false;
             Vector2 axis = Vector2.Zero;

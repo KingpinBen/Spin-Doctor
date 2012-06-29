@@ -198,7 +198,7 @@ namespace GameLibrary.Objects
             }
             #endregion
 
-            this.SetUpPhysics(world);
+            this.SetupPhysics(world);
 #endif
         }
 
@@ -207,7 +207,7 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            if (this.PrismaticJoint.MotorSpeed != 0)
+            if (this._prismaticJoint.MotorSpeed != 0)
             {
                 _rotation += 0.3f;
 
@@ -258,7 +258,7 @@ namespace GameLibrary.Objects
 
         #region Private Methods
 
-        protected override void SetUpPhysics(World world)
+        protected override void SetupPhysics(World world)
         {
 #if EDITOR
 #else

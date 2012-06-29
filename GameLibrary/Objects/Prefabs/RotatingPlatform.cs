@@ -107,7 +107,7 @@ namespace GameLibrary.Objects
                 this.Height = this._texture.Height;
             }
 #else
-            SetUpPhysics(world);
+            SetupPhysics(world);
 #endif
         }
         #endregion
@@ -145,7 +145,7 @@ namespace GameLibrary.Objects
         #region new methods
 
         #region SetUpPhysics
-        protected override void SetUpPhysics(World world)
+        protected override void SetupPhysics(World world)
         {
             /*  Okay, this created some issues (there are still issues I know) but lemme tell you whats going down.
              *  The bodytype being static seems to be the only way to get it working the way it should. Using the joint limits

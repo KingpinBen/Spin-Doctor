@@ -157,11 +157,11 @@ namespace SpinEditor
                 #endregion
 
                 #region Draw PhysicsObjects and Decals
-                if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count > 0)
+                if (STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count > 0)
                 {
-                    for (int i = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i > 0; i--)
+                    for (int i = STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i > 0; i--)
                     {
-                        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Draw(spriteBatch);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Draw(spriteBatch);
 
                         #region Selection Draw
                         if (!HideOverlay && STATIC_EDITOR_MODE.selectedObjectIndices.Count > 0)
@@ -172,12 +172,15 @@ namespace SpinEditor
                                 {
                                     if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i - 1)
                                     {
-                                        spriteBatch.Draw(debugOverlay, 
-                                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Position,
-                                            new Rectangle(0, 0, 
-                                                (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Width,
-                                                (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Height),
-                                            Color.Green * 0.4f, 0f, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i - 1].Origin, 1.0f, SpriteEffects.None, 0.0f);
+                                        spriteBatch.Draw(debugOverlay,
+                                            new Rectangle((int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Position.X - STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Width / 2),
+                                                (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Position.Y - STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Height / 2),
+                                                (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Width),
+                                                (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Height)),
+                                            new Rectangle(0, 0,
+                                                (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Width,
+                                                (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Height),
+                                            Color.Green * 0.4f, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
                                     }
                                 }
                             }
@@ -204,13 +207,13 @@ namespace SpinEditor
                                         float width = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Width * STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Scale;
                                         float height = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height * STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Scale;
 
-                                        spriteBatch.Draw(debugOverlay, 
+                                        spriteBatch.Draw(debugOverlay,
                                             new Rectangle(
                                                 (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - width * 0.5f),
                                                 (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - height * 0.5f),
                                                 (int)(width),
                                                 (int)(height)),
-                                            new Rectangle(0, 0, (int)width , (int)height),
+                                            new Rectangle(0, 0, (int)width, (int)height),
                                             Color.Green * 0.3f, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
                                     }
                                 }
@@ -225,38 +228,37 @@ namespace SpinEditor
                 spriteBatch.End();
                 #endregion
 
+                #region Primitives
+
+                primBatch.Begin(PrimitiveType.LineList);
+                
                 #region Movement paths
                 if (!HideMovementPath)
                 {
-                    primBatch.Begin(PrimitiveType.LineList);
+                    Vector2 offset = new Vector2((GraphicsDevice.Viewport.Width / 2 / Camera.Zoom) - Camera.Pos.X, (GraphicsDevice.Viewport.Height / 2 / Camera.Zoom) - Camera.Pos.Y);
+                    for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i++)
                     {
-                        Vector2 offset = new Vector2((GraphicsDevice.Viewport.Width / 2 / Camera.Zoom) - Camera.Pos.X, (GraphicsDevice.Viewport.Height / 2 / Camera.Zoom) - Camera.Pos.Y);
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+                        Type t = STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].GetType();
+                        if (t.BaseType == typeof(DynamicObject))
                         {
-                            Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].GetType();
-                            if (t.BaseType == typeof(DynamicObject))
-                            {
-                                DynamicObject dyObj = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
-                                primBatch.AddVertex((dyObj.Position + offset) * Camera.Zoom, Color.Red);
-                                primBatch.AddVertex((dyObj.EndPosition + offset) * Camera.Zoom, Color.Red);
+                            DynamicObject dyObj = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.ObjectsList[i];
+                            primBatch.AddVertex((dyObj.Position + offset) * Camera.Zoom, Color.Red);
+                            primBatch.AddVertex((dyObj.EndPosition + offset) * Camera.Zoom, Color.Red);
 
-                            }
-                            else if (t == typeof(Rope))
-                            {
-                                Rope ropeObj = (Rope)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
-                                primBatch.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);
-                                primBatch.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Green);
-                            }
+                        }
+                        else if (t == typeof(Rope))
+                        {
+                            Rope ropeObj = (Rope)STATIC_EDITOR_MODE.levelInstance.ObjectsList[i];
+                            primBatch.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);
+                            primBatch.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Green);
                         }
                     }
-                    primBatch.End();
                 }
                 #endregion
 
                 #region Grid
                 if (!HideGrid)
                 {
-                    primBatch.Begin(PrimitiveType.LineList);
                     for (int i = 0; i < xLineCount + 2; i++)
                     {
                         primBatch.AddVertex(new Vector2(xOffset + xySpacing * i, 0), Color.White * 0.2f);
@@ -268,8 +270,10 @@ namespace SpinEditor
                         primBatch.AddVertex(new Vector2(0, yOffset + xySpacing * i), Color.White * 0.2f);
                         primBatch.AddVertex(new Vector2(GraphicsDevice.Viewport.Width, yOffset + xySpacing * i), Color.White * 0.2f);
                     }
-                    primBatch.End();
                 }
+                #endregion
+
+                primBatch.End();
                 #endregion
 
                 #region Screen Rotation Point
@@ -280,40 +284,33 @@ namespace SpinEditor
                                 new Vector2((GraphicsDevice.Viewport.Width / 2 / Camera.Zoom) - Camera.Pos.X - (crosshair.Width / 2 / Camera.Zoom),
                                             (GraphicsDevice.Viewport.Height / 2 / Camera.Zoom) - Camera.Pos.Y - (crosshair.Height / 2 / Camera.Zoom)) * Camera.Zoom,
                                             Color.White * 0.2f);
-                    spriteBatch.End();
+                spriteBatch.End();
                 //}
                 #endregion
 
                 #region Text
-                    if (!HideCoordinates)
-                    {
-                        spriteBatch.Begin();
-                        spriteBatch.DrawString(font, "Local Co-ords: ",
-                             Vector2.Zero,
-                             Color.White);
-                        spriteBatch.DrawString(font, localCoOrds,
-                            new Vector2(0, 20),
-                            Color.White);
-                        spriteBatch.DrawString(font, "World Co-ords: ",
-                            new Vector2(0, 40),
-                            Color.White);
-                        spriteBatch.DrawString(font, worldCoOrds,
-                            new Vector2(0, 60),
-                            Color.White);
-
-                        spriteBatch.DrawString(font, "x: " + this.Width + "   y: " + this.Height,
-                        new Vector2(0, 80),
+                if (!HideCoordinates)
+                {
+                    spriteBatch.Begin();
+                    //spriteBatch.DrawString(font, "Screen Co-ords: ",
+                    //     Vector2.Zero,
+                    //     Color.White);
+                    //spriteBatch.DrawString(font, localCoOrds,
+                    //    new Vector2(0, 20),
+                    //    Color.White);
+                    spriteBatch.DrawString(font, "Level Co-ords: ",
+                        new Vector2(0, 0),
+                        Color.White);
+                    spriteBatch.DrawString(font, worldCoOrds,
+                        new Vector2(0, 20),
                         Color.White);
 
-                        if (gameTime != null)
-                        {
-                            spriteBatch.DrawString(font, gameTime.TotalGameTime.Seconds.ToString(),
-                                new Vector2(0, 100),
-                                Color.White);
-                        }
+                    //spriteBatch.DrawString(font, "x: " + this.Width + "   y: " + this.Height,
+                    //new Vector2(0, 80),
+                    //Color.White);
 
-                        spriteBatch.End();
-                    }
+                    spriteBatch.End();
+                }
                 #endregion
             }
         }

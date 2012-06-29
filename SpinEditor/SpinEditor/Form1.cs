@@ -99,9 +99,16 @@ namespace SpinEditor
             if ((listBox_Classes.SelectedItem != null) && (listBox_Assets0.SelectedItem != null))
             {
                 //  All textures are loaded inside each object.
-                string texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
-                string texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets0.SelectedIndex].ToString();
-                string texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets0.SelectedIndex].ToString();
+                string texloc0 = "";
+                string texloc1 = "";
+                string texloc2 = "";
+
+                if (listBox_Assets0.SelectedIndex >= 0)
+                    texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
+                if (listBox_Assets1.SelectedIndex >= 0)
+                    texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets1.SelectedIndex].ToString();
+                if (listBox_Assets2.SelectedIndex >= 0)
+                    texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets2.SelectedIndex].ToString();
 
                 #region Object Types
                 switch (Type)
@@ -127,7 +134,7 @@ namespace SpinEditor
                             Door door = new Door();
                             door.Init(Position, texloc0);
                             door.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(door);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(door);
                         }
                         break;
                     case "Ladder":
@@ -135,7 +142,7 @@ namespace SpinEditor
                             Ladder ladder = new Ladder();
                             ladder.Init(Position, texloc0);
                             ladder.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(ladder);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(ladder);
                         }
                         break;
                     case "Moving Platform":
@@ -143,7 +150,7 @@ namespace SpinEditor
                             MovingPlatform movPlat = new MovingPlatform();
                             movPlat.Init(Position, texloc0);
                             movPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(movPlat);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(movPlat);
                         }
                         break;
                     //case "Note":
@@ -167,7 +174,7 @@ namespace SpinEditor
                             Piston piston = new Piston();
                             piston.Init(Position, texloc0, texloc1);
                             piston.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(piston);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(piston);
                         }
                         break;
                     //case "Pullable Object":
@@ -183,7 +190,7 @@ namespace SpinEditor
                             PushingPlatform pushPlat = new PushingPlatform();
                             pushPlat.Init(Position, 100, 20, texloc0, "Assets/Sprites/Effects/explosion");
                             pushPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(pushPlat);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(pushPlat);
                         }
                         break;
                     case "Rope":
@@ -191,7 +198,7 @@ namespace SpinEditor
                             Rope rope = new Rope();
                             rope.Init(Position, texloc0);
                             rope.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(rope);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rope);
                         }
                         break;
                     case "Rotate Room Button":
@@ -199,7 +206,7 @@ namespace SpinEditor
                             RotateRoomButton rotRoomButton = new RotateRoomButton();
                             rotRoomButton.Init(Position, texloc0);
                             rotRoomButton.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(rotRoomButton);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rotRoomButton);
                         }
                         break;
                     case "Rotating Platform":
@@ -207,7 +214,7 @@ namespace SpinEditor
                             RotatingPlatform rotPlat = new RotatingPlatform();
                             rotPlat.Init(Position, texloc0);
                             rotPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(rotPlat);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rotPlat);
                         }
                         break;
                     case "Saw Blade":
@@ -216,7 +223,7 @@ namespace SpinEditor
                             Saw sawBlade = new Saw();
                             sawBlade.Init(Position, texloc0, texloc1);
                             sawBlade.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(sawBlade);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(sawBlade);
                         }
                         break;
                     case "Spikes":
@@ -224,7 +231,7 @@ namespace SpinEditor
                             Spike spike = new Spike();
                             spike.Init(Position, texloc0);
                             spike.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(spike);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(spike);
                         }
                         break;
                     case "Static Object":
@@ -232,7 +239,7 @@ namespace SpinEditor
                             StaticObject staticObj = new StaticObject();
                             staticObj.Init(Position, texloc0);
                             staticObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(staticObj);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(staticObj);
                         }
                         break;
                     default:
@@ -257,7 +264,7 @@ namespace SpinEditor
                             {
                                 STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
                             }
-                            STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Physics, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count - 1));
+                            STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Physics, STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count - 1));
                         }
                         break;
                 }
@@ -272,7 +279,7 @@ namespace SpinEditor
             {
                 for (int i = STATIC_EDITOR_MODE.arrayLength - 1; STATIC_EDITOR_MODE.arrayLength - 1 > STATIC_EDITOR_MODE.arrayIndex; i--)
                 {
-                    STATIC_EDITOR_MODE.undoPhysObjArray[i] = null;
+                    STATIC_EDITOR_MODE.undoObjArray[i] = null;
                     STATIC_EDITOR_MODE.undoDecalArray[i] = null;
                     STATIC_EDITOR_MODE.arrayLength--;
                 }
@@ -281,19 +288,19 @@ namespace SpinEditor
             {
                 for (int i = 0; i < STATIC_EDITOR_MODE.arrayMax - 1; i++)
                 {
-                    STATIC_EDITOR_MODE.undoPhysObjArray[i] = STATIC_EDITOR_MODE.undoPhysObjArray[i + 1];
+                    STATIC_EDITOR_MODE.undoObjArray[i] = STATIC_EDITOR_MODE.undoObjArray[i + 1];
                     STATIC_EDITOR_MODE.undoDecalArray[i] = STATIC_EDITOR_MODE.undoDecalArray[i + 1];
 
                 }
-                STATIC_EDITOR_MODE.undoPhysObjArray[STATIC_EDITOR_MODE.arrayLength - 1] = null;
+                STATIC_EDITOR_MODE.undoObjArray[STATIC_EDITOR_MODE.arrayLength - 1] = null;
                 STATIC_EDITOR_MODE.undoDecalArray[STATIC_EDITOR_MODE.arrayLength - 1] = null;
                 STATIC_EDITOR_MODE.arrayLength--;
             }
 
-            STATIC_EDITOR_MODE.undoPhysObjArray[STATIC_EDITOR_MODE.arrayLength] = new PhysicsObject[STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count];
-            for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+            STATIC_EDITOR_MODE.undoObjArray[STATIC_EDITOR_MODE.arrayLength] = new NodeObject[STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count];
+            for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i++)
             {
-                STATIC_EDITOR_MODE.undoPhysObjArray[STATIC_EDITOR_MODE.arrayLength][i] = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i];
+                STATIC_EDITOR_MODE.undoObjArray[STATIC_EDITOR_MODE.arrayLength][i] = STATIC_EDITOR_MODE.levelInstance.ObjectsList[i];
             }
 
             STATIC_EDITOR_MODE.undoDecalArray[STATIC_EDITOR_MODE.arrayLength] = new Decal[STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count];
@@ -311,8 +318,8 @@ namespace SpinEditor
             if (STATIC_EDITOR_MODE.arrayIndex > 0)
             {
                 STATIC_EDITOR_MODE.arrayIndex--;
-                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList = null;
-                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList = STATIC_EDITOR_MODE.undoPhysObjArray[STATIC_EDITOR_MODE.arrayIndex].ToList();
+                STATIC_EDITOR_MODE.levelInstance.ObjectsList = null;
+                STATIC_EDITOR_MODE.levelInstance.ObjectsList = STATIC_EDITOR_MODE.undoObjArray[STATIC_EDITOR_MODE.arrayIndex].ToList();
                 STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList = null;
                 STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList = STATIC_EDITOR_MODE.undoDecalArray[STATIC_EDITOR_MODE.arrayIndex].ToList();
                 STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
@@ -325,7 +332,7 @@ namespace SpinEditor
             if (STATIC_EDITOR_MODE.arrayLength - 1 > STATIC_EDITOR_MODE.arrayIndex)
             {
                 STATIC_EDITOR_MODE.arrayIndex++;
-                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList = STATIC_EDITOR_MODE.undoPhysObjArray[STATIC_EDITOR_MODE.arrayIndex].ToList();
+                STATIC_EDITOR_MODE.levelInstance.ObjectsList = STATIC_EDITOR_MODE.undoObjArray[STATIC_EDITOR_MODE.arrayIndex].ToList();
                 STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList = STATIC_EDITOR_MODE.undoDecalArray[STATIC_EDITOR_MODE.arrayIndex].ToList();
                 STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
                 Handle_Property_Grid_Items();
@@ -521,9 +528,9 @@ namespace SpinEditor
                         xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
                         xnA_RenderControl1.levelDimensions = STATIC_EDITOR_MODE.levelInstance.RoomDimensions;
 
-                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+                        for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i++)
                         {
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                         }
 
                         for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count; i++)
@@ -631,7 +638,7 @@ namespace SpinEditor
                     switch (STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Type)
                     {
                         case OBJECT_TYPE.Physics:
-                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index].Clone());
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index].Clone());
                             break;
                         case OBJECT_TYPE.Decal:
                             STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Add(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index].Clone());
@@ -659,7 +666,7 @@ namespace SpinEditor
                         {
                             case (OBJECT_TYPE.Physics):
                                 {
-                                    theStuff.Add(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index]);
+                                    theStuff.Add(STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index]);
                                 }
                                 break;
                             case (OBJECT_TYPE.Decal):
@@ -2395,7 +2402,7 @@ namespace SpinEditor
 
         private void ZOOM_ValueChanged(object sender, EventArgs e)
         {
-            xnA_RenderControl1.Camera.Zoom = (float)ZOOM.Value / 100;
+            xnA_RenderControl1.Camera.Zoom = (float)ZOOM.Value * 0.01f;
         }
         #endregion
 
@@ -2466,7 +2473,7 @@ namespace SpinEditor
                     {
                         case (OBJECT_TYPE.Physics):
                             {
-                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
+                                STATIC_EDITOR_MODE.levelInstance.ObjectsList.RemoveAt(STATIC_EDITOR_MODE.selectedObjectIndices[i - 1].Index);
                             }
                             break;
                         case (OBJECT_TYPE.Decal):
@@ -2504,15 +2511,15 @@ namespace SpinEditor
                 case EDITOR_MODE.SELECT:
                     {
                         #region Handle Objects Under Cursor
-                        if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count > 0)
+                        if (STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count > 0)
                         {
-                            for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Count; i++)
+                            for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i++)
                             {
                                 Rectangle BoundingBox = new Rectangle(
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width * 0.5f),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height * 0.5f),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Width),
-                                    (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[i].Height));
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].Position.X - STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].Width * 0.5f),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].Position.Y - STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].Height * 0.5f),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].Width),
+                                    (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].Height));
 
                                 if (BoundingBox.Contains(MousePos))
                                 {
@@ -2565,10 +2572,10 @@ namespace SpinEditor
                                     case (OBJECT_TYPE.Physics):
                                         {
                                             newRect = new Microsoft.Xna.Framework.Rectangle(
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width * 0.5f),
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height * 0.5f),
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
-                                                    (int)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width * 0.5f),
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height * 0.5f),
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
+                                                    (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height);
                                         }
                                         break;
                                     case (OBJECT_TYPE.Decal):
@@ -2600,13 +2607,13 @@ namespace SpinEditor
                                         {
                                             case (OBJECT_TYPE.Physics):
                                                 {
-                                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
-                                                    Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
+                                                    STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
+                                                    Type t = STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
                                                     if (t.BaseType == typeof(DynamicObject))
                                                     {
-                                                        DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
+                                                        DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
                                                         dyOb.EndPosition += moveDis;
-                                                        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index] = dyOb;
+                                                        STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index] = dyOb;
                                                     }
                                                 }
                                                 break;
