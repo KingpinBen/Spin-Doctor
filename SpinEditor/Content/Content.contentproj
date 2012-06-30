@@ -254,8 +254,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Decal\Wood Panel.png">
-      <Name>Wood Panel</Name>
+    <Compile Include="Assets\Images\Textures\Decal\wood_wallPanel.png">
+      <Name>wood_wallPanel</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -279,13 +279,8 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Doors\Door3.png">
-      <Name>Door3</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Doors\DoorStandard.png">
-      <Name>DoorStandard</Name>
+    <Compile Include="Assets\Images\Textures\Doors\door_closedElevator.png">
+      <Name>door_closedElevator</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -294,13 +289,13 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Doors\Wood Door.png">
-      <Name>Wood Door</Name>
+    <Compile Include="Assets\Images\Textures\Doors\door_medical1.png">
+      <Name>door_medical1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Environment\barrelBundle_1.png">
-      <Name>barrelBundle_1</Name>
+    <Compile Include="Assets\Images\Textures\Doors\door_wood.png">
+      <Name>door_wood</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -311,6 +306,11 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\Environment\barrel_2.png">
       <Name>barrel_2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\barrel_bundle1.png">
+      <Name>barrel_bundle1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -419,6 +419,26 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\platform_broken.png">
+      <Name>platform_broken</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\platform_cushioned1.png">
+      <Name>platform_cushioned1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\platform_cushioned2.png">
+      <Name>platform_cushioned2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\RustedBar.png">
+      <Name>RustedBar</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="Assets\Images\Textures\Ladder\LadderRust.png">
       <Name>LadderRust</Name>
       <Importer>TextureImporter</Importer>
@@ -449,8 +469,58 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_1.png">
+      <Name>background_1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="Assets\Images\Textures\RoomSetup\background_2.png">
       <Name>background_2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_3.png">
+      <Name>background_3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_4.png">
+      <Name>background_4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_indust1.png">
+      <Name>background_indust1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_indust2.png">
+      <Name>background_indust2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_medical1.jpg">
+      <Name>background_medical1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_medical2.jpg">
+      <Name>background_medical2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_medical3.jpg">
+      <Name>background_medical3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_medical4.jpg">
+      <Name>background_medical4</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_medical5.jpg">
+      <Name>background_medical5</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -471,11 +541,6 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\RoomSetup\rock.png">
       <Name>rock</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\RoomSetup\RustedBar.png">
-      <Name>RustedBar</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -506,6 +571,21 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\Saw\bloodiedBlade3.png">
       <Name>bloodiedBlade3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Saw\Copy of i_sawDecalEndPiece.png">
+      <Name>Copy of i_sawDecalEndPiece</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Saw\i_sawDecalEndPiece.png">
+      <Name>i_sawDecalEndPiece</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Saw\i_sawDecalMiddlePiece.png">
+      <Name>i_sawDecalMiddlePiece</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -549,28 +629,28 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Other\Controls\A.png">
-      <Name>A</Name>
+    <Compile Include="Assets\Images\Textures\Switch\Switch Box.png">
+      <Name>Switch Box</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Other\Controls\B.png">
-      <Name>B</Name>
+    <Compile Include="Assets\Images\Textures\Switch\Valve.png">
+      <Name>Valve</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Other\Controls\X.png">
-      <Name>X</Name>
+    <Compile Include="Assets\Images\Textures\Switch\valveHandle.png">
+      <Name>valveHandle</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Other\Controls\Y.png">
-      <Name>Y</Name>
+    <Compile Include="Assets\Images\Textures\Vent\Pad.png">
+      <Name>Pad</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Other\Dev\9pxCrosshair.png">
-      <Name>9pxCrosshair</Name>
+    <Compile Include="Assets\Images\Textures\Vent\Steam Vent.png">
+      <Name>Steam Vent</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -594,71 +674,10 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Other\Game\DeveloperLogo.png">
-      <Name>DeveloperLogo</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Other\Game\LoadingIcon.png">
-      <Name>LoadingIcon</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Other\Game\smallGear.png">
-      <Name>smallGear</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Other\Game\TitleLogo.png">
-      <Name>TitleLogo</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Other\Images\backgroundlandscape.jpg">
-      <Name>backgroundlandscape</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Images\Textures\Saw\i_sawDecalEndPiece.png">
-      <Name>i_sawDecalEndPiece</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Saw\i_sawDecalMiddlePiece.png">
-      <Name>i_sawDecalMiddlePiece</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\Images\Textures\Switch\Switch Box.png">
-      <Name>Switch Box</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Switch\Valve.png">
-      <Name>Valve</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Textures\Switch\valveHandle.png">
-      <Name>valveHandle</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\Images\Textures\Vent\Steam Vent.png">
-      <Name>Steam Vent</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\Images\Textures\Vent\Pad.png">
-      <Name>Pad</Name>
+    <Compile Include="Assets\Other\Dev\9pxCrosshair.png">
+      <Name>9pxCrosshair</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

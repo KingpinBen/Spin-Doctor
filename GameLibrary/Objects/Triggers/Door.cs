@@ -123,6 +123,7 @@ namespace GameLibrary.Objects.Triggers
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
+            this._origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
 
 #if EDITOR
             if (_width == 0 || _height == 0)
@@ -163,7 +164,7 @@ namespace GameLibrary.Objects.Triggers
                 (int)(_width),
                 (int)(_height)),
                 null, this._tint, this._rotation, 
-                new Vector2(this._texture.Width / 2, this._texture.Height / 2), 
+                this._origin, 
                 SpriteEffects.None, this._zLayer);
         }
 #else
@@ -176,7 +177,7 @@ namespace GameLibrary.Objects.Triggers
                 (int)(this._position.X),
                 (int)(this._position.Y),
                 (int)(_width),
-                (int)(_height)), null, Color.White, _rotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), SpriteEffects.None, zLayer);
+                (int)(_height)), null, this._tint, _rotation, _origin, SpriteEffects.None, this._zLayer);
         }
 #endif
         #endregion

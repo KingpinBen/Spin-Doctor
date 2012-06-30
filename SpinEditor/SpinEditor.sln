@@ -9,6 +9,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Content", "Content\Content.contentproj", "{4026EA7A-C0CB-43D4-8E29-3B5130BD6CF1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentProj", "ContentProj\ContentProj.csproj", "{BDED80F4-421B-4637-B3D8-3DBFA0FA6EA6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9FD0115-96DC-4928-BFAC-45826E9E35FF} = {C9FD0115-96DC-4928-BFAC-45826E9E35FF}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer Physics XNA", "..\Farseer Physics Engine 3.3 XNA\Farseer Physics XNA.csproj", "{0A850700-1ABB-4288-A391-6726B90EBEB9}"
 EndProject

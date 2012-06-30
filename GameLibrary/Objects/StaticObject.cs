@@ -420,12 +420,21 @@ namespace GameLibrary.Objects
 #endif
         }
 
+#if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, new Rectangle((int)(_position.X - (this.Width * 0.5f)), (int)(_position.Y - (this.Height * 0.5f)), (int)Width, (int)Height),
+            spriteBatch.Draw(_texture, this._position,
+                new Rectangle(0, 0, (int)this._width, (int)this._height),
+                Tint, TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1f, SpriteEffects.None, _zLayer);
+        }
+#else
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(_texture, new Rectangle((int)(_position.X - (this.Width * 0.5f)), (int)(_position.Y - (this.Height * 0.5f)), (int)Width, (int)Height),
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
                 Tint, TextureRotation, Vector2.Zero, SpriteEffects.None, _zLayer);
         }
+#endif
 
         #region Private Methods
 
