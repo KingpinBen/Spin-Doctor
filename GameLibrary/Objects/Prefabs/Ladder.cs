@@ -359,7 +359,7 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Setup Body
-        private void SetupPhysics(World world)
+        void SetupPhysics(World world)
         {
 #if EDITOR
 
@@ -370,9 +370,9 @@ namespace GameLibrary.Objects
                 newWidth *= -1;
 
             if (Orientation == Direction.Vertical)
-                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(_height * _climbableSections), ConvertUnits.ToSimUnits(_mass));
+                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), ConvertUnits.ToSimUnits(_mass));
             else
-                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_height * _climbableSections), ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(_mass));
+                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(_mass));
 
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.IsSensor = true;

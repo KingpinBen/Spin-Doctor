@@ -58,7 +58,7 @@ namespace GameLibrary.Objects
         private const float _movementSpeed = 22.0f;
         private const float _jumpForce = 4.2f;      // 3.2f - Waist height. Pre 24/5
         private const float _maxJumpTime = 0.54f;
-        private const float _maxAirTime = 0.6f;
+        private const float _maxAirTime = 0.84f;
         private const float _midAirForce = 200.0f;
         private bool _canJump;
         private bool _canDoubleJump;
@@ -157,11 +157,6 @@ namespace GameLibrary.Objects
             if (PlayerState == pState.Dead)
             {
                 return;
-            }
-
-            if (_timeSinceStateChange < 5.0)
-            {
-                _timeSinceStateChange += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
             }
 
             //Keeps the body rotation up, moving with the camera.
@@ -271,14 +266,17 @@ namespace GameLibrary.Objects
 
         private void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            TouchingFixtures.Remove(fixtureB);
+            //if (PlayerState == pState.Dead || PlayerState == pState.Jumping) return;
+
+            if (TouchingFixtures.Contains(fixtureB))
+            {
+                TouchingFixtures.Remove(fixtureB);
+            }
 
             //  Player separation needs to work in a certain way.
             //  the jumping state is handled in HandleJumping so
             //  on separation must check if the player has fallen 
             //  off of a ledge.
-            if (PlayerState == pState.Dead || PlayerState == pState.Jumping || PlayerState == pState.Climbing) return;
-
             if (TouchingFixtures.Count == 0)
             {
                 //  Player shouldn't be able to initiate a jump if not touching
@@ -296,6 +294,7 @@ namespace GameLibrary.Objects
             {
                 return false;
             }
+
             //  We don't want anything bringing the player back to life by changing state
             //  accidently by a collision.
             if (PlayerState == pState.Dead)
@@ -316,14 +315,14 @@ namespace GameLibrary.Objects
                 {
                     if ((int)type != 1)
                     {
-                        this.Kill();
-                        return true;
+                        //this.Kill();
+                        //return true;
                     }
                 }
-
                 //Input.VibrateGP(100f, 0.6f);
-                this.PlayerState = pState.Grounded;
             }
+
+            this.PlayerState = pState.Grounded;
 
             if (!_canJump || !_canDoubleJump)
             {
@@ -343,40 +342,39 @@ namespace GameLibrary.Objects
         private void HandleJumping(Vector2 Gravity)
         {
             Vector2 force = Gravity;
-            force *= _jumpForce;
 
             //  First jump
             if (CanJump)
             {
+                force *= _jumpForce;
+
                 if (PlayerState == pState.Climbing)
                 {
-                    if (Input.LeftCheck() || Input.RightCheck())
+                    if (Input.LeftCheck())
                     {
-                        Vector2 jumpforce = Gravity;
-
-                        if (Input.LeftCheck())
-                        {
-                            jumpforce *= SpinAssist.ModifyVectorByUp(new Vector2(_jumpForce, -force.Y / 6));
-                        }
-                        else if (Input.RightCheck())
-                        {
-                            jumpforce *= SpinAssist.ModifyVectorByUp(new Vector2(-_jumpForce, -force.Y / 6));
-                        }
-
-                        ToggleBodies(true);
-                        this.PlayerState = pState.Jumping;
-                        WheelBody.ApplyLinearImpulse(jumpforce);
-
-                        return;
+                        force *= SpinAssist.ModifyVectorByUp(new Vector2(force.Y * 4f, -_jumpForce));
                     }
+                    else if (Input.RightCheck())
+                    {
+                        force *= SpinAssist.ModifyVectorByUp(new Vector2(-force.Y * 4f, -_jumpForce));
+                    }
+
+                    ToggleBodies(true);
+                    WheelBody.ApplyLinearImpulse(force);
+                    this.PlayerState = pState.Jumping;
+
+                    return;
                 }
 
                 WheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
+                this.PlayerState = pState.Jumping;
                 _canJump = false;
             }
                 //  Second jump (steam jump)
             else if (_dJumpEnabled && _canDoubleJump)
             {
+                force *= _jumpForce;
+
                 // Apply 2 forces. Up and then directiona;
                 if (Math.Abs(Input.GP_LeftThumbstick.X) >= 0.2)
                 {
@@ -397,15 +395,8 @@ namespace GameLibrary.Objects
 
         #region Handle Running and Idling
 
-        private void HandleMoving(GameTime gameTime)
+        void HandleMoving(GameTime gameTime)
         {
-            
-
-            if (WheelJoint.MotorSpeed == 0 && this.PlayerState == pState.Grounded)
-            {
-                return;
-            }
-
             if (WheelJoint.MotorSpeed == 0)
                 this.PlayerState = pState.Grounded;
             else
@@ -599,7 +590,7 @@ namespace GameLibrary.Objects
         /// </summary>
         public void ForceFall()
         {
-            PlayerState = pState.Falling;
+           PlayerState = pState.Grounded;
         }
         #endregion
 

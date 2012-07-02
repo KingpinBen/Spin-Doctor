@@ -102,9 +102,9 @@ namespace GameLibrary.Assists
             }
 
             Console.WriteLine("---------------------[ PLAYER ]---------------------");
-            Console.Write("Position: " + Player.Instance.Body.Position.ToString());
-            Console.WriteLine("State: " + Player.Instance.PlayerState.ToString());
-            Console.WriteLine("AirTime: " + Player.Instance.AirTime.ToString());
+            Console.WriteLine("Position: " + Player.Instance.Body.Position.ToString());
+            Console.Write("State: " + Player.Instance.PlayerState.ToString());
+            Console.WriteLine(".   AirTime: " + Player.Instance.AirTime.ToString());
             Console.WriteLine("Jump: " + Player.Instance.CanJump.ToString() + ". DoubJump: " + Player.Instance.CanDoubleJump.ToString());
             
         }

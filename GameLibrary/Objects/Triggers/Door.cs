@@ -188,6 +188,11 @@ namespace GameLibrary.Objects.Triggers
 #if EDITOR
             return true;
 #else
+            if (fixtureB != Player.Instance.WheelBody.FixtureList[0])
+            {
+                return false;
+            }
+
             if (!TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);

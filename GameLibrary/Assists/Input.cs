@@ -875,7 +875,7 @@ namespace GameLibrary.Assists
             if (isGamePad)
                 return GP_X;
             else
-                return SHIFT_L;
+                return E;
         }
 
         public static bool LeftCheck()
