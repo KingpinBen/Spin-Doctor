@@ -182,7 +182,7 @@ namespace GameLibrary.Screens
         #region HandleInput
         private void HandleInput()
         {
-            if (Player.Instance.PlayerState == pState.Dead && Input.GP_X)
+            if (Player.Instance.PlayerState == pState.Dead && Input.Jump())
             {
                 LoadLevel();
             }

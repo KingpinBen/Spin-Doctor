@@ -79,24 +79,34 @@ namespace GameLibrary.Assists
                 Console.WriteLine("Screen [" + i + "] = [" + 
                     Screen_Manager.ScreenList[i].Name + "]" + ".");
             }
+            Console.WriteLine("---------------------[ RENDER ]---------------------");
 
-            Console.Write("FPS: " + frameRate.ToString());
-            Console.WriteLine(".     SpriteCount: "  + Sprite_Manager.ListCount());
-            Console.WriteLine("Gamepad Input?: " + Input.isGamePad.ToString());
+            Console.Write("FPS: " + frameRate.ToString() + ".  SpriteCount: " + Sprite_Manager.ListCount());
+            Console.WriteLine("DrawTime: " + stopWatch.ElapsedMilliseconds + "ms.");
+            
             Console.WriteLine("---------------[ CAMERA & ROTATION ]----------------");
-            Console.WriteLine("World Rotation: " + Camera.Rotation / Math.PI);
+            Console.WriteLine("World Rotation: " + Camera.Rotation / Math.PI + ". Up is: " + Camera.UpIs.ToString());
             Console.WriteLine("Rotating?: " + Camera.LevelRotating + ". CanRotate? " + Camera.LevelRotates);
-            Console.Write("Up Is: " + Camera.UpIs.ToString());
-            Console.WriteLine(".    Zoom: " + Camera.Zoom.ToString());
-            Console.WriteLine("--------------------[ CONTROLS ]--------------------");
-            Console.WriteLine("LeftThumbstick : " + new Vector2((float)Math.Round(Input.GP_LeftThumbstick.X, 2), (float)Math.Round(Input.GP_LeftThumbstick.Y, 2)).ToString());
-            Console.WriteLine("ButtonsPushed  : " + Input.CurrentGpState.Buttons.ToString());
+            Console.WriteLine("Zoom: " + Camera.Zoom.ToString());
+
+            Console.WriteLine("--------------------[ CONTROLS ]--------------------"); 
+            Console.Write("Gamepad Input?: " + Input.isGamePad.ToString());
+            if (Input.isGamePad)
+            {
+                Console.WriteLine(". LeftThumbstick : " + new Vector2((float)Math.Round(Input.GP_LeftThumbstick.X, 2), (float)Math.Round(Input.GP_LeftThumbstick.Y, 2)).ToString());
+                Console.WriteLine("ButtonsPushed  : " + Input.CurrentGpState.Buttons.ToString());
+            }
+            else
+            {
+                Console.WriteLine(".  Buttons pushed: " + Input.CurrentKbState.GetPressedKeys().ToString());
+            }
+
             Console.WriteLine("---------------------[ PLAYER ]---------------------");
-            Console.WriteLine("BodyPosition: " + Player.Instance.Body.Position.ToString());
-            Console.WriteLine("WheelPosition: " + Player.Instance.WheelBody.Position.ToString());
-            Console.Write("State: " + Player.Instance.PlayerState.ToString());
-            Console.Write("Jump: " + Player.Instance.CanJump.ToString()); Console.WriteLine(". DoubJump: " + Player.Instance.CanDoubleJump.ToString());
-            Console.WriteLine("DrawTime: " + stopWatch.ElapsedMilliseconds / 1000.0f + "ms.");
+            Console.Write("Position: " + Player.Instance.Body.Position.ToString());
+            Console.WriteLine("State: " + Player.Instance.PlayerState.ToString());
+            Console.WriteLine("AirTime: " + Player.Instance.AirTime.ToString());
+            Console.WriteLine("Jump: " + Player.Instance.CanJump.ToString() + ". DoubJump: " + Player.Instance.CanDoubleJump.ToString());
+            
         }
         #endregion
 

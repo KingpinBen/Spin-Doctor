@@ -130,6 +130,7 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
+            base.SetupPhysics(world);
             this.Body.BodyType = BodyType.Dynamic;
 #endif
         }

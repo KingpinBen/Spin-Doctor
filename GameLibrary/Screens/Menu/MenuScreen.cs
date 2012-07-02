@@ -86,6 +86,12 @@ namespace GameLibrary.Screens.Menu
         #endregion
 
         #region Constructor
+
+        public MenuScreen(string name)
+            : base(name)
+        {
+            _selectionOption = Point.Zero;
+        }
         public MenuScreen()
             : base("PauseMenu")
         {

@@ -48,10 +48,7 @@ namespace GameLibrary.Objects
         {
             base.Init(position, tex);
 
-            this._movementDirection = Direction.Horizontal;
             this._endPosition = this.Position;
-            this._startsMoving = false;
-            this._motorSpeed = 3.0f;
         }
 
         public override void Load(ContentManager content, World world)

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using GameLibrary.Screens;
 using GameLibrary.Drawing;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Input;
 #endregion
 
 namespace GameLibrary.Managers
@@ -112,26 +113,20 @@ namespace GameLibrary.Managers
         }
         #endregion
 
-        #region Constructor
-
         public Screen_Manager(Game game, GraphicsDeviceManager graphicsManager)
             : base(game)
         {
-            Game = game;
-            Content = new ContentManager(game.Services, "Content");
+            _game = game;
+            _content = new ContentManager(game.Services, "Content");
             _deviceManager = graphicsManager;
-        }
-        #endregion
-
-        #region Load
-        /// <summary>
-        /// Load Content
-        /// </summary>
-        public void Load()
-        {
             _screenList = new List<Screen>();
             _screensToAdd = new List<Screen>();
             _spriteBatch = new SpriteBatch(_game.GraphicsDevice);
+            _currentState = State.FadeIn;
+        }
+
+        public void Load()
+        {
             Input.Load();
             Audio.Load();
             Fonts.Load(Content);
@@ -139,23 +134,21 @@ namespace GameLibrary.Managers
             //  This is an array used for global textures that everything needs. In this
             //  case, a blank pixel.
             _textures = new Texture2D[1];
-            _textures[0] = Content.Load
-                <Texture2D>(FileLoc.BlankPixel());
-
-            _currentState = State.FadeIn;
+            _textures[0] = Content.Load<Texture2D>(FileLoc.BlankPixel());
         }
-        #endregion
 
-        #region Update
-        /// <summary>
-        /// Updates the topscreen and checks for user input.
-        /// </summary>
-        /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
         {
             Input.Update(gameTime);
             Audio.Update();
             HUD.Update(gameTime);
+
+            if (Input.IsNewKeyPress(Keys.F12))
+            {
+                _deviceManager.PreferredBackBufferHeight = 1080;
+                _deviceManager.PreferredBackBufferWidth = 1920;
+                _deviceManager.ApplyChanges();
+            }
 
             #region Dev
 #if Development
@@ -220,13 +213,6 @@ namespace GameLibrary.Managers
             #endregion
         }
 
-        #endregion
-
-        #region Draw
-        /// <summary>
-        /// Draws the gameplayscreen and the topscreen.
-        /// </summary>
-        /// <param name="sb">Spritebatch</param>
         public override void Draw(GameTime gameTime)
         {
 #if Development
@@ -253,25 +239,13 @@ namespace GameLibrary.Managers
             #endregion
 
         }
-        #endregion
 
-        #region Add Screen
-        /// <summary>
-        /// Adds the passed screen to the top for interaction.
-        /// </summary>
-        /// <param name="screen">Which screen do you want to add? (e.g. this)</param>
         public static void AddScreen(Screen screen)
         {
             screen.Load();
             ScreenList.Add(screen);
         }
-        #endregion
 
-        #region Delete Top Screen
-        /// <summary>
-        /// Deletes the top Screen
-        /// </summary>
-        /// <param name="screen"></param>
         public static void DeleteScreen()
         {
             int i = ScreenList.Count - 1;
@@ -279,9 +253,7 @@ namespace GameLibrary.Managers
             ScreenList[i].Unload();
             ScreenList.RemoveAt(i);
         }
-        #endregion
 
-        #region Load Level
         public static void LoadLevel(int id)
         {
             _loadingContent = true;
@@ -292,7 +264,6 @@ namespace GameLibrary.Managers
             _screensToAdd.Add(loading);
             GameplayScreen.LevelID = id;
         }
-        #endregion
 
         static bool HandleTransition(GameTime gameTime)
         {
@@ -342,15 +313,10 @@ namespace GameLibrary.Managers
         }
         #endregion
 
-        #region ExitGame
-        /// <summary>
-        /// Exits the game.
-        /// </summary>
         public static void ExitGame()
         {
-            Content.Dispose();
-            Game.Exit();
+            _content.Dispose();
+            _game.Exit();
         }
-        #endregion
     }
 }

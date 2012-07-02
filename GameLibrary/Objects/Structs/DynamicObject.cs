@@ -45,7 +45,9 @@ namespace GameLibrary.Objects
         protected bool _startsMoving;
         [ContentSerializer]
         protected float _timeToReverse;
+#if EDITOR
 
+#else
         [ContentSerializerIgnore]
         protected FixedPrismaticJoint _prismaticJoint;
         [ContentSerializerIgnore]
@@ -54,6 +56,7 @@ namespace GameLibrary.Objects
         protected bool _isMoving;
         [ContentSerializerIgnore]
         private bool _currentMovingDirection;
+#endif
         #endregion
 
         #region Properties
@@ -210,14 +213,20 @@ namespace GameLibrary.Objects
         {
             
         }
+
+        public override void Init(Vector2 position, string tex)
+        {
+            base.Init(position, tex);
+
+            this._movementDirection = Direction.Horizontal;
+            this._mass = 100.0f;
+            this._motorSpeed = 3.0f;
+            this._timeToReverse = 1.0f;
+            this._startsMoving = true;
+            this._endPosition = position;
+        }
         #endregion
 
-        #region Load
-        /// <summary>
-        /// Must be called to create the objects joint.
-        /// </summary>
-        /// <param name="content"></param>
-        /// <param name="world"></param>
         public override void Load(ContentManager content, World world)
         {
             if (this._textureAsset != "")
@@ -241,9 +250,7 @@ namespace GameLibrary.Objects
             }
 #endif
         }
-        #endregion
 
-        #region Update
         public override void Update(GameTime gameTime)
         {
 #if EDITOR
@@ -283,7 +290,6 @@ namespace GameLibrary.Objects
             }
 #endif
         }
-        #endregion
 
         #region Private Methods
 
@@ -355,11 +361,11 @@ namespace GameLibrary.Objects
 #else
             if (_isMoving)
             {
-                this.PrismaticJoint.MotorSpeed = 0.0f;
+                this._prismaticJoint.MotorSpeed = 0.0f;
             }
             else
             {
-                this.PrismaticJoint.MotorSpeed = _motorSpeed;
+                this._prismaticJoint.MotorSpeed = _motorSpeed;
             }
 #endif
         }

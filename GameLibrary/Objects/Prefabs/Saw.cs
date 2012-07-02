@@ -140,7 +140,6 @@ namespace GameLibrary.Objects
             base.Init(position, tex);
 
             this._bloodiedTextureAsset = texblood;
-            this._motorSpeed = 0;
             this._scale = 1.0f;
         }
         #endregion

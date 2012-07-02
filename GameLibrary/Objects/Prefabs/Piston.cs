@@ -172,11 +172,6 @@ namespace GameLibrary.Objects
             base.Init(position, basePiece);
 
             this.endBodyTexAsset = endPiece;
-            this._mass = 100f;
-            this._motorSpeed = 5.0f;
-            this._startsMoving = true;
-            this._timeToReverse = 1.5f;
-            this._endPosition = position;
         }
         #endregion
 

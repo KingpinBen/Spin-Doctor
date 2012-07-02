@@ -58,7 +58,7 @@ namespace GameLibrary.Objects
         private const float _movementSpeed = 22.0f;
         private const float _jumpForce = 4.2f;      // 3.2f - Waist height. Pre 24/5
         private const float _maxJumpTime = 0.54f;
-        private const float _maxAirTime = 0.5f;
+        private const float _maxAirTime = 0.6f;
         private const float _midAirForce = 200.0f;
         private bool _canJump;
         private bool _canDoubleJump;
@@ -122,6 +122,11 @@ namespace GameLibrary.Objects
         public static Player Instance
         {
             get { return playerInstance; }
+        }
+
+        public float AirTime
+        {
+            get { return _airTime; }
         }
 
         #endregion
@@ -478,8 +483,7 @@ namespace GameLibrary.Objects
 
         private void HandleAir(GameTime gameTime)
         {
-            //  
-            _airTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+            _airTime += ((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f) * Math.Abs(SpinAssist.ModifyVectorByUp(Vector2.Normalize(this.Body.LinearVelocity)).Y);
 
             if (PlayerState != pState.Falling)
             {
@@ -488,6 +492,7 @@ namespace GameLibrary.Objects
                 if (_airTime >= _maxJumpTime && _airTime > 0.3f)
                 {
                     this.PlayerState = pState.Falling;
+                    _airTime = 0.0f;
                 }
             }
 

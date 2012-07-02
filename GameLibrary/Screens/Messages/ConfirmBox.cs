@@ -25,14 +25,11 @@ namespace GameLibrary.Screens.Messages
 
         #region Constructor
         public ConfirmBox()
-            : base()
+            : base("ConfirmBox")
         {
-            this.Name = "ConfirmBox";
             this.isPopUp = true;
             this._menuArrayCount = new Point(2, 1);
             this._menuItemArray = new MenuOption[_menuArrayCount.X, _menuArrayCount.Y];
-
-            _content = new ContentManager(Screen_Manager.Game.Services, "Content");
         }
         #endregion
 
