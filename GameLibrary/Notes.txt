@@ -15,19 +15,16 @@
 
 	Use pythagoras to find the max size of the level. AB^2 + BC^2 = CA^2. 1500~ large, 1000 medium, 700~ small 
 
+[ Body Userdata Flags ] - Make them ints.
 
+0 - None.
+1 - Cushioned platform.
 
 
 [ To do ]
-
-	player jumping (cap speed due to forces),
 
 	Save states (things that need saving: unlocked rooms, current unlocked gear, collectables >> HUB state(?)),
 
 	graphics/sound menus,
 
 	implement sound cues (probably one of the last things to do),
-
-	Fix ladder so it doesn't directly change the level specified 'CanRotate'.
-
-	FIX: Holding a direction and grabbing the ladder immediately drops the player.

@@ -183,12 +183,6 @@ namespace GameLibrary.Objects.Triggers
         #endregion
 
         #region Constructor
-        /// <summary>
-        /// Creates a multiple use trigger.
-        /// </summary>
-        /// <param name="position">Position of trigger</param>
-        /// <param name="tHeight">trigger height</param>
-        /// <param name="tWidth">trigger width</param>
         public Trigger()
         {
 
@@ -197,12 +191,13 @@ namespace GameLibrary.Objects.Triggers
 
         public virtual void Init(Vector2 position, float tWidth, float tHeight)
         {
-            this._width = tWidth;
-            this._height = tHeight;
+            this.TriggerWidth = tWidth;
+            this.TriggerHeight = tHeight;
             this._position = position;
             this._tint = Color.White;
-            this.ShowHelp = true;
-            this.Message = " to use.";
+            this._showHelp = true;
+            this._message = " to use.";
+            this._zLayer = 0.5f;
         }
         #endregion
 

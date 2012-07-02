@@ -71,7 +71,7 @@ namespace GameLibrary.Screens.Messages
             {
                 fsp = new FullscreenPicture();
                 //  TODO: LINK TO CORRECT POPUP ASSET LOCATION THINGY
-                fsp.Load(_content, "Assets/Other/Dev/invite" + StringID.ToString());
+                fsp.Load(_content, "Assets/Other/Dev/invite" + StringID.ToString(), ScaleStyle.MaxHeight);
                 fsp.Scale = ((1 / Screen_Manager.GraphicsDevice.Viewport.AspectRatio) * 2) * 0.8f;
 
                 return;

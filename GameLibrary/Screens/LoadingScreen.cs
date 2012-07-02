@@ -42,7 +42,8 @@ namespace GameLibrary.Screens
         #region Fields
         private Sprite sprite;
         private AnimatedText ContinueText;
-        public FullscreenPicture picture { get; set; }
+        //public FullscreenPicture picture { get; set; }
+        private FullscreenPicture _banner;
 
         private ContentManager content;
 
@@ -54,19 +55,21 @@ namespace GameLibrary.Screens
         {
             content = new ContentManager(Screen_Manager.Game.Services, "Content");
 
-            sprite = new Sprite();
-            picture = new FullscreenPicture();
+            
+            //picture = new FullscreenPicture();
         }
         #endregion
 
         #region Load
         public override void Load()
         {
-            int locx = Screen_Manager.GraphicsDevice.Viewport.Width - (int)(102 * sprite.Scale);
-            int locy = Screen_Manager.GraphicsDevice.Viewport.Height - (int)(102 * sprite.Scale);
-
+            sprite = new Sprite();
             sprite.Init(new Point(102,102), new Point(8, 1), -1);
             sprite.Scale = 0.4f;
+
+            int locx = Screen_Manager.GraphicsDevice.Viewport.Width - (int)(102 * sprite.Scale);
+            int locy = Screen_Manager.GraphicsDevice.Viewport.Height - (int)(102 * sprite.Scale);
+            sprite.ZLayer = 0.0f;
             sprite.Load(content, "Assets/Other/Game/LoadingIcon");
             sprite.Position = new Vector2(locx, locy);
 
@@ -76,9 +79,10 @@ namespace GameLibrary.Screens
             ContinueText.Load(content);
             ContinueText.Scale = 0.7f;
 
-            picture.scaleStyle = ScaleStyle.MaxWidth;
-            picture.Load(content, "Assets/Other/Images/backgroundlandscape");
-
+            _banner = new FullscreenPicture();
+            _banner.Load(content, "Assets/Other/Game/SDBanner", ScaleStyle.MaxWidth);
+            _banner.Position = new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width / 2, Screen_Manager.GraphicsDevice.Viewport.Height);
+            _banner.Origin = new Vector2(_banner.texture.Width / 2, _banner.texture.Height);
             base.Load();
         }
 
@@ -91,10 +95,13 @@ namespace GameLibrary.Screens
         #region Update
         public override void Update(GameTime gameTime)
         {
-            if (Screen_Manager.LoadingContent)
-                sprite.Update(gameTime);
+            if (Screen_Manager.LoadingContent) { }
+
             else
+            {
                 ContinueText.Update(gameTime);
+                sprite.Update(gameTime);
+            }
 
             if (!Screen_Manager.LoadingContent && Input.Jump())
                 Screen_Manager.FadeOut(null);
@@ -110,11 +117,16 @@ namespace GameLibrary.Screens
 
             sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 
-            picture.Draw(sb);
+            //picture.Draw(sb);
+            _banner.Draw(sb);
+
             if (Screen_Manager.LoadingContent)
-                sprite.Draw(sb);
+            { }
             else
+            {
+                sprite.Draw(sb);
                 ContinueText.Draw(sb);
+            }
 
             base.Draw(sb);
             sb.End();

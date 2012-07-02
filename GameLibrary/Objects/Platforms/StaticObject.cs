@@ -396,7 +396,7 @@ namespace GameLibrary.Objects
             this._position = position;
             this._textureAsset = tex;
             this._tint = Color.White;
-            this._zLayer = 0.01f;
+            this._zLayer = 0.5f;
             this._mass = 1000.0f;
         }
         #endregion
@@ -425,14 +425,14 @@ namespace GameLibrary.Objects
         {
             spriteBatch.Draw(_texture, this._position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1f, SpriteEffects.None, _zLayer);
+                Tint, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_texture, new Rectangle((int)(_position.X - (this.Width * 0.5f)), (int)(_position.Y - (this.Height * 0.5f)), (int)Width, (int)Height),
+            sb.Draw(_texture, _position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, Vector2.Zero, SpriteEffects.None, _zLayer);
+                Tint, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
         }
 #endif
 

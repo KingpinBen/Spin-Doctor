@@ -127,10 +127,9 @@ namespace GameLibrary.Objects
         {
             this.Position = position;
             this._textureAsset = tex;
-            this.Tint = Color.White;
             this._message = "AUTO CHOSEN";
-            this.TriggerHeight = 25;
-            this.TriggerWidth = 25;
+
+            base.Init(position, 25, 25);
         }
         #endregion
 

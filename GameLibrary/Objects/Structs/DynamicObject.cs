@@ -255,7 +255,7 @@ namespace GameLibrary.Objects
             }
 
             if  ((this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit && !this.MovingToStart) ||
-                (this.PrismaticJoint.JointTranslation < this.PrismaticJoint.LowerLimit && this.MovingToStart) ||
+                (this.PrismaticJoint.JointTranslation <= 0 && this.MovingToStart) ||
                 _elapsedTimer > 0.0f)
             {
                 //  If so zero the speed. Fixes bouncing errors in farseer.

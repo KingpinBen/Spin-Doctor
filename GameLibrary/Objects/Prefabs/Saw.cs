@@ -11,6 +11,7 @@
 //--    Revision List
 //--    ===============
 //--    BenG - Initial - replaced Sawblade
+//--    BenG - Changed decal zlayer to fixed back.
 //--    
 //--    TBD
 //--    ==============
@@ -232,12 +233,13 @@ namespace GameLibrary.Objects
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, Color.White, 
                 TextureRotation, Origin, _scale, SpriteEffects.None, zLayer); 
 
+            
             sb.Draw(_wallDecalEnd, this.Position, null, Color.White, _decalRotation,
-                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, zLayer + 0.01f);
+                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.87f);
             sb.Draw(_wallDecalEnd, this.EndPosition, null, Color.White, (float)Math.PI + _decalRotation,
-                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, zLayer + 0.01f);
+                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.87f);
             sb.Draw(_wallDecalMiddle, _decalRectangle, null, Color.White, _decalRotation,
-                Vector2.Zero, SpriteEffects.None, zLayer + 0.01f);
+                Vector2.Zero, SpriteEffects.None, 0.87f);
 
 #if Development
             sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed: " + this.PrismaticJoint.MotorSpeed + ". IsMoving: " + this._isMoving, 
@@ -249,8 +251,9 @@ namespace GameLibrary.Objects
             sb.DrawString(Fonts.DebugFont, "Translation: " + this.PrismaticJoint.JointTranslation.ToString(), 
                 ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(400, -30), Color.Red);
 
-            sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit) + (this.MovingToStart == false).ToString(), this.Position - new Vector2(0, 500), Color.Red);
-            sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation <= this.PrismaticJoint.LowerLimit) + (this.MovingToStart == true).ToString(), this.Position - new Vector2(0, 485), Color.Red);
+            sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit) + (!this.MovingToStart).ToString(), this.Position - new Vector2(0, 500), Color.Red);
+            sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation <= 0) + this.MovingToStart.ToString(), this.Position - new Vector2(0, 485), Color.Red);
+            sb.DrawString(Fonts.DebugFont, this._elapsedTimer.ToString(), this.Position - new Vector2(0, 460), Color.Red);
 #endif
         }
 #endif

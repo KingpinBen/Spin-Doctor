@@ -62,7 +62,7 @@ namespace GameLibrary.Drawing
         public string textureLoc { get; set; }
         public ScaleStyle scaleStyle { get; set; }
 
-        public void Load(ContentManager content, string TexLoc)
+        public void Load(ContentManager content, string TexLoc, ScaleStyle style)
         {
             textureLoc = TexLoc;
             texture = content.Load<Texture2D>
@@ -70,6 +70,7 @@ namespace GameLibrary.Drawing
 
             Origin = new Vector2(texture.Width / 2, texture.Height / 2);
             Position = (new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f);
+            this.scaleStyle = style;
 
             switch (scaleStyle)
             {

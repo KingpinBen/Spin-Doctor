@@ -325,13 +325,14 @@ namespace GameLibrary.Objects
             TexVertOutput input = SpinAssist.TexToVert(world, endBodyTexture, ConvertUnits.ToSimUnits(10.0f), 1.0f);
 
             this._origin = input.Origin;
-
+            
             this.endBody = input.Body;
             this.endBody.Rotation = SpinAssist.RotationByOrientation(_orientation);
             this.endBody.Position = ConvertUnits.ToSimUnits(Position + offset);
             this.endBody.Restitution = 0.0f;
             this.endBody.Friction = 1.0f;
             this.endBody.BodyType = BodyType.Dynamic;
+            this.endBody.Mass = 100.0f;
 
             if (_isLethal)
             {
@@ -411,11 +412,17 @@ namespace GameLibrary.Objects
 #if EDITOR
             return true;
 #else
+            if (fixtureA == this.endBody.FixtureList[0])
+            {
+                return false;
+            }
+
             if (!TouchingFixtures.Contains(fixtureB) && 
                 (fixtureB == Player.Instance.WheelBody.FixtureList[0] || fixtureB == Player.Instance.Body.FixtureList[0]))
             {
                 Player.Instance.Kill();
             }
+
             return true;
 #endif
         }
@@ -424,7 +431,10 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            TouchingFixtures.Remove(fixtureB);
+            if (TouchingFixtures.Contains(fixtureB))
+            {
+                TouchingFixtures.Remove(fixtureB);
+            }
 #endif
         }
 

@@ -112,10 +112,8 @@ namespace GameLibrary.Objects.Triggers
         {
             this._nextLevel = 0;
             this._textureAsset = texLoc;
-            this._showHelp = true;
-            this._tint = Color.White;
-            this._position = position;
-            this._message = " to use.";
+
+            base.Init(position, 30, 30);
         }
         #endregion
 
