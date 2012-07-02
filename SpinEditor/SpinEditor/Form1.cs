@@ -366,6 +366,12 @@ namespace SpinEditor
             xnA_RenderControl1.HideGrid = ViewMenuHideGrid.Checked;
         }
 
+        private void ViewMenuHideSpawn_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideSpawn.Checked = !ViewMenuHideSpawn.Checked;
+            xnA_RenderControl1.HidePlayerSpawn = ViewMenuHideSpawn.Checked;
+        }
+
         #endregion
 
         #region File
@@ -2795,22 +2801,22 @@ namespace SpinEditor
 
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.F1))
             {
-                xnA_RenderControl1.HideCoordinates = !xnA_RenderControl1.HideCoordinates;
+                this.ViewMenuHideCoordinates_Click(null, null);
             }
 
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.F2))
             {
-                xnA_RenderControl1.HideGrid = !xnA_RenderControl1.HideGrid;
+                this.ViewMenuHideGrid_Click(null, null);
             }
 
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.F3))
             {
-                xnA_RenderControl1.HideMovementPath = !xnA_RenderControl1.HideMovementPath;
+                this.ViewMenuHideMovementPath_Click(null, null);
             }
 
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.F4))
             {
-                xnA_RenderControl1.HideOverlay = !xnA_RenderControl1.HideOverlay;
+                this.ViewMenuHideOverlay_Click(null, null);
             }
             #endregion
 
@@ -2840,5 +2846,7 @@ namespace SpinEditor
             this.xnA_RenderControl1.Focus();
         }
         #endregion
+
+        
     }
 }

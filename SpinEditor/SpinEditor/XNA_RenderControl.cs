@@ -42,6 +42,7 @@ namespace SpinEditor
         string worldCoOrds = "";
 
         public Texture2D levelBackground { get; set; }
+        private Texture2D devCharacter;
         public Vector2 levelDimensions { get; set; }
         public ContentManager contentMan { get; set; }
         public Camera2D Camera { get; set; }
@@ -56,6 +57,7 @@ namespace SpinEditor
         public bool HideCoordinates { get; set; }
         public bool HideMovementPath { get; set; }
         public bool HideGrid { get; set; }
+        public bool HidePlayerSpawn { get; set; }
 
         #endregion
 
@@ -79,10 +81,11 @@ namespace SpinEditor
             if (Mouse.WindowHandle != this.Handle)
                 Mouse.WindowHandle = this.Handle;
 
-            //  Load some things to content,
+            //  Load some textures and fonts,
             debugOverlay = contentMan.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
             crosshair = contentMan.Load<Texture2D>("Assets/Other/Dev/9pxCrosshair");
             font = contentMan.Load<SpriteFont>("Assets/Fonts/Debug");
+            devCharacter = contentMan.Load<Texture2D>("Assets/Other/Dev/devHarland");
 
             //  Setup the grid initially
             RefreshGrid();
@@ -148,11 +151,18 @@ namespace SpinEditor
                 #region Objects and selection overlay
                 spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, Camera.get_transformation(new Vector2(this.Width, this.Height)));
 
-                #region Draw the Level Background
+                #region Draw Generics
                 if (levelBackground != null)
                 {
                     spriteBatch.Draw(levelBackground, new Rectangle(-(int)levelDimensions.X / 2, -(int)levelDimensions.Y / 2, (int)levelDimensions.X, (int)levelDimensions.Y),
                         new Rectangle(0, 0, (int)this.levelDimensions.X, (int)this.levelDimensions.Y), Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 1.0f);
+                }
+
+                if (!HidePlayerSpawn)
+                {
+                    spriteBatch.Draw(devCharacter, STATIC_EDITOR_MODE.levelInstance.PlayerSpawnLocation,
+                    null, Color.White, 0.0f, new Vector2(this.devCharacter.Width / 2, this.devCharacter.Height / 2),
+                    0.43f, SpriteEffects.None, 0.3f);
                 }
                 #endregion
 

@@ -47,6 +47,7 @@ namespace SpinEditor
             this.ViewMenuHideGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewMenuHideCoordinates = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewMenuHideMovementPath = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideSpawn = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -72,16 +73,18 @@ namespace SpinEditor
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.listBox_Assets0 = new System.Windows.Forms.ListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.listBox_Assets1 = new System.Windows.Forms.ListBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.listBox_Assets2 = new System.Windows.Forms.ListBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
             this.ZOOM = new System.Windows.Forms.NumericUpDown();
             this.panel3 = new System.Windows.Forms.Panel();
             this.Align_Relative = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.BUTTON_ALIGN_10 = new System.Windows.Forms.Button();
             this.BUTTON_ALIGN_1 = new System.Windows.Forms.Button();
             this.BUTTON_ALIGN_6 = new System.Windows.Forms.Button();
@@ -94,19 +97,17 @@ namespace SpinEditor
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
-            this.listBox_Assets0 = new System.Windows.Forms.ListBox();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ZOOM)).BeginInit();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -211,7 +212,8 @@ namespace SpinEditor
             this.ViewMenuHideOverlay,
             this.ViewMenuHideGrid,
             this.ViewMenuHideCoordinates,
-            this.ViewMenuHideMovementPath});
+            this.ViewMenuHideMovementPath,
+            this.ViewMenuHideSpawn});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -243,6 +245,13 @@ namespace SpinEditor
             this.ViewMenuHideMovementPath.Size = new System.Drawing.Size(190, 22);
             this.ViewMenuHideMovementPath.Text = "Hide Movement Lines";
             this.ViewMenuHideMovementPath.Click += new System.EventHandler(this.ViewMenuHideMovementPath_Click);
+            // 
+            // ViewMenuHideSpawn
+            // 
+            this.ViewMenuHideSpawn.Name = "ViewMenuHideSpawn";
+            this.ViewMenuHideSpawn.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideSpawn.Text = "Hide Player Spawn";
+            this.ViewMenuHideSpawn.Click += new System.EventHandler(this.ViewMenuHideSpawn_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -495,6 +504,26 @@ namespace SpinEditor
             this.tabControl1.Size = new System.Drawing.Size(210, 118);
             this.tabControl1.TabIndex = 6;
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.listBox_Assets0);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(202, 92);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Tex 1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // listBox_Assets0
+            // 
+            this.listBox_Assets0.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox_Assets0.FormattingEnabled = true;
+            this.listBox_Assets0.Location = new System.Drawing.Point(3, 5);
+            this.listBox_Assets0.Name = "listBox_Assets0";
+            this.listBox_Assets0.Size = new System.Drawing.Size(196, 82);
+            this.listBox_Assets0.TabIndex = 7;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.listBox_Assets1);
@@ -533,6 +562,15 @@ namespace SpinEditor
             this.listBox_Assets2.Name = "listBox_Assets2";
             this.listBox_Assets2.Size = new System.Drawing.Size(196, 82);
             this.listBox_Assets2.TabIndex = 8;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(229, 358);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(91, 13);
+            this.label5.TabIndex = 25;
+            this.label5.Text = "Align Relative To:";
             // 
             // panel4
             // 
@@ -614,15 +652,6 @@ namespace SpinEditor
             this.Align_Relative.Size = new System.Drawing.Size(202, 21);
             this.Align_Relative.TabIndex = 26;
             this.Align_Relative.SelectedIndexChanged += new System.EventHandler(this.Align_Relative_SelectedIndexChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(229, 358);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(91, 13);
-            this.label5.TabIndex = 25;
-            this.label5.Text = "Align Relative To:";
             // 
             // BUTTON_ALIGN_10
             // 
@@ -735,6 +764,7 @@ namespace SpinEditor
             this.xnA_RenderControl1.HideGrid = false;
             this.xnA_RenderControl1.HideMovementPath = false;
             this.xnA_RenderControl1.HideOverlay = false;
+            this.xnA_RenderControl1.HidePlayerSpawn = false;
             this.xnA_RenderControl1.levelBackground = null;
             this.xnA_RenderControl1.levelDimensions = new Microsoft.Xna.Framework.Vector2(0F, 0F);
             this.xnA_RenderControl1.Location = new System.Drawing.Point(0, 0);
@@ -745,26 +775,6 @@ namespace SpinEditor
             this.xnA_RenderControl1.Click += new System.EventHandler(this.xnA_RenderControl1_Click);
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
-            // 
-            // listBox_Assets0
-            // 
-            this.listBox_Assets0.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox_Assets0.FormattingEnabled = true;
-            this.listBox_Assets0.Location = new System.Drawing.Point(3, 5);
-            this.listBox_Assets0.Name = "listBox_Assets0";
-            this.listBox_Assets0.Size = new System.Drawing.Size(196, 82);
-            this.listBox_Assets0.TabIndex = 7;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.listBox_Assets0);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(202, 92);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Tex 1";
-            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -786,6 +796,7 @@ namespace SpinEditor
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
@@ -793,7 +804,6 @@ namespace SpinEditor
             ((System.ComponentModel.ISupportInitialize)(this.ZOOM)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -867,6 +877,7 @@ namespace SpinEditor
         private ToolStripMenuItem deselectAllToolStripMenuItem;
         private TabPage tabPage1;
         private ListBox listBox_Assets0;
+        private ToolStripMenuItem ViewMenuHideSpawn;
 
 
     }
