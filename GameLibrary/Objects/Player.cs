@@ -57,13 +57,14 @@ namespace GameLibrary.Objects
         private static readonly Player playerInstance = new Player();
         private const float _movementSpeed = 22.0f;
         private const float _jumpForce = 4.2f;      // 3.2f - Waist height. Pre 24/5
-        private const float _maxJumpTime = 0.54f;   
+        private const float _maxJumpTime = 0.54f;
+        private const float _maxAirTime = 0.5f;
         private const float _midAirForce = 200.0f;
         private bool _canJump;
         private bool _canDoubleJump;
         private bool _dJumpEnabled;
         private float _grabbingRotation;
-        private float _jumpTime;
+        private float _airTime;
         private WeldJoint grabbingJoint;
         
         #endregion
@@ -220,11 +221,6 @@ namespace GameLibrary.Objects
                     }
             }
 
-            if (PlayerState != pState.Jumping && _jumpTime > 0)
-            {
-                _jumpTime = 0.0f;
-            }
-
             #endregion
 
             #region Press Jump
@@ -291,22 +287,35 @@ namespace GameLibrary.Objects
         {
             //  We don't want sensors to affect anything for the player as only sensors want to 
             //  sense the player rather than the other way around.
-            if (fixtureB.IsSensor == true) return true;
+            if (fixtureB.IsSensor)
+            {
+                return false;
+            }
+            //  We don't want anything bringing the player back to life by changing state
+            //  accidently by a collision.
+            if (PlayerState == pState.Dead)
+            {
+                return true;
+            }
 
             if (!TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);
             }
 
-            if (PlayerState == pState.Dead)
-            {
-                return true;
-            }
-
             if (PlayerState != pState.Running && PlayerState != pState.Grounded)
             {
-                //Input.VibrateGP(100f, 0.6f);
-                this.PlayerState = pState.Grounded;
+                if (PlayerState == pState.Falling && _airTime >= _maxAirTime)
+                {
+                    this.Kill();
+                    return true;
+                }
+                else
+                {
+                    //Input.VibrateGP(100f, 0.6f);
+                    this.PlayerState = pState.Grounded;
+                    _airTime = 0.0f;
+                }
             }
 
             if (!_canJump || !_canDoubleJump)
@@ -465,11 +474,14 @@ namespace GameLibrary.Objects
 
         private void HandleAir(GameTime gameTime)
         {
+            //  
+            _airTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+
             if (PlayerState != pState.Falling)
             {
-                _jumpTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
-
-                if (_jumpTime >= _maxJumpTime && _jumpTime > 0.3f)
+                //  Gives the check a minimum value with 0.3
+                //  whilst also checking a max.
+                if (_airTime >= _maxJumpTime && _airTime > 0.3f)
                 {
                     this.PlayerState = pState.Falling;
                 }
@@ -588,19 +600,15 @@ namespace GameLibrary.Objects
         {
             this.WheelBody.OnCollision += Body_OnCollision;
             this.WheelBody.OnSeparation += Body_OnSeparation;
-
             this.WheelBody.AngularDamping = 10.0f;
             this.WheelBody.LinearDamping = 0.7f;
-
+            this.WheelBody.CollisionCategories = Category.Cat12;
             this.mainBody.CollisionCategories = Category.Cat10;
-            this.wheelBody.CollisionCategories = Category.Cat12;
-            foreach (Fixture fix in wheelBody.FixtureList)
-                fix.Body.CollisionCategories = Category.Cat12;
-
+            
             this.PlayerState = pState.Grounded;
             this._canJump = true;
             this._dJumpEnabled = enableDoubleJump;
-            this._jumpTime = 0.0f;
+            this._airTime = 0.0f;
 
             if (_dJumpEnabled)
                 _canDoubleJump = true;
