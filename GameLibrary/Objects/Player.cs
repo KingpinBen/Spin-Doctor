@@ -320,6 +320,7 @@ namespace GameLibrary.Objects
                     }
                 }
                 //Input.VibrateGP(100f, 0.6f);
+                PlayerState = pState.Grounded;
             }
 
             this.PlayerState = pState.Grounded;
@@ -564,12 +565,6 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Join Ladder
-        /// <summary>
-        /// TODO: make the parameter a Vector2 as to change
-        /// depending on the ladders orientation. Perhaps check which value is 0 and choose
-        /// the other.
-        /// </summary>
-        /// <param name="MoveTo"></param>
         public void JoinLadder(Vector2 MoveTo)
         {
             _canDoubleJump = true;
@@ -590,7 +585,11 @@ namespace GameLibrary.Objects
         /// </summary>
         public void ForceFall()
         {
-           PlayerState = pState.Grounded;
+            this.ToggleBodies(true);
+            if (PlayerState != pState.Grounded || PlayerState == pState.Running)
+            {
+                PlayerState = pState.Falling;
+            }
         }
         #endregion
 

@@ -24,7 +24,7 @@
 //--
 //--------------------------------------------------------------------------
 
-//#define Development
+#define Development
 
 #region Using Statements
 using System;
@@ -256,14 +256,18 @@ namespace GameLibrary.Objects
                 if (Input.Grab())
                 {
                     if (Grabbed)
+                    {
                         DisconnectPlayer();
+                    }
                     else
+                    {
                         ConnectPlayer();
+                    }
                 }
             }
 
-            //  Make sure the player isnt grabbing the ladder if they aren't climbing.
-            if (Player.Instance.PlayerState != pState.Climbing && Grabbed)
+            //  Just a quick error grab.
+            if (Grabbed && Player.Instance.PlayerState != pState.Climbing)
             {
                 DisconnectPlayer();
             }
@@ -295,7 +299,6 @@ namespace GameLibrary.Objects
 #if Development
             sb.DrawString(Fonts.DebugFont, "Grabbed: " + Grabbed.ToString(), Position + new Vector2(20, 0), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
             sb.DrawString(Fonts.DebugFont, "InRange: " + PlayerInRange.ToString(), Position + new Vector2(20, 15), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-            sb.DrawString(Fonts.DebugFont, "Rotation: "  + Rotation, Position + new Vector2(20,30), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
             sb.DrawString(Fonts.DebugFont, "Orientation: " + _orientation, Position + new Vector2(20, 45), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
 #endif
             #endregion
@@ -318,11 +321,12 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            this.Grabbed = false;
-
-            Camera.AllowRotation = true;
-            Player.Instance.ToggleBodies(true);
-            Player.Instance.ForceFall();
+            if (Grabbed)
+            {
+                Camera.AllowRotation = true;
+                Player.Instance.ForceFall();
+                this.Grabbed = false;
+            }
 #endif
         }
 
@@ -411,11 +415,7 @@ namespace GameLibrary.Objects
 
             //  Initiate disconnecting the player.
             _inGrabbingRange = false;
-
-            if (_grabbed)
-            {
-                DisconnectPlayer();
-            }
+            DisconnectPlayer();
         }
         /// <summary>
         /// Set the player in range to enable climbing
