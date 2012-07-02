@@ -18,7 +18,7 @@
 [ Body Userdata Flags ] - Make them ints.
 
 0 - None.
-1 - Cushioned platform.
+1 - Dont kill from fall damage.
 
 
 [ To do ]

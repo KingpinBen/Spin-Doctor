@@ -70,7 +70,7 @@ namespace GameLibrary.Screens
             this.IsExitable = false;
             Level = new Level();
             this.graphicsDevice = Screen_Manager.GraphicsDevice;
-
+            World = new World(Vector2.Zero);
             PresentationParameters pp = this.graphicsDevice.PresentationParameters;
 
             RenderTargetEffect = new RenderTarget2D(Screen_Manager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
@@ -201,7 +201,7 @@ namespace GameLibrary.Screens
 
 #else
             IsInitialized = false;
-            World = new World(Vector2.Zero);
+            World.Clear();
             Camera.UpIs = UpIs.Up;
 
             #region Development

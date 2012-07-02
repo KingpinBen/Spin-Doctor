@@ -171,6 +171,7 @@
       <Project>{B80D7A5E-0696-4422-BD8D-FAE685F29483}</Project>
       <Name>SpinDoctorContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -434,6 +434,7 @@ namespace SpinEditor
             this.listBox_Classes.FormattingEnabled = true;
             this.listBox_Classes.Items.AddRange(new object[] {
             "Bounce Pad",
+            "Cushioned Platform",
             "Decal",
             "Door",
             "Ladder",

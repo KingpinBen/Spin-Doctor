@@ -305,17 +305,19 @@ namespace GameLibrary.Objects
 
             if (PlayerState != pState.Running && PlayerState != pState.Grounded)
             {
-                if (PlayerState == pState.Falling && _airTime >= _maxAirTime)
+                //  Check the if the object has 
+                object type = fixtureB.UserData;
+                if (PlayerState == pState.Falling && _airTime >= _maxAirTime && type is int)
                 {
-                    this.Kill();
-                    return true;
+                    if ((int)type != 1)
+                    {
+                        this.Kill();
+                        return true;
+                    }
                 }
-                else
-                {
-                    //Input.VibrateGP(100f, 0.6f);
-                    this.PlayerState = pState.Grounded;
-                    _airTime = 0.0f;
-                }
+
+                //Input.VibrateGP(100f, 0.6f);
+                this.PlayerState = pState.Grounded;
             }
 
             if (!_canJump || !_canDoubleJump)
@@ -323,6 +325,8 @@ namespace GameLibrary.Objects
                 _canJump = true;
                 _canDoubleJump = true;
             }
+
+            _airTime = 0.0f;
 
             return true;
         }

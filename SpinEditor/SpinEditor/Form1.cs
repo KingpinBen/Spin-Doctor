@@ -121,6 +121,14 @@ namespace SpinEditor
                     //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(bouncePad);
                     //    }
                     //    break;
+                    case "Cushioned Platform":
+                        {
+                            CushionedPlatform plat = new CushionedPlatform();
+                            plat.Init(Position, texloc0);
+                            plat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(plat);
+                        }
+                        break;
                     case "Decal":
                         {
                             Decal decal = new Decal();
@@ -2330,6 +2338,9 @@ namespace SpinEditor
             #region Selected-Class Texture Switch
             switch (listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString())
             {
+                case "Cushioned Platform":
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+                    break;
                 case "Decal":
                     STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Decal/";
                     break;

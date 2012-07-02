@@ -447,7 +447,8 @@ namespace GameLibrary.Objects
             //  Fortunately, Farseer will allow us to use the Texture to find the outline. Haven't tried it with 
             //  full coloured images, only outlines. Will have to research! More demos!
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this.Width), ConvertUnits.ToSimUnits(this.Height), ConvertUnits.ToSimUnits(this.Mass), ConvertUnits.ToSimUnits(this.Position));
-
+            //  Give it a 0 for no flags.
+            this.Body.FixtureList[0].UserData = (int)0;
             // Elastic (>1) <->Non-elastic collisions (0).
             this.Body.Restitution = 0f;
 
