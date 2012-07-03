@@ -22,7 +22,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 #region Using Statements
 using System;
@@ -204,6 +204,7 @@ namespace GameLibrary.Screens
 
 #else
             IsInitialized = false;
+            World = new World(Vector2.Zero);
             Camera.UpIs = UpIs.Up;
 
 
@@ -211,8 +212,6 @@ namespace GameLibrary.Screens
             //  If theres anything in Level, clear it.
             if (Level != null)
             {
-                World.Clear();
-
                 if (Level.Content != null)
                 {
                     Level.Unload();

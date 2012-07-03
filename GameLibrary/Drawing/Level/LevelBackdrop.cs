@@ -66,7 +66,7 @@ namespace GameLibrary.Drawing
         public void Draw(SpriteBatch sb)
         {
             sb.Draw(_levelBackground, new Rectangle(-this.roomDimensions.X / 2, -this.roomDimensions.Y / 2, this.roomDimensions.X, this.roomDimensions.Y),
-                null, backgroundTint, 0.0f, Vector2.Zero, SpriteEffects.None, 1f);
+                new Rectangle(0,0,this.roomDimensions.X, this.roomDimensions.Y), backgroundTint, 0.0f, Vector2.Zero, SpriteEffects.None, 1f);
 
             //sb.Draw(_roomShell, Vector2.Zero, null, Color.Red, 0.0f, this._origin, 1.0f, SpriteEffects.None, 0.5f);
             //sb.Draw(_roomShell, Vector2.Zero, null, Color.White, MathHelper.PiOver2, this._origin, 1.0f, SpriteEffects.None, 0.5f);

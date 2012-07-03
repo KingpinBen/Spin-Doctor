@@ -168,14 +168,27 @@ namespace GameLibrary.Objects
             {
                 if (Input.Grab() && _inRange)
                 {
-                    //_ropeBodyRevoluteJoint = new RevoluteJoint(_pathBodies[bodyIndex - 1], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
-                    _ropePlayerJoint = new WeldJoint(_touchedRopeFixtures[_touchedRopeFixtures.Count - 1].Body, Player.Instance.Body, Vector2.Zero, Vector2.Zero);
-                    GameplayScreen.World.AddJoint(_ropePlayerJoint);
+                    int index = 0;
+                    float smallestDistance = (float)(Math.Pow(Player.Instance.Body.Position.X - _touchedRopeFixtures[0].Body.Position.X, 2.0) + Math.Pow(Player.Instance.Body.Position.Y - _touchedRopeFixtures[0].Body.Position.Y, 2.0));
+                    
+                    for(int i = 1; i < _touchedRopeFixtures.Count; i++)
+                    {
+                        float distance = (float)(Math.Pow(Player.Instance.Body.Position.X - _touchedRopeFixtures[i].Body.Position.X, 2.0) + Math.Pow(Player.Instance.Body.Position.Y - _touchedRopeFixtures[i].Body.Position.Y, 2.0));
+
+                        if (distance < smallestDistance)
+                        {
+                            smallestDistance = distance;
+                            index = i;
+                        }
+                    }
 
                     _ropeJoint = new RopeJoint(_pathBodies[0], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
-                    _ropeJoint.MaxLength -= 1.0f;
                     GameplayScreen.World.AddJoint(_ropeJoint);
                     Player.Instance.GrabRope();
+                    _ropePlayerJoint = new WeldJoint(_touchedRopeFixtures[index].Body, Player.Instance.Body, Vector2.Zero, Vector2.Zero);
+                    GameplayScreen.World.AddJoint(_ropePlayerJoint);
+
+                    
                 }
             }
             else
