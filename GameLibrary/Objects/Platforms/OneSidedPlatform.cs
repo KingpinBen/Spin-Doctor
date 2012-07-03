@@ -51,7 +51,7 @@ namespace GameLibrary.Objects
         private Fixture _platform;
 
 #if EDITOR || Development
-        private Texture2D displayTexture;
+        protected Texture2D displayTexture;
 #endif 
         #endregion
 
@@ -60,6 +60,11 @@ namespace GameLibrary.Objects
             : base()
         {
 
+        }
+
+        public override void Init(Vector2 position)
+        {
+            base.Init(position);
         }
         #endregion
 

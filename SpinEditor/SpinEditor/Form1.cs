@@ -96,7 +96,7 @@ namespace SpinEditor
         #region Create an Object
         private void CreateObject(string Type, Vector2 Position)
         {
-            if ((listBox_Classes.SelectedItem != null) && (listBox_Assets0.SelectedItem != null))
+            if ((listBox_Assets0.SelectedItem != null) || (listBox_Classes.SelectedItem != null || Type == "Bounce Pad" || Type == "One-Sided Platform"))
             {
                 //  All textures are loaded inside each object.
                 string texloc0 = "";
@@ -113,14 +113,14 @@ namespace SpinEditor
                 #region Object Types
                 switch (Type)
                 {
-                    //case "Bounce Pad":
-                    //    {
-                    //        BouncePad bouncePad = new BouncePad();
-                    //        bouncePad.Init(Position, texloc0);
-                    //        bouncePad.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                    //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(bouncePad);
-                    //    }
-                    //    break;
+                    case "Bounce Pad":
+                        {
+                            BouncePad bouncePad = new BouncePad();
+                            bouncePad.Init(Position);
+                            bouncePad.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(bouncePad);
+                        }
+                        break;
                     case "Cushioned Platform":
                         {
                             CushionedPlatform plat = new CushionedPlatform();
@@ -172,7 +172,7 @@ namespace SpinEditor
                     case "One-Sided Platform":
                         {
                             OneSidedPlatform oneSidePlat = new OneSidedPlatform();
-                            oneSidePlat.Init(Position, texloc0);
+                            oneSidePlat.Init(Position);
                             oneSidePlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                             STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(oneSidePlat);
                         }
