@@ -441,6 +441,7 @@ namespace SpinEditor
             "Moving Platform",
             "Note",
             "One-Sided Platform",
+            "Particle Emitter",
             "Piston",
             "Pullable Object",
             "Pushing Platform",

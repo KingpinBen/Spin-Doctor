@@ -7,10 +7,12 @@ using Microsoft.Xna.Framework.Graphics;
 using GameLibrary.Screens;
 using Microsoft.Xna.Framework.Content;
 using GameLibrary.Assists;
+using GameLibrary.Objects;
+using FarseerPhysics.Dynamics;
 
 namespace GameLibrary.Drawing
 {
-    public class ParticleEmitter
+    public class ParticleEmitter : NodeObject
     {
         #region Fields
         
@@ -27,6 +29,7 @@ namespace GameLibrary.Drawing
         Vector2 _position;
         bool _isActive;
         bool _useGravity;
+        string _textureAsset;
 
         float _timeNewParticle;
         float _minSpawnAngle;
@@ -141,17 +144,20 @@ namespace GameLibrary.Drawing
 
         }
 
-        public void Init(Vector2 position)
+        public void Init(Vector2 position, string texAsset)
         {
             this._position = position;
             this._timeNewParticle = 1 / 60;
         }
 
-        public void Load()
+        public override void  Load(ContentManager content, World world)
         {
 #if EDITOR
 
 #else
+            _texture = content.Load<Texture2D>(_textureAsset);
+            _isActive = true;
+
             this._particles = new List<Particle>(_particleCount);
             this._queuedParticles = new Queue<Particle>(_particleCount);
 

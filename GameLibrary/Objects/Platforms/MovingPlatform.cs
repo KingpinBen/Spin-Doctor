@@ -67,10 +67,25 @@ namespace GameLibrary.Objects
             base.Update(gameTime);
         }
 
+        #region Draw
+#if EDITOR
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(_texture, this._position,
+                new Rectangle(0, 0, (int)this._width, (int)this._height),
+                Tint, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
+
+            spriteBatch.Draw(_texture, this._endPosition,
+                new Rectangle(0, 0, (int)this._width, (int)this._height),
+                Tint * 0.4f, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
+        }
+#else
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
         }
+#endif
+        #endregion
 
         protected override void SetupPhysics(World world)
         {

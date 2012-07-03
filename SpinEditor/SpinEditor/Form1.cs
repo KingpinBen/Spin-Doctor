@@ -169,14 +169,22 @@ namespace SpinEditor
                     //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(shiny);
                     //    }
                     //    break;
-                    //case "One-Sided Platform":
-                    //    {
-                    //        OneSidedPlatform oneSidePlat = new OneSidedPlatform();
-                    //        oneSidePlat.Init(Position, tex.Width, tex.Height, texloc0);
-                    //        oneSidePlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                    //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(oneSidePlat);
-                    //    }
-                    //    break;
+                    case "One-Sided Platform":
+                        {
+                            OneSidedPlatform oneSidePlat = new OneSidedPlatform();
+                            oneSidePlat.Init(Position, texloc0);
+                            oneSidePlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(oneSidePlat);
+                        }
+                        break;
+                    case "Particle Emitter":
+                        {
+                            ParticleEmitter emitter = new ParticleEmitter();
+                            emitter.Init(Position, texloc0);
+                            emitter.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(emitter);
+                        }
+                        break;
                     case "Piston":
                         {
                             Piston piston = new Piston();
@@ -537,6 +545,9 @@ namespace SpinEditor
                     using (XmlTextReader input = new XmlTextReader(stream))
                     {
                         xnA_RenderControl1.bDoNotDraw = true;
+
+                        STATIC_EDITOR_MODE.Setup();
+
                         STATIC_EDITOR_MODE.levelInstance = IntermediateSerializer.Deserialize<Level>(input, null);
 
                         xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
@@ -2356,6 +2367,9 @@ namespace SpinEditor
                 case "One-Sided Platform":
                     STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
                     break;
+                case "Particle Emitter":
+                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Effects/";
+                    break;
                 case "Piston":
                     STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Piston/";
                     break;
@@ -2583,7 +2597,7 @@ namespace SpinEditor
                         {
                             for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0 && containsMouse == false; i--)
                             {
-                                Microsoft.Xna.Framework.Rectangle newRect = new Microsoft.Xna.Framework.Rectangle();
+                                Rectangle newRect = new Rectangle();
                                 switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
                                 {
                                     case (OBJECT_TYPE.Physics):
@@ -2857,7 +2871,5 @@ namespace SpinEditor
             this.xnA_RenderControl1.Focus();
         }
         #endregion
-
-        
     }
 }

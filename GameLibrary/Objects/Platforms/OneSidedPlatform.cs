@@ -63,8 +63,14 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
 #if EDITOR || Developement
-
+            
             displayTexture = content.Load<Texture2D>(FileLoc.DevTexture());
+
+            if (Width == 0 || Height == 0)
+            {
+                Width = displayTexture.Width;
+                Height = displayTexture.Height;
+            }
 #else
 
             this.Body = BodyFactory.CreateBody(world);
@@ -95,7 +101,8 @@ namespace GameLibrary.Objects
 #if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
-            //  TODO: Make this work with editor.
+            spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height), 
+                Color.White, 0.0f, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, 0.2f);
         }
 
 #else

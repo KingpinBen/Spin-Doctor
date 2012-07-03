@@ -75,6 +75,17 @@ namespace GameLibrary.Objects
 
         #endregion
 
+        public NodeObject()
+        {
+
+        }
+
+        public virtual void Init(Vector2 position)
+        {
+            this._position = position;
+            this._zLayer = 0.6f;
+        }
+
         public virtual void Load(ContentManager content, World world)
         { }
 
