@@ -223,7 +223,7 @@ namespace GameLibrary.Objects
             this._motorSpeed = 3.0f;
             this._timeToReverse = 1.0f;
             this._startsMoving = true;
-            this._endPosition = position;
+            this._endPosition = position + new Vector2(200, 0);
         }
         #endregion
 

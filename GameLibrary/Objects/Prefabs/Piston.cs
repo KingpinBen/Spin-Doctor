@@ -85,16 +85,16 @@ namespace GameLibrary.Objects
 #if EDITOR
         
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
-        public new Vector2 EndPosition
+        public override Vector2 EndPosition
         {
             get
             {
-                return _position;
+                return _endPosition;
             }
             //  Internal as the end point should be calculated on texture size.
-            internal set
+            set
             {
-                _endPosition = value;
+                _endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
@@ -172,6 +172,7 @@ namespace GameLibrary.Objects
             base.Init(position, basePiece);
 
             this.endBodyTexAsset = endPiece;
+            
         }
         #endregion
 
@@ -189,8 +190,8 @@ namespace GameLibrary.Objects
             }
 
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
-            Orientation = _orientation;
-            //_endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
+            _endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
+            
 #else
             firstBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston2");
             secondBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston1");

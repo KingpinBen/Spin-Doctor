@@ -32,12 +32,64 @@ using FarseerPhysics.Factories;
 using GameLibrary.Assists;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects
 {
     public class MovingPlatform : DynamicObject
     {
+#if EDITOR
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public override Vector2 EndPosition
+        {
+            get
+            {
+                return _endPosition;
+            }
+            set
+            {
+                if (_movementDirection == Direction.Horizontal)
+                {
+                    _endPosition = new Vector2(value.X, _position.Y);
+                }
+                else
+                {
+                    _endPosition = new Vector2(_position.X, value.Y);
+                }
+            }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public override Direction MovementDirection
+        {
+            get
+            {
+                return base.MovementDirection;
+            }
+            set
+            {
+                if (value != MovementDirection)
+                {
+                    if (value == Direction.Horizontal)
+                    {
+                        float dist = Math.Abs(_endPosition.Y - _position.Y);
+
+                        _endPosition = new Vector2(_position.Y - dist, _position.Y);
+                    }
+                    else
+                    {
+                        float dist = Math.Abs(_endPosition.Y - _position.Y);
+
+                        _endPosition = new Vector2(_position.X, _position.X - dist);
+                    }
+                }
+                base.MovementDirection = value;
+            }
+        }
+#else
+
+#endif
+
         public MovingPlatform()
             : base()
         {
@@ -47,8 +99,6 @@ namespace GameLibrary.Objects
         public override void Init(Vector2 position, string tex)
         {
             base.Init(position, tex);
-
-            this._endPosition = this.Position;
         }
 
         public override void Load(ContentManager content, World world)
@@ -94,7 +144,7 @@ namespace GameLibrary.Objects
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this.Width), ConvertUnits.ToSimUnits(this.Height), ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Dynamic;
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
-
+            this.Body.Friction = 1.0f;
             this.SetUpJoint(world);
 #endif
         }
