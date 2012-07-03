@@ -105,9 +105,24 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            if (lastTouched >= 0 && lastTouched <= _bounceCooldown)
+            /*  This sort of gets the right effect but depending on how the 
+             * designers want it to work, it'll need redoing.
+             * 
+             * If they want it to only allow one bounce, then I'll need 'Reset' 
+             * it by waiting for a separation of the player from the trigger.
+             * 
+             * I'll have to ask tomorrow
+             * */
+
+            if (lastTouched >= 0)
             {
                 lastTouched += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+
+                if (this.Body.Restitution == _restitution)
+                {
+                    this.Body.Restitution = 0.0f;
+                }
+
 
                 if (lastTouched >= _bounceCooldown)
                 {
@@ -115,13 +130,7 @@ namespace GameLibrary.Objects
                     this.Body.Restitution = _restitution;
                 }
             }
-            else
-            {
-                if (this.Body.Restitution == _restitution)
-                {
-                    this.Body.Restitution = 0.0f;
-                }
-            }
+            
 #endif
         }
         #endregion
@@ -129,7 +138,7 @@ namespace GameLibrary.Objects
 #if !EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(Fonts.DebugFont, "Rest: " + _restitution + ". LastT: " + lastTouched, this.Position - new Vector2(0, 30), Color.Red);
+            spriteBatch.DrawString(Fonts.DebugFont, "Rest: " + this.Body.Restitution + ". LastT: " + lastTouched, this.Position - new Vector2(0, 30), Color.Red);
             base.Draw(spriteBatch);
         }
 #endif
