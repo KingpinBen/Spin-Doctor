@@ -166,7 +166,7 @@ namespace GameLibrary.Objects
 
             if (!GameplayScreen.World.JointList.Contains(_ropeJoint))
             {
-                if (Input.Interact() && _inRange)
+                if (Input.Grab() && _inRange)
                 {
                     //_ropeBodyRevoluteJoint = new RevoluteJoint(_pathBodies[bodyIndex - 1], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
                     _ropePlayerJoint = new WeldJoint(_touchedRopeFixtures[_touchedRopeFixtures.Count - 1].Body, Player.Instance.Body, Vector2.Zero, Vector2.Zero);
@@ -175,6 +175,7 @@ namespace GameLibrary.Objects
                     _ropeJoint = new RopeJoint(_pathBodies[0], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
                     _ropeJoint.MaxLength -= 1.0f;
                     GameplayScreen.World.AddJoint(_ropeJoint);
+                    Player.Instance.GrabRope();
                 }
             }
             else
@@ -219,19 +220,15 @@ namespace GameLibrary.Objects
         protected override void SetupPhysics(World world)
         {
             this._pathBodies = new List<Body>();
+            float width = ConvertUnits.ToSimUnits(this._texture.Width / 2);
+            float height = ConvertUnits.ToSimUnits(this._texture.Height / 2);
 
             Path _ropePath = new Path();
             _ropePath.Add(ConvertUnits.ToSimUnits(this._position));
             _ropePath.Add(ConvertUnits.ToSimUnits(this._endPosition));
 
-            float width = ConvertUnits.ToSimUnits(this._texture.Width / 2);//    0.2
-            float height = ConvertUnits.ToSimUnits(this._texture.Height / 2);//  0.3
-            //float extraRoom = 0.0f;// = ConvertUnits.ToSimUnits(2.0f);
-
-            //PolygonShape shape = new PolygonShape(PolygonTools.CreateCircle(height, 8), ConvertUnits.ToSimUnits(_mass));
             PolygonShape rotationPointShape = new PolygonShape(PolygonTools.CreateCircle(height, 8), 100);
             PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), 20);
-            //_pathBodies = PathManager.EvenlyDistributeShapesAlongPath(world, _ropePath, shape, BodyType.Dynamic, _chainCount);
 
             Body prevBody = new Body(world); ;
             for (int i = 0; i < _chainCount; ++i)
@@ -271,18 +268,6 @@ namespace GameLibrary.Objects
                 prevBody = body;
                 _pathBodies.Add(body);
             }
-
-            //FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, _pathBodies[0], new Vector2(0, 0), _pathBodies[0].Position);
-            //fixedJoint.MaxMotorTorque = 0f;
-            //PathManager.AttachBodiesWithRevoluteJoint(world, _pathBodies, new Vector2(0f, height + extraRoom), new Vector2(0f, -(height + extraRoom)), false, true);
-
-            //for (int i = 1; i < _pathBodies.Count; i++)
-            //{
-            //    //_pathBodies[i].CollisionCategories = Category.Cat10;
-            //    _pathBodies[i].IsSensor = true;
-            //    _pathBodies[i].OnCollision += Body_OnCollision;
-            //    _pathBodies[i].OnSeparation += Body_OnSeparation;
-            //}
         }
         #endregion
 
@@ -322,6 +307,7 @@ namespace GameLibrary.Objects
             return true;
         }
         #endregion
+
         #endregion
     }
 }

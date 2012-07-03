@@ -149,7 +149,6 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        #region Update
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -184,7 +183,6 @@ namespace GameLibrary.Objects
             {
                 this.WheelJoint.MotorSpeed = 0.0f;
             }
-
 
             #region How to handle each state
             switch (PlayerState)
@@ -253,7 +251,6 @@ namespace GameLibrary.Objects
 
             #endregion
         }
-        #endregion
 
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -546,6 +543,8 @@ namespace GameLibrary.Objects
         }
         #endregion
 
+        #region Ladder Code
+
         #region Toggle Body Activity
         public void ToggleBodies(bool active)
         {
@@ -591,6 +590,8 @@ namespace GameLibrary.Objects
                 PlayerState = pState.Falling;
             }
         }
+        #endregion
+
         #endregion
 
         #region Player specific body settings
