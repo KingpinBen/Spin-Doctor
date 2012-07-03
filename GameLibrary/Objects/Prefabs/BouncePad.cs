@@ -38,10 +38,13 @@ namespace GameLibrary.Objects
         private float _restitution;
 
         private float lastTouched;
+        private const float _bounceCooldown = 2f;
 
         #endregion
 
         #region Properties
+
+#if EDITOR
         [ContentSerializerIgnore]
         public float Restitution
         {
@@ -49,22 +52,34 @@ namespace GameLibrary.Objects
             {
                 return _restitution;
             }
-#if EDITOR
             set
-#else
-            protected set
-#endif
             {
-                _restitution = value;
+                _restitution = MathHelper.Clamp(value, 0.0f, 1.0f);
             }
-
         }
+#else
+        [ContentSerializerIgnore]
+        public float Restitution
+        {
+            get
+            {
+                return _restitution;
+            }
+        }
+#endif
         #endregion
 
         #region Constructor
         public BouncePad()
             : base()
         {
+        }
+
+        public override void Init(Vector2 position)
+        {
+            base.Init(position);
+
+            this._restitution = 1.0f;
         }
         #endregion
 
@@ -76,7 +91,10 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
+            this.lastTouched = -1.0f;
             this.Body.Restitution = _restitution;
+            this.Body.OnCollision += Body_OnCollision;
+            this.Body.OnSeparation += Body_OnSeparation;
 #endif
         }
         #endregion
@@ -87,46 +105,51 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            if (lastTouched < 0.4)
+            if (lastTouched >= 0 && lastTouched <= _bounceCooldown)
             {
                 lastTouched += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
 
-                if (this.Body.Restitution == _restitution)
+                if (lastTouched >= _bounceCooldown)
                 {
-                    this.Body.Restitution = 0.0f;
+                    lastTouched = -1f;
+                    this.Body.Restitution = _restitution;
                 }
             }
             else
             {
                 if (this.Body.Restitution == _restitution)
                 {
-                    this.Body.Restitution = _restitution;
+                    this.Body.Restitution = 0.0f;
                 }
             }
 #endif
         }
         #endregion
 
-        #region Draw
-#if EDITOR
-
-#else
+#if !EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(Fonts.DebugFont, "Res: " + this.Body.Restitution + ". Last: " + lastTouched.ToString(), this.Position + new Vector2(0,-100), Color.Red);
-
+            spriteBatch.DrawString(Fonts.DebugFont, "Rest: " + _restitution + ". LastT: " + lastTouched, this.Position - new Vector2(0, 30), Color.Red);
             base.Draw(spriteBatch);
         }
 #endif
-        #endregion
 
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
-            if (lastTouched > 0.4f)
-                lastTouched = 0.0f;
+#if EDITOR
+#else
+            if (fixtureB != Player.Instance.WheelBody.FixtureList[0])
+            {
+                return false;
+            }
 
-            return base.Body_OnCollision(fixtureA, fixtureB, contact);
+            if (lastTouched < 0.0f)
+            {
+                lastTouched = 0.0f;
+            }
+#endif
+            return true;
         }
         #endregion
     }

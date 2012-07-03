@@ -147,7 +147,7 @@ namespace GameLibrary.Objects
             }
 #else
             this._message = " to rotate " + RDirection;
-            SetUpTrigger(world);
+            SetupTrigger(world);
 #endif
         }
 

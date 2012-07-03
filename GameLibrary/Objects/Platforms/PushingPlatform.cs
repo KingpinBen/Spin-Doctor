@@ -139,7 +139,7 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            this.SetUpTrigger(world);
+            this.SetupTrigger(world);
             this.CreateSprite(content);
 #endif
         }
@@ -249,7 +249,7 @@ namespace GameLibrary.Objects
         #endregion
 
         #region SetupTrigger
-        protected override void SetUpTrigger(World world)
+        protected override void SetupTrigger(World world)
         {
 #if EDITOR
 

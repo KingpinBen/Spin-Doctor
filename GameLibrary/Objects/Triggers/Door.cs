@@ -23,7 +23,7 @@
 //--    
 //-------------------------------------------------------------------------------
 
-//#define Development
+#define Development
 
 #region Using Statements
 using System;
@@ -132,9 +132,8 @@ namespace GameLibrary.Objects.Triggers
 #else
             this.TriggerWidth = 30;
             this.TriggerHeight = 30;
-            this.SetUpTrigger(world);
+            this.SetupTrigger(world);
 #endif
-
         }
         #endregion
 
@@ -147,8 +146,6 @@ namespace GameLibrary.Objects.Triggers
             {
                 Screen_Manager.LoadLevel(_nextLevel);
             }
-
-            base.Update(gameTime);
 #endif
         }
 
@@ -197,8 +194,10 @@ namespace GameLibrary.Objects.Triggers
             {
                 TouchingFixtures.Add(fixtureB);
             }
-
-            //if (TouchingFixtures.Count > 0 && this.Triggered) return true;
+            else
+            {
+                return true;
+            }
 
             if (Camera.UpIs == UpIs.Up &&
                 _orientation == Orientation.Up)
@@ -221,7 +220,10 @@ namespace GameLibrary.Objects.Triggers
                 this.Triggered = true;
             }
 
-            if (this.ShowHelp && !HUD.ShowPopup) HUD.ShowOnScreenMessage(true, " to use.");
+            if (this.ShowHelp && !HUD.ShowPopup) 
+            {
+                HUD.ShowOnScreenMessage(true, " to use.");
+            }
 
             return true;
 #endif
@@ -232,20 +234,21 @@ namespace GameLibrary.Objects.Triggers
 #if EDITOR
 
 #else
-            this.TouchingFixtures.Remove(fixtureB);
+            if (TouchingFixtures.Contains(fixtureB))
+            {
+                TouchingFixtures.Remove(fixtureB);
+            }
 
-            if (TouchingFixtures.Count == 0)
+            if (fixtureB == Player.Instance.WheelBody.FixtureList[0])
             {
                 this.Triggered = false;
                 HUD.ShowOnScreenMessage(false);
-            }
-            else 
-                return;
+            } 
 #endif
         }
         #endregion
 
-        protected override void SetUpTrigger(World world)
+        protected override void SetupTrigger(World world)
         {
 #if EDITOR
 
@@ -258,12 +261,13 @@ namespace GameLibrary.Objects.Triggers
             //  Change the position to it's above the lowest point of the doors
             //  texture
             this.Body.Position = ConvertUnits.ToSimUnits(_position + SpinAssist.ModifyVectorByOrientation(
-                new Vector2(0,(this._height / 2) - (TriggerHeight / 2)), 
+                new Vector2(0,(this._height * 0.5f) - (TriggerHeight * 0.5f)), 
                 this._orientation));
 
-            this.Body.IsSensor = true;
-            this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+            this.Body.OnCollision += Body_OnCollision;
+            
+            this.Body.IsSensor = true;
             //this.Body.CollisionCategories = Category.Cat10;
 #endif
         }

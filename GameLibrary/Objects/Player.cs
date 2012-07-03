@@ -289,7 +289,7 @@ namespace GameLibrary.Objects
             //  sense the player rather than the other way around.
             if (fixtureB.IsSensor)
             {
-                return false;
+                return true;
             }
 
             //  We don't want anything bringing the player back to life by changing state

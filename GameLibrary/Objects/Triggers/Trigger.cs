@@ -226,7 +226,7 @@ namespace GameLibrary.Objects.Triggers
 
             this.Triggered = false;
 
-            SetUpTrigger(world);
+            this.SetupTrigger(world);
 #endif
         }
         #endregion
@@ -324,7 +324,7 @@ namespace GameLibrary.Objects.Triggers
         #endregion
 
         #region Setup Trigger
-        protected virtual void SetUpTrigger(World world)
+        protected virtual void SetupTrigger(World world)
         {
 #if EDITOR
 #else
