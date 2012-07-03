@@ -149,6 +149,42 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Assets\Other\Dev\gradient.png">
+      <Name>gradient</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Other\Dev\groundPaper.png">
+      <Name>groundPaper</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Other\Dev\invite1.jpg">
+      <Name>invite1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Other\Dev\Trigger.png">
+      <Name>Trigger</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Other\Dev\9pxCrosshair.png">
+      <Name>9pxCrosshair</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Other\Dev\devHarland.png">
+      <Name>devHarland</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Assets\Images\Textures\Decal\Bolt.png">
       <Name>Bolt</Name>
       <Importer>TextureImporter</Importer>
@@ -398,6 +434,7 @@
       <Name>platform_1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Assets\Images\Textures\Environment\platform_2.png">
       <Name>platform_2</Name>
@@ -436,6 +473,11 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\Environment\RustedBar.png">
       <Name>RustedBar</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Ladder\Ladder wood hb small.png">
+      <Name>Ladder wood hb small</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -574,11 +616,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Saw\Copy of i_sawDecalEndPiece.png">
-      <Name>Copy of i_sawDecalEndPiece</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Assets\Images\Textures\Saw\i_sawDecalEndPiece.png">
       <Name>i_sawDecalEndPiece</Name>
       <Importer>TextureImporter</Importer>
@@ -651,40 +688,6 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\Vent\Steam Vent.png">
       <Name>Steam Vent</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Other\Dev\gradient.png">
-      <Name>gradient</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Other\Dev\groundPaper.png">
-      <Name>groundPaper</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Other\Dev\invite1.jpg">
-      <Name>invite1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Other\Dev\Trigger.png">
-      <Name>Trigger</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\Other\Dev\9pxCrosshair.png">
-      <Name>9pxCrosshair</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\Other\Dev\devHarland.png">
-      <Name>devHarland</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

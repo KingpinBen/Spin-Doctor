@@ -367,16 +367,15 @@ namespace GameLibrary.Objects
             //this.endSecondJoint.MaxMotorForce = float.MaxValue;
             //this.endSecondJoint.LimitEnabled = true;
 
-            this.Body.IgnoreCollisionWith(this.firstBody);
-            this.Body.IgnoreCollisionWith(this.secondBody);
-            this.firstBody.IgnoreCollisionWith(this.secondBody);
+            this.Body.CollisionCategories = Category.Cat20;
+            this.firstBody.CollisionCategories = Category.Cat20;
+            this.secondBody.CollisionCategories = Category.Cat20;
+            this.endBody.CollisionCategories = Category.Cat20;
 
-            foreach (Fixture fixture in this.endBody.FixtureList)
-            {
-                fixture.IgnoreCollisionWith(this.Body.FixtureList[0]);
-                fixture.IgnoreCollisionWith(this.firstBody.FixtureList[0]);
-                fixture.IgnoreCollisionWith(this.secondBody.FixtureList[0]);
-            }
+            this.Body.CollidesWith = ~Category.Cat20 & Category.All;
+            this.firstBody.CollidesWith = ~Category.Cat20 & Category.All;
+            this.secondBody.CollidesWith = ~Category.Cat20 & Category.All;
+            this.endBody.CollidesWith = ~Category.Cat20 & Category.All;
 #endif
         }
 

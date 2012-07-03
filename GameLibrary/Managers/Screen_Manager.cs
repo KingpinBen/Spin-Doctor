@@ -20,7 +20,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 #region Using Statements
 using System;
@@ -135,6 +135,12 @@ namespace GameLibrary.Managers
             //  case, a blank pixel.
             _textures = new Texture2D[1];
             _textures[0] = Content.Load<Texture2D>(FileLoc.BlankPixel());
+
+            #region Development
+#if Development
+            DevDisplay.Load(GameplayScreen.World);
+#endif
+            #endregion
         }
 
         public override void Update(GameTime gameTime)

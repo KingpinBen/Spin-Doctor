@@ -22,7 +22,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 #region Using Statements
 using System;
@@ -100,7 +100,7 @@ namespace GameLibrary.Screens
             }
 
             // Updates the world every second. Make it either first or last
-            World.Step((float)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.001));
+            World.Step((float)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f));
 
             Camera.Update(gameTime);
             Level.Update(gameTime);
@@ -199,18 +199,15 @@ namespace GameLibrary.Screens
 
 #else
             IsInitialized = false;
-            World.Clear();
             Camera.UpIs = UpIs.Up;
 
-            #region Development
-#if Development
-            DevDisplay.Load(World);
-#endif
-            #endregion
+
 
             //  If theres anything in Level, clear it.
             if (Level != null)
             {
+                World.Clear();
+
                 if (Level.Content != null)
                 {
                     Level.Unload();

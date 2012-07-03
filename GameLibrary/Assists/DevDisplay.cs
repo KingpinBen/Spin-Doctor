@@ -131,7 +131,7 @@ namespace GameLibrary.Assists
         #endregion
 
         #region Farseer Debug
-        private static void LoadCreateDebugView(World world)
+        static void LoadCreateDebugView(World world)
         {
             //create and configure the debug view
             _debugView = new DebugViewXNA(world);
@@ -141,7 +141,7 @@ namespace GameLibrary.Assists
             _debugView.LoadContent(Screen_Manager.GraphicsDevice, Screen_Manager.Content);
         }
 
-        private static void Draw_DebugData()
+        static void Draw_DebugData()
         {
             Matrix projection = Matrix.CreateOrthographicOffCenter(0f, Screen_Manager.GraphicsDevice.Viewport.Width / MeterInPixels,
                 Screen_Manager.GraphicsDevice.Viewport.Height / MeterInPixels, 0f, 0f, 1f);

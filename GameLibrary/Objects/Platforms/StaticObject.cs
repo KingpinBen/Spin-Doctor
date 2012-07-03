@@ -37,6 +37,9 @@ using System.ComponentModel;
 using GameLibrary.Assists;
 using FarseerPhysics.Factories;
 using System.Diagnostics;
+using GameLibrary.Screens;
+using Poly2Tri.Triangulation.Polygon;
+using FarseerPhysics.Collision.Shapes;
 #endregion
 
 namespace GameLibrary.Objects
@@ -423,6 +426,7 @@ namespace GameLibrary.Objects
 #endif
         }
 
+        #region Draw
 #if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -438,6 +442,7 @@ namespace GameLibrary.Objects
                 Tint, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
         }
 #endif
+        #endregion
 
         #region Private Methods
 
@@ -454,10 +459,10 @@ namespace GameLibrary.Objects
             this.Body.FixtureList[0].UserData = (int)0;
             // Elastic (>1) <->Non-elastic collisions (0).
             this.Body.Restitution = 0f;
-
+            this.Body.CollisionCategories = Category.Cat20;
+            this.Body.CollidesWith = Category.All & ~Category.Cat20;
             // Default friction the body has when colliding with other objects.
             this.Body.Friction = 5.0f;
-            this.Body.Awake = false;
 #endif
         }
 
