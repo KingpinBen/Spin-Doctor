@@ -20,6 +20,8 @@
 //--    
 //-------------------------------------------------------------------------------
 
+#define Development
+
 #region Using Statements
 using System;
 using System.Collections.Generic;
@@ -35,6 +37,7 @@ using FarseerPhysics.Factories;
 using FarseerPhysics.Collision.Shapes;
 using GameLibrary.Assists;
 using Microsoft.Xna.Framework.Graphics;
+using GameLibrary.Drawing;
 #endregion
 
 namespace GameLibrary.Objects
@@ -62,7 +65,10 @@ namespace GameLibrary.Objects
 
         public override void Load(ContentManager content, World world)
         {
-#if EDITOR || Developement
+#if Development
+            displayTexture = content.Load<Texture2D>(FileLoc.DevTexture());
+#endif
+#if EDITOR
             
             displayTexture = content.Load<Texture2D>(FileLoc.DevTexture());
 
@@ -71,24 +77,10 @@ namespace GameLibrary.Objects
                 Width = displayTexture.Width;
                 Height = displayTexture.Height;
             }
+
+
 #else
-
-            this.Body = BodyFactory.CreateBody(world);
-            this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
-            
-
-            PolygonShape shape = new PolygonShape(1);
-            shape.SetAsBox(ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height));
-            _platform = this.Body.CreateFixture(shape);
-
-            radius = ConvertUnits.ToSimUnits(28);
-            top = this.Body.Position.Y + ConvertUnits.ToSimUnits(Height / 2);
-
-            world.ContactManager.PreSolve += PreSolve; 
-
-            //  Apply it after attaching the fixture so it applies to all fixtures
-            //  without having to redo it to newer ones later.
-            this.Body.Friction = 3.0f;
+            SetupPhysics(world);
 #endif
         }
 
@@ -102,26 +94,27 @@ namespace GameLibrary.Objects
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height), 
-                Color.White, 0.0f, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, 0.2f);
+                Color.White * 0.5f, this.TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, 0.2f);
         }
 
 #else
         public override void Draw(SpriteBatch spriteBatch)
         {
 #if Development
-            spriteBatch.DrawString(Fonts.DebugFont, "PosY: " + Player.Instance.WheelBody.Position.Y, this.Position + new Vector2(0, -80), Color.Red);
-            spriteBatch.DrawString(Fonts.DebugFont, "Calc: " + (top + radius - 3.0f * Settings.LinearSlop), this.Position + new Vector2(0, -65), Color.Red);
-            spriteBatch.DrawString(Fonts.DebugFont, top + " " + radius, this.Position + new Vector2(0, -35), Color.Red);
+            spriteBatch.DrawString(Fonts.DebugFont, "PosY: " + Player.Instance.WheelBody.Position.Y, this.Position + new Vector2(0, -100), Color.Red, 0.0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);
+            spriteBatch.DrawString(Fonts.DebugFont, "TopY: " + ConvertUnits.ToDisplayUnits(this.Body.Position.Y - top), this.Position + new Vector2(0, -85), Color.Red, 0.0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);
+            spriteBatch.DrawString(Fonts.DebugFont, top + " " + radius, this.Position + new Vector2(0, -70), Color.Red, 0.0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);
 
-            spriteBatch.Draw(displayTexture, ConvertUnits.ToDisplayUnits(this.Body.Position) - new Vector2(this.Width / 2, this.Height/2), new Rectangle(0, 0, (int)this.Width * 2, (int)this.Height * 2),
-                Color.White * 0.7f, 0.0f, new Vector2(this.Width / 2, this.Height / 2), 1.0f, SpriteEffects.None, 0.0f);
+            spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height),
+                Color.White * 0.7f, this.TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, 0.0f);
 #endif
             //base.Draw(spriteBatch);
         }
 #endif
         #endregion
 
-        #region PreSolve Collisions
+        #region Private Methods
+
         protected void PreSolve(Contact contact, ref Manifold oldManifold)
         {
 #if EDITOR
@@ -129,20 +122,87 @@ namespace GameLibrary.Objects
             Fixture fixtureA = contact.FixtureA;
             Fixture fixtureB = contact.FixtureB;
 
-            if (fixtureA == this.Body.FixtureList[0] || fixtureB == this.Body.FixtureList[0])
-            {
-                if (fixtureB != Player.Instance.WheelBody.FixtureList[0] || fixtureA != Player.Instance.WheelBody.FixtureList[0])
-                {
-                    Vector2 position = Player.Instance.WheelBody.Position;
 
-                    if (position.Y > top - radius - 3.0f * Settings.LinearSlop)
+            if (fixtureA == this.Body.FixtureList[0])
+            {
+                contact.Enabled = false;
+
+                if (fixtureB == Player.Instance.WheelBody.FixtureList[0])
+                {
+                    switch (_orientation)
                     {
-                        contact.Enabled = false;
+                        case Orientation.Up:
+                            if (Player.Instance.WheelBody.Position.Y < top - radius * Settings.LinearSlop &&
+                                Camera.UpIs == UpIs.Up)
+                            {
+                                contact.Enabled = true;
+                            }
+                            break;
+                        case Orientation.Down:
+                            if (Player.Instance.WheelBody.Position.Y > top - radius * Settings.LinearSlop &&
+                                Camera.UpIs == UpIs.Down)
+                            {
+                                contact.Enabled = true;
+                            }
+                            break;
+                        case Orientation.Left:
+                            if (Player.Instance.WheelBody.Position.X > top - radius * Settings.LinearSlop &&
+                                Camera.UpIs == UpIs.Left)
+                            {
+                                contact.Enabled = true;
+                            }
+                            break;
+                        case Orientation.Right:
+                            if (Player.Instance.WheelBody.Position.X < top + radius * Settings.LinearSlop &&
+                                Camera.UpIs == UpIs.Right)
+                            {
+                                contact.Enabled = true;
+                            }
+                            break;
                     }
                 }
             }
 #endif
         }
+
+        protected override void SetupPhysics(World world)
+        {
+#if EDITOR
+#else
+            this.Body = BodyFactory.CreateBody(world);
+            this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
+
+            PolygonShape shape = new PolygonShape(1);
+            shape.SetAsBox(ConvertUnits.ToSimUnits(Width * 0.5f), ConvertUnits.ToSimUnits(Height * 0.5f));
+            _platform = this.Body.CreateFixture(shape);
+
+            //  The Player wheel radius.
+            radius = ConvertUnits.ToSimUnits(28);
+            switch (_orientation)
+            {
+                case Orientation.Up:
+                    top = ConvertUnits.ToSimUnits(this._position.Y - (_height * 0.5f));
+                    break;
+                case Orientation.Down:
+                    top = ConvertUnits.ToSimUnits(this._position.Y + (_height * 0.5f));
+                    break;
+                case Orientation.Left:
+                    top = ConvertUnits.ToSimUnits(this._position.X - (_width * 0.5f));
+                    break;
+                case Orientation.Right:
+                    top = ConvertUnits.ToSimUnits(this._position.X + (_width * 0.5f));
+                    break;
+            }
+            
+
+            world.ContactManager.PreSolve += PreSolve;
+
+            //  Apply it after attaching the fixture so it applies to all fixtures
+            //  without having to redo it to newer ones later.
+            this.Body.Friction = 2.0f;
+#endif
+        }
+
         #endregion
     }
 }

@@ -22,7 +22,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-//#define Development
+#define Development
 
 #region Using Statements
 using System;
@@ -85,6 +85,11 @@ namespace GameLibrary.Screens
             //gamePlayEffect = Content.Load<Effect>("Assets/Effects/BlackAndWhite");
             //gamePlayEffect.Parameters["enableMonochrome"].SetValue(false);
 
+            #region Development
+#if Development
+            DevDisplay.Load(GameplayScreen.World);
+#endif
+            #endregion
         }
         #endregion
 
