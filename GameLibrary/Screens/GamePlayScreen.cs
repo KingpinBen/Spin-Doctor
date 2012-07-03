@@ -88,7 +88,6 @@ namespace GameLibrary.Screens
         }
         #endregion
 
-        #region Update
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -119,7 +118,6 @@ namespace GameLibrary.Screens
             Sprite_Manager.Update(gameTime);
 #endif
         }
-        #endregion
 
         #region Draw
 #if EDITOR

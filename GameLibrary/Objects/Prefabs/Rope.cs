@@ -227,8 +227,8 @@ namespace GameLibrary.Objects
             _ropePath.Add(ConvertUnits.ToSimUnits(this._position));
             _ropePath.Add(ConvertUnits.ToSimUnits(this._endPosition));
 
-            PolygonShape rotationPointShape = new PolygonShape(PolygonTools.CreateCircle(height, 8), 100);
-            PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), 20);
+            PolygonShape rotationPointShape = new PolygonShape(PolygonTools.CreateCircle(height, 8), 25);
+            PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), 5);
 
             Body prevBody = new Body(world); ;
             for (int i = 0; i < _chainCount; ++i)

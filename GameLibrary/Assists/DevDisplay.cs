@@ -106,7 +106,8 @@ namespace GameLibrary.Assists
             Console.Write("State: " + Player.Instance.PlayerState.ToString());
             Console.WriteLine(".   AirTime: " + Player.Instance.AirTime.ToString());
             Console.WriteLine("Jump: " + Player.Instance.CanJump.ToString() + ". DoubJump: " + Player.Instance.CanDoubleJump.ToString());
-            
+            Console.WriteLine("---------------------[ PHYSICS ]---------------------");
+            Console.Write("Bodies: " + GameplayScreen.World.Island.BodyCount + ". Contacts" + GameplayScreen.World.Island.ContactCount);
         }
         #endregion
 

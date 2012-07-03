@@ -74,7 +74,6 @@ namespace GameLibrary.Objects
         protected RevoluteJoint wheelJoint;
         protected Texture2D charTexture;
         protected pState playerState;
-        protected pState lastPlayerState;
         protected ContentManager _content;
         protected List<Fixture> TouchingFixtures;
         private Vector2 TexturePosition;

@@ -36,6 +36,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
 using GameLibrary.Assists;
 using FarseerPhysics.Factories;
+using System.Diagnostics;
 #endregion
 
 namespace GameLibrary.Objects
@@ -403,12 +404,14 @@ namespace GameLibrary.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            if (_textureAsset != "")
+            if (_textureAsset == "")
             {
-                _texture = content.Load<Texture2D>(_textureAsset);
-                _origin = new Vector2(_texture.Width / 2, _texture.Height / 2); 
+                throw new Exception("A TEXTURE location in the level doesn't exist.");
             }
-            
+
+            _texture = content.Load<Texture2D>(_textureAsset);
+            _origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+
 #if EDITOR
             if (this.Width == 0.0f || this.Height == 0.0f)
             {
@@ -454,6 +457,7 @@ namespace GameLibrary.Objects
 
             // Default friction the body has when colliding with other objects.
             this.Body.Friction = 5.0f;
+            this.Body.Awake = false;
 #endif
         }
 
