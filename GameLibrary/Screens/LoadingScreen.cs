@@ -64,14 +64,14 @@ namespace GameLibrary.Screens
         public override void Load()
         {
             sprite = new Sprite();
-            sprite.Init(new Point(102,102), new Point(8, 1), -1);
+            
             sprite.Scale = 0.4f;
 
             int locx = Screen_Manager.GraphicsDevice.Viewport.Width - (int)(102 * sprite.Scale);
             int locy = Screen_Manager.GraphicsDevice.Viewport.Height - (int)(102 * sprite.Scale);
+            sprite.Init(new Vector2(locx, locy), new Point(102, 102), new Point(8, 1), -1);
             sprite.ZLayer = 0.0f;
             sprite.Load(content, "Assets/Other/Game/LoadingIcon");
-            sprite.Position = new Vector2(locx, locy);
 
             ContinueText = new AnimatedText("to Continue", ImgType.Continue,1.0f, Alignment.Left);
             ContinueText.AnchorPoint = ScreenAnchorLocation.BottomLeft;

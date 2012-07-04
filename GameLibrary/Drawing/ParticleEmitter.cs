@@ -17,7 +17,9 @@ namespace GameLibrary.Drawing
         #region Fields
         
 #if EDITOR
-
+        private Texture2D _devTexture;
+        private int _devHeight = 35;
+        private int _devWidth = 35;
 #else
         
 #endif
@@ -26,20 +28,30 @@ namespace GameLibrary.Drawing
         float _elapsed;
 
         Texture2D _texture;
-        Vector2 _position;
+        [ContentSerializer]
         bool _isActive;
+        [ContentSerializer]
         bool _useGravity;
+        [ContentSerializer]
         string _textureAsset;
 
+        [ContentSerializer]
         float _timeNewParticle;
+        [ContentSerializer]
         float _minSpawnAngle;
+        [ContentSerializer]
         float _maxSpawnAngle;
+        [ContentSerializer]
         float _gravityModifier;
+        [ContentSerializer]
         float _minLifeTime;
+        [ContentSerializer]
         float _maxLifeTime;
-
+        [ContentSerializer]
         int _particleCount;
+        [ContentSerializer]
         int _minParticles;
+        [ContentSerializer]
         int _maxParticles;
         #endregion
 
@@ -138,7 +150,6 @@ namespace GameLibrary.Drawing
 
         #endregion
 
-
         public ParticleEmitter()
         {
 
@@ -148,12 +159,13 @@ namespace GameLibrary.Drawing
         {
             this._position = position;
             this._timeNewParticle = 1 / 60;
+            this._textureAsset = texAsset;
         }
 
         public override void  Load(ContentManager content, World world)
         {
 #if EDITOR
-
+            _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
             _texture = content.Load<Texture2D>(_textureAsset);
             _isActive = true;
@@ -169,7 +181,7 @@ namespace GameLibrary.Drawing
 #endif
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
 #if EDITOR
 
@@ -204,16 +216,28 @@ namespace GameLibrary.Drawing
 #endif
         }
 
-        public void Draw(SpriteBatch sb)
+#if EDITOR
+        public override void Draw(SpriteBatch sb)
         {
+            sb.Draw(_devTexture, this._position, new Rectangle(0,0,_devWidth, _devHeight), Color.White * 0.7f, 0.0f, new Vector2(_devTexture.Width / 2, _devTexture.Height/ 2), 1.0f, SpriteEffects.None, _zLayer); 
+        }
+#else
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.DrawString(Fonts.DebugFont, "QueueCount: " + _queuedParticles.Count, this.Position + new Vector2(0, 20), Color.White);
+            sb.DrawString(Fonts.DebugFont, "Count: " + _particles.Count, this.Position + new Vector2(0, 5), Color.White);
+
             for (int i = 0; i < _particles.Count; i++)
             {
                 if (!_particles[i].Alive)
                 {
                     continue;
                 }
+
+                sb.Draw(_texture, _particles[i].Position, null, Color.CornflowerBlue, 0.0f, Vector2.Zero, 10.0f, SpriteEffects.None, 0.4f);
             }
         }
+#endif
 
         void AddParticle()
         {
@@ -230,7 +254,7 @@ namespace GameLibrary.Drawing
         {
             float life = SpinAssist.GetRandom(_minLifeTime, _maxLifeTime);
             Vector2 acceleration = Vector2.Zero;
-            particle.Init(this._position, Vector2.Zero, acceleration, life);
+            particle.Init(this._position, -GameplayScreen.World.Gravity, acceleration, life);
         }
     }
 }

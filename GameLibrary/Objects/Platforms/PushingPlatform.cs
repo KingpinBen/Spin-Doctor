@@ -158,7 +158,7 @@ namespace GameLibrary.Objects
 
                 if (createDelay <= 0.0f)
                 {
-                    Sprite newSprite = _exhaustSprite.Clone();
+                    Sprite newSprite = (Sprite)_exhaustSprite.Clone();
 
                     Sprite_Manager.AddSprite(newSprite);
                     createDelay = 0.13f;
@@ -210,8 +210,7 @@ namespace GameLibrary.Objects
 
 #else
             _exhaustSprite = new Sprite();
-            _exhaustSprite.Init(new Point(68, 64), new Point(14, 1), 1);
-            _exhaustSprite.Position = this.Position;
+            _exhaustSprite.Init(this._position, new Point(68, 64), new Point(14, 1), 1);
             _exhaustSprite.Velocity = SpinAssist.ModifyVectorByOrientation(new Vector2(0, -20), _orientation);
             _exhaustSprite.Alpha = 0.6f;
             _exhaustSprite.Scale = 2.0f;

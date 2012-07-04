@@ -239,7 +239,7 @@ namespace GameLibrary.Drawing
             Player.Instance.Load(_content, world, _spawnLocation, true);
 
             this._levelBackdrop.Tint = this._backgroundTint;
-            this._levelBackdrop.Load(_content, _roomDimensions, _roomTheme, _backgroundFile);
+            this._levelBackdrop.Load(_content, _roomDimensions, _roomTheme, _roomType, _backgroundFile);
 
             if (_roomType != RoomTypeEnum.NonRotating)
             {
@@ -311,12 +311,12 @@ namespace GameLibrary.Drawing
 
             if (_roomType == RoomTypeEnum.Rotating)
             {
-                this._levelBackdrop.DrawShell(sb);
-            }
-            else
-            {
                 this._levelBackdrop.Draw(sb);
             }
+            //else
+            //{
+            //    this._levelBackdrop.Draw(sb);
+            //}
 
             for (int i = this._objectList.Count; i > 0; i--)
             {

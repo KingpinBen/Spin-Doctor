@@ -70,7 +70,13 @@ namespace GameLibrary.Objects
 
 
 #else
-
+        public Vector2 Position
+        {
+            get
+            {
+                return _position;
+            }
+        }
 #endif
 
         #endregion

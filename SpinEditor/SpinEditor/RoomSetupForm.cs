@@ -106,12 +106,19 @@ namespace SpinEditor
         public bool CheckIfComplete()
         {
             //  The texture must be changed here.
-            if (rearWall == "")
+            if (rearWall == "" && roomType != RoomTypeEnum.NonRotating)
             {
                 MessageBox.Show("Put a texture name in for the background.");
                 return false;
             }
-            rearWall = "Assets/Images/Textures/RoomSetup/" + rearWall;
+            if (roomType != RoomTypeEnum.NonRotating)
+            {
+                rearWall = "Assets/Images/Textures/RoomSetup/" + rearWall;
+            }
+            else
+            {
+                rearWall = "Nonrotating";
+            }
 
             return true;
         }

@@ -32,27 +32,27 @@ using GameLibrary.Objects;
 
 namespace GameLibrary.Drawing
 {
-    public class Sprite : ICloneable
+    public class Sprite : NodeObject
     {
         #region Fields
 
-        float elapsed = 0.0f;
-        float rotation = 0.0f;
-        float scale = 1.0f;
-        float alpha = 1.0f;
-        float zLayer = 0.7f;
-        bool isAnimated;
-        bool isAnimating = true;
-        bool isDead = false;
-        bool isDying = false;
-        int timesToPlay = 1;
-        Texture2D spriteTexture;
-        Point singleFrameDimensions = new Point(0, 0);
-        Point currentFrame = new Point(0, 0);
-        Point frameCount = new Point(1, 1);
-        Vector2 position = Vector2.Zero;
-        Vector2 velocity = Vector2.Zero;
-        Color tint = Color.White;
+        private float elapsed = 0.0f;
+        private float rotation = 0.0f;
+        private float scale = 1.0f;
+        private float alpha = 1.0f;
+        private float zLayer = 0.7f;
+        private bool isAnimated;
+        private bool isAnimating = true;
+        private bool isDead = false;
+        private bool isDying = false;
+        private int timesToPlay = 1;
+        private Texture2D spriteTexture;
+        private Point singleFrameDimensions = new Point(0, 0);
+        private Point currentFrame = new Point(0, 0);
+        private Point frameCount = new Point(1, 1);
+        private Vector2 position = Vector2.Zero;
+        private Vector2 velocity = Vector2.Zero;
+        private Color tint = Color.White;
         
         #endregion
 
@@ -121,18 +121,6 @@ namespace GameLibrary.Drawing
             }
         }
 
-        public Vector2 Position
-        {
-            get
-            {
-                return position;
-            }
-            set
-            {
-                position = value;
-            }
-        }
-
         public Vector2 Velocity
         {
             get
@@ -188,7 +176,7 @@ namespace GameLibrary.Drawing
         /// <param name="frameDimensions">Dimensions of 1 frame of the spritesheet in px</param>
         /// <param name="spriteSheetDims">how many frames on the spritesheet</param>
         /// <param name="timesToPlay">how many times the animation should play. -1 for infinite</param>
-        public void Init(Point frameDimensions, Point spriteSheetDims, int timesToPlay)
+        public void Init(Vector2 position, Point frameDimensions, Point spriteSheetDims, int timesToPlay)
         {
             this.singleFrameDimensions = frameDimensions;
             this.frameCount = spriteSheetDims;
@@ -301,20 +289,6 @@ namespace GameLibrary.Drawing
             else
                 isDead = true;
         }
-        #endregion
-
-        #region Cloning
-
-        object ICloneable.Clone()
-        {
-            return this.Clone();
-        }
-
-        public Sprite Clone()
-        {
-            return (Sprite)this.MemberwiseClone();
-        }
-
         #endregion
 
         #region Activate / Deactivate Animation

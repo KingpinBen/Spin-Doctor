@@ -26,12 +26,14 @@ namespace GameLibrary.Drawing
 
         public Particle()
         {
+            this._isAlive = false;
         }
 
         public void Init(Vector2 position, Vector2 velocity, Vector2 acceleration, float life)
         {
             this.Position = position;
             this.Velocity = velocity;
+            this.Acceleration = acceleration;
             this._isAlive = true;
             this._timeLeft = life;
         }

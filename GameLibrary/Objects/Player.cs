@@ -55,7 +55,7 @@ namespace GameLibrary.Objects
         #region Fields
 
         private static readonly Player playerInstance = new Player();
-        private const float _movementSpeed = 22.0f;
+        private const float _movementSpeed = 16.0f;
         private const float _jumpForce = 4.2f;      // 3.2f - Waist height. Pre 24/5
         private const float _maxJumpTime = 0.54f;
         private const float _maxAirTime = 0.84f;
