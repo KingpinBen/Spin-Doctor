@@ -84,12 +84,6 @@ namespace GameLibrary.Screens
             LoadLevel();
             //gamePlayEffect = Content.Load<Effect>("Assets/Effects/BlackAndWhite");
             //gamePlayEffect.Parameters["enableMonochrome"].SetValue(false);
-
-            #region Development
-#if Development
-            DevDisplay.Load(GameplayScreen.World);
-#endif
-            #endregion
         }
         #endregion
 
@@ -104,7 +98,7 @@ namespace GameLibrary.Screens
                 return;
             }
 
-            // Updates the world every second. Make it either first or last
+            // Updates the world every second
             World.Step((float)(gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f));
 
             Camera.Update(gameTime);
@@ -207,7 +201,11 @@ namespace GameLibrary.Screens
             World = new World(Vector2.Zero);
             Camera.UpIs = UpIs.Up;
 
-
+            #region Development
+#if Development
+            DevDisplay.Load(World);
+#endif
+            #endregion
 
             //  If theres anything in Level, clear it.
             if (Level != null)

@@ -147,7 +147,7 @@ namespace GameLibrary.Assists
                 Screen_Manager.GraphicsDevice.Viewport.Height / MeterInPixels, 0f, 0f, 1f);
 
             Matrix view =
-                Matrix.CreateTranslation(new Vector3((-Camera.Position / MeterInPixels) - Camera.LevelOrigin, 0f)) *
+                Matrix.CreateTranslation(new Vector3((-Camera.Position / MeterInPixels), 0f)) *
                 Matrix.CreateScale(Camera.Zoom, Camera.Zoom, 0f) *
                 Matrix.CreateRotationZ(Camera.Rotation) *
                 Matrix.CreateTranslation(new Vector3(((new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f) / MeterInPixels), 0f));

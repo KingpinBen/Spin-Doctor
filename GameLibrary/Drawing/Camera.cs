@@ -46,8 +46,9 @@ namespace GameLibrary.Drawing
     {
         #region Fields
 
-        private const float RotationSpeed = 0.08f;
-        private const float largestDimensionModifier = 0.9f;    //80% of largest dimension
+        private const float _rotationSpeed = 0.08f;
+        //  90% of largest dimension
+        private const float largestDimensionModifier = 0.9f;    
         private const float _gravityForce = 120.0f;
         private static bool _levelRotates;
         private static bool _allowLevelRotation;
@@ -56,12 +57,13 @@ namespace GameLibrary.Drawing
         private static Vector2 _cameraPosition;
         private static float _worldRotation;
         private static float _currentCameraZoom;
+        //  Hold at what float zooms to show the whole level.
         private static float _fullLevelZoom;
         private static float _rotationToAdd;
         private static float _rotateDelayTimer;
         private static float _largestLevelDimension;
         private static UpIs _upIs;
-
+        private static CameraType _cameraType;
         #endregion
 
         #region Properties
@@ -82,11 +84,17 @@ namespace GameLibrary.Drawing
         #endregion
 
         #region Allow Rotation
+        /// <summary>
+        /// Has rotating the level been temporarily disabled?
+        /// 
+        /// E.g. climbing the ladder
+        /// </summary>
         public static bool AllowRotation
         {
             get
             {
-                if (!LevelRotates) return false;
+                if (!LevelRotates) 
+                    return false;
                 return _allowLevelRotation;
             }
             set
@@ -109,17 +117,10 @@ namespace GameLibrary.Drawing
         }
         #endregion
 
-        public static Vector2 LevelOrigin
-        {
-            get { return Vector2.Zero; }
-        }
-
         public static Vector2 Position
         {
             get { return _cameraPosition; }
         }
-
-        public static CameraType CameraType { get; internal set; }
 
         #region Able to rotate Delay
         /// <summary>
@@ -145,6 +146,14 @@ namespace GameLibrary.Drawing
         }
         #endregion
 
+        public static CameraType CameraType
+        {
+            get
+            {
+                return _cameraType;
+            }
+        }
+
         #region Zoom
         /// <summary>
         /// Global zoom.
@@ -154,36 +163,10 @@ namespace GameLibrary.Drawing
         public static float Zoom
         {
             get { return _currentCameraZoom; }
-            set
-            {
-                _currentCameraZoom = value;
-            }
-        }
-        #endregion
-
-        #region Level Size Zoom
-        /// <summary>
-        /// Holds the particular level target zoom. The normal zoom will probably
-        /// or could change during the game/level so it's important for that it's held
-        /// somewhere incase we need to lerp it.
-        /// </summary>
-        public static float FullLevelZoom
-        {
-            get
-            {
-                return _fullLevelZoom;
-            }
             internal set
             {
-                _fullLevelZoom = value;
+                _currentCameraZoom = MathHelper.Clamp(value, 0.1f, 4.0f);
             }
-        }
-        #endregion
-
-        #region Rotation still to add
-        public static float RotationToAdd
-        {
-            get { return _rotationToAdd; }
         }
         #endregion
 
@@ -210,47 +193,39 @@ namespace GameLibrary.Drawing
 
         #endregion
 
-        #region Load
         public static void Load(bool levelCanRotate, float LargestLevelDimension)
         {
             _levelRotates = levelCanRotate;
             AllowRotation = _levelRotates;
             UpIs = UpIs.Up;
             _largestLevelDimension = LargestLevelDimension;
-            _currentCameraZoom = (Screen_Manager.GraphicsDevice.Viewport.Height * 0.5f) / (LargestLevelDimension * largestDimensionModifier);
+            CalculateZoom();
             _fullLevelZoom = Zoom;
             
-            CameraType = CameraType.Free;
+            _cameraType = CameraType.Free;
             _worldRotation = 0.0f;
-            _cameraPosition = LevelOrigin;
+            _cameraPosition = Vector2.Zero;
             _rotateDelayTimer = 0;
         }
-        #endregion
 
-        #region Update
         public static void Update(GameTime gameTime)
         {
-            HandleInput();
-
-            HandleRotation(gameTime);
-
-            if (CameraType == CameraType.Level && Position != LevelOrigin)
+            if (_cameraType == CameraType.Level && Position != Vector2.Zero)
             {
                 //  TODO:
                 //  Chase vector from current camera position to Level Origin
 
-                _cameraPosition = LevelOrigin;
+                _cameraPosition = Vector2.Zero;
             }
-            else if (CameraType == CameraType.Focus)
+            else if (_cameraType == CameraType.Focus)
             {
                 //  TODO:
                 //  Create a variablee for target focus.
                 //  Chase vector from current camera position to Focus position.
                 _cameraPosition = ConvertUnits.ToDisplayUnits(Player.Instance.Body.Position);
             }
-
-            #region Free Camera (Development)
-            else if (CameraType == CameraType.Free)
+#if Development
+            else if (_cameraType == CameraType.Free)
             {
                 if (Input.GP_RightThumbstick.X != 0)
                     _cameraPosition += SpinAssist.ModifyVectorByUp(new Vector2(Input.GP_RightThumbstick.X * 10, 0));
@@ -258,42 +233,118 @@ namespace GameLibrary.Drawing
                     _cameraPosition -= SpinAssist.ModifyVectorByUp(new Vector2(0, Input.GP_RightThumbstick.Y * 10));
             }
 
-            #endregion
-        }
-        #endregion
-
-        #region HandleInput
-        /// <summary>
-        /// All key presses that call functions should be in here.
-        /// </summary>
-        private static void HandleInput()
-        {
-            #region Development
-#if Development
             ZoomModifierInput();
 
             //  Debug camera control
             if (Input.GP_Back)
             {
-                switch (CameraType)
+                switch (_cameraType)
                 {
                     case CameraType.Free:
-                        CameraType = CameraType.Level;
+                        _cameraType = CameraType.Level;
                         break;
                     case CameraType.Level:
-                        CameraType = CameraType.Focus;
+                        _cameraType = CameraType.Focus;
                         break;
                 }
             }
 #endif
-            #endregion
 
+            if (_levelRotates)
+            {
+                HandleInput();
+                HandleRotation(gameTime);
+            }
+        }
+
+        #region Private Methods
+
+        static void ZoomModifierInput()
+        {
+            if (Input.GP_RB)
+                Zoom -= 0.005f;
+            else if (Input.GP_LB)
+                Zoom += 0.005f;
+        }
+
+        static void ChangeGravity()
+        {
+            switch (UpIs)
+            {
+                case UpIs.Up:
+                    {
+                        GameplayScreen.World.Gravity = new Vector2(0, _gravityForce);
+                        break;
+                    }
+                case UpIs.Down:
+                    {
+                        GameplayScreen.World.Gravity = new Vector2(0, -_gravityForce);
+                        break;
+                    }
+                case UpIs.Left:
+                    {
+                        GameplayScreen.World.Gravity = new Vector2(_gravityForce, 0);
+                        break;
+                    }
+                case UpIs.Right:
+                    {
+                        GameplayScreen.World.Gravity = new Vector2(-_gravityForce, 0);
+                        break;
+                    }
+            }
+        }
+
+        static void HandleRotation(GameTime gameTime)
+        {
+            if (_rotateDelayTimer > 0)
+            {
+                _rotateDelayTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            else if (_rotateDelayTimer < 0)
+            {
+                _rotateDelayTimer = 0;
+            }
+
+            //  Nothing else needs to happen if theres 
+            //  nothing to add.
+            if (_rotationToAdd == 0)
+            {
+                _levelRotating = false;
+                return;
+            }
+
+            if (_rotationToAdd > 0)   //  Left
+            {
+                _worldRotation += _rotationSpeed;
+                _rotationToAdd -= _rotationSpeed;
+
+                if (_rotationToAdd < _rotationSpeed)
+                {
+                    _worldRotation += _rotationToAdd;
+                    _rotationToAdd = 0f;
+                }
+            }
+            else if (_rotationToAdd < 0)  //  Right
+            {
+                _worldRotation -= _rotationSpeed;
+                _rotationToAdd += _rotationSpeed;
+
+                if (_rotationToAdd > -_rotationSpeed)
+                {
+                    _worldRotation += _rotationToAdd;
+                    _rotationToAdd = 0f;
+                }
+            }
+        }
+
+        static void HandleInput()
+        {
             if (Player.Instance.PlayerState == pState.Dead)
             {
                 return;
             }
 
-            if (!LevelRotates || !AllowRotation)
+            if (!AllowRotation)
             {
                 return;
             }
@@ -310,81 +361,14 @@ namespace GameLibrary.Drawing
                 }
             }
         }
+
         #endregion
 
-        #region HandleRotation
-        private static void HandleRotation(GameTime gameTime)
-        {
-            //  No need to handle the rotation if the level can't 
-            //  rotate.
-            if (!_levelRotates) return;
-
-            if (_rotateDelayTimer > 0) 
-                _rotateDelayTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-            else if (_rotateDelayTimer < 0) 
-                _rotateDelayTimer = 0;
-
-            //  Nothing else needs to happen if theres 
-            //  nothing to add.
-            if (_rotationToAdd == 0)
-            {
-                _levelRotating = false;
-                return;
-            }
-
-            if (_rotationToAdd > 0)   //  Left
-            {
-                _worldRotation += RotationSpeed;
-                _rotationToAdd -= RotationSpeed;
-
-                if (_rotationToAdd < RotationSpeed)
-                {
-                    _worldRotation += RotationToAdd;
-                    _rotationToAdd = 0f;
-                }
-            }
-            else if (_rotationToAdd < 0)  //  Right
-            {
-                _worldRotation -= RotationSpeed;
-                _rotationToAdd += RotationSpeed;
-
-                if (_rotationToAdd > -RotationSpeed)
-                {
-                    _worldRotation += RotationToAdd;
-                    _rotationToAdd = 0f;
-                }
-            }
-        }
-        #endregion
-
-        #region TransformMatrix
-        // View Matrix
-        public static Matrix TransformMatrix()
-        {
-            Matrix _transform = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0)) *
-                                         Matrix.CreateRotationZ((float)_worldRotation) *
-                                         Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
-                                         Matrix.CreateTranslation(new Vector3((new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f), 0));
-            return _transform;
-        }
-        #endregion
-
-        #region ZoomModifieringInput
-        /// <summary>
-        /// Dev Only
-        /// </summary>
-        private static void ZoomModifierInput()
-        {
-            if (Input.GP_RB)
-                Zoom -= 0.005f;
-            else if (Input.GP_LB)
-                Zoom += 0.005f;
-        }
-        #endregion
+        #region Public Methods
 
         public static void ChangeCamera(CameraType type)
         {
-            CameraType = type;
+            _cameraType = type;
         }
 
         #region Global Camera Changes
@@ -506,32 +490,23 @@ namespace GameLibrary.Drawing
             ChangeGravity();
         }
 
-        static void ChangeGravity()
+        
+        #endregion
+
+        public static void CalculateZoom()
         {
-            switch (UpIs)
-            {
-                case UpIs.Up:
-                    {
-                        GameplayScreen.World.Gravity = new Vector2(0, _gravityForce);
-                        break;
-                    }
-                case UpIs.Down:
-                    {
-                        GameplayScreen.World.Gravity = new Vector2(0, -_gravityForce);
-                        break;
-                    }
-                case UpIs.Left:
-                    {
-                        GameplayScreen.World.Gravity = new Vector2(_gravityForce, 0);
-                        break;
-                    }
-                case UpIs.Right:
-                    {
-                        GameplayScreen.World.Gravity = new Vector2(-_gravityForce, 0);
-                        break;
-                    }
-            }
+            _currentCameraZoom = (Screen_Manager.GraphicsDevice.Viewport.Height * 0.5f) / (_largestLevelDimension * largestDimensionModifier);
         }
+
+        public static Matrix TransformMatrix()
+        {
+            Matrix _transform = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0)) *
+                                         Matrix.CreateRotationZ((float)_worldRotation) *
+                                         Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
+                                         Matrix.CreateTranslation(new Vector3((new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f), 0));
+            return _transform;
+        }
+
         #endregion
     }
 }
