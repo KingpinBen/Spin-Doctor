@@ -2772,41 +2772,43 @@ namespace SpinEditor
             STATIC_EDITOR_MODE.keyboardCurrentState = Keyboard.GetState();
 
             #region Editor Toolstrip
-
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Q))
+            if (xnA_RenderControl1.Focused)
             {
-                SwitchToSelectMode();
-            }
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Q))
+                {
+                    SwitchToSelectMode();
+                }
 
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.W))
-            {
-                SwitchToMoveMode();
-            }
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.W))
+                {
+                    SwitchToMoveMode();
+                }
 
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.E))
-            {
-                SwitchToPlaceMode();
-            }
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.E))
+                {
+                    SwitchToPlaceMode();
+                }
 
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Delete))
-            {
-                DeleteSelectedObjects();
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Delete))
+                {
+                    DeleteSelectedObjects();
+                }
+
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.C) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                {
+                    CopyPaste();
+                }
+
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.D) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                {
+                    STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                }
             }
             #endregion
 
             if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.S) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
             {
                 SaveFile();
-            }
-
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.D) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
-            {
-                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-            }
-
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.C) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
-            {
-                CopyPaste();
             }
 
             #region Undo / Redo

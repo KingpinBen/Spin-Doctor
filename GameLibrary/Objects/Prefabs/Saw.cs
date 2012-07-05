@@ -229,16 +229,15 @@ namespace GameLibrary.Objects
 #else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, Color.White, 
-                TextureRotation, Origin, _scale, SpriteEffects.None, zLayer); 
-
-            
             sb.Draw(_wallDecalEnd, this.Position, null, Color.White, _decalRotation,
                 new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.87f);
             sb.Draw(_wallDecalEnd, this.EndPosition, null, Color.White, (float)Math.PI + _decalRotation,
                 new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.87f);
             sb.Draw(_wallDecalMiddle, _decalRectangle, null, Color.White, _decalRotation,
                 Vector2.Zero, SpriteEffects.None, 0.87f);
+
+            sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, Color.White, 
+                TextureRotation, Origin, _scale, SpriteEffects.None, zLayer); 
 
 #if Development
             sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed: " + this.PrismaticJoint.MotorSpeed + ". IsMoving: " + this._isMoving, 
