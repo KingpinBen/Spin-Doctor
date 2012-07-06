@@ -22,7 +22,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-//#define Development
+#define Development
 
 #region Using Statements
 using System;
@@ -41,6 +41,7 @@ using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Collision;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
 #endregion
 
 namespace GameLibrary.Screens
@@ -139,35 +140,36 @@ namespace GameLibrary.Screens
         {
             Matrix cameraTransform = Camera.TransformMatrix();
 
-            if (shadowEffect != null)
+            if (GameSettings.DrawShadows)
             {
                 this.graphicsDevice.SetRenderTarget(RenderTargetEffect);
+
+
+                this.graphicsDevice.Clear(Color.Transparent);
+
+                this.DrawObjects(cameraTransform, SpriteSortMode.Immediate, BlendState.NonPremultiplied, false, true);
+                this._gameObjects = RenderTargetEffect;
+
+                this.graphicsDevice.SetRenderTarget(renderTargetMask);
+                this.graphicsDevice.Clear(Color.Transparent);
+
+                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
+                shadowEffect.CurrentTechnique.Passes[0].Apply();
+                _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
+                _spriteBatch.End();
+
+                _gameObjects = renderTargetMask;
+
+                this.graphicsDevice.SetRenderTarget(renderTargetBlur);
+                this.graphicsDevice.Clear(Color.Transparent);
+
+                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                shadowEffect.CurrentTechnique.Passes[1].Apply();
+                _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
+                _spriteBatch.End();
+
+                _gameObjects = renderTargetBlur;
             }
-
-            this.graphicsDevice.Clear(Color.Transparent);
-
-            this.DrawObjects(cameraTransform, SpriteSortMode.Immediate, BlendState.NonPremultiplied, false, true);
-            this._gameObjects = RenderTargetEffect;
-
-            this.graphicsDevice.SetRenderTarget(renderTargetMask);
-            this.graphicsDevice.Clear(Color.Transparent);
-
-            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
-            shadowEffect.CurrentTechnique.Passes[0].Apply();
-            _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
-            _spriteBatch.End();
-
-            _gameObjects = renderTargetMask;
-
-            this.graphicsDevice.SetRenderTarget(renderTargetBlur);
-            this.graphicsDevice.Clear(Color.Transparent);
-
-            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            shadowEffect.CurrentTechnique.Passes[1].Apply();
-            _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
-            _spriteBatch.End();
-
-            _gameObjects = renderTargetBlur;
 
             this.graphicsDevice.SetRenderTarget(null);
             this.graphicsDevice.Clear(Color.Black);
@@ -185,12 +187,18 @@ namespace GameLibrary.Screens
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, null, null, cameraTransform);
             Level.DrawBackdrop(_spriteBatch);
             _spriteBatch.End();
-
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
-            _spriteBatch.End();
+            if (GameSettings.DrawShadows)
+            {
+                _spriteBatch.Begin();
+                _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
+                _spriteBatch.End();
+            }
 
             this.DrawObjects(cameraTransform, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
+
+            _spriteBatch.Begin();
+            HUD.Draw(_spriteBatch);
+            _spriteBatch.End();
 
 #if shit
             //if (gamePlayEffect != null)
@@ -282,6 +290,11 @@ namespace GameLibrary.Screens
             if (Player.Instance.PlayerState == pState.Dead && Input.Jump())
             {
                 LoadLevel();
+            }
+
+            if (Input.IsNewGpPress(Buttons.LeftShoulder) || Input.IsNewKeyPress(Keys.F8))
+            {
+                GameSettings.ToggleShadows();
             }
 
             if (Input.GP_Start || Input.Escape)

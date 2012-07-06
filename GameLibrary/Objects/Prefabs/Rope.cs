@@ -22,6 +22,8 @@
 //--    
 //--------------------------------------------------------------------------
 
+#define Development
+
 #region Using Statements
 using System;
 using System.Collections.Generic;
@@ -222,6 +224,13 @@ namespace GameLibrary.Objects
                     Tint, _pathBodies[i].Rotation, new Vector2(Texture.Width / 2, Texture.Height / 2), 1f,
                     SpriteEffects.None, zLayer);
             }
+#if Development
+            if (_touchedRopeFixtures.Count > 0)
+            {
+                sb.DrawString(Fonts.DebugFont, "Touching: " + _touchedRopeFixtures.Count, this._position, Color.Red);
+            }
+#endif
+
         }
         
 #endif
@@ -242,6 +251,7 @@ namespace GameLibrary.Objects
 
             PolygonShape rotationPointShape = new PolygonShape(PolygonTools.CreateCircle(height, 8), 25);
             PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), 5);
+            PolygonShape sensorShape = new PolygonShape(PolygonTools.CreateCircle(height, 6), 1.0f);
 
             Body prevBody = new Body(world); ;
             for (int i = 0; i < _chainCount; ++i)
@@ -254,8 +264,8 @@ namespace GameLibrary.Objects
                 {
                     Fixture fixture = body.CreateFixture(rotationPointShape);
                     fixture.Friction = 0.2f;
-                    fixture.CollisionCategories = Category.Cat1;
-                    fixture.CollidesWith = Category.All & ~Category.Cat2;
+                    //fixture.CollisionCategories = Category.All;
+                    //fixture.CollidesWith = Category.All & ~Category.Cat2;
                     body.AngularDamping = 0.4f;
                     
                     FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, body, Vector2.Zero, ConvertUnits.ToSimUnits(Position));
@@ -264,18 +274,19 @@ namespace GameLibrary.Objects
                 {
                     Fixture fixture = body.CreateFixture(shape);
                     fixture.Friction = 0.2f;
+                    Fixture sensorFix = body.CreateFixture(sensorShape);
+                    sensorFix.IsSensor = true;
 
-                    fixture.CollisionCategories = Category.Cat2;
-                    fixture.CollidesWith = Category.All & ~Category.Cat1;
+                    //fixture.CollisionCategories = Category.All;
+                    fixture.CollidesWith = Category.All & ~Category.Cat10 & ~Category.Cat12;
 
                     RopeJoint rj = new RopeJoint(prevBody, body, new Vector2(0.0f, height), new Vector2(0.0f, -height / 2));
 
                     rj.CollideConnected = false;
                     world.AddJoint(rj);
 
-                    body.OnCollision += Body_OnCollision;
-                    body.OnSeparation += Body_OnSeparation;
-                    body.IsSensor = true;
+                    body.FixtureList[1].Body.OnCollision += Body_OnCollision;
+                    body.FixtureList[1].Body.OnSeparation += Body_OnSeparation;
                 }
 
                 prevBody = body;
@@ -287,12 +298,10 @@ namespace GameLibrary.Objects
         #region Collisions
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            if (fixtureB.Body != Player.Instance.Body)
+            if (_touchedRopeFixtures.Contains(fixtureA) && fixtureB == Player.Instance.Body.FixtureList[0])
             {
-                return;
+                _touchedRopeFixtures.Remove(fixtureA);
             }
-
-            _touchedRopeFixtures.Remove(fixtureA);
 
             if (_touchedRopeFixtures.Count == 0)
             {
@@ -302,7 +311,7 @@ namespace GameLibrary.Objects
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (fixtureB.Body != Player.Instance.Body)
+            if (fixtureB != Player.Instance.Body.FixtureList[0])
             {
                 return true;
             }

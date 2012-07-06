@@ -38,6 +38,7 @@ using GameLibrary.Assists;
 using Microsoft.Xna.Framework.Graphics;
 using GameLibrary.Managers;
 using GameLibrary.Screens;
+using Microsoft.Xna.Framework.Input;
 #endregion
 
 namespace GameLibrary.Drawing
@@ -261,9 +262,9 @@ namespace GameLibrary.Drawing
 
         static void ZoomModifierInput()
         {
-            if (Input.GP_RB)
+            if (Input.GP_RB || Input.IsKeyPress(Keys.Home))
                 Zoom -= 0.005f;
-            else if (Input.GP_LB)
+            else if (Input.GP_LB || Input.IsKeyPress(Keys.Insert))
                 Zoom += 0.005f;
         }
 

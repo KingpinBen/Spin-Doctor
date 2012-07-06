@@ -168,6 +168,7 @@
     <Compile Include="Objects\Platforms\RotatingPlatform.cs" />
     <Compile Include="Objects\Platforms\StaticObject.cs" />
     <Compile Include="Screens\GamePlayScreen.cs" />
+    <Compile Include="Screens\GameSettings.cs" />
     <Compile Include="Screens\LoadingScreen.cs" />
     <Compile Include="Screens\Menu\GameMenu.cs" />
     <Compile Include="Screens\Menu\GraphicsScreen.cs" />
