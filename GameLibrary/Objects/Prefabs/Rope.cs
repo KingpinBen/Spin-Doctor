@@ -63,6 +63,7 @@ namespace GameLibrary.Objects
         private bool _inRange;
         private Texture2D endTexture;
         private RopeJoint _ropeJoint;
+        private int _grabbedIndex;
 
         #endregion
 
@@ -180,7 +181,7 @@ namespace GameLibrary.Objects
                         if (distance < smallestDistance)
                         {
                             smallestDistance = distance;
-                            index = i;
+                            _grabbedIndex = i;
                         }
                     }
 
@@ -195,6 +196,8 @@ namespace GameLibrary.Objects
             }
             else
             {
+                Player.Instance.GrabRotation = _pathBodies[_grabbedIndex].Rotation;
+
                 if (Input.Jump())
                 {
                     GameplayScreen.World.RemoveJoint(_ropeJoint);
@@ -250,7 +253,7 @@ namespace GameLibrary.Objects
             _ropePath.Add(ConvertUnits.ToSimUnits(this._endPosition));
 
             PolygonShape rotationPointShape = new PolygonShape(PolygonTools.CreateCircle(height, 8), 25);
-            PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), 5);
+            PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), 1.0f);
             PolygonShape sensorShape = new PolygonShape(PolygonTools.CreateCircle(height, 6), 1.0f);
 
             Body prevBody = new Body(world); ;
