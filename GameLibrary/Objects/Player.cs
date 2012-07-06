@@ -153,15 +153,15 @@ namespace GameLibrary.Objects
         {
             base.Update(gameTime);
 
-            if (PlayerState == pState.Dead)
-            {
-                return;
-            }
-
             //Keeps the body rotation up, moving with the camera.
             if (Camera.LevelRotating || (mainBody.Rotation != (float)-Camera.Rotation && PlayerState != pState.Swinging))
             {
                 mainBody.Rotation = (float)-Camera.Rotation;
+            }
+
+            if (PlayerState == pState.Dead)
+            {
+                return;
             }
 
             if (!mainBody.Enabled && PlayerState != pState.Climbing)

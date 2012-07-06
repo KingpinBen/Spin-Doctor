@@ -50,7 +50,6 @@ namespace GameLibrary.Drawing
 #if EDITOR
 
 #else
-        Player _player;
         ContentManager _content;
         Gears _gears;
         bool _initialized = false;
@@ -166,25 +165,21 @@ namespace GameLibrary.Drawing
             }
         }
         [ContentSerializerIgnore]
-        public Vector2 RoomDimensions
+        public List<NodeObject> ObjectsList
         {
             get
             {
-                return _roomDimensions;
+                return _objectList;
             }
-        }        
-        //[ContentSerializerIgnore]
-        //public bool CanLevelRotate
-        //{
-        //    get 
-        //    { 
-        //        return _levelRotates; 
-        //    }
-        //    protected set
-        //    {
-        //        _levelRotates = value;
-        //    }
-        //}
+        }
+        [ContentSerializerIgnore]
+        public Decal_Manager DecalManager
+        {
+            get
+            {
+                return _decalManager;
+            }
+        }
 #endif
 
         [ContentSerializerIgnore]
@@ -221,7 +216,6 @@ namespace GameLibrary.Drawing
 #else
             this._content = new ContentManager(Screen_Manager.Game.Services, "Content");
             this._levelBackdrop = new LevelBackdrop();
-            this._player = Player.Instance;
             this._initialized = false;
 
             _gears = new Gears();
@@ -304,24 +298,17 @@ namespace GameLibrary.Drawing
         #endregion
 
         #region Draw Gameplay
-        public void DrawGameplay(SpriteBatch sb)
+        public void DrawBackdrop(SpriteBatch sb)
         {
-            this._decalManager.Draw(sb);
-            this._player.Draw(sb);
+            
+            
 
             if (_roomType == RoomTypeEnum.Rotating)
             {
                 this._levelBackdrop.Draw(sb);
             }
-            //else
-            //{
-            //    this._levelBackdrop.Draw(sb);
-            //}
 
-            for (int i = this._objectList.Count; i > 0; i--)
-            {
-                this._objectList[i - 1].Draw(sb);
-            }
+            this._decalManager.Draw(sb);
         }
         #endregion
 #endif

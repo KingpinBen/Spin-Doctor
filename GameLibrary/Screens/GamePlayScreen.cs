@@ -57,8 +57,15 @@ namespace GameLibrary.Screens
         public static int LevelID { get; set; }
         private static new bool IsInitialized = false;
         private GraphicsDevice graphicsDevice;
-        private Effect gamePlayEffect;
+        private Effect shadowEffect;
+        private Effect alphaEffect;
+        private SpriteBatch _spriteBatch;
+
+        private RenderTarget2D renderTargetMask;
+        private RenderTarget2D renderTargetBlur;
         private RenderTarget2D RenderTargetEffect;
+        private Texture2D _gameObjects;
+        private Texture2D _shadowMap;
 
         #endregion
 
@@ -66,14 +73,19 @@ namespace GameLibrary.Screens
         public GameplayScreen(int ID) 
             : base("GamePlayScreen")
         {
-            LevelID = ID;
             this.IsExitable = false;
-            Level = new Level();
-            this.graphicsDevice = Screen_Manager.GraphicsDevice;
-            World = new World(Vector2.Zero);
-            PresentationParameters pp = this.graphicsDevice.PresentationParameters;
 
-            RenderTargetEffect = new RenderTarget2D(Screen_Manager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
+            LevelID = ID;
+            Level = new Level();
+            World = new World(Vector2.Zero);
+
+            this.graphicsDevice = Screen_Manager.GraphicsDevice;
+            this._spriteBatch = new SpriteBatch(this.graphicsDevice);
+
+            PresentationParameters pp = this.graphicsDevice.PresentationParameters;
+            this.RenderTargetEffect = new RenderTarget2D(graphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth16);
+            this.renderTargetMask = new RenderTarget2D(graphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
+            this.renderTargetBlur = new RenderTarget2D(graphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
         }
         #endregion
 
@@ -82,7 +94,8 @@ namespace GameLibrary.Screens
         {
             HUD.Load();
             LoadLevel();
-            //gamePlayEffect = _content.Load<Effect>("Assets/Other/Effects/BlackAndWhite");
+            shadowEffect = _content.Load<Effect>("Assets/Other/Effects/MaskEffect");
+            alphaEffect = _content.Load<Effect>("Assets/Other/Effects/AlphaTexture");
             //gamePlayEffect.Parameters["enableMonochrome"].SetValue(true);
         }
         #endregion
@@ -124,16 +137,42 @@ namespace GameLibrary.Screens
 #else
         public override void Draw(SpriteBatch sb)
         {
-            if (gamePlayEffect != null)
+            Matrix cameraTransform = Camera.TransformMatrix();
+
+            if (shadowEffect != null)
             {
-                //  Set the following to draw on the rendertarget
                 this.graphicsDevice.SetRenderTarget(RenderTargetEffect);
             }
 
-            Screen_Manager.GraphicsDevice.Clear(Color.Black);
+            this.graphicsDevice.Clear(Color.Transparent);
 
-            #region Draw Level
-            sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null,
+            this.DrawObjects(cameraTransform, SpriteSortMode.Immediate, BlendState.NonPremultiplied, false, true);
+            this._gameObjects = RenderTargetEffect;
+
+            this.graphicsDevice.SetRenderTarget(renderTargetMask);
+            this.graphicsDevice.Clear(Color.Transparent);
+
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
+            shadowEffect.CurrentTechnique.Passes[0].Apply();
+            _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
+            _spriteBatch.End();
+
+            _gameObjects = renderTargetMask;
+
+            this.graphicsDevice.SetRenderTarget(renderTargetBlur);
+            this.graphicsDevice.Clear(Color.Transparent);
+
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            shadowEffect.CurrentTechnique.Passes[1].Apply();
+            _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
+            _spriteBatch.End();
+
+            _gameObjects = renderTargetBlur;
+
+            this.graphicsDevice.SetRenderTarget(null);
+            this.graphicsDevice.Clear(Color.Black);
+
+            sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null,
                     Matrix.CreateTranslation(new Vector3(-Camera.Position, 0)) *
                     Matrix.CreateRotationZ(bgRotation) *
                     Matrix.CreateScale(new Vector3(Camera.Zoom, Camera.Zoom, 1)) *
@@ -143,36 +182,97 @@ namespace GameLibrary.Screens
             }
             sb.End();
 
-            sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, Camera.TransformMatrix());
-            {
-                Level.DrawGameplay(sb);
-                Sprite_Manager.Draw(sb);
-            }
-            sb.End();
-            #endregion
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, null, null, cameraTransform);
+            Level.DrawBackdrop(_spriteBatch);
+            _spriteBatch.End();
 
-            if (gamePlayEffect != null)
-            {
-                //  Clear the rendertarget and screen
-                this.graphicsDevice.SetRenderTarget(null);
-                Screen_Manager.GraphicsDevice.Clear(Color.Black);
-            }
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
+            _spriteBatch.End();
 
-            sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-            {
-                if (gamePlayEffect != null)
-                {
-                    //  Apply Post Processing
-                    gamePlayEffect.CurrentTechnique.Passes[0].Apply();
-                    sb.Draw(RenderTargetEffect, Vector2.Zero, Color.White);
-                }
+            this.DrawObjects(cameraTransform, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
 
-                //  Draw the HUD
-                HUD.Draw(sb);
-                base.Draw(sb);
-            }
-            sb.End();
+#if shit
+            //if (gamePlayEffect != null)
+            //{
+            //    //  Set the following to draw on the rendertarget
+            //    this.graphicsDevice.SetRenderTarget(RenderTargetEffect);
+            //}
+
+            //Screen_Manager.GraphicsDevice.Clear(Color.Black);
+
+            //#region Draw Level
+            //sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null,
+            //        Matrix.CreateTranslation(new Vector3(-Camera.Position, 0)) *
+            //        Matrix.CreateRotationZ(bgRotation) *
+            //        Matrix.CreateScale(new Vector3(Camera.Zoom, Camera.Zoom, 1)) *
+            //        Matrix.CreateTranslation(new Vector3(Screen_Manager.GraphicsDevice.Viewport.Width * 0.5f, Screen_Manager.GraphicsDevice.Viewport.Height * 0.5f, 0f)));
+            //{
+            //    Level.DrawBackground(sb);
+            //}
+            //sb.End();
+
+            //sb.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, Camera.TransformMatrix());
+            //{
+            //    this.DrawObjects(sb, SpriteSortMode.
+            //    Sprite_Manager.Draw(sb);
+            //}
+            //sb.End();
+            //#endregion
+
+            //if (gamePlayEffect != null)
+            //{
+            //    //  Clear the rendertarget and screen
+            //    this.graphicsDevice.SetRenderTarget(null);
+            //    Screen_Manager.GraphicsDevice.Clear(Color.Black);
+            //}
+
+            //sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            //{
+            //    if (gamePlayEffect != null)
+            //    {
+            //        //  Apply Post Processing
+            //        gamePlayEffect.CurrentTechnique.Passes[0].Apply();
+            //        sb.Draw(RenderTargetEffect, Vector2.Zero, Color.White);
+            //    }
+
+            //    //  Draw the HUD
+            //    HUD.Draw(sb);
+            //    base.Draw(sb);
+            //}
+            //sb.End();
+#endif
         }
+    
+
+        void DrawObjects(Matrix? transform, SpriteSortMode sortMode, BlendState blendState, bool drawDecals, bool addAlpha)
+        {
+            if (transform == null)
+                _spriteBatch.Begin(sortMode, blendState, SamplerState.AnisotropicWrap, null, null);
+            else
+            {
+                _spriteBatch.Begin(sortMode, blendState, SamplerState.LinearWrap, null, null, null, (Matrix)transform);
+            }
+
+            if (addAlpha)
+            {
+                alphaEffect.CurrentTechnique.Passes[0].Apply();
+            }
+
+            Player.Instance.Draw(_spriteBatch);
+
+            if (drawDecals)
+            {
+                Level.DecalManager.Draw(_spriteBatch);
+            }
+                
+            for (int i = 0; i < Level.ObjectsList.Count; i++)
+            {
+                Level.ObjectsList[i].Draw(_spriteBatch);
+            }
+            _spriteBatch.End();
+        }
+
 #endif
         #endregion
 
