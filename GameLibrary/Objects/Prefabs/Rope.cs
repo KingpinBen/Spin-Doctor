@@ -187,11 +187,10 @@ namespace GameLibrary.Objects
 
                     _ropeJoint = new RopeJoint(_pathBodies[0], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
                     GameplayScreen.World.AddJoint(_ropeJoint);
-                    Player.Instance.GrabRope();
                     _ropePlayerJoint = new WeldJoint(_touchedRopeFixtures[index].Body, Player.Instance.Body, Vector2.Zero, Vector2.Zero);
                     GameplayScreen.World.AddJoint(_ropePlayerJoint);
 
-                    
+                    Player.Instance.GrabRope();
                 }
             }
             else

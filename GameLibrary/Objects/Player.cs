@@ -188,35 +188,23 @@ namespace GameLibrary.Objects
             switch (PlayerState)
             {
                 case pState.Climbing:
-                    {
-                        HandleClimbing(gameTime);
-                        break;
-                    }
+                    HandleClimbing(gameTime);
+                    break;
                 case pState.Falling:
-                    {
-                        HandleAir(gameTime);
-                        break;
-                    }
+                    HandleAir(gameTime);
+                    break;
                 case pState.Jumping:
-                    {
-                        HandleAir(gameTime);
-                        break;
-                    }
-                case pState.Grounded:
-                    {
-                        HandleMoving(gameTime);
-                        break;
-                    }
-                case pState.Running:
-                    {
-                        HandleMoving(gameTime);
-                        break;
-                    }
+                    HandleAir(gameTime);
+                    break;
                 case pState.Pulling:
-                    {
-                        HandlePulling(gameTime);
-                        break;
-                    }
+                    HandlePulling(gameTime);
+                    break;
+                case pState.Swinging:
+                    HandleSwinging(gameTime);
+                    break;
+                default:
+                    HandleMoving(gameTime);
+                    break;
             }
 
             #endregion
@@ -263,7 +251,7 @@ namespace GameLibrary.Objects
 
         private void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            //if (PlayerState == pState.Dead || PlayerState == pState.Jumping) return;
+            if (PlayerState == pState.Dead || PlayerState == pState.Swinging) return;
 
             if (TouchingFixtures.Contains(fixtureB))
             {
@@ -334,184 +322,7 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        #region Handle All Movements
-
-        #region Handle Jumping
-        private void HandleJumping(Vector2 Gravity)
-        {
-            Vector2 force = Gravity;
-
-            //  First jump
-            if (CanJump)
-            {
-                force *= _jumpForce;
-
-                if (PlayerState == pState.Climbing)
-                {
-                    if (Input.LeftCheck())
-                    {
-                        force += SpinAssist.ModifyVectorByUp(new Vector2(-150, 0));
-                    }
-                    else if (Input.RightCheck())
-                    {
-                        force += SpinAssist.ModifyVectorByUp(new Vector2(150, 0));
-                    }
-
-                    this.ToggleBodies(true);
-                    this.WheelBody.ApplyLinearImpulse(force);
-                    this.PlayerState = pState.Jumping;
-
-                    return;
-                }
-
-                WheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
-                this.PlayerState = pState.Jumping;
-                _canJump = false;
-            }
-                //  Second jump (steam jump)
-            else if (_dJumpEnabled && _canDoubleJump)
-            {
-                force *= _jumpForce;
-
-                // Apply 2 forces. Up and then directiona;
-                if (Math.Abs(Input.GP_LeftThumbstick.X) >= 0.2)
-                {
-                    Vector2 direction = new Vector2(Input.GP_LeftThumbstick.X, 0);
-                    direction.Normalize();
-                    direction *= 15.0f;
-
-                    WheelBody.ApplyLinearImpulse(direction);
-                }
-
-                WheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
-                _canDoubleJump = false;
-                this.PlayerState = pState.Jumping;
-            }
-        }
-
-        #endregion
-
-        #region Handle Running and Idling
-
-        void HandleMoving(GameTime gameTime)
-        {
-            if (WheelJoint.MotorSpeed == 0)
-                this.PlayerState = pState.Grounded;
-            else
-                this.PlayerState = pState.Running;
-
-        }
-        #endregion
-
-        #region Handle Death
-        /// <summary>
-        /// Contains changes to the character to handle the death
-        /// </summary>
-        private void HandleDeath()
-        {
-            this.PlayerState = pState.Dead;
-            this.Body.SleepingAllowed = true;
-            WheelBody.Friction = 1f;
-
-            WheelJoint.MotorSpeed = 0f;
-        }
-        #endregion
-
-        #region Handle Climbing
-        private void HandleClimbing(GameTime gameTime)
-        {
-            Vector2 direction = Vector2.Zero;
-
-            if (Input.isGamePad)
-            {
-                //  Using a % mod on movement speed fixes a separation issue with 
-                //  ladders where separation should disconnect player doesn't.
-                if (Input.GP_LeftThumbstick.Y <= -0.25f)
-                {
-                    ToggleBodies(true);
-
-                    direction = (GameplayScreen.World.Gravity / 6f);
-                }
-                else if (Input.GP_LeftThumbstick.Y >= 0.25f)
-                {
-                    ToggleBodies(true);
-
-                    direction = -(GameplayScreen.World.Gravity / 6f);
-                }
-                else
-                    ToggleBodies(false);
-            } 
-            else 
-            {
-                if (Input.W)
-                {
-                    ToggleBodies(true);
-
-                    direction = -(GameplayScreen.World.Gravity / 6f);
-                }
-                else
-                if (Input.S)
-                {
-                    ToggleBodies(true);
-
-                    direction = (GameplayScreen.World.Gravity / 6f);
-                }
-                else 
-                    ToggleBodies(false);
-            }
-
-            if (WheelJoint.MotorSpeed != 0.0f) WheelJoint.MotorSpeed = 0.0f;
-                this.WheelBody.LinearVelocity = direction;
-        }
-        #endregion
-
-        private void HandleSwinging(GameTime gameTime)
-        {
-            mainBody.Rotation = GrabRotation;
-        }
-
-        private void HandleAir(GameTime gameTime)
-        {
-            _airTime += ((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f) * Math.Abs(SpinAssist.ModifyVectorByUp(Vector2.Normalize(this.Body.LinearVelocity)).Y);
-
-            if (PlayerState != pState.Falling)
-            {
-                //  Gives the check a minimum value with 0.3
-                //  whilst also checking a max.
-                if (_airTime >= _maxJumpTime && _airTime > 0.3f)
-                {
-                    this.PlayerState = pState.Falling;
-                    _airTime = 0.0f;
-                }
-            }
-
-            if (Input.LeftCheck())
-            {
-                this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(-_midAirForce, 0)));
-            }
-            else if (Input.RightCheck())
-            {
-                this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(_midAirForce, 0)));
-            }
-        }
-
-        private void HandlePulling(GameTime gameTime)
-        {
-            if (Input.LeftCheck())
-            {
-                this.WheelJoint.MotorSpeed = -_movementSpeed;
-            }
-            else if (Input.RightCheck())
-            {
-                this.WheelJoint.MotorSpeed = _movementSpeed;
-            }
-            else
-            {
-                this.WheelJoint.MotorSpeed = 0.0f;
-            }
-        }
-
-        #endregion
+        
 
         #region Kill Player
         /// <summary>
@@ -629,6 +440,181 @@ namespace GameLibrary.Objects
         public void GrabRope()
         {
             PlayerState = pState.Swinging;
+        }
+
+        #endregion
+
+        #region Handle All Movements
+
+        void HandleJumping(Vector2 Gravity)
+        {
+            Vector2 force = Gravity;
+
+            //  First jump
+            if (CanJump)
+            {
+                force *= _jumpForce;
+
+                if (PlayerState == pState.Climbing)
+                {
+                    if (Input.LeftCheck())
+                    {
+                        force += SpinAssist.ModifyVectorByUp(new Vector2(-150, 0));
+                    }
+                    else if (Input.RightCheck())
+                    {
+                        force += SpinAssist.ModifyVectorByUp(new Vector2(150, 0));
+                    }
+
+                    this.ToggleBodies(true);
+                    this.WheelBody.ApplyLinearImpulse(force);
+                    this.PlayerState = pState.Jumping;
+
+                    return;
+                }
+
+                WheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
+                this.PlayerState = pState.Jumping;
+                _canJump = false;
+            }
+            //  Second jump (steam jump)
+            else if (_dJumpEnabled && _canDoubleJump)
+            {
+                force *= _jumpForce;
+
+                // Apply 2 forces. Up and then directiona;
+                if (Math.Abs(Input.GP_LeftThumbstick.X) >= 0.2)
+                {
+                    Vector2 direction = new Vector2(Input.GP_LeftThumbstick.X, 0);
+                    direction.Normalize();
+                    direction *= 15.0f;
+
+                    WheelBody.ApplyLinearImpulse(direction);
+                }
+
+                WheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
+                _canDoubleJump = false;
+                this.PlayerState = pState.Jumping;
+            }
+        }
+
+        void HandleMoving(GameTime gameTime)
+        {
+            if (WheelJoint.MotorSpeed == 0)
+                this.PlayerState = pState.Grounded;
+            else
+                this.PlayerState = pState.Running;
+
+        }
+
+        void HandleDeath()
+        {
+            this.PlayerState = pState.Dead;
+            this.Body.SleepingAllowed = true;
+            WheelBody.Friction = 1f;
+
+            WheelJoint.MotorSpeed = 0f;
+        }
+
+        void HandleClimbing(GameTime gameTime)
+        {
+            Vector2 direction = Vector2.Zero;
+
+            if (Input.isGamePad)
+            {
+                //  Using a % mod on movement speed fixes a separation issue with 
+                //  ladders where separation should disconnect player doesn't.
+                if (Input.GP_LeftThumbstick.Y <= -0.25f)
+                {
+                    ToggleBodies(true);
+
+                    direction = (GameplayScreen.World.Gravity / 6f);
+                }
+                else if (Input.GP_LeftThumbstick.Y >= 0.25f)
+                {
+                    ToggleBodies(true);
+
+                    direction = -(GameplayScreen.World.Gravity / 6f);
+                }
+                else
+                    ToggleBodies(false);
+            }
+            else
+            {
+                if (Input.W)
+                {
+                    ToggleBodies(true);
+
+                    direction = -(GameplayScreen.World.Gravity / 6f);
+                }
+                else
+                    if (Input.S)
+                    {
+                        ToggleBodies(true);
+
+                        direction = (GameplayScreen.World.Gravity / 6f);
+                    }
+                    else
+                        ToggleBodies(false);
+            }
+
+            if (WheelJoint.MotorSpeed != 0.0f) WheelJoint.MotorSpeed = 0.0f;
+            this.WheelBody.LinearVelocity = direction;
+        }
+
+        void HandleSwinging(GameTime gameTime)
+        {
+            mainBody.Rotation = GrabRotation;
+
+            if (Input.LeftCheck())
+            {
+                this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(-_midAirForce * 1.5f, 0)));
+            }
+            else if (Input.RightCheck())
+            {
+                this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(_midAirForce * 1.5f, 0)));
+            }
+        }
+
+        void HandleAir(GameTime gameTime)
+        {
+            _airTime += ((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f) * Math.Abs(SpinAssist.ModifyVectorByUp(Vector2.Normalize(this.Body.LinearVelocity)).Y);
+
+            if (PlayerState != pState.Falling)
+            {
+                //  Gives the check a minimum value with 0.3
+                //  whilst also checking a max.
+                if (_airTime >= _maxJumpTime && _airTime > 0.3f)
+                {
+                    this.PlayerState = pState.Falling;
+                    _airTime = 0.0f;
+                }
+            }
+
+            if (Input.LeftCheck())
+            {
+                this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(-_midAirForce, 0)));
+            }
+            else if (Input.RightCheck())
+            {
+                this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(_midAirForce, 0)));
+            }
+        }
+
+        void HandlePulling(GameTime gameTime)
+        {
+            if (Input.LeftCheck())
+            {
+                this.WheelJoint.MotorSpeed = -_movementSpeed;
+            }
+            else if (Input.RightCheck())
+            {
+                this.WheelJoint.MotorSpeed = _movementSpeed;
+            }
+            else
+            {
+                this.WheelJoint.MotorSpeed = 0.0f;
+            }
         }
 
         #endregion
