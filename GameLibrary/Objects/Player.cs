@@ -350,15 +350,15 @@ namespace GameLibrary.Objects
                 {
                     if (Input.LeftCheck())
                     {
-                        force *= SpinAssist.ModifyVectorByUp(new Vector2(force.Y * 4f, -_jumpForce));
+                        force += SpinAssist.ModifyVectorByUp(new Vector2(-150, 0));
                     }
                     else if (Input.RightCheck())
                     {
-                        force *= SpinAssist.ModifyVectorByUp(new Vector2(-force.Y * 4f, -_jumpForce));
+                        force += SpinAssist.ModifyVectorByUp(new Vector2(150, 0));
                     }
 
-                    ToggleBodies(true);
-                    WheelBody.ApplyLinearImpulse(force);
+                    this.ToggleBodies(true);
+                    this.WheelBody.ApplyLinearImpulse(force);
                     this.PlayerState = pState.Jumping;
 
                     return;
