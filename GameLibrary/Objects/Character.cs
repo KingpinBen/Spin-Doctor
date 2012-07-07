@@ -352,7 +352,7 @@ namespace GameLibrary.Objects
             CircleShape circle1 = new CircleShape(ConvertUnits.ToSimUnits(28), ConvertUnits.ToSimUnits(charMass));
             this.wheelBody.CreateFixture(circle1);
             this.wheelBody.Restitution = 0.0f;
-            this.wheelBody.Friction = 3.0f;
+            this.wheelBody.Friction = 1.0f;
 
             //  Motor
             this.wheelJoint = new RevoluteJoint(Body, WheelBody, ConvertUnits.ToSimUnits(Vector2.UnitY * MotorPivot), Vector2.Zero);

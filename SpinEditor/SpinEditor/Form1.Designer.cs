@@ -72,6 +72,12 @@ namespace SpinEditor
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.assetSelectDialog3 = new System.Windows.Forms.Button();
+            this.assetSelectDialog2 = new System.Windows.Forms.Button();
+            this.assetLocTextBox3 = new System.Windows.Forms.TextBox();
+            this.assetLocTextBox2 = new System.Windows.Forms.TextBox();
+            this.assetLocTextBox1 = new System.Windows.Forms.TextBox();
+            this.assetSelectDialog1 = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.listBox_Assets0 = new System.Windows.Forms.ListBox();
@@ -80,9 +86,6 @@ namespace SpinEditor
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.listBox_Assets2 = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.ZOOM = new System.Windows.Forms.NumericUpDown();
             this.panel3 = new System.Windows.Forms.Panel();
             this.Align_Relative = new System.Windows.Forms.ComboBox();
             this.BUTTON_ALIGN_10 = new System.Windows.Forms.Button();
@@ -97,6 +100,7 @@ namespace SpinEditor
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
+            this.openAssetFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -104,8 +108,6 @@ namespace SpinEditor
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.panel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ZOOM)).BeginInit();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -479,9 +481,14 @@ namespace SpinEditor
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.assetSelectDialog3);
+            this.panel1.Controls.Add(this.assetSelectDialog2);
+            this.panel1.Controls.Add(this.assetLocTextBox3);
+            this.panel1.Controls.Add(this.assetLocTextBox2);
+            this.panel1.Controls.Add(this.assetLocTextBox1);
+            this.panel1.Controls.Add(this.assetSelectDialog1);
             this.panel1.Controls.Add(this.tabControl1);
             this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.panel3);
             this.panel1.Controls.Add(this.listBox_Classes);
             this.panel1.Controls.Add(this.propertyGrid1);
@@ -493,6 +500,60 @@ namespace SpinEditor
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(452, 651);
             this.panel1.TabIndex = 12;
+            // 
+            // assetSelectDialog3
+            // 
+            this.assetSelectDialog3.Location = new System.Drawing.Point(358, 593);
+            this.assetSelectDialog3.Name = "assetSelectDialog3";
+            this.assetSelectDialog3.Size = new System.Drawing.Size(86, 23);
+            this.assetSelectDialog3.TabIndex = 34;
+            this.assetSelectDialog3.Text = "Select Texture";
+            this.assetSelectDialog3.UseVisualStyleBackColor = true;
+            this.assetSelectDialog3.Click += new System.EventHandler(this.assetSelectDialog3_Click);
+            // 
+            // assetSelectDialog2
+            // 
+            this.assetSelectDialog2.Location = new System.Drawing.Point(356, 564);
+            this.assetSelectDialog2.Name = "assetSelectDialog2";
+            this.assetSelectDialog2.Size = new System.Drawing.Size(86, 23);
+            this.assetSelectDialog2.TabIndex = 33;
+            this.assetSelectDialog2.Text = "Select Texture";
+            this.assetSelectDialog2.UseVisualStyleBackColor = true;
+            this.assetSelectDialog2.Click += new System.EventHandler(this.assetSelectDialog2_Click);
+            // 
+            // assetLocTextBox3
+            // 
+            this.assetLocTextBox3.Location = new System.Drawing.Point(227, 591);
+            this.assetLocTextBox3.Name = "assetLocTextBox3";
+            this.assetLocTextBox3.ReadOnly = true;
+            this.assetLocTextBox3.Size = new System.Drawing.Size(122, 20);
+            this.assetLocTextBox3.TabIndex = 32;
+            // 
+            // assetLocTextBox2
+            // 
+            this.assetLocTextBox2.Location = new System.Drawing.Point(227, 565);
+            this.assetLocTextBox2.Name = "assetLocTextBox2";
+            this.assetLocTextBox2.ReadOnly = true;
+            this.assetLocTextBox2.Size = new System.Drawing.Size(122, 20);
+            this.assetLocTextBox2.TabIndex = 31;
+            // 
+            // assetLocTextBox1
+            // 
+            this.assetLocTextBox1.Location = new System.Drawing.Point(226, 538);
+            this.assetLocTextBox1.Name = "assetLocTextBox1";
+            this.assetLocTextBox1.ReadOnly = true;
+            this.assetLocTextBox1.Size = new System.Drawing.Size(123, 20);
+            this.assetLocTextBox1.TabIndex = 30;
+            // 
+            // assetSelectDialog1
+            // 
+            this.assetSelectDialog1.Location = new System.Drawing.Point(356, 535);
+            this.assetSelectDialog1.Name = "assetSelectDialog1";
+            this.assetSelectDialog1.Size = new System.Drawing.Size(86, 23);
+            this.assetSelectDialog1.TabIndex = 29;
+            this.assetSelectDialog1.Text = "Select Texture";
+            this.assetSelectDialog1.UseVisualStyleBackColor = true;
+            this.assetSelectDialog1.Click += new System.EventHandler(this.assetSelectDialog1_Click);
             // 
             // tabControl1
             // 
@@ -573,55 +634,6 @@ namespace SpinEditor
             this.label5.Size = new System.Drawing.Size(91, 13);
             this.label5.TabIndex = 25;
             this.label5.Text = "Align Relative To:";
-            // 
-            // panel4
-            // 
-            this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel4.Controls.Add(this.label3);
-            this.panel4.Controls.Add(this.ZOOM);
-            this.panel4.Location = new System.Drawing.Point(226, 495);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(214, 33);
-            this.panel4.TabIndex = 28;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(18, 7);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(134, 13);
-            this.label3.TabIndex = 25;
-            this.label3.Text = "Camera Zoom Percentage:";
-            // 
-            // ZOOM
-            // 
-            this.ZOOM.DecimalPlaces = 1;
-            this.ZOOM.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            65536});
-            this.ZOOM.Location = new System.Drawing.Point(157, 5);
-            this.ZOOM.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.ZOOM.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ZOOM.Name = "ZOOM";
-            this.ZOOM.Size = new System.Drawing.Size(54, 20);
-            this.ZOOM.TabIndex = 28;
-            this.ZOOM.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.ZOOM.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ZOOM.ValueChanged += new System.EventHandler(this.ZOOM_ValueChanged);
             // 
             // panel3
             // 
@@ -778,6 +790,10 @@ namespace SpinEditor
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
             // 
+            // openAssetFileDialog1
+            // 
+            this.openAssetFileDialog1.FileName = "Select Asset";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -801,9 +817,6 @@ namespace SpinEditor
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ZOOM)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -854,10 +867,7 @@ namespace SpinEditor
         private Button BUTTON_ALIGN_4;
         private Button BUTTON_ALIGN_9;
         private Button BUTTON_ALIGN_5;
-        private NumericUpDown ZOOM;
         public PropertyGrid propertyGrid1;
-        private Panel panel4;
-        private Label label3;
         private TabControl tabControl1;
         private TabPage tabPage2;
         private ListBox listBox_Assets1;
@@ -880,6 +890,13 @@ namespace SpinEditor
         private TabPage tabPage1;
         private ListBox listBox_Assets0;
         private ToolStripMenuItem ViewMenuHideSpawn;
+        private Button assetSelectDialog1;
+        private OpenFileDialog openAssetFileDialog1;
+        private TextBox assetLocTextBox1;
+        private TextBox assetLocTextBox3;
+        private TextBox assetLocTextBox2;
+        private Button assetSelectDialog3;
+        private Button assetSelectDialog2;
 
 
     }

@@ -322,8 +322,6 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        
-
         #region Kill Player
         /// <summary>
         /// Allows global usage for objects to cause the death of the player.
@@ -411,8 +409,8 @@ namespace GameLibrary.Objects
         {
             this.WheelBody.OnCollision += Body_OnCollision;
             this.WheelBody.OnSeparation += Body_OnSeparation;
-            this.WheelBody.AngularDamping = 10.0f;
-            this.WheelBody.LinearDamping = 0.7f;
+            //this.WheelBody.AngularDamping = 10.0f;
+            //this.WheelBody.LinearDamping = 0.7f;
             this.WheelBody.CollisionCategories = Category.Cat12;
             this.mainBody.CollisionCategories = Category.Cat10;
             

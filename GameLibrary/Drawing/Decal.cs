@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.ComponentModel;
+using GameLibrary.Assists;
+using FarseerPhysics.Common;
 #endregion
 
 namespace GameLibrary.Drawing
@@ -122,6 +124,7 @@ namespace GameLibrary.Drawing
             set
             {
                 _rotation = MathHelper.ToRadians(value);
+                UpdateCorners();
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
@@ -167,7 +170,7 @@ namespace GameLibrary.Drawing
             this._scale = 1.0f;
             this._rotation = 0.0f;
             this._decalAsset = assetLoc;
-            this._zLayer = 0.4f;
+            this._zLayer = 0.8f;
             this._flip = SpriteEffects.None;
             this._tint = Color.White * 1.0f;
         }
@@ -189,7 +192,7 @@ namespace GameLibrary.Drawing
 
         public void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._decalTexture, this._position, null, this._tint, this._rotation, this._origin, 
+            sb.Draw(this._decalTexture, this._position, new Rectangle(0,0,(int)this._width, (int)this._height), this._tint, this._rotation, new Vector2(_width * 0.5f, _height * 0.5f), 
                 this._scale, this._flip, this._zLayer);
         }
 
@@ -206,5 +209,10 @@ namespace GameLibrary.Drawing
         }
 
         #endregion
+
+        private void UpdateCorners()
+        {
+            
+        }
     }
 }

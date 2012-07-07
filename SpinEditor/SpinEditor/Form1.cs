@@ -45,7 +45,7 @@ namespace SpinEditor
         public Form1()
         {
             InitializeComponent();
-
+            
             //  Disable fullscreen as it messes up the grid.
             this.MaximizeBox = false;
             lst_ObjectsUnderCursor = new List<ObjectIndex>();
@@ -66,8 +66,6 @@ namespace SpinEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ZOOM.Value = (decimal)(xnA_RenderControl1.Camera.Zoom * 100);
-
             //Refresh_XNB_Asset_List();
 
             listBox_Classes.SelectedIndex = 0;
@@ -75,6 +73,8 @@ namespace SpinEditor
             listBox_Assets1.SelectedItem = "icon";
             listBox_Assets2.SelectedItem = "icon";
             Align_Relative.SelectedItem = "Last Selected";
+
+            Fonts.Load(xnA_RenderControl1.contentMan);
 
             NewFile();
 
@@ -84,6 +84,8 @@ namespace SpinEditor
             {
                 xnA_RenderControl1.bDoNotDraw = false;
             }
+
+
         }
 
         #endregion
@@ -103,12 +105,16 @@ namespace SpinEditor
                 string texloc1 = "";
                 string texloc2 = "";
 
-                if (listBox_Assets0.SelectedIndex >= 0)
-                    texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
-                if (listBox_Assets1.SelectedIndex >= 0)
-                    texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets1.SelectedIndex].ToString();
-                if (listBox_Assets2.SelectedIndex >= 0)
-                    texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets2.SelectedIndex].ToString();
+                //if (listBox_Assets0.SelectedIndex >= 0)
+                //    texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
+                //if (listBox_Assets1.SelectedIndex >= 0)
+                //    texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets1.SelectedIndex].ToString();
+                //if (listBox_Assets2.SelectedIndex >= 0)
+                //    texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets2.SelectedIndex].ToString();
+
+                    texloc0 += assetLocTextBox1.Text.ToString();
+                    texloc1 = assetLocTextBox2.Text.ToString();
+                    texloc2 = assetLocTextBox3.Text.ToString();
 
                 #region Object Types
                 switch (Type)
@@ -550,7 +556,16 @@ namespace SpinEditor
 
                         STATIC_EDITOR_MODE.levelInstance = IntermediateSerializer.Deserialize<Level>(input, null);
 
-                        xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
+                        if (STATIC_EDITOR_MODE.levelInstance.RoomType == RoomTypeEnum.Rotating)
+                        {
+                            xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
+                        }
+                        else
+                        {
+                            xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(FileLoc.BlankPixel());
+                        }
+
+                        
                         xnA_RenderControl1.levelDimensions = STATIC_EDITOR_MODE.levelInstance.RoomDimensions;
 
                         for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i++)
@@ -2431,10 +2446,6 @@ namespace SpinEditor
         }
         #endregion
 
-        private void ZOOM_ValueChanged(object sender, EventArgs e)
-        {
-            xnA_RenderControl1.Camera.Zoom = (float)ZOOM.Value * 0.01f;
-        }
         #endregion
 
         #region Toolstrip
@@ -2871,6 +2882,89 @@ namespace SpinEditor
         private void xnA_RenderControl1_Click(object sender, EventArgs e)
         {
             this.xnA_RenderControl1.Focus();
+        }
+        #endregion
+
+        #region Texture Selections
+        private void assetSelectDialog1_Click(object sender, EventArgs e)
+        {
+            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string relativePath = Path.Combine(assemblyLocation, "../../../../Content");
+            string contentPath = Path.GetFullPath(relativePath);
+
+            openAssetFileDialog1.InitialDirectory = contentPath;
+            openAssetFileDialog1.Title = "Select Texture Asset";
+            openAssetFileDialog1.Filter = "PNG Files (*.png)|*.png|" +
+                                     "JPEG Files (*.jpg)|*.jpg";
+
+
+            if (openAssetFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string location = openAssetFileDialog1.FileName;
+                string newloc = "";
+
+                for (int i = contentPath.Length + 1; i < location.Length - 4; i++)
+                {
+                    char newchar = location[i];
+                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\') { }
+                    else newloc += newchar;
+                }
+                assetLocTextBox1.Text = newloc;
+            }
+        }
+
+        private void assetSelectDialog2_Click(object sender, EventArgs e)
+        {
+            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string relativePath = Path.Combine(assemblyLocation, "../../../../Content");
+            string contentPath = relativePath;// Path.GetFullPath(relativePath);
+
+            openAssetFileDialog1.InitialDirectory = contentPath;
+            openAssetFileDialog1.Title = "Select Texture Asset";
+            openAssetFileDialog1.Filter = "PNG Files (*.png)|*.png|" +
+                                     "JPEG Files (*.jpg)|*.jpg";
+
+
+            if (openAssetFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string location = openAssetFileDialog1.FileName;
+                string newloc = "";
+
+                for (int i = contentPath.Length + 1; i < location.Length - 4; i++)
+                {
+                    char newchar = location[i];
+                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\') { }
+                    else newloc += newchar;
+                }
+                assetLocTextBox2.Text = newloc;
+            }
+        }
+
+        private void assetSelectDialog3_Click(object sender, EventArgs e)
+        {
+            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string relativePath = Path.Combine(assemblyLocation, "../../../../Content");
+            string contentPath = Path.GetFullPath(relativePath);
+
+            openAssetFileDialog1.InitialDirectory = contentPath;
+            openAssetFileDialog1.Title = "Select Texture Asset";
+            openAssetFileDialog1.Filter = "PNG Files (*.png)|*.png|" +
+                                     "JPEG Files (*.jpg)|*.jpg";
+
+
+            if (openAssetFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string location = openAssetFileDialog1.FileName;
+                string newloc = "";
+
+                for (int i = contentPath.Length + 1; i < location.Length - 4; i++)
+                {
+                    char newchar = location[i];
+                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\') { }
+                    else newloc += newchar;
+                }
+                assetLocTextBox3.Text = newloc;
+            }
         }
         #endregion
     }

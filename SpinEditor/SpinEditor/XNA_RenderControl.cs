@@ -218,13 +218,9 @@ namespace SpinEditor
                                         float height = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Height * STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Scale;
 
                                         spriteBatch.Draw(debugOverlay,
-                                            new Rectangle(
-                                                (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.X - width * 0.5f),
-                                                (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position.Y - height * 0.5f),
-                                                (int)(width),
-                                                (int)(height)),
+                                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Position,
                                             new Rectangle(0, 0, (int)width, (int)height),
-                                            Color.Green * 0.3f, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
+                                            Color.Green * 0.3f, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].Rotation, new Vector2(width * 0.5f, height * 0.5f), 1.0f, SpriteEffects.None, 0.0f);
                                     }
                                 }
                             }
