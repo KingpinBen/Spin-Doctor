@@ -197,7 +197,7 @@ namespace GameLibrary.Objects
             {
                 Player.Instance.GrabRotation = _pathBodies[_grabbedIndex].Rotation;
 
-                if (Input.Jump())
+                if (Input.Jump() || Player.Instance.PlayerState == pState.Dead)
                 {
                     GameplayScreen.World.RemoveJoint(_ropeJoint);
                     GameplayScreen.World.RemoveJoint(_ropePlayerJoint);

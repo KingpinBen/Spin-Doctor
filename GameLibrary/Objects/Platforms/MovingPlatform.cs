@@ -144,7 +144,7 @@ namespace GameLibrary.Objects
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this.Width), ConvertUnits.ToSimUnits(this.Height), ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Dynamic;
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
-            this.Body.Friction = 1.0f;
+            this.Body.Friction = 3.0f;
             this.SetUpJoint(world);
 #endif
         }
