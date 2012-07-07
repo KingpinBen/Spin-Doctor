@@ -290,7 +290,7 @@ namespace GameLibrary.Objects
             Texture2D climbing = _content.Load<Texture2D>(spriteSheetLocation + "Ladder-Sheet");
             Texture2D death = _content.Load<Texture2D>(spriteSheetLocation + "DeathSpriteSheet");
 
-            CurrentAnimationName = "Run";
+            currentAnimation = "Idle";
             Animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));
             Animations.Add("Idle", new FrameAnimation(idle, 20, new Point(242, 454), 10.0f, new Point(5, 4), false, 16));
             Animations.Add("Falling", new FrameAnimation(falling, 20, new Point(275, 472), 17.0f, new Point(5, 4), false));

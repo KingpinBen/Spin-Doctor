@@ -103,9 +103,9 @@ namespace GameLibrary.Drawing
         {
             //Adds the frames
             this.frames = new Rectangle[numOfFrames];
-            this.frameOrigin = new Vector2(frameDims.X / 2, (frameDims.Y - yOffset) / 2);
+            this.frameOrigin = new Vector2(frameDims.X * 0.5f, (frameDims.Y - yOffset) * 0.5f);
             this._texture = asset;
-            this.currentFrame = frames.Length;
+            this.currentFrame = frames.Length - 1;
             this.PlayOnce = playOnce;
 
             for (int i = 0; i < frames.Length; i++)
