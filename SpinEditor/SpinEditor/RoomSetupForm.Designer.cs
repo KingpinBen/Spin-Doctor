@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RoomSetupForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.drawWallsCheckBox1 = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
             this.backgroundTextBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -50,6 +51,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.drawWallsCheckBox1);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.backgroundTextBox);
             this.groupBox1.Controls.Add(this.label6);
@@ -64,10 +66,20 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(5, 32);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(183, 202);
+            this.groupBox1.Size = new System.Drawing.Size(183, 232);
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "New Room";
+            // 
+            // drawWallsCheckBox1
+            // 
+            this.drawWallsCheckBox1.AutoSize = true;
+            this.drawWallsCheckBox1.Location = new System.Drawing.Point(9, 173);
+            this.drawWallsCheckBox1.Name = "drawWallsCheckBox1";
+            this.drawWallsCheckBox1.Size = new System.Drawing.Size(87, 17);
+            this.drawWallsCheckBox1.TabIndex = 16;
+            this.drawWallsCheckBox1.Text = "Insert Walls?";
+            this.drawWallsCheckBox1.UseVisualStyleBackColor = true;
             // 
             // label7
             // 
@@ -189,9 +201,9 @@
             // BUTTON_CREATE_ROOM
             // 
             this.BUTTON_CREATE_ROOM.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.BUTTON_CREATE_ROOM.Location = new System.Drawing.Point(49, 173);
+            this.BUTTON_CREATE_ROOM.Location = new System.Drawing.Point(9, 196);
             this.BUTTON_CREATE_ROOM.Name = "BUTTON_CREATE_ROOM";
-            this.BUTTON_CREATE_ROOM.Size = new System.Drawing.Size(85, 23);
+            this.BUTTON_CREATE_ROOM.Size = new System.Drawing.Size(162, 23);
             this.BUTTON_CREATE_ROOM.TabIndex = 8;
             this.BUTTON_CREATE_ROOM.Text = "Create Room";
             this.BUTTON_CREATE_ROOM.UseVisualStyleBackColor = true;
@@ -217,7 +229,7 @@
             // BUTTON_LOAD_ROOM
             // 
             this.BUTTON_LOAD_ROOM.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this.BUTTON_LOAD_ROOM.Location = new System.Drawing.Point(54, 4);
+            this.BUTTON_LOAD_ROOM.Location = new System.Drawing.Point(5, 3);
             this.BUTTON_LOAD_ROOM.Name = "BUTTON_LOAD_ROOM";
             this.BUTTON_LOAD_ROOM.Size = new System.Drawing.Size(85, 23);
             this.BUTTON_LOAD_ROOM.TabIndex = 12;
@@ -228,7 +240,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(193, 238);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(193, 268);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.BUTTON_LOAD_ROOM);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -259,5 +272,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button BUTTON_LOAD_ROOM;
+        public System.Windows.Forms.CheckBox drawWallsCheckBox1;
     }
 }

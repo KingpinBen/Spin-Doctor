@@ -84,8 +84,6 @@ namespace SpinEditor
             {
                 xnA_RenderControl1.bDoNotDraw = false;
             }
-
-
         }
 
         #endregion
@@ -474,6 +472,20 @@ namespace SpinEditor
 
         #endregion
 
+        #region RenderControl Gain Focus
+        /// <summary>
+        /// We need the render control to regain focus after the screen has been selected otherwise it sticks to the last object.
+        /// 
+        /// Having it on mouseover would be too frustrating.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void xnA_RenderControl1_Click(object sender, EventArgs e)
+        {
+            this.xnA_RenderControl1.Focus();
+        }
+        #endregion
+
         #endregion
 
         #region Private Methods
@@ -522,10 +534,51 @@ namespace SpinEditor
                                     STATIC_EDITOR_MODE.levelInstance.RoomType = RoomForm.roomType;
 
                                     //  Load the background texture and attach it to the level.
-                                    STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
-                                    xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
+                                    if (RoomForm.roomType == RoomTypeEnum.Rotating)
+                                    {
+                                        STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
+                                        xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
+                                    }
 
-                                    Update_undoArray();
+                                    if (RoomForm.drawWallsCheckBox1.Checked)
+                                    {
+                                        StaticObject topWall = new StaticObject();
+                                        StaticObject bottomWall = new StaticObject(); 
+                                        StaticObject leftWall = new StaticObject();
+                                        StaticObject rightWall = new StaticObject();
+
+                                        topWall.Init(Vector2.Zero, "Assets/Images/Textures/Environment/platform_4");
+                                        bottomWall.Init(Vector2.Zero, "Assets/Images/Textures/Environment/platform_4");
+                                        leftWall.Init(Vector2.Zero, "Assets/Images/Textures/Environment/platform_4");
+                                        rightWall.Init(Vector2.Zero, "Assets/Images/Textures/Environment/platform_4");
+
+                                        topWall.Load(xnA_RenderControl1.contentMan, new World(Vector2.Zero));
+                                        bottomWall.Load(xnA_RenderControl1.contentMan, new World(Vector2.Zero));
+                                        leftWall.Load(xnA_RenderControl1.contentMan, new World(Vector2.Zero));
+                                        rightWall.Load(xnA_RenderControl1.contentMan, new World(Vector2.Zero));
+
+                                        float textureWidth = topWall.Texture.Width;
+                                        float textureHeight = topWall.Texture.Height;
+
+                                        topWall.Position = new Vector2(0, -alteredRoomSize.Y * 0.5f) - new Vector2(0,textureHeight * 0.5f - 4);
+                                        bottomWall.Position = new Vector2(0, alteredRoomSize.Y * 0.5f) + new Vector2(0, textureHeight * 0.5f - 4);
+                                        leftWall.Position = new Vector2(-alteredRoomSize.X * 0.5f, 0) - new Vector2(textureHeight * 0.5f, 0);
+                                        rightWall.Position = new Vector2(alteredRoomSize.X * 0.5f, 0) + new Vector2(textureHeight * 0.5f, 0);
+
+                                        bottomWall.Orientation = GameLibrary.Objects.Orientation.Down;
+                                        leftWall.Orientation = GameLibrary.Objects.Orientation.Left;
+                                        rightWall.Orientation = GameLibrary.Objects.Orientation.Right;
+
+                                        topWall.Width = bottomWall.Width = alteredRoomSize.X;
+                                        leftWall.Height = rightWall.Height = alteredRoomSize.Y + (leftWall.Texture.Height * 2) - 8;
+
+                                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(topWall);
+                                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(bottomWall);
+                                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(leftWall);
+                                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rightWall);
+                                    }
+
+                                    //Update_undoArray();
                                 }
                                 break;
                             default:
@@ -581,7 +634,7 @@ namespace SpinEditor
                         xnA_RenderControl1.bDoNotDraw = false;
 
                         Update_undoArray();
-
+                        
                         MessageBox.Show("Level Loaded!", "Level loaded info box", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return true;
                     }
@@ -2536,8 +2589,6 @@ namespace SpinEditor
 
         #endregion
 
-        #endregion
-
         #region User Input Methods
 
         void xnA_RenderControl1_MouseMove(object sender, MouseEventArgs e)
@@ -2871,28 +2922,11 @@ namespace SpinEditor
 
         #endregion
 
-        #region RenderControl Gain Focus
-        /// <summary>
-        /// We need the render control to regain focus after the screen has been selected otherwise it sticks to the last object.
-        /// 
-        /// Having it on mouseover would be too frustrating.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void xnA_RenderControl1_Click(object sender, EventArgs e)
-        {
-            this.xnA_RenderControl1.Focus();
-        }
         #endregion
 
         #region Texture Selections
         private void assetSelectDialog1_Click(object sender, EventArgs e)
         {
-            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string relativePath = Path.Combine(assemblyLocation, "../../../../Content");
-            string contentPath = Path.GetFullPath(relativePath);
-
-            openAssetFileDialog1.InitialDirectory = contentPath;
             openAssetFileDialog1.Title = "Select Texture Asset";
             openAssetFileDialog1.Filter = "PNG Files (*.png)|*.png|" +
                                      "JPEG Files (*.jpg)|*.jpg";
@@ -2901,13 +2935,18 @@ namespace SpinEditor
             if (openAssetFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 string location = openAssetFileDialog1.FileName;
-                string newloc = "";
+                string removeAfter = "ALL ASSETS\\";
+                int startFrom = location.IndexOf(removeAfter);
+                string newloc = String.Empty;
 
-                for (int i = contentPath.Length + 1; i < location.Length - 4; i++)
+                for (int i = startFrom + removeAfter.Length; i < location.Length - 4; i++)
                 {
                     char newchar = location[i];
-                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\') { }
-                    else newloc += newchar;
+                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\') 
+                    {
+                    }
+                    else 
+                        newloc += newchar;
                 }
                 assetLocTextBox1.Text = newloc;
             }
@@ -2915,11 +2954,6 @@ namespace SpinEditor
 
         private void assetSelectDialog2_Click(object sender, EventArgs e)
         {
-            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string relativePath = Path.Combine(assemblyLocation, "../../../../Content");
-            string contentPath = relativePath;// Path.GetFullPath(relativePath);
-
-            openAssetFileDialog1.InitialDirectory = contentPath;
             openAssetFileDialog1.Title = "Select Texture Asset";
             openAssetFileDialog1.Filter = "PNG Files (*.png)|*.png|" +
                                      "JPEG Files (*.jpg)|*.jpg";
@@ -2928,13 +2962,18 @@ namespace SpinEditor
             if (openAssetFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 string location = openAssetFileDialog1.FileName;
-                string newloc = "";
+                string removeAfter = "ALL ASSETS\\";
+                int startFrom = location.IndexOf(removeAfter);
+                string newloc = String.Empty;
 
-                for (int i = contentPath.Length + 1; i < location.Length - 4; i++)
+                for (int i = startFrom + removeAfter.Length; i < location.Length - 4; i++)
                 {
                     char newchar = location[i];
-                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\') { }
-                    else newloc += newchar;
+                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\')
+                    {
+                    }
+                    else
+                        newloc += newchar;
                 }
                 assetLocTextBox2.Text = newloc;
             }
@@ -2942,11 +2981,6 @@ namespace SpinEditor
 
         private void assetSelectDialog3_Click(object sender, EventArgs e)
         {
-            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string relativePath = Path.Combine(assemblyLocation, "../../../../Content");
-            string contentPath = Path.GetFullPath(relativePath);
-
-            openAssetFileDialog1.InitialDirectory = contentPath;
             openAssetFileDialog1.Title = "Select Texture Asset";
             openAssetFileDialog1.Filter = "PNG Files (*.png)|*.png|" +
                                      "JPEG Files (*.jpg)|*.jpg";
@@ -2955,13 +2989,18 @@ namespace SpinEditor
             if (openAssetFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 string location = openAssetFileDialog1.FileName;
-                string newloc = "";
+                string removeAfter = "ALL ASSETS\\";
+                int startFrom = location.IndexOf(removeAfter);
+                string newloc = String.Empty;
 
-                for (int i = contentPath.Length + 1; i < location.Length - 4; i++)
+                for (int i = startFrom + removeAfter.Length; i < location.Length - 4; i++)
                 {
                     char newchar = location[i];
-                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\') { }
-                    else newloc += newchar;
+                    if (newchar == '\\' && newloc[newloc.Length - 1] == '\\')
+                    {
+                    }
+                    else
+                        newloc += newchar;
                 }
                 assetLocTextBox3.Text = newloc;
             }

@@ -24,6 +24,7 @@ namespace SpinEditor
             InitializeComponent();
             typeComboBox.SelectedIndex = 0;
             themeComboBox.SelectedIndex = 0;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
         }
 
         private void typeComboBox_SelectedIndexChanged(object sender, EventArgs e)

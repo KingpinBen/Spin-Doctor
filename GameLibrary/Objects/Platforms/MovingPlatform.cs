@@ -39,6 +39,7 @@ namespace GameLibrary.Objects
 {
     public class MovingPlatform : DynamicObject
     {
+        #region Properties
 #if EDITOR
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public override Vector2 EndPosition
@@ -89,6 +90,7 @@ namespace GameLibrary.Objects
 #else
 
 #endif
+        #endregion
 
         public MovingPlatform()
             : base()
