@@ -59,7 +59,7 @@ namespace GameLibrary.Objects
         {
 #if EDITOR
 #else
-            MessageOverlay newOverlay = new MessageOverlay(MessageType.FullScreen, 1);
+            MessageOverlay newOverlay = new MessageOverlay(MessageType.FullScreen, 1, Screen_Manager.GraphicsDevice);
             newOverlay.Load();
 
             Screen_Manager.AddScreen(newOverlay);

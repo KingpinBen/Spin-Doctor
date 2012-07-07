@@ -57,8 +57,8 @@ namespace GameLibrary.Screens.Messages
 
         private FullscreenPicture fsp;
 
-        public MessageOverlay(MessageType type, int stringID) 
-            : base("New Message")
+        public MessageOverlay(MessageType type, int stringID, GraphicsDevice graphics) 
+            : base("New Message", graphics)
         {
             this.Type = type;
             this.StringID = stringID;

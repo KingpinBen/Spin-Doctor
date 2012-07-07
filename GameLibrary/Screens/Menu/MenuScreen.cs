@@ -87,13 +87,13 @@ namespace GameLibrary.Screens.Menu
 
         #region Constructor
 
-        public MenuScreen(string name)
-            : base(name)
+        public MenuScreen(string name, GraphicsDevice graphics)
+            : base(name, graphics)
         {
             _selectionOption = Point.Zero;
         }
-        public MenuScreen()
-            : base("PauseMenu")
+        public MenuScreen(GraphicsDevice graphics)
+            : base("PauseMenu", graphics)
         {
             _selectionOption = Point.Zero;
         }

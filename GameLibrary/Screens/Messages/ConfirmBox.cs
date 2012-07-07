@@ -24,8 +24,8 @@ namespace GameLibrary.Screens.Messages
         #endregion
 
         #region Constructor
-        public ConfirmBox()
-            : base("ConfirmBox")
+        public ConfirmBox(GraphicsDevice graphics)
+            : base("ConfirmBox", graphics)
         {
             this.isPopUp = true;
             this._menuArrayCount = new Point(2, 1);

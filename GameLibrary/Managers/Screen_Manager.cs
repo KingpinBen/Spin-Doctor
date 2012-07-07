@@ -19,7 +19,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 #region Using Statements
 using System;
@@ -134,8 +134,6 @@ namespace GameLibrary.Managers
             //  case, a blank pixel.
             _textures = new Texture2D[1];
             _textures[0] = Content.Load<Texture2D>(FileLoc.BlankPixel());
-
-
         }
 
         public override void Update(GameTime gameTime)
@@ -156,8 +154,8 @@ namespace GameLibrary.Managers
             DevDisplay.Update(gameTime);
 #endif
             #endregion
-
-            ScreenList[ScreenList.Count - 1].Update(gameTime);
+            if (ScreenList.Count > 0)
+                ScreenList[ScreenList.Count - 1].Update(gameTime);
 
             #region Transition Handling
             //  We only want to do all this if the screen state doesn't equal Show.
@@ -220,10 +218,13 @@ namespace GameLibrary.Managers
             stopWatch.Start();
 #endif
 
-            for (int i = 0; i < ScreenList.Count; i++)
-            {
-                ScreenList[i].Draw(_spriteBatch);
-            }
+            //for (int i = 0; i < ScreenList.Count; i++)
+            //{
+            //    ScreenList[i].Draw(_spriteBatch);
+            //}
+
+            if (ScreenList.Count > 0)
+                ScreenList[ScreenList.Count - 1].Draw(_spriteBatch);
 
             if (_currentState != State.Show)
             {
@@ -260,7 +261,7 @@ namespace GameLibrary.Managers
             _loadingContent = true;
             _currentState = State.FadeOut;
 
-            LoadingScreen loading = new LoadingScreen();
+            LoadingScreen loading = new LoadingScreen(GraphicsDevice);
             loading.Load();
             _screensToAdd.Add(loading);
             GameplayScreen.LevelID = id;

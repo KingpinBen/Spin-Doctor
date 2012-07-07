@@ -23,8 +23,8 @@ namespace GameLibrary.Screens
 #endif
         #endregion
 
-        public IntroScreen()
-            : base("IntroScreen")
+        public IntroScreen(GraphicsDevice graphics)
+            : base("IntroScreen", graphics)
         {
 
         }

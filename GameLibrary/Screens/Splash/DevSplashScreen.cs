@@ -43,8 +43,8 @@ namespace GameLibrary.Screens
 
         protected ContentManager content;
 
-        public DevSplashScreen(string tex)
-            : base("DeveloperSplashScreen")
+        public DevSplashScreen(string tex, GraphicsDevice graphics)
+            : base("DeveloperSplashScreen", graphics)
         {
             this._textureLocation = tex;
             _position = new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f;

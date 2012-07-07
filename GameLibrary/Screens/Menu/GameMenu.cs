@@ -21,14 +21,14 @@ namespace GameLibrary.Screens.Menu
             get
             {
                 //  Middle of the screen.
-                return new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f;
+                return new Vector2(this._graphicsDevice.Viewport.Width, this._graphicsDevice.Viewport.Height) * 0.5f;
             }
         }
 
         #endregion
 
-        public GameMenu()
-            : base()
+        public GameMenu(GraphicsDevice graphics)
+            : base(graphics)
         {
             _menuArrayCount = new Point(1, 3);
 
@@ -67,7 +67,7 @@ namespace GameLibrary.Screens.Menu
             sb.Begin();
 
             base.Draw(sb);
-            sb.Draw(_headerTexture, (new Vector2(Screen_Manager.GraphicsDevice.Viewport.Width, Screen_Manager.GraphicsDevice.Viewport.Height) * 0.5f) + new Vector2(0, -_headerTexture.Height / 3),
+            sb.Draw(_headerTexture, (new Vector2(this._graphicsDevice.Viewport.Width, this._graphicsDevice.Viewport.Height) * 0.5f) + new Vector2(0, -_headerTexture.Height / 3),
                 null, Color.White, 0f, new Vector2(_headerTexture.Width / 2, _headerTexture.Height / 2),
                 0.6f, SpriteEffects.None, 0f);
 
@@ -90,7 +90,7 @@ namespace GameLibrary.Screens.Menu
                     }
                 case optionType.Opt2:
                     {
-                        ConfirmBox newBox = new ConfirmBox();
+                        ConfirmBox newBox = new ConfirmBox(this._graphicsDevice);
                         Screen_Manager.AddScreen(newBox);
                         break;
                     }

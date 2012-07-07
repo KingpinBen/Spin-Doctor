@@ -85,13 +85,15 @@ namespace GameLibrary.Screens
         private bool _isExitable = true;
 
         protected ContentManager _content;
+        protected GraphicsDevice _graphicsDevice;
 
         #endregion
 
         #region Constructor
-        public Screen(string name)
+        public Screen(string name, GraphicsDevice graphics)
         {
-            this.Name = name;
+            this._name = name;
+            this._graphicsDevice = graphics;
             this._content = new ContentManager(Screen_Manager.Game.Services, "Content");
         }
         #endregion

@@ -50,8 +50,8 @@ namespace GameLibrary.Screens
         #endregion
 
         #region Constructor
-        public LoadingScreen()
-            : base("LoadingScreen")
+        public LoadingScreen(GraphicsDevice graphics)
+            : base("LoadingScreen", graphics)
         {
             content = new ContentManager(Screen_Manager.Game.Services, "Content");
 
