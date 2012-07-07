@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;EDITOR</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -172,6 +172,7 @@
     <Compile Include="Screens\LoadingScreen.cs" />
     <Compile Include="Screens\Menu\GameMenu.cs" />
     <Compile Include="Screens\Menu\GraphicsScreen.cs" />
+    <Compile Include="Screens\Menu\MainMenu.cs" />
     <Compile Include="Screens\Menu\MenuOption.cs" />
     <Compile Include="Screens\Menu\MenuScreen.cs" />
     <Compile Include="Screens\Messages\ConfirmBox.cs" />

@@ -15,10 +15,26 @@ namespace GameLibrary.Screens
                 return _drawShadows;
             }
         }
-
         public static void ToggleShadows()
         {
             _drawShadows = !_drawShadows;
+        }
+
+        private static bool _allowDoubleJump = false;
+        public static bool DoubleJumpEnabled
+        {
+            get
+            {
+                return _allowDoubleJump;
+            }
+            set
+            {
+                _allowDoubleJump = value;
+            }
+        }
+        public static void ToggleDoubleJump()
+        {
+            _allowDoubleJump = !_allowDoubleJump;
         }
     }
 }

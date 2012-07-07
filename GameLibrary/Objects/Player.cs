@@ -62,7 +62,6 @@ namespace GameLibrary.Objects
         private const float _midAirForce = 200.0f;
         private bool _canJump;
         private bool _canDoubleJump;
-        private bool _dJumpEnabled;
         private float _grabbingRotation;
         private float _airTime;
         private WeldJoint grabbingJoint;
@@ -99,11 +98,7 @@ namespace GameLibrary.Objects
         {
             get
             {
-                return _dJumpEnabled;
-            }
-            set
-            {
-                _dJumpEnabled = value;
+                return GameSettings.DoubleJumpEnabled;
             }
         }
 
@@ -140,12 +135,14 @@ namespace GameLibrary.Objects
         #endregion
 
         #region Load
-        public void Load(ContentManager content, World world, Vector2 position, bool enableDoubJump)
+        public override void Load(ContentManager content, World world, Vector2 position)
         {
             base.Load(content, world, position);
-            SetupPlayerSettings(enableDoubJump);
 
-            if (Animations.Count == 0) AddAnimations();
+            SetupPlayerSettings();
+
+            if (Animations.Count == 0) 
+                AddAnimations();
         }
         #endregion
 
@@ -405,7 +402,7 @@ namespace GameLibrary.Objects
 
         #region Player specific body settings
 
-        private void SetupPlayerSettings(bool enableDoubleJump)
+        private void SetupPlayerSettings()
         {
             this.WheelBody.OnCollision += Body_OnCollision;
             this.WheelBody.OnSeparation += Body_OnSeparation;
@@ -416,10 +413,9 @@ namespace GameLibrary.Objects
             
             this.PlayerState = pState.Grounded;
             this._canJump = true;
-            this._dJumpEnabled = enableDoubleJump;
             this._airTime = 0.0f;
 
-            if (_dJumpEnabled)
+            if (GameSettings.DoubleJumpEnabled)
                 _canDoubleJump = true;
             else
                 _canDoubleJump = false;
@@ -476,7 +472,7 @@ namespace GameLibrary.Objects
                 _canJump = false;
             }
             //  Second jump (steam jump)
-            else if (_dJumpEnabled && _canDoubleJump)
+            else if (this.DoubleJumpEnabled && _canDoubleJump)
             {
                 force *= _jumpForce;
 

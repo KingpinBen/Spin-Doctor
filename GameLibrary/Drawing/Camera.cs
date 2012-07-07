@@ -355,6 +355,7 @@ namespace GameLibrary.Drawing
                 if (Input.RotateLeft())
                 {
                     ForceRotateLeft();
+                    
                 }
                 else if (Input.RotateRight())
                 {
@@ -410,11 +411,13 @@ namespace GameLibrary.Drawing
             }
 
             ChangeGravity();
+            Player.Instance.Body.ResetDynamics();
         }
 
         public static void ForceRotateRight()
         {
             if (_rotateDelayTimer > 0.0f) return;
+            
 
             _rotationToAdd += MathHelper.PiOver2;
             _levelRotating = true;
@@ -448,6 +451,7 @@ namespace GameLibrary.Drawing
             }
 
             ChangeGravity();
+            Player.Instance.Body.ResetDynamics();
         }
 
         public static void ForceRotateHalf()
@@ -489,6 +493,7 @@ namespace GameLibrary.Drawing
             }
 
             ChangeGravity();
+            Player.Instance.Body.ResetDynamics();
         }
 
         

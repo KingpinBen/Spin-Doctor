@@ -230,7 +230,7 @@ namespace GameLibrary.Drawing
 #else
             Init();
             this.SetupCamera();
-            Player.Instance.Load(_content, world, _spawnLocation, true);
+            Player.Instance.Load(_content, world, _spawnLocation);
 
             this._levelBackdrop.Tint = this._backgroundTint;
             this._levelBackdrop.Load(_content, _roomDimensions, _roomTheme, _roomType, _backgroundFile);

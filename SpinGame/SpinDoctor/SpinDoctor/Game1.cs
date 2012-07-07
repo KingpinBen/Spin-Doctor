@@ -31,6 +31,7 @@ using GameLibrary.Screens;
 using GameLibrary.Assists;
 using GameLibrary.Screens.Messages;
 using GameLibrary.Managers;
+using GameLibrary.Screens.Menu;
 
 #endregion
 
@@ -78,7 +79,7 @@ namespace SpinDoctor
             Components.Add(_screenMan);
             
 
-            GameplayScreen gamescreen = new GameplayScreen(0);
+            GameplayScreen gamescreen = new GameplayScreen(0, this.GraphicsDevice);
             Screen_Manager.AddScreen(gamescreen);
 
 #if ShowStartUp
