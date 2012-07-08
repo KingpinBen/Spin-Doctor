@@ -53,9 +53,7 @@ namespace GameLibrary.Managers
         const float _transitionTime = 0.6f;
         static float _transitionPoint = 0;
 
-#if Development
         Stopwatch stopWatch = new Stopwatch();
-#endif
 
         #endregion
 
@@ -150,12 +148,16 @@ namespace GameLibrary.Managers
             }
 
             #region Dev
-#if Development
-            DevDisplay.Update(gameTime);
-#endif
+            if (SessionSettings.DevelopmentMode)
+            {
+                DevDisplay.Update(gameTime);
+            }
             #endregion
+
             if (ScreenList.Count > 0)
+            {
                 ScreenList[ScreenList.Count - 1].Update(gameTime);
+            }
 
             #region Transition Handling
             //  We only want to do all this if the screen state doesn't equal Show.
@@ -214,9 +216,10 @@ namespace GameLibrary.Managers
 
         public override void Draw(GameTime gameTime)
         {
-#if Development
-            stopWatch.Start();
-#endif
+            if (SessionSettings.DevelopmentMode)
+            {
+                stopWatch.Start();
+            }
 
             //for (int i = 0; i < ScreenList.Count; i++)
             //{
@@ -234,10 +237,12 @@ namespace GameLibrary.Managers
             }
 
             #region Development
-#if Development
-            DevDisplay.Draw(gameTime, stopWatch);
-            stopWatch.Reset();
-#endif
+            if (SessionSettings.DevelopmentMode)
+            {
+                DevDisplay.Draw(gameTime, stopWatch);
+                stopWatch.Reset();
+            }
+
             #endregion
 
         }

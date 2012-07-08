@@ -44,33 +44,36 @@ namespace SpinDoctor
 
         Screen_Manager _screenMan;
 
+        int _startLevel = 0;
+        int _backbufferWidth = 1280;
+        int _backbufferHeight = 720;
+        bool _fullScreen = false;
+        //  TODO: Change for non-dev
+        bool _showStartup = false;
+
         #endregion
 
-        #region Constructor
         public Game1()
         {
             this.IsMouseVisible = true;
-            Content.RootDirectory = "Content";
+            this.Content.RootDirectory = "Content";
+            this.IsFixedTimeStep = true;
+            this.Window.Title = "Spin Doctor - Development";
 
             _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferHeight = 720;
-            _graphics.PreferredBackBufferWidth = 1280;
-            _graphics.PreferMultiSampling = true;
-            //_graphics.IsFullScreen = true;
-            _graphics.SynchronizeWithVerticalRetrace = true;
-            IsFixedTimeStep = true;
             
-            _graphics.ApplyChanges();
-
-
-            this.Window.Title = "Spin Doctor - Development";
             ConvertUnits.SetDisplayUnitToSimUnitRatio(24f);
         }
-        #endregion
 
-        #region Init
         protected override void Initialize()
         {
+            _graphics.PreferredBackBufferHeight = _backbufferHeight;
+            _graphics.PreferredBackBufferWidth = _backbufferWidth;
+            _graphics.PreferMultiSampling = true;
+            _graphics.IsFullScreen = _fullScreen;
+            _graphics.SynchronizeWithVerticalRetrace = true;
+            _graphics.ApplyChanges();
+
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += ChangeWindowSize;
 
@@ -79,54 +82,33 @@ namespace SpinDoctor
             Components.Add(_screenMan);
             
 
-            GameplayScreen gamescreen = new GameplayScreen(0, this.GraphicsDevice);
+            GameplayScreen gamescreen = new GameplayScreen(_startLevel, this.GraphicsDevice);
             Screen_Manager.AddScreen(gamescreen);
 
-#if ShowStartUp
-            IntroScreen introScreen = new IntroScreen();
-            Screen_Manager.AddScreen(introScreen);
-
-            //SplashScreen devSplash = new SplashScreen("Assets/Other/Dev/DevLogo");
-            Screen_Manager.AddScreen(devSplash);
-#endif
+            if (_showStartup)
+            {
+                IntroScreen introScreen = new IntroScreen(this._graphics.GraphicsDevice);
+                Screen_Manager.AddScreen(introScreen);
+            }
 
             base.Initialize();
         }
-        #endregion
 
-        #region Load
-        protected override void LoadContent()
-        {
-            
-        }
-        #endregion
+        protected override void LoadContent() { }
 
-        #region Unload
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
-        #endregion
+        protected override void UnloadContent() { }
 
-        #region Update
         protected override void Update(GameTime gameTime)
         {
-            //  Game Components are drawn from base.Update (e.g. Screen_Manager)
-
             base.Update(gameTime);
         }
-        #endregion
 
-        #region Draw
         protected override void Draw(GameTime gameTime)
         {
-            //  DrawableGameComponents are drawn from base
-
             base.Draw(gameTime);
         }
-        #endregion
 
-        private void ChangeWindowSize(object sender, EventArgs e)
+        void ChangeWindowSize(object sender, EventArgs e)
         {
             if (Window.ClientBounds.Width > 0 && Window.ClientBounds.Height > 0)
             {
@@ -135,6 +117,40 @@ namespace SpinDoctor
             }
 
             _graphics.ApplyChanges();
+        }
+
+        public void SetArgs(string[] args)
+        {
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].ToLower() == "-dev")
+                {
+                    SessionSettings.SetDevelopment(this, true);
+                }
+                else if (args[i] == "-loadlevel")
+                {
+                    _startLevel = Convert.ToInt32(args[i + 1]);
+                    i++;
+                }
+                else if (args[i] == "+x")
+                {
+                    _backbufferWidth = Convert.ToInt32(args[i + 1]);
+                    i++;
+                }
+                else if (args[i] == "+y")
+                {
+                    _backbufferHeight = Convert.ToInt32(args[i + 1]);
+                    i++;
+                }
+                else if (args[i] == "-fullscreen")
+                {
+                    _fullScreen = true;
+                }
+                else if (args[i] == "-skipStartup")
+                {
+                    _showStartup = false;
+                }
+            }
         }
     }
 }

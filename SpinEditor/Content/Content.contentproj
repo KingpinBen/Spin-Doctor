@@ -104,51 +104,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Effects\explosion.png">
-      <Name>explosion</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Effects\smoke.png">
-      <Name>smoke</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Spritesheets\DeathSpriteSheet.png">
-      <Name>DeathSpriteSheet</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Spritesheets\Falling-Sheet.png">
-      <Name>Falling-Sheet</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Spritesheets\Idle1-Sheet.png">
-      <Name>Idle1-Sheet</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Spritesheets\Idle2-Sheet.png">
-      <Name>Idle2-Sheet</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Spritesheets\Ladder-Sheet.png">
-      <Name>Ladder-Sheet</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Spritesheets\New-Jump-SHEET-.png">
-      <Name>New-Jump-SHEET-</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Assets\Images\Spritesheets\Running-Sheet.png">
-      <Name>Running-Sheet</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Assets\Other\Dev\gradient.png">
       <Name>gradient</Name>
       <Importer>TextureImporter</Importer>
@@ -185,6 +140,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Images\Basics\transparentgrad.png">
+      <Name>transparentgrad</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Assets\Images\Textures\Decal\Bolt.png">
       <Name>Bolt</Name>
       <Importer>TextureImporter</Importer>
@@ -192,6 +154,21 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\Decal\decal_goldblock_1.png">
       <Name>decal_goldblock_1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Decal\decal_mansion1_tile.png">
+      <Name>decal_mansion1_tile</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Decal\decal_mansion2_tile.png">
+      <Name>decal_mansion2_tile</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Decal\decal_mansion3_tile.png">
+      <Name>decal_mansion3_tile</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -360,6 +337,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\Cog 18T_damaged.png">
+      <Name>Cog 18T_damaged</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="Assets\Images\Textures\Environment\Cog 6T.png">
       <Name>Cog 6T</Name>
       <Importer>TextureImporter</Importer>
@@ -425,7 +407,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Assets\Images\Textures\Environment\Platform1.jpg">
+    <Compile Include="Assets\Images\Textures\Environment\Platform1.png">
       <Name>Platform1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -434,7 +416,6 @@
       <Name>platform_1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Assets\Images\Textures\Environment\platform_2.png">
       <Name>platform_2</Name>
@@ -511,6 +492,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Assets\Images\Textures\Piston\thinPistonPipe.png">
+      <Name>thinPistonPipe</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="Assets\Images\Textures\RoomSetup\background_1.png">
       <Name>background_1</Name>
       <Importer>TextureImporter</Importer>
@@ -538,6 +524,36 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\RoomSetup\background_indust2.png">
       <Name>background_indust2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_Mansion1_Lrg.png">
+      <Name>background_Mansion1_Lrg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_Mansion1_Sml.png">
+      <Name>background_Mansion1_Sml</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_Mansion2_Lrg.png">
+      <Name>background_Mansion2_Lrg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_Mansion2_Sml.png">
+      <Name>background_Mansion2_Sml</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_Mansion3_Lrg.png">
+      <Name>background_Mansion3_Lrg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\RoomSetup\background_Mansion3_Sml.png">
+      <Name>background_Mansion3_Sml</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -631,6 +647,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Assets\Images\Textures\Saw\sawblade_1.png">
+      <Name>sawblade_1</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="Assets\Images\Textures\Spikes\smallSpike.png">
       <Name>smallSpike</Name>
       <Importer>TextureImporter</Importer>
@@ -671,6 +692,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="Assets\Images\Textures\Switch\Switch Box_Alt.png">
+      <Name>Switch Box_Alt</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="Assets\Images\Textures\Switch\Valve.png">
       <Name>Valve</Name>
       <Importer>TextureImporter</Importer>
@@ -678,6 +704,16 @@
     </Compile>
     <Compile Include="Assets\Images\Textures\Switch\valveHandle.png">
       <Name>valveHandle</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Switch\Valve_Blue.png">
+      <Name>Valve_Blue</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Switch\Valve_Red.png">
+      <Name>Valve_Red</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

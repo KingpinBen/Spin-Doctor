@@ -269,9 +269,10 @@ namespace GameLibrary.Screens
             Camera.UpIs = UpIs.Up;
 
             #region Development
-#if Development
-            DevDisplay.Load(World);
-#endif
+            if (SessionSettings.DevelopmentMode)
+            {
+                DevDisplay.Load(World);
+            }
             #endregion
 
             //  If theres anything in Level, clear it.

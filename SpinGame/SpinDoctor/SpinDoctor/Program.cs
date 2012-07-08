@@ -12,6 +12,7 @@ namespace SpinDoctor
         {
             using (Game1 game = new Game1())
             {
+                game.SetArgs(args);
                 game.Run();
             }
         }

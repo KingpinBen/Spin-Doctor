@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace GameLibrary.Screens
 {
@@ -35,6 +36,27 @@ namespace GameLibrary.Screens
         public static void ToggleDoubleJump()
         {
             _allowDoubleJump = !_allowDoubleJump;
+        }
+    }
+
+    public static class SessionSettings
+    {
+        private static bool _developmentMode = false;
+
+        public static bool DevelopmentMode
+        {
+            get
+            {
+                return _developmentMode;
+            }
+        }
+
+        public static void SetDevelopment(object sender, bool state)
+        {
+            if (sender is Game)
+            {
+                _developmentMode = state;
+            }
         }
     }
 }
