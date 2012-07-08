@@ -34,17 +34,20 @@ namespace GameLibrary.Drawing
 {
     public class FrameAnimation
     {
+        #region Fields
         Rectangle[] frames; //Animation Frames
         int currentFrame = 0;
         private Vector2 frameOrigin;
         private Texture2D _texture;
+        private bool _reversePlayback = true;
 
         /// <summary>
         /// Time between frames.
         /// Spritesheets were rendered at 30fps, halve the time for 60fps
         /// </summary>
         float frameLength = 1 / 30; 
-        float timer = 0; 
+        float timer = 0;
+        #endregion
 
         #region Properties
 
@@ -96,6 +99,16 @@ namespace GameLibrary.Drawing
                 return _texture;
             }
         }
+
+        public bool ReversePlayback
+        {
+            get
+            {
+                return _reversePlayback;
+            }
+        }
+
+        
         #endregion
 
         #region Constructor
@@ -129,27 +142,41 @@ namespace GameLibrary.Drawing
 
         public void Update(GameTime gameTime)
         {
-            if (PlayOnce && currentFrame == 0) return;
+            if (PlayOnce && currentFrame == 0)
+            {
+                return;
+            }
 
             timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
 
             if (timer >= frameLength)
             {
-                timer = 0;
-
-                if (currentFrame - 1 < 0)
+                if (_reversePlayback)
                 {
-                    currentFrame = frames.Length;
+                    if (currentFrame - 1 < 0)
+                    {
+                        currentFrame = frames.Length;
+                    }
+
+                    currentFrame -= 1;
+                }
+                else
+                {
+                    currentFrame = (currentFrame + 1) % frames.Length;
                 }
 
-                currentFrame -= 1;
-                //currentFrame = (currentFrame - 1) % frames.Length;
+                timer = 0;
             }
         }
 
         public void ResetCurrentFrame()
         {
             currentFrame = frames.Length - 1;
+        }
+
+        public void SetPlayback(bool shouldReverse)
+        {
+            _reversePlayback = shouldReverse;
         }
     }
 }
