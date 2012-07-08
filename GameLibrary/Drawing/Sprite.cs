@@ -216,7 +216,7 @@ namespace GameLibrary.Drawing
         #endregion
 
         #region Update
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             if (velocity != Vector2.Zero) position += velocity;
 
@@ -264,7 +264,7 @@ namespace GameLibrary.Drawing
         #endregion
 
         #region Draw
-        public void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb)
         {
             sb.Draw(spriteTexture, position,
                 new Rectangle(
