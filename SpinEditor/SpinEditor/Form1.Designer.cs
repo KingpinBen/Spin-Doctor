@@ -69,15 +69,14 @@ namespace SpinEditor
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.BUTTON_IMPORT_ASSET = new System.Windows.Forms.Button();
             this.listBox_Classes = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.assetSelectDialog3 = new System.Windows.Forms.Button();
-            this.assetSelectDialog2 = new System.Windows.Forms.Button();
-            this.assetLocTextBox3 = new System.Windows.Forms.TextBox();
-            this.assetLocTextBox2 = new System.Windows.Forms.TextBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.assetLocTextBox1 = new System.Windows.Forms.TextBox();
+            this.assetSelectDialog3 = new System.Windows.Forms.Button();
             this.assetSelectDialog1 = new System.Windows.Forms.Button();
+            this.assetLocTextBox3 = new System.Windows.Forms.TextBox();
+            this.assetSelectDialog2 = new System.Windows.Forms.Button();
+            this.assetLocTextBox2 = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.listBox_Assets0 = new System.Windows.Forms.ListBox();
@@ -99,19 +98,18 @@ namespace SpinEditor
             this.BUTTON_ALIGN_9 = new System.Windows.Forms.Button();
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
             this.openAssetFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -395,21 +393,25 @@ namespace SpinEditor
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.Title = "Save Level";
+            // 
             // hScrollBar1
             // 
             this.hScrollBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.hScrollBar1.Location = new System.Drawing.Point(0, 635);
             this.hScrollBar1.Name = "hScrollBar1";
-            this.hScrollBar1.Size = new System.Drawing.Size(882, 16);
+            this.hScrollBar1.Size = new System.Drawing.Size(878, 16);
             this.hScrollBar1.TabIndex = 4;
             this.hScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hScrollBar1_Scroll);
             // 
             // vScrollBar1
             // 
             this.vScrollBar1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.vScrollBar1.Location = new System.Drawing.Point(882, 0);
+            this.vScrollBar1.Location = new System.Drawing.Point(878, 0);
             this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(16, 651);
+            this.vScrollBar1.Size = new System.Drawing.Size(20, 651);
             this.vScrollBar1.TabIndex = 5;
             this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
             // 
@@ -424,7 +426,7 @@ namespace SpinEditor
             // BUTTON_IMPORT_ASSET
             // 
             this.BUTTON_IMPORT_ASSET.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BUTTON_IMPORT_ASSET.Location = new System.Drawing.Point(146, 612);
+            this.BUTTON_IMPORT_ASSET.Location = new System.Drawing.Point(148, 625);
             this.BUTTON_IMPORT_ASSET.Name = "BUTTON_IMPORT_ASSET";
             this.BUTTON_IMPORT_ASSET.Size = new System.Drawing.Size(74, 23);
             this.BUTTON_IMPORT_ASSET.TabIndex = 8;
@@ -435,6 +437,7 @@ namespace SpinEditor
             // listBox_Classes
             // 
             this.listBox_Classes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox_Classes.BackColor = System.Drawing.SystemColors.Window;
             this.listBox_Classes.FormattingEnabled = true;
             this.listBox_Classes.Items.AddRange(new object[] {
             "Bounce Pad",
@@ -455,31 +458,11 @@ namespace SpinEditor
             "Saw Blade",
             "Spikes",
             "Static Object"});
-            this.listBox_Classes.Location = new System.Drawing.Point(10, 374);
+            this.listBox_Classes.Location = new System.Drawing.Point(12, 16);
             this.listBox_Classes.Name = "listBox_Classes";
-            this.listBox_Classes.Size = new System.Drawing.Size(210, 95);
+            this.listBox_Classes.Size = new System.Drawing.Size(206, 95);
             this.listBox_Classes.TabIndex = 9;
             this.listBox_Classes.SelectedIndexChanged += new System.EventHandler(this.listBox_Classes_SelectedIndexChanged);
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 476);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(102, 13);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "New Object Texture";
-            // 
-            // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 358);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(90, 13);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "New Object Type";
             // 
             // panel1
             // 
@@ -487,10 +470,7 @@ namespace SpinEditor
             this.panel1.Controls.Add(this.tabControl1);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.panel3);
-            this.panel1.Controls.Add(this.listBox_Classes);
             this.panel1.Controls.Add(this.propertyGrid1);
-            this.panel1.Controls.Add(this.label1);
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.BUTTON_IMPORT_ASSET);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(898, 49);
@@ -498,9 +478,35 @@ namespace SpinEditor
             this.panel1.Size = new System.Drawing.Size(452, 651);
             this.panel1.TabIndex = 12;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.assetLocTextBox1);
+            this.groupBox1.Controls.Add(this.assetSelectDialog3);
+            this.groupBox1.Controls.Add(this.assetSelectDialog1);
+            this.groupBox1.Controls.Add(this.assetLocTextBox3);
+            this.groupBox1.Controls.Add(this.listBox_Classes);
+            this.groupBox1.Controls.Add(this.assetSelectDialog2);
+            this.groupBox1.Controls.Add(this.assetLocTextBox2);
+            this.groupBox1.Location = new System.Drawing.Point(10, 358);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(226, 232);
+            this.groupBox1.TabIndex = 35;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "New Object";
+            // 
+            // assetLocTextBox1
+            // 
+            this.assetLocTextBox1.BackColor = System.Drawing.SystemColors.Control;
+            this.assetLocTextBox1.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.assetLocTextBox1.Location = new System.Drawing.Point(12, 119);
+            this.assetLocTextBox1.Name = "assetLocTextBox1";
+            this.assetLocTextBox1.ReadOnly = true;
+            this.assetLocTextBox1.Size = new System.Drawing.Size(114, 20);
+            this.assetLocTextBox1.TabIndex = 30;
+            // 
             // assetSelectDialog3
             // 
-            this.assetSelectDialog3.Location = new System.Drawing.Point(132, 70);
+            this.assetSelectDialog3.Location = new System.Drawing.Point(132, 169);
             this.assetSelectDialog3.Name = "assetSelectDialog3";
             this.assetSelectDialog3.Size = new System.Drawing.Size(86, 23);
             this.assetSelectDialog3.TabIndex = 34;
@@ -508,44 +514,9 @@ namespace SpinEditor
             this.assetSelectDialog3.UseVisualStyleBackColor = true;
             this.assetSelectDialog3.Click += new System.EventHandler(this.assetSelectDialog3_Click);
             // 
-            // assetSelectDialog2
-            // 
-            this.assetSelectDialog2.Location = new System.Drawing.Point(132, 43);
-            this.assetSelectDialog2.Name = "assetSelectDialog2";
-            this.assetSelectDialog2.Size = new System.Drawing.Size(86, 23);
-            this.assetSelectDialog2.TabIndex = 33;
-            this.assetSelectDialog2.Text = "Select Texture";
-            this.assetSelectDialog2.UseVisualStyleBackColor = true;
-            this.assetSelectDialog2.Click += new System.EventHandler(this.assetSelectDialog2_Click);
-            // 
-            // assetLocTextBox3
-            // 
-            this.assetLocTextBox3.Location = new System.Drawing.Point(7, 72);
-            this.assetLocTextBox3.Name = "assetLocTextBox3";
-            this.assetLocTextBox3.ReadOnly = true;
-            this.assetLocTextBox3.Size = new System.Drawing.Size(122, 20);
-            this.assetLocTextBox3.TabIndex = 32;
-            // 
-            // assetLocTextBox2
-            // 
-            this.assetLocTextBox2.Location = new System.Drawing.Point(7, 45);
-            this.assetLocTextBox2.Name = "assetLocTextBox2";
-            this.assetLocTextBox2.ReadOnly = true;
-            this.assetLocTextBox2.Size = new System.Drawing.Size(122, 20);
-            this.assetLocTextBox2.TabIndex = 31;
-            // 
-            // assetLocTextBox1
-            // 
-            this.assetLocTextBox1.ForeColor = System.Drawing.SystemColors.MenuHighlight;
-            this.assetLocTextBox1.Location = new System.Drawing.Point(6, 19);
-            this.assetLocTextBox1.Name = "assetLocTextBox1";
-            this.assetLocTextBox1.ReadOnly = true;
-            this.assetLocTextBox1.Size = new System.Drawing.Size(123, 20);
-            this.assetLocTextBox1.TabIndex = 30;
-            // 
             // assetSelectDialog1
             // 
-            this.assetSelectDialog1.Location = new System.Drawing.Point(132, 17);
+            this.assetSelectDialog1.Location = new System.Drawing.Point(132, 117);
             this.assetSelectDialog1.Name = "assetSelectDialog1";
             this.assetSelectDialog1.Size = new System.Drawing.Size(86, 23);
             this.assetSelectDialog1.TabIndex = 29;
@@ -553,13 +524,40 @@ namespace SpinEditor
             this.assetSelectDialog1.UseVisualStyleBackColor = true;
             this.assetSelectDialog1.Click += new System.EventHandler(this.assetSelectDialog1_Click);
             // 
+            // assetLocTextBox3
+            // 
+            this.assetLocTextBox3.Location = new System.Drawing.Point(12, 171);
+            this.assetLocTextBox3.Name = "assetLocTextBox3";
+            this.assetLocTextBox3.ReadOnly = true;
+            this.assetLocTextBox3.Size = new System.Drawing.Size(114, 20);
+            this.assetLocTextBox3.TabIndex = 32;
+            // 
+            // assetSelectDialog2
+            // 
+            this.assetSelectDialog2.Location = new System.Drawing.Point(132, 143);
+            this.assetSelectDialog2.Name = "assetSelectDialog2";
+            this.assetSelectDialog2.Size = new System.Drawing.Size(86, 23);
+            this.assetSelectDialog2.TabIndex = 33;
+            this.assetSelectDialog2.Text = "Select Texture";
+            this.assetSelectDialog2.UseVisualStyleBackColor = true;
+            this.assetSelectDialog2.Click += new System.EventHandler(this.assetSelectDialog2_Click);
+            // 
+            // assetLocTextBox2
+            // 
+            this.assetLocTextBox2.Location = new System.Drawing.Point(12, 145);
+            this.assetLocTextBox2.Name = "assetLocTextBox2";
+            this.assetLocTextBox2.ReadOnly = true;
+            this.assetLocTextBox2.Size = new System.Drawing.Size(114, 20);
+            this.assetLocTextBox2.TabIndex = 31;
+            // 
             // tabControl1
             // 
             this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(10, 492);
+            this.tabControl1.Enabled = false;
+            this.tabControl1.Location = new System.Drawing.Point(228, 625);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(210, 118);
@@ -627,7 +625,7 @@ namespace SpinEditor
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(229, 358);
+            this.label5.Location = new System.Drawing.Point(242, 358);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(91, 13);
             this.label5.TabIndex = 25;
@@ -647,9 +645,9 @@ namespace SpinEditor
             this.panel3.Controls.Add(this.BUTTON_ALIGN_4);
             this.panel3.Controls.Add(this.BUTTON_ALIGN_9);
             this.panel3.Controls.Add(this.BUTTON_ALIGN_5);
-            this.panel3.Location = new System.Drawing.Point(226, 374);
+            this.panel3.Location = new System.Drawing.Point(234, 374);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(214, 115);
+            this.panel3.Size = new System.Drawing.Size(210, 115);
             this.panel3.TabIndex = 27;
             // 
             // Align_Relative
@@ -659,9 +657,9 @@ namespace SpinEditor
             "Last Selected",
             "First Selected",
             "Selection"});
-            this.Align_Relative.Location = new System.Drawing.Point(6, 3);
+            this.Align_Relative.Location = new System.Drawing.Point(10, 3);
             this.Align_Relative.Name = "Align_Relative";
-            this.Align_Relative.Size = new System.Drawing.Size(202, 21);
+            this.Align_Relative.Size = new System.Drawing.Size(195, 21);
             this.Align_Relative.TabIndex = 26;
             this.Align_Relative.SelectedIndexChanged += new System.EventHandler(this.Align_Relative_SelectedIndexChanged);
             // 
@@ -677,7 +675,7 @@ namespace SpinEditor
             // BUTTON_ALIGN_1
             // 
             this.BUTTON_ALIGN_1.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_1.Image")));
-            this.BUTTON_ALIGN_1.Location = new System.Drawing.Point(6, 30);
+            this.BUTTON_ALIGN_1.Location = new System.Drawing.Point(10, 30);
             this.BUTTON_ALIGN_1.Name = "BUTTON_ALIGN_1";
             this.BUTTON_ALIGN_1.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_1.TabIndex = 13;
@@ -686,7 +684,7 @@ namespace SpinEditor
             // BUTTON_ALIGN_6
             // 
             this.BUTTON_ALIGN_6.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_6.Image")));
-            this.BUTTON_ALIGN_6.Location = new System.Drawing.Point(6, 70);
+            this.BUTTON_ALIGN_6.Location = new System.Drawing.Point(10, 70);
             this.BUTTON_ALIGN_6.Name = "BUTTON_ALIGN_6";
             this.BUTTON_ALIGN_6.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_6.TabIndex = 22;
@@ -695,7 +693,7 @@ namespace SpinEditor
             // BUTTON_ALIGN_2
             // 
             this.BUTTON_ALIGN_2.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_2.Image")));
-            this.BUTTON_ALIGN_2.Location = new System.Drawing.Point(46, 30);
+            this.BUTTON_ALIGN_2.Location = new System.Drawing.Point(50, 30);
             this.BUTTON_ALIGN_2.Name = "BUTTON_ALIGN_2";
             this.BUTTON_ALIGN_2.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_2.TabIndex = 14;
@@ -704,7 +702,7 @@ namespace SpinEditor
             // BUTTON_ALIGN_7
             // 
             this.BUTTON_ALIGN_7.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_7.Image")));
-            this.BUTTON_ALIGN_7.Location = new System.Drawing.Point(46, 70);
+            this.BUTTON_ALIGN_7.Location = new System.Drawing.Point(50, 70);
             this.BUTTON_ALIGN_7.Name = "BUTTON_ALIGN_7";
             this.BUTTON_ALIGN_7.Size = new System.Drawing.Size(34, 34);
             this.BUTTON_ALIGN_7.TabIndex = 21;
@@ -766,6 +764,10 @@ namespace SpinEditor
             this.panel2.Size = new System.Drawing.Size(898, 651);
             this.panel2.TabIndex = 13;
             // 
+            // openAssetFileDialog1
+            // 
+            this.openAssetFileDialog1.FileName = "Select Asset";
+            // 
             // xnA_RenderControl1
             // 
             this.xnA_RenderControl1.Camera = null;
@@ -788,25 +790,6 @@ namespace SpinEditor
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
             // 
-            // openAssetFileDialog1
-            // 
-            this.openAssetFileDialog1.FileName = "Select Asset";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.assetLocTextBox1);
-            this.groupBox1.Controls.Add(this.assetSelectDialog3);
-            this.groupBox1.Controls.Add(this.assetSelectDialog1);
-            this.groupBox1.Controls.Add(this.assetLocTextBox3);
-            this.groupBox1.Controls.Add(this.assetSelectDialog2);
-            this.groupBox1.Controls.Add(this.assetLocTextBox2);
-            this.groupBox1.Location = new System.Drawing.Point(222, 496);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(220, 105);
-            this.groupBox1.TabIndex = 35;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Textures";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -826,14 +809,14 @@ namespace SpinEditor
             this.toolStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -863,8 +846,6 @@ namespace SpinEditor
         private VScrollBar vScrollBar1;
         private Button BUTTON_IMPORT_ASSET;
         private ListBox listBox_Classes;
-        private Label label1;
-        private Label label2;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripButton BUTTON_EDIT_ROOM;
         private Panel panel1;

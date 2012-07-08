@@ -68,7 +68,7 @@ namespace SpinEditor
         {
             //Refresh_XNB_Asset_List();
 
-            listBox_Classes.SelectedIndex = 0;
+            listBox_Classes.SelectedIndex = -1;
             listBox_Assets0.SelectedItem = "icon";
             listBox_Assets1.SelectedItem = "icon";
             listBox_Assets2.SelectedItem = "icon";
@@ -696,10 +696,10 @@ namespace SpinEditor
 
         bool SaveFile()
         {
-            saveFileDialog1.Filter = "Xml files|*.xml";
+            saveFileDialog1.Filter = "XML files|*.xml";
             saveFileDialog1.AddExtension = true;
 
-            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.ConformanceLevel = ConformanceLevel.Auto;
@@ -808,6 +808,7 @@ namespace SpinEditor
         #region Align Methods
         private void BUTTON_IMPORT_ASSET_Click(object sender, EventArgs e)
         {
+#if NOTUSED
             // Default to the directory which contains our content files
             string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string relativePath = Path.Combine(assemblyLocation, "../../../../Content", STATIC_CONTBUILDER.textureLoc);
@@ -834,6 +835,7 @@ namespace SpinEditor
             }
 
             Refresh_XNB_Asset_List();
+#endif
         }
 
         #region ALIGN/ROTATE
@@ -2389,83 +2391,149 @@ namespace SpinEditor
 
         #region Texture List Methods
 
-        private void Refresh_XNB_Asset_List()
-        {
-            listBox_Assets0.Items.Clear();
-            listBox_Assets1.Items.Clear();
-            listBox_Assets2.Items.Clear();
-
-            string[] lst_Files = Directory.GetFiles(STATIC_CONTBUILDER.pathToContent(), "*.xnb", SearchOption.TopDirectoryOnly);
-
-            for (int i = 0; i < lst_Files.Length; i++)
-            {
-                //  If the file name contains "i_" anywhere,
-                //  it will be ignored as a choice. For use
-                //  with system only files.
-                if (lst_Files[i].Contains("i_"))
-                    continue;
-
-                listBox_Assets0.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
-                listBox_Assets1.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
-                listBox_Assets2.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
-            }
-        }
 
         #region Update TextureList to match changed object type
         private void listBox_Classes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            #region Selected-Class Texture Switch
+            int amountOfTexturesNeeded = 0;
+
             switch (listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString())
             {
+                case "Bounce Pad": 
+                    break;
                 case "Cushioned Platform":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Decal":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Decal/";
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Door":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Doors/";
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Ladder":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Ladder/";
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Moving Platform":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+                    amountOfTexturesNeeded = 1;
                     break;
-                case "One-Sided Platform":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+                case "Note":
+                    amountOfTexturesNeeded = 1;
                     break;
-                case "Particle Emitter":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Effects/";
+                case "One-Sided Platform": 
                     break;
-                case "Piston":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Piston/";
+                case "Particle Emitter": 
+                    break;
+                case "Piston": 
+                    amountOfTexturesNeeded = 2;
+                    break;
+                case "Pullable Object":
+                    amountOfTexturesNeeded = 1;
+                    break;
+                case "Pushing Platform":
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Rope":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Rope/";
+                    amountOfTexturesNeeded = 2;
                     break;
                 case "Rotate Room Button":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Switch/";
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Rotating Platform":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Saw Blade":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Saw/";
+                    amountOfTexturesNeeded = 2;
                     break;
                 case "Spikes":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Spikes/";
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Static Object":
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+                    amountOfTexturesNeeded = 1;
                     break;
                 default:
-                    STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/";
+                    amountOfTexturesNeeded = -1;
                     break;
             }
-            #endregion
 
-            Refresh_XNB_Asset_List();
+
+            if (amountOfTexturesNeeded == 1)
+            {
+                assetLocTextBox1.BackColor = System.Drawing.Color.FromArgb(255, 128, 128);
+                assetLocTextBox2.BackColor = System.Drawing.Color.FromName("Control");
+                assetLocTextBox3.BackColor = System.Drawing.Color.FromName("Control");
+            }
+            else if (amountOfTexturesNeeded == 2)
+            {
+                assetLocTextBox1.BackColor = System.Drawing.Color.FromArgb(255, 128, 128);
+                assetLocTextBox2.BackColor = System.Drawing.Color.FromArgb(255, 128, 128);
+                assetLocTextBox3.BackColor = System.Drawing.Color.FromName("Control");
+            }
+            else if (amountOfTexturesNeeded == 3)
+            {
+                assetLocTextBox1.BackColor = System.Drawing.Color.FromArgb(255, 128, 128);
+                assetLocTextBox2.BackColor = System.Drawing.Color.FromArgb(255, 128, 128);
+                assetLocTextBox3.BackColor = System.Drawing.Color.FromArgb(255, 128, 128);
+            }
+            else
+            {
+                assetLocTextBox1.BackColor = System.Drawing.Color.FromName("Control");
+                assetLocTextBox2.BackColor = System.Drawing.Color.FromName("Control");
+                assetLocTextBox3.BackColor = System.Drawing.Color.FromName("Control");
+            }
+
+            #region Selected-Class Texture Switch
+            //switch (listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString())
+            //{
+            //    case "Cushioned Platform":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+            //        break;
+            //    case "Decal":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Decal/";
+            //        break;
+            //    case "Door":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Doors/";
+            //        break;
+            //    case "Ladder":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Ladder/";
+            //        break;
+            //    case "Moving Platform":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+            //        break;
+            //    case "One-Sided Platform":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+            //        break;
+            //    case "Particle Emitter":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Effects/";
+            //        break;
+            //    case "Piston":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Piston/";
+            //        break;
+            //    case "Rope":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Rope/";
+            //        break;
+            //    case "Rotate Room Button":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Switch/";
+            //        break;
+            //    case "Rotating Platform":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+            //        break;
+            //    case "Saw Blade":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Saw/";
+            //        break;
+            //    case "Spikes":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Spikes/";
+            //        break;
+            //    case "Static Object":
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/Environment/";
+            //        break;
+            //    default:
+            //        STATIC_CONTBUILDER.textureLoc = "Assets/Images/Textures/";
+            //        break;
+            //}
+
+
+            //Refresh_XNB_Asset_List();
+            #endregion
         }
         #endregion
 
@@ -2868,21 +2936,24 @@ namespace SpinEditor
             }
             #endregion
 
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.S) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+            if (xnA_RenderControl1.Focused)
             {
-                SaveFile();
-            }
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.S) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                {
+                    SaveFile();
+                }
 
-            #region Undo / Redo
+                #region Undo / Redo
 
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Z) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
-            {
-                Undo();
-            }
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Z) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                {
+                    Undo();
+                }
 
-            if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Y) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
-            {
-                Redo();
+                if (CheckNewKey(Microsoft.Xna.Framework.Input.Keys.Y) && STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                {
+                    Redo();
+                }
             }
             #endregion
 
@@ -2949,6 +3020,7 @@ namespace SpinEditor
                         newloc += newchar;
                 }
                 assetLocTextBox1.Text = newloc;
+                assetLocTextBox1.BackColor = System.Drawing.Color.FromArgb(128, 255, 128);
             }
         }
 
@@ -2976,6 +3048,7 @@ namespace SpinEditor
                         newloc += newchar;
                 }
                 assetLocTextBox2.Text = newloc;
+                assetLocTextBox2.BackColor = System.Drawing.Color.FromArgb(128, 255, 128);
             }
         }
 
@@ -3003,8 +3076,35 @@ namespace SpinEditor
                         newloc += newchar;
                 }
                 assetLocTextBox3.Text = newloc;
+                assetLocTextBox3.BackColor = System.Drawing.Color.FromArgb(128, 255, 128);
             }
         }
+        #endregion
+
+        #region Unused
+#if NOTUSED
+        private void Refresh_XNB_Asset_List()
+        {
+            listBox_Assets0.Items.Clear();
+            listBox_Assets1.Items.Clear();
+            listBox_Assets2.Items.Clear();
+
+            string[] lst_Files = Directory.GetFiles(STATIC_CONTBUILDER.pathToContent(), "*.xnb", SearchOption.TopDirectoryOnly);
+
+            for (int i = 0; i < lst_Files.Length; i++)
+            {
+                //  If the file name contains "i_" anywhere,
+                //  it will be ignored as a choice. For use
+                //  with system only files.
+                if (lst_Files[i].Contains("i_"))
+                    continue;
+
+                listBox_Assets0.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
+                listBox_Assets1.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
+                listBox_Assets2.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
+            }
+        }
+#endif
         #endregion
     }
 }
