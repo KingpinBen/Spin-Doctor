@@ -284,9 +284,7 @@ namespace GameLibrary.Objects
 #if EDITOR
             return true;
 #else
-            if (!TouchingFixtures.Contains(fixtureB) && 
-                (fixtureB == Player.Instance.Body.FixtureList[0] ||
-                fixtureB == Player.Instance.WheelBody.FixtureList[0]))
+            if (!TouchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
             {
                 TouchingFixtures.Add(fixtureB);
                 Player.Instance.Kill();

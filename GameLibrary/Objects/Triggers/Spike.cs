@@ -84,13 +84,9 @@ namespace GameLibrary.Objects.Triggers
 #if EDITOR
             return true;
 #else
-            if (!TouchingFixtures.Contains(fixtureB))
+            if (!TouchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
             {
                 TouchingFixtures.Add(fixtureB);
-            }
-
-            if (fixtureB == Player.Instance.Body.FixtureList[0] || fixtureB == Player.Instance.WheelBody.FixtureList[0])
-            {
                 Player.Instance.Kill();
             }
 

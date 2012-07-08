@@ -412,9 +412,9 @@ namespace GameLibrary.Objects
                 return false;
             }
 
-            if (!TouchingFixtures.Contains(fixtureB) && 
-                (fixtureB == Player.Instance.WheelBody.FixtureList[0] || fixtureB == Player.Instance.Body.FixtureList[0]))
+            if (!TouchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
             {
+                TouchingFixtures.Add(fixtureB);
                 Player.Instance.Kill();
             }
 
