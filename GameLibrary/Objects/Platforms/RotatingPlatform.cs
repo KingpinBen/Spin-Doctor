@@ -37,15 +37,33 @@ namespace GameLibrary.Objects
     public class RotatingPlatform : PhysicsObject
     {
         #region Fields
+#if EDITOR
 
+#else
         private FixedRevoluteJoint revoluteJoint;
+        private float _targetRotation;
+#endif
         [ContentSerializer]
         private bool _rotatesWithLevel;
+        [ContentSerializer]
+        private float _motorSpeed;
 
         #endregion
 
         #region Properties
 #if EDITOR
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public float MotorSpeed
+        {
+            get
+            {
+                return _motorSpeed;
+            } 
+            set
+            {
+                _motorSpeed = value;
+            }
+        }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public bool RotatesWithLevel
         {
@@ -71,7 +89,13 @@ namespace GameLibrary.Objects
             }
         }
 #else
-
+        private float TargetRotation
+        {
+            get
+            {
+                return -(float)Camera.Rotation;
+            }
+        }
 #endif
 
 
@@ -118,13 +142,30 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            if (!_rotatesWithLevel)
+            if (_rotatesWithLevel)
             {
-                return;
+                if (this.Body.Rotation != TargetRotation)
+                {
+                    float amountToTurn = TargetRotation - this.Body.Rotation;
+
+                    if ((amountToTurn > 0 && _motorSpeed < 0) ||
+                        (amountToTurn < 0 && _motorSpeed > 0))
+                    {
+                        _motorSpeed *= -1;
+                    }
+                    
+                    this.Body.Rotation += _motorSpeed;
+                    amountToTurn -= _motorSpeed;
+
+                    if (Math.Abs(amountToTurn) <= Math.Abs(_motorSpeed))
+                    {
+                        this.Body.Rotation += amountToTurn;
+                    }
+                }
             }
 
             //  Limit it so it can only be at 1 angle, the level rotation
-            this.Body.Rotation = -(float)Camera.Rotation;
+            //this.Body.Rotation = -(float)Camera.Rotation;
 #endif
         }
         #endregion
@@ -174,29 +215,17 @@ namespace GameLibrary.Objects
 
             this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, ConvertUnits.ToSimUnits(Vector2.Zero), ConvertUnits.ToSimUnits(this.Position));
             this.revoluteJoint.MaxMotorTorque = float.MaxValue;
-#endif
-        }
-        #endregion
 
-        #region Change RotatewithLevel
-        /// <summary>
-        /// Toggles it off it on, or on if off.
-        /// </summary>
-        public void ToggleRotateWithLevel()
-        {
-            if (_rotatesWithLevel)
+            if (!_rotatesWithLevel)
             {
-                ToggleRotateWithLevel(false);
+                this.revoluteJoint.MotorSpeed = _motorSpeed;
             }
             else
             {
-                ToggleRotateWithLevel(true);
+                float newSpeed = 1 / _motorSpeed;
+                this._motorSpeed = newSpeed;
             }
-        }
-
-        public void ToggleRotateWithLevel(bool set)
-        {
-            _rotatesWithLevel = set;
+#endif
         }
         #endregion
 
