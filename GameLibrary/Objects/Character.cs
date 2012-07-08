@@ -243,8 +243,8 @@ namespace GameLibrary.Objects
                 return;
             }
 
-            Vector2 tempPosition = ConvertUnits.ToDisplayUnits(this.wheelBody.Position - this.Body.Position);
-            this.TexturePosition = ConvertUnits.ToDisplayUnits(this.Body.Position) - (tempPosition / 4);
+            Vector2 tempPosition = ConvertUnits.ToDisplayUnits(this.Body.Position - this.wheelBody.Position);
+            this.TexturePosition = ConvertUnits.ToDisplayUnits(this.Body.Position) + (tempPosition * 0.25f);
 
             HandleAnimation(gameTime);
         }
@@ -337,15 +337,16 @@ namespace GameLibrary.Objects
         protected void SetUpPhysics(World world)
         {
             //  Body
-            //this.mainBody = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(CharWidth), ConvertUnits.ToSimUnits(charHeight), ConvertUnits.ToSimUnits(CharWidth / 4), ConvertUnits.ToSimUnits(charHeight / 4), 2, ConvertUnits.ToSimUnits(0.0f));
-            this.mainBody = BodyFactory.CreateCircle(world, ConvertUnits.ToSimUnits(CharWidth / 3), 0);
+            this.mainBody = new Body(world);
+            Fixture mainBodyFixture = FixtureFactory.AttachCircle(ConvertUnits.ToSimUnits(CharWidth * 0.5f), 0.0f, mainBody);
+            //this.mainBody = BodyFactory.CreateCircle(world, ConvertUnits.ToSimUnits(CharWidth * 0.4f), 0);
             this.mainBody.BodyType = BodyType.Dynamic;
             this.mainBody.Position = ConvertUnits.ToSimUnits(StartPosition);
             this.mainBody.Restitution = 0f;
-            this.mainBody.Friction = 1.0f;
+            this.mainBody.Friction = 0.0f;
             
             //  Wheel
-            float MotorPivot = (charHeight / 2) - 8.0f;
+            float MotorPivot = (charHeight * 0.5f) - 8.0f;
             this.wheelBody = BodyFactory.CreateBody(world);
             this.wheelBody.Position = ConvertUnits.ToSimUnits(StartPosition + new Vector2(0, MotorPivot));
             this.wheelBody.BodyType = BodyType.Dynamic;
@@ -359,7 +360,7 @@ namespace GameLibrary.Objects
             this.wheelJoint.MotorEnabled = true;
             this.wheelJoint.MotorSpeed = 0f;
             this.wheelJoint.MaxMotorTorque = float.MaxValue;
-            world.AddJoint(WheelJoint);
+            world.AddJoint(wheelJoint);
 
             //  Settings
             this.wheelBody.IgnoreCollisionWith(Body);

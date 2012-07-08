@@ -45,6 +45,8 @@ using GameLibrary.Managers;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Factories;
+using FarseerPhysics.Collision.Shapes;
+using FarseerPhysics.Common;
 
 #endregion
 
@@ -76,10 +78,6 @@ namespace GameLibrary.Objects
             {
                 return _canJump;
             }
-            internal set
-            {
-                _canJump = value;
-            }
         }
 
         public bool CanDoubleJump
@@ -87,10 +85,6 @@ namespace GameLibrary.Objects
             get
             {
                 return _canDoubleJump;
-            }
-            internal set
-            {
-                _canDoubleJump = value;
             }
         }
 
@@ -119,9 +113,12 @@ namespace GameLibrary.Objects
             get { return playerInstance; }
         }
 
-        public float AirTime
+        public Fixture PlayerHitBox
         {
-            get { return _airTime; }
+            get
+            {
+                return this.mainBody.FixtureList[this.mainBody.FixtureList.Count - 1];
+            }
         }
 
         #endregion
@@ -248,7 +245,10 @@ namespace GameLibrary.Objects
 
         private void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            if (PlayerState == pState.Dead || PlayerState == pState.Swinging) return;
+            if (PlayerState == pState.Dead || PlayerState == pState.Swinging)
+            {
+                return;
+            }
 
             if (TouchingFixtures.Contains(fixtureB))
             {
@@ -410,15 +410,26 @@ namespace GameLibrary.Objects
             //this.WheelBody.LinearDamping = 0.7f;
             this.WheelBody.CollisionCategories = Category.Cat12;
             this.mainBody.CollisionCategories = Category.Cat10;
+            this.mainBody.IsSensor = false;
+            
+            //PolygonShape playerHitBox = new PolygonShape(PolygonTools.CreateRectangle(ConvertUnits.ToSimUnits(this.CharWidth * 0.25f), ConvertUnits.ToSimUnits(charHeight * 0.6f)), 0.0f); 
+            Fixture hitbox = FixtureFactory.AttachRectangle(ConvertUnits.ToSimUnits(CharWidth * 0.25f), ConvertUnits.ToSimUnits(charHeight), 0.0f, ConvertUnits.ToSimUnits(new Vector2(0, 10)), mainBody);
+            //this.mainBody.CreateFixture(playerHitBox);
+            
+            this.mainBody.FixtureList[this.mainBody.FixtureList.Count - 1].IsSensor = true;
             
             this.PlayerState = pState.Grounded;
             this._canJump = true;
             this._airTime = 0.0f;
 
             if (GameSettings.DoubleJumpEnabled)
+            {
                 _canDoubleJump = true;
+            }
             else
+            {
                 _canDoubleJump = false;
+            }
         }
 
         #endregion
@@ -447,10 +458,10 @@ namespace GameLibrary.Objects
             //  First jump
             if (CanJump)
             {
-                force *= _jumpForce;
-
                 if (PlayerState == pState.Climbing)
                 {
+                    force *= 3.0f;
+
                     if (Input.LeftCheck())
                     {
                         force += SpinAssist.ModifyVectorByUp(new Vector2(-150, 0));
@@ -463,13 +474,15 @@ namespace GameLibrary.Objects
                     this.ToggleBodies(true);
                     this.WheelBody.ApplyLinearImpulse(force);
                     this.PlayerState = pState.Jumping;
-
-                    return;
                 }
+                else
+                {
 
-                WheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
-                this.PlayerState = pState.Jumping;
-                _canJump = false;
+                    force *= _jumpForce;
+                    WheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
+                    this.PlayerState = pState.Jumping;
+                    _canJump = false;
+                }
             }
             //  Second jump (steam jump)
             else if (this.DoubleJumpEnabled && _canDoubleJump)
@@ -521,35 +534,38 @@ namespace GameLibrary.Objects
                 if (Input.GP_LeftThumbstick.Y <= -0.25f)
                 {
                     ToggleBodies(true);
-
+                    this.CurrentAnimation.SetPlayback(true);
                     direction = (GameplayScreen.World.Gravity / 6f);
                 }
                 else if (Input.GP_LeftThumbstick.Y >= 0.25f)
                 {
                     ToggleBodies(true);
-
+                    this.CurrentAnimation.SetPlayback(false);
                     direction = -(GameplayScreen.World.Gravity / 6f);
                 }
                 else
+                {
                     ToggleBodies(false);
+                }
             }
             else
             {
                 if (Input.W)
                 {
                     ToggleBodies(true);
-
+                    this.CurrentAnimation.SetPlayback(true);
                     direction = -(GameplayScreen.World.Gravity / 6f);
                 }
+                else if (Input.S)
+                {
+                    ToggleBodies(true);
+                    this.CurrentAnimation.SetPlayback(false);
+                    direction = (GameplayScreen.World.Gravity / 6f);
+                }
                 else
-                    if (Input.S)
-                    {
-                        ToggleBodies(true);
-
-                        direction = (GameplayScreen.World.Gravity / 6f);
-                    }
-                    else
-                        ToggleBodies(false);
+                {
+                    ToggleBodies(false);
+                }
             }
 
             if (WheelJoint.MotorSpeed != 0.0f) WheelJoint.MotorSpeed = 0.0f;
