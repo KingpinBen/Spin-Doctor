@@ -187,28 +187,32 @@ namespace GameLibrary.Screens
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, null, null, cameraTransform);
             Level.DrawBackdrop(_spriteBatch);
             _spriteBatch.End();
-            if (GameSettings.DrawShadows)
-            {
-                _spriteBatch.Begin();
-                _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
-                _spriteBatch.End();
-            }
+
+            
 
             this.DrawObjects(cameraTransform, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
 
+            if (GameSettings.DrawShadows)
+            {
+                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
+                _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
+                _spriteBatch.End();
+            }
             _spriteBatch.Begin();
             HUD.Draw(_spriteBatch);
             _spriteBatch.End();
         }
     
 
-        void DrawObjects(Matrix? transform, SpriteSortMode sortMode, BlendState blendState, bool drawDecals, bool addAlpha)
+        void DrawObjects(Matrix transform, SpriteSortMode sortMode, BlendState blendState, bool drawDecals, bool addAlpha)
         {
             if (transform == null)
+            {
                 _spriteBatch.Begin(sortMode, blendState, SamplerState.AnisotropicWrap, null, null);
+            }
             else
             {
-                _spriteBatch.Begin(sortMode, blendState, SamplerState.LinearWrap, null, null, null, (Matrix)transform);
+                _spriteBatch.Begin(sortMode, blendState, SamplerState.LinearWrap, null, null, null, transform);
             }
 
             if (addAlpha)
@@ -216,13 +220,13 @@ namespace GameLibrary.Screens
                 alphaEffect.CurrentTechnique.Passes[0].Apply();
             }
 
-            Player.Instance.Draw(_spriteBatch);
-
             if (drawDecals)
             {
                 Level.DecalManager.Draw(_spriteBatch);
             }
-                
+
+            Player.Instance.Draw(_spriteBatch);
+
             for (int i = 0; i < Level.ObjectsList.Count; i++)
             {
                 Level.ObjectsList[i].Draw(_spriteBatch);
