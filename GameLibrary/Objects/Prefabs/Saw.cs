@@ -230,11 +230,11 @@ namespace GameLibrary.Objects
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(_wallDecalEnd, this.Position, null, Color.White, _decalRotation,
-                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.87f);
+                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.75f);
             sb.Draw(_wallDecalEnd, this.EndPosition, null, Color.White, (float)Math.PI + _decalRotation,
-                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.87f);
+                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.75f);
             sb.Draw(_wallDecalMiddle, _decalRectangle, null, Color.White, _decalRotation,
-                Vector2.Zero, SpriteEffects.None, 0.87f);
+                Vector2.Zero, SpriteEffects.None, 0.75f);
 
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, Color.White, 
                 TextureRotation, Origin, _scale, SpriteEffects.None, zLayer); 
