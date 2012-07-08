@@ -43,7 +43,7 @@ namespace GameLibrary.Objects.Triggers
         #endregion
         public ChangeLevelZone() : base() { }
 
-        public virtual void Init(Vector2 position)
+        public override void Init(Vector2 position)
         {
             this._position = position;
             this._width = 50;

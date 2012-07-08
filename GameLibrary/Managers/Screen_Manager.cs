@@ -87,7 +87,7 @@ namespace GameLibrary.Managers
                 _content = value;
             }
         }
-        public static GraphicsDevice GraphicsDevice
+        public static new GraphicsDevice GraphicsDevice
         {
             get
             {

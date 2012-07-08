@@ -198,7 +198,7 @@ namespace GameLibrary.Objects
         [ContentSerializerIgnore]
         public Body Body { get; set; }
         [ContentSerializerIgnore]
-        public virtual Vector2 Position
+        public new virtual Vector2 Position
         {
             get
             {
