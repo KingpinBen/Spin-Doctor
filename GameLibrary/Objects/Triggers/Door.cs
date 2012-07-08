@@ -67,7 +67,7 @@ namespace GameLibrary.Objects.Triggers
                 _nextLevel = value;
             }
         }
-        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        [ContentSerializerIgnore]
         public override Orientation Orientation
         {
             get
@@ -96,6 +96,7 @@ namespace GameLibrary.Objects.Triggers
                 return base.TriggerHeight;
             }
         }
+        
 #else
 
 #endif
@@ -193,10 +194,6 @@ namespace GameLibrary.Objects.Triggers
             if (!TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);
-            }
-            else
-            {
-                return true;
             }
 
             if (Camera.UpIs == UpIs.Up &&
