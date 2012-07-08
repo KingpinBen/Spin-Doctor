@@ -290,6 +290,10 @@ namespace GameLibrary.Objects
                 Player.Instance.Kill();
                 _touched = true;
             }
+            else
+            {
+                return false;
+            }
 
             return true;
 #endif
