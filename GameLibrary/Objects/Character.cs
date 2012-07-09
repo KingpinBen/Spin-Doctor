@@ -201,25 +201,12 @@ namespace GameLibrary.Objects
 
         #endregion
 
-        #region Constructor
-        /// <summary>
-        /// Construct
-        /// </summary>
         public Character()
         {
             _content = new ContentManager(Screen_Manager.Game.Services, "Content");
             Animations = new Dictionary<string, FrameAnimation>();
         }
-        #endregion
 
-        #region Load
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="content">Content manager</param>
-        /// <param name="_world">the World</param>
-        /// <param name="position">Starting Position</param>
-        /// <param name="tex">Texture location</param>
         public virtual void Load(ContentManager content, World _world, Vector2 position)
         {
             this.charHeight = 128f;
@@ -233,9 +220,7 @@ namespace GameLibrary.Objects
 
             SetUpPhysics(_world);
         }
-        #endregion
 
-        #region Update
         public virtual void Update(GameTime gameTime)
         {
             if (this.mainBody.Enabled == false)
@@ -248,9 +233,7 @@ namespace GameLibrary.Objects
 
             HandleAnimation(gameTime);
         }
-        #endregion
 
-        #region Draw
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             #region Development
@@ -271,7 +254,6 @@ namespace GameLibrary.Objects
             this.TexturePosition, CurrentAnimation.CurrentRect, Color.White,
             this.mainBody.Rotation, CurrentAnimation.FrameOrigin, 0.43f, LookingDirection, 0.3f);
         } 
-        #endregion
 
         #region Animations
         /// <summary>
@@ -298,6 +280,7 @@ namespace GameLibrary.Objects
             Animations.Add("Climbing",  new FrameAnimation(climbing, 20, new Point(207, 462), 10.0f, new Point(5, 4), false, 24));
             Animations.Add("Dead", new FrameAnimation(death, 21, new Point(550, 458), 20.0f, new Point(4, 5), true, 40));
         }
+
         /// <summary>
         /// Changeds animation dependant on PlayerState.
         /// </summary>
@@ -305,35 +288,49 @@ namespace GameLibrary.Objects
         {
             string oldAnimation = CurrentAnimationName;
 
+            #region Handle Animation States
+            //  Change the animation depending on the player
+            //  state.
             if (PlayerState == pState.Grounded)
+            {
                 CurrentAnimationName = "Idle";
+            }
             else if (PlayerState == pState.Running)
+            {
                 CurrentAnimationName = "Run";
+            }
             else if (PlayerState == pState.Falling)
+            {
                 CurrentAnimationName = "Falling";
+            }
             else if (PlayerState == pState.Jumping)
+            {
                 CurrentAnimationName = "Jumping";
+            }
             else if (PlayerState == pState.Climbing)
+            {
                 CurrentAnimationName = "Climbing";
+            }
             else if (PlayerState == pState.Dead)
+            {
                 CurrentAnimationName = "Dead";
+            }
+            #endregion
 
+            //  If the animation has changed, reset its current frame
             if (oldAnimation != CurrentAnimationName)
             {
                 CurrentAnimation.ResetCurrentFrame();
             }
 
+            //  Play through the animation
             if (CurrentAnimation != null)
+            {
                 CurrentAnimation.Update(gameTime);
+            }
         }
         #endregion
 
-        #region SetupPhysics
-        /// <summary>
-        /// Creates the physics and body of a moveable character.
-        /// </summary>
-        /// <param name="world">World</param>
-        /// <param name="mass">Mass of character</param>
         protected void SetUpPhysics(World world)
         {
             //  Body
@@ -370,6 +367,5 @@ namespace GameLibrary.Objects
             this.wheelBody.SleepingAllowed = false;
             this.mainBody.SleepingAllowed = false;
         }
-        #endregion
     }
 }

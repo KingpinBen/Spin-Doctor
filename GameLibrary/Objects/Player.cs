@@ -66,7 +66,6 @@ namespace GameLibrary.Objects
         private bool _canDoubleJump;
         private float _grabbingRotation;
         private float _airTime;
-        private WeldJoint grabbingJoint;
         
         #endregion
 
@@ -123,25 +122,17 @@ namespace GameLibrary.Objects
 
         #endregion
 
-        #region Constructor
-        private Player()
-            : base()
-        {
-            
-        }
-        #endregion
+        public Player() : base() { }
 
-        #region Load
         public override void Load(ContentManager content, World world, Vector2 position)
         {
             base.Load(content, world, position);
 
             SetupPlayerSettings();
 
-            if (Animations.Count == 0) 
+            if (Animations.Count == 0)
                 AddAnimations();
         }
-        #endregion
 
         public override void Update(GameTime gameTime)
         {
@@ -319,16 +310,6 @@ namespace GameLibrary.Objects
         }
         #endregion
 
-        #region Kill Player
-        /// <summary>
-        /// Allows global usage for objects to cause the death of the player.
-        /// </summary>
-        public void Kill()
-        {
-            HandleDeath();
-        }
-        #endregion
-
         #region Apply a Force
         /// <summary>
         /// Allows objects to force the player in a certain direction
@@ -348,59 +329,6 @@ namespace GameLibrary.Objects
             WheelBody.ApplyLinearImpulse(dir * force);
         }
         #endregion
-
-        #region Ladder Code
-
-        #region Toggle Body Activity
-        public void ToggleBodies(bool active)
-        {
-            if (Body.Enabled == active) return;
-
-            //  toggle
-            Body.Enabled = active;
-            WheelBody.Enabled = active;
-
-            if (active)
-            {
-                //  Wake them up
-                Body.Awake = true;
-                WheelBody.Awake = true;
-            }
-        }
-        #endregion
-
-        #region Join Ladder
-        public void JoinLadder(Vector2 MoveTo)
-        {
-            _canDoubleJump = true;
-            _canJump = true;
-
-            if (Player.Instance.PlayerState != pState.Climbing)
-            {
-                PlayerState = pState.Climbing;
-            }
-
-            this.SetPosition = MoveTo;
-        }
-        #endregion
-
-        #region Force Falling
-        /// <summary>
-        /// For use with ladder disconnects and maybe other things.
-        /// </summary>
-        public void ForceFall()
-        {
-            this.ToggleBodies(true);
-            if (PlayerState != pState.Grounded || PlayerState == pState.Running)
-            {
-                PlayerState = pState.Falling;
-            }
-        }
-        #endregion
-
-        #endregion
-
-        #region Player specific body settings
 
         private void SetupPlayerSettings()
         {
@@ -432,24 +360,7 @@ namespace GameLibrary.Objects
             }
         }
 
-        #endregion
-
-        public void CreateWeldToPlayer(Fixture fixture, Contact contact)
-        {
-            if (grabbingJoint != null) return;
-
-            PlayerState = pState.Pulling;
-            grabbingJoint = JointFactory.CreateWeldJoint(GameplayScreen.World, this.Body, fixture.Body, contact.Manifold.LocalPoint);
-        }
-
-        public void GrabRope()
-        {
-            PlayerState = pState.Swinging;
-        }
-
-        #endregion
-
-        #region Handle All Movements
+        #region PlayerState Dependent Methods
 
         void HandleJumping(Vector2 Gravity)
         {
@@ -514,6 +425,8 @@ namespace GameLibrary.Objects
 
         }
 
+        #region Death and Killing the player
+
         void HandleDeath()
         {
             this.PlayerState = pState.Dead;
@@ -522,6 +435,20 @@ namespace GameLibrary.Objects
 
             WheelJoint.MotorSpeed = 0f;
         }
+
+        #region Kill Player
+        /// <summary>
+        /// Objects can use this to kill the player.
+        /// </summary>
+        public void Kill()
+        {
+            HandleDeath();
+        }
+        #endregion
+
+        #endregion
+
+        #region Climbing and Ladders
 
         void HandleClimbing(GameTime gameTime)
         {
@@ -572,6 +499,53 @@ namespace GameLibrary.Objects
             this.WheelBody.LinearVelocity = direction;
         }
 
+        public void ToggleBodies(bool active)
+        {
+            if (Body.Enabled == active) return;
+
+            //  toggle
+            Body.Enabled = active;
+            WheelBody.Enabled = active;
+
+            if (active)
+            {
+                //  Wake them up
+                Body.Awake = true;
+                WheelBody.Awake = true;
+            }
+        }
+
+        public void JoinLadder(Vector2 MoveTo)
+        {
+            _canDoubleJump = true;
+            _canJump = true;
+
+            if (Player.Instance.PlayerState != pState.Climbing)
+            {
+                PlayerState = pState.Climbing;
+            }
+
+            this.SetPosition = MoveTo;
+        }
+
+        #region Force Falling
+        /// <summary>
+        /// For use with ladder disconnects and maybe other things.
+        /// </summary>
+        public void ForceFall()
+        {
+            this.ToggleBodies(true);
+            if (PlayerState != pState.Grounded || PlayerState == pState.Running)
+            {
+                PlayerState = pState.Falling;
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region Swinging and Rope
+
         void HandleSwinging(GameTime gameTime)
         {
             mainBody.Rotation = GrabRotation;
@@ -585,6 +559,13 @@ namespace GameLibrary.Objects
                 this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(_midAirForce * 1.5f, 0)));
             }
         }
+
+        public void GrabRope()
+        {
+            PlayerState = pState.Swinging;
+        }
+
+        #endregion
 
         void HandleAir(GameTime gameTime)
         {
@@ -626,6 +607,8 @@ namespace GameLibrary.Objects
                 this.WheelJoint.MotorSpeed = 0.0f;
             }
         }
+
+        #endregion
 
         #endregion
     }
