@@ -413,7 +413,7 @@ namespace GameLibrary.Objects
             this.mainBody.IsSensor = false;
             
             //PolygonShape playerHitBox = new PolygonShape(PolygonTools.CreateRectangle(ConvertUnits.ToSimUnits(this.CharWidth * 0.25f), ConvertUnits.ToSimUnits(charHeight * 0.6f)), 0.0f); 
-            Fixture hitbox = FixtureFactory.AttachRectangle(ConvertUnits.ToSimUnits(CharWidth * 0.25f), ConvertUnits.ToSimUnits(charHeight), 0.0f, ConvertUnits.ToSimUnits(new Vector2(0, 10)), mainBody);
+            Fixture hitbox = FixtureFactory.AttachRectangle(ConvertUnits.ToSimUnits(56), ConvertUnits.ToSimUnits(charHeight), 0.0f, ConvertUnits.ToSimUnits(new Vector2(0, 10)), mainBody);
             //this.mainBody.CreateFixture(playerHitBox);
             
             this.mainBody.FixtureList[this.mainBody.FixtureList.Count - 1].IsSensor = true;

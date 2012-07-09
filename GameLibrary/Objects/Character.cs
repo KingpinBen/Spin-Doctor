@@ -338,7 +338,8 @@ namespace GameLibrary.Objects
         {
             //  Body
             this.mainBody = new Body(world);
-            Fixture mainBodyFixture = FixtureFactory.AttachCircle(ConvertUnits.ToSimUnits(CharWidth * 0.5f), 0.0f, mainBody);
+            //Fixture mainBodyFixture = FixtureFactory.AttachCircle(ConvertUnits.ToSimUnits(CharWidth * 0.5f), 0.0f, mainBody);
+            Fixture mainBodyFixture = FixtureFactory.AttachEllipse(ConvertUnits.ToSimUnits(CharWidth * 0.4f), ConvertUnits.ToSimUnits(charHeight * 0.5f), 4, 0.0f, mainBody);
             //this.mainBody = BodyFactory.CreateCircle(world, ConvertUnits.ToSimUnits(CharWidth * 0.4f), 0);
             this.mainBody.BodyType = BodyType.Dynamic;
             this.mainBody.Position = ConvertUnits.ToSimUnits(StartPosition);
