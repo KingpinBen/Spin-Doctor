@@ -209,22 +209,29 @@ namespace GameLibrary.Objects
 
             this.Body = input.Body;
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
-            this.Body.BodyType = BodyType.Static;
-            this.Body.Restitution = 0.0f;
-            this.Body.Friction = 3.0f;
-
+            
             this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, ConvertUnits.ToSimUnits(Vector2.Zero), ConvertUnits.ToSimUnits(this.Position));
             this.revoluteJoint.MaxMotorTorque = float.MaxValue;
+            this.revoluteJoint.MotorEnabled = true;
 
             if (!_rotatesWithLevel)
             {
                 this.revoluteJoint.MotorSpeed = _motorSpeed;
+                this.Body.BodyType = BodyType.Dynamic;
             }
             else
             {
+                this.Body.BodyType = BodyType.Static;
+
                 float newSpeed = 1 / _motorSpeed;
                 this._motorSpeed = newSpeed;
             }
+
+            
+            this.Body.IgnoreGravity = true;
+            this.Body.IgnoreCCD = true;
+            this.Body.Restitution = 0.0f;
+            this.Body.Friction = 3.0f;
 #endif
         }
         #endregion
