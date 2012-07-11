@@ -179,7 +179,7 @@ namespace GameLibrary.Objects
 #else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
         }
 #endif
 
