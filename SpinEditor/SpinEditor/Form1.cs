@@ -38,6 +38,7 @@ namespace SpinEditor
         Vector2 mouseUp= Vector2.Zero;
         bool containsMouse = false;
         bool dragReleased = true;
+        int amountOfTexturesNeeded;
         #endregion
 
         #region Constructor and Load
@@ -96,199 +97,224 @@ namespace SpinEditor
         #region Create an Object
         private void CreateObject(string Type, Vector2 Position)
         {
-            if ((listBox_Assets0.SelectedItem != null) || (listBox_Classes.SelectedItem != null || Type == "Bounce Pad" || Type == "One-Sided Platform"))
+            string texloc0 = "";
+            string texloc1 = "";
+            string texloc2 = "";
+
+            if (amountOfTexturesNeeded > 0)
             {
-                //  All textures are loaded inside each object.
-                string texloc0 = "";
-                string texloc1 = "";
-                string texloc2 = "";
+                if (assetLocTextBox1.Text.ToString() != "")
+                    texloc0 = assetLocTextBox1.Text.ToString();
+                else 
+                    return;
 
-                //if (listBox_Assets0.SelectedIndex >= 0)
-                //    texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
-                //if (listBox_Assets1.SelectedIndex >= 0)
-                //    texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets1.SelectedIndex].ToString();
-                //if (listBox_Assets2.SelectedIndex >= 0)
-                //    texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets2.SelectedIndex].ToString();
-
-                    texloc0 += assetLocTextBox1.Text.ToString();
-                    texloc1 = assetLocTextBox2.Text.ToString();
-                    texloc2 = assetLocTextBox3.Text.ToString();
-
-                #region Object Types
-                switch (Type)
+                if (amountOfTexturesNeeded > 1)
                 {
-                    case "Bounce Pad":
-                        {
-                            BouncePad bouncePad = new BouncePad();
-                            bouncePad.Init(Position);
-                            bouncePad.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(bouncePad);
-                        }
-                        break;
-                    case "Cushioned Platform":
-                        {
-                            CushionedPlatform plat = new CushionedPlatform();
-                            plat.Init(Position, texloc0);
-                            plat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(plat);
-                        }
-                        break;
-                    case "Decal":
-                        {
-                            Decal decal = new Decal();
-                            decal.Init(Position, texloc0);
-                            decal.Load(xnA_RenderControl1.contentMan);
-                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Add(decal);
-                        }
-                        break;
-                    case "Door":
-                        {
-                            Door door = new Door();
-                            door.Init(Position, texloc0);
-                            door.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(door);
-                        }
-                        break;
-                    case "Ladder":
-                        {
-                            Ladder ladder = new Ladder();
-                            ladder.Init(Position, texloc0);
-                            ladder.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(ladder);
-                        }
-                        break;
-                    case "Moving Platform":
-                        {
-                            MovingPlatform movPlat = new MovingPlatform();
-                            movPlat.Init(Position, texloc0);
-                            movPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(movPlat);
-                        }
-                        break;
-                    //case "Note":
-                    //    {
-                    //        Note shiny = new Note();
-                    //        shiny.Init(Position, texloc0);
-                    //        shiny.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                    //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(shiny);
-                    //    }
-                    //    break;
-                    case "One-Sided Platform":
-                        {
-                            OneSidedPlatform oneSidePlat = new OneSidedPlatform();
-                            oneSidePlat.Init(Position);
-                            oneSidePlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(oneSidePlat);
-                        }
-                        break;
-                    case "Particle Emitter":
-                        {
-                            ParticleEmitter emitter = new ParticleEmitter();
-                            emitter.Init(Position, texloc0);
-                            emitter.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(emitter);
-                        }
-                        break;
-                    case "Piston":
-                        {
-                            Piston piston = new Piston();
-                            piston.Init(Position, texloc0, texloc1);
-                            piston.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(piston);
-                        }
-                        break;
-                    //case "Pullable Object":
-                    //    {
-                    //        PullableObject pullObj = new PullableObject();
-                    //        pullObj.Init(Position, tex.Width, tex.Height, texloc0);
-                    //        pullObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                    //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(pullObj);
-                    //    }
-                    //    break;
-                    case "Pushing Platform":
-                        {
-                            PushingPlatform pushPlat = new PushingPlatform();
-                            pushPlat.Init(Position, 100, 20, texloc0, "Assets/Sprites/Effects/explosion");
-                            pushPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(pushPlat);
-                        }
-                        break;
-                    case "Rope":
-                        {
-                            Rope rope = new Rope();
-                            rope.Init(Position, texloc0);
-                            rope.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rope);
-                        }
-                        break;
-                    case "Rotate Room Button":
-                        {
-                            RotateRoomButton rotRoomButton = new RotateRoomButton();
-                            rotRoomButton.Init(Position, texloc0);
-                            rotRoomButton.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rotRoomButton);
-                        }
-                        break;
-                    case "Rotating Platform":
-                        {
-                            RotatingPlatform rotPlat = new RotatingPlatform();
-                            rotPlat.Init(Position, texloc0);
-                            rotPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rotPlat);
-                        }
-                        break;
-                    case "Saw Blade":
-                        {
-                            if (listBox_Assets1.SelectedItem == null) return;
-                            Saw sawBlade = new Saw();
-                            sawBlade.Init(Position, texloc0, texloc1);
-                            sawBlade.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(sawBlade);
-                        }
-                        break;
-                    case "Spikes":
-                        {
-                            Spike spike = new Spike();
-                            spike.Init(Position, texloc0);
-                            spike.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(spike);
-                        }
-                        break;
-                    case "Static Object":
-                        {
-                            StaticObject staticObj = new StaticObject();
-                            staticObj.Init(Position, texloc0);
-                            staticObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                            STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(staticObj);
-                        }
-                        break;
-                    default:
+                    if (assetLocTextBox2.Text.ToString() != "")
+                        texloc1 = assetLocTextBox2.Text.ToString();
+                    else
                         return;
-                }
-                #endregion
 
-                switch (Type)
-                {
-                    case "Decal":
-                        {
-                            if (!STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
-                            {
-                                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-                            }
-                            STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Decal, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count - 1));
-                        }
-                        break;
-                    default:
-                        {
-                            if (!STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
-                            {
-                                STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
-                            }
-                            STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Physics, STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count - 1));
-                        }
-                        break;
+                    if (amountOfTexturesNeeded > 2)
+                    {
+                        if (assetLocTextBox3.Text.ToString() != "")
+                            texloc2 = assetLocTextBox3.Text.ToString();
+                        else
+                            return;
+                    }
                 }
             }
+
+            //if ((listBox_Assets0.SelectedItem != null) || (listBox_Classes.SelectedItem != null || Type == "Bounce Pad" || Type == "One-Sided Platform"))
+            //{
+            //  All textures are loaded inside each object.
+
+
+            //if (listBox_Assets0.SelectedIndex >= 0)
+            //    texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
+            //if (listBox_Assets1.SelectedIndex >= 0)
+            //    texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets1.SelectedIndex].ToString();
+            //if (listBox_Assets2.SelectedIndex >= 0)
+            //    texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets2.SelectedIndex].ToString();
+
+            //texloc0 = assetLocTextBox1.Text.ToString();
+            //texloc1 = assetLocTextBox2.Text.ToString();
+            //texloc2 = assetLocTextBox3.Text.ToString();
+
+            #region Object Types
+            switch (Type)
+            {
+                case "Bounce Pad":
+                    {
+                        BouncePad bouncePad = new BouncePad();
+                        bouncePad.Init(Position);
+                        bouncePad.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(bouncePad);
+                    }
+                    break;
+                case "Cushioned Platform":
+                    {
+                        CushionedPlatform plat = new CushionedPlatform();
+                        plat.Init(Position, texloc0);
+                        plat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(plat);
+                    }
+                    break;
+                case "Decal":
+                    {
+                        Decal decal = new Decal();
+                        decal.Init(Position, texloc0);
+                        decal.Load(xnA_RenderControl1.contentMan);
+                        STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Add(decal);
+                    }
+                    break;
+                case "Door":
+                    {
+                        Door door = new Door();
+                        door.Init(Position, texloc0);
+                        door.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(door);
+                    }
+                    break;
+                case "Ladder":
+                    {
+                        Ladder ladder = new Ladder();
+                        ladder.Init(Position, texloc0);
+                        ladder.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(ladder);
+                    }
+                    break;
+                case "Moving Platform":
+                    {
+                        MovingPlatform movPlat = new MovingPlatform();
+                        movPlat.Init(Position, texloc0);
+                        movPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(movPlat);
+                    }
+                    break;
+                //case "Note":
+                //    {
+                //        Note shiny = new Note();
+                //        shiny.Init(Position, texloc0);
+                //        shiny.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(shiny);
+                //    }
+                //    break;
+                case "One-Sided Platform":
+                    {
+                        OneSidedPlatform oneSidePlat = new OneSidedPlatform();
+                        oneSidePlat.Init(Position);
+                        oneSidePlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(oneSidePlat);
+                    }
+                    break;
+                case "Particle Emitter":
+                    {
+                        ParticleEmitter emitter = new ParticleEmitter();
+                        emitter.Init(Position, texloc0);
+                        emitter.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(emitter);
+                    }
+                    break;
+                case "Piston":
+                    {
+                        Piston piston = new Piston();
+                        piston.Init(Position, texloc0, texloc1);
+                        piston.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(piston);
+                    }
+                    break;
+                //case "Pullable Object":
+                //    {
+                //        PullableObject pullObj = new PullableObject();
+                //        pullObj.Init(Position, tex.Width, tex.Height, texloc0);
+                //        pullObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(pullObj);
+                //    }
+                //    break;
+                case "Pushing Platform":
+                    {
+                        PushingPlatform pushPlat = new PushingPlatform();
+                        pushPlat.Init(Position, texloc0, "Assets/Sprites/Effects/explosion");
+                        pushPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(pushPlat);
+                    }
+                    break;
+                case "Rope":
+                    {
+                        Rope rope = new Rope();
+                        rope.Init(Position, texloc0);
+                        rope.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rope);
+                    }
+                    break;
+                case "Rotate Room Button":
+                    {
+                        RotateRoomButton rotRoomButton = new RotateRoomButton();
+                        rotRoomButton.Init(Position, texloc0);
+                        rotRoomButton.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rotRoomButton);
+                    }
+                    break;
+                case "Rotating Platform":
+                    {
+                        RotatingPlatform rotPlat = new RotatingPlatform();
+                        rotPlat.Init(Position, texloc0);
+                        rotPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rotPlat);
+                    }
+                    break;
+                case "Saw Blade":
+                    {
+                        Saw sawBlade = new Saw();
+                        sawBlade.Init(Position, texloc0, texloc1);
+                        sawBlade.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(sawBlade);
+                    }
+                    break;
+                case "Spikes":
+                    {
+                        Spike spike = new Spike();
+                        spike.Init(Position, texloc0);
+                        spike.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(spike);
+                    }
+                    break;
+                case "Static Object":
+                    {
+                        StaticObject staticObj = new StaticObject();
+                        staticObj.Init(Position, texloc0);
+                        staticObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(staticObj);
+                    }
+                    break;
+                default:
+                    return;
+            }
+            #endregion
+
+            switch (Type)
+            {
+                case "Decal":
+                    {
+                        if (!STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                        {
+                            STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                        }
+                        STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Decal, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count - 1));
+                    }
+                    break;
+                default:
+                    {
+                        if (!STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && !STATIC_EDITOR_MODE.keyboardCurrentState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                        {
+                            STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
+                        }
+                        STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Physics, STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count - 1));
+                    }
+                    break;
+            }
+
         }
         #endregion 
 
@@ -2395,7 +2421,7 @@ namespace SpinEditor
         #region Update TextureList to match changed object type
         private void listBox_Classes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int amountOfTexturesNeeded = 0;
+            amountOfTexturesNeeded = 0;
 
             switch (listBox_Classes.Items[listBox_Classes.SelectedIndex].ToString())
             {
