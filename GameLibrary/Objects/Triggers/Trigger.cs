@@ -160,11 +160,25 @@ namespace GameLibrary.Objects.Triggers
         {
             get
             {
-                return _triggerWidth;
+                if (_orientation == Objects.Orientation.Up || _orientation == Objects.Orientation.Down)
+                {
+                    return _triggerWidth;
+                }
+                else
+                {
+                    return _triggerHeight;
+                }
             }
             protected set
             {
-                _triggerWidth = value;
+                if (_orientation == Objects.Orientation.Up || _orientation == Objects.Orientation.Down)
+                {
+                    _triggerWidth = value;
+                }
+                else
+                {
+                    _triggerHeight = value;
+                }
             }
         }
                 [ContentSerializerIgnore]
@@ -172,11 +186,25 @@ namespace GameLibrary.Objects.Triggers
         {
             get
             {
-                return _triggerHeight;
+                if (_orientation == Objects.Orientation.Up || _orientation == Objects.Orientation.Down)
+                {
+                    return _triggerHeight;
+                }
+                else
+                {
+                    return _triggerWidth;
+                }
             }
             protected set
             {
-                _triggerHeight = value;
+                if (_orientation == Objects.Orientation.Up || _orientation == Objects.Orientation.Down)
+                {
+                    _triggerHeight = value;
+                }
+                else
+                {
+                    _triggerWidth = value;
+                }
             }
         }
 #endif
