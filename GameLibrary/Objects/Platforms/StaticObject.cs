@@ -223,7 +223,7 @@ namespace GameLibrary.Objects
                 if (_orientation == Orientation.Up || _orientation == Orientation.Down)
                     _height = value;
                 else
-                    _height = value;
+                    _width = value;
             }
         }
         [ContentSerializerIgnore]
