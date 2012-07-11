@@ -39,6 +39,7 @@ using FarseerPhysics.Dynamics.Contacts;
 using GameLibrary.Drawing;
 using GameLibrary.Assists;
 using FarseerPhysics.Factories;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.Objects
@@ -47,66 +48,137 @@ namespace GameLibrary.Objects
     {
         #region Fields
 
+#if EDITOR
+        private Texture2D _devTexture;
+#else
+        private float _elapsed;
+        private float createDelay;
+        private Sprite _exhaustSprite;
+#endif
+
         [ContentSerializer]
         private float _timeBetweenPulses;
         [ContentSerializer]
         private string _exhaustTextureAsset;
         [ContentSerializer]
         private float _timePulsing;
+        [ContentSerializer]
+        private Vector2 _triggerOffset;
 
-        [ContentSerializerIgnore]
-        private float _elapsed;
-        [ContentSerializerIgnore]
-        private float createDelay;
-        [ContentSerializerIgnore]
-        private Sprite _exhaustSprite;
         #endregion
 
         #region Properties
 
-        [ContentSerializerIgnore]
-        public float PulseCooldown
+#if EDITOR
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public float PushCooldown
         {
             get
             {
                 return _timeBetweenPulses;
             }
-#if EDITOR
             set
             {
                 _timeBetweenPulses = value;
             }
-#endif
         }
 
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public string ExhaustTextureAsset
         {
             get
             {
                 return _exhaustTextureAsset;
             }
-#if EDITOR
             set
             {
                 _exhaustTextureAsset = value;
             }
-#endif
         }
-        [ContentSerializerIgnore]
-        public float TimePulsing
+
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public float PushLength
         {
             get
             {
                 return _timePulsing;
             }
-#if EDITOR
             set
             {
                 _timePulsing = value;
             }
-#endif
         }
+
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public override float TriggerWidth
+        {
+            get
+            {
+                if (_orientation == Objects.Orientation.Up || _orientation == Objects.Orientation.Down)
+                {
+                    return _triggerWidth;
+                }
+                else
+                {
+                    return _triggerHeight;
+                }
+            }
+            set
+            {
+                if (_orientation == Objects.Orientation.Up || _orientation == Objects.Orientation.Down)
+                {
+                    _triggerWidth = value;
+                }
+                else
+                {
+                    _triggerHeight = value;
+                }
+            }
+        }
+
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public override float TriggerHeight
+        {
+            get
+            {
+                if (_orientation == Objects.Orientation.Up || _orientation == Objects.Orientation.Down)
+                {
+                    return _triggerHeight;
+                }
+                else
+                {
+                    return _triggerWidth;
+                }
+            }
+            set
+            {
+                if (_orientation == Objects.Orientation.Up || _orientation == Objects.Orientation.Down)
+                {
+                    _triggerHeight = value;
+                }
+                else
+                {
+                    _triggerWidth = value;
+                }
+            }
+        }
+
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public Vector2 TriggerOffset
+        {
+            get
+            {
+                return _triggerOffset;
+            }
+            set
+            {
+                _triggerOffset = value;
+            }
+        }
+#else
+#endif
+        
+
         #endregion
 
         #region Constructor
@@ -115,15 +187,17 @@ namespace GameLibrary.Objects
             
         }
 
-        public void Init(Vector2 position, float tWidth, float tHeight, string texLoc, string fxTexLoc)
+        public void Init(Vector2 position, string texLoc, string fxTexLoc)
         {
+            base.Init(position);
+
             this._textureAsset = texLoc;
+            this._tint = Color.White;
             this._exhaustTextureAsset = fxTexLoc;
-            this.ShowHelp = false;
+            this._showHelp = false;
+            this._message = "";
             this._timePulsing = 1.0f;
             this._timeBetweenPulses = 3.0f;
-
-            base.Init(position, tWidth, tHeight);
         }
         #endregion
 
@@ -131,13 +205,25 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(this._textureAsset);
-            this._origin = new Vector2
-                (this._texture.Width / 2, this._texture.Height);
+
+            this._origin = new Vector2(this._texture.Width * 0.5f, this._texture.Height * 0.5f);
 
             this.GetRotationFromOrientation();
 
 #if EDITOR
+            _devTexture = content.Load<Texture2D>(FileLoc.DevTexture());
 
+            if (Width == 0 || Height == 0)
+            {
+                Width = _texture.Width;
+                Height = _texture.Height; 
+            }
+
+            if (this.TriggerHeight == 0 || this.TriggerWidth == 0)
+            {
+                this._triggerWidth = _texture.Width * 0.33f;
+                this._triggerHeight = 250.0f;
+            }
 #else
             this.SetupTrigger(world);
             this.CreateSprite(content);
@@ -190,6 +276,15 @@ namespace GameLibrary.Objects
         }
 
         #region Draw
+#if EDITOR
+        public override void Draw(SpriteBatch sb)
+        {
+            sb.Draw(this._texture, this._position, null, this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
+
+            sb.Draw(this._devTexture, this.GetTriggerPosition(false), new Rectangle(0, 0, (int)_triggerWidth, (int)_triggerHeight), Color.White * 0.5f, 
+                this._rotation, new Vector2(_triggerWidth * 0.5f, _triggerHeight * 0.5f), 1.0f, SpriteEffects.None, this._zLayer);
+        }
+#else
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, this._origin, 1f, SpriteEffects.None, this._zLayer);
@@ -199,6 +294,7 @@ namespace GameLibrary.Objects
             base.Draw(sb);
 #endif
         }
+#endif
         #endregion
 
         #region Private Methods
@@ -217,8 +313,8 @@ namespace GameLibrary.Objects
             _exhaustSprite.Rotation = this.TextureRotation;
             _exhaustSprite.Tint = Color.White;
             _exhaustSprite.TimesToPlay = 1;
-            _exhaustSprite.Texture = Content.Load<Texture2D>(_exhaustTextureAsset);
-            _exhaustSprite.Load();
+            //_exhaustSprite.Texture = Content.Load<Texture2D>(_exhaustTextureAsset);
+            //_exhaustSprite.Load();
 #endif
         }
         #endregion
@@ -247,21 +343,31 @@ namespace GameLibrary.Objects
         }
         #endregion
 
+        private Vector2 GetTriggerPosition(bool convert)
+        {
+            Vector2 bodyPos = Vector2.Zero;
+            bodyPos.Y = (this.Height + this.TriggerHeight) * 0.5f;
+            bodyPos = SpinAssist.ModifyVectorByOrientation(bodyPos, _orientation);
+            Vector2 newOffset = SpinAssist.ModifyVectorByOrientation(_triggerOffset, _orientation);
+            if (convert)
+                return ConvertUnits.ToSimUnits(this._position - bodyPos + newOffset);// + bodyPos);// +newOffset;
+            else
+                return this._position - bodyPos + newOffset;
+        }
+
         #region SetupTrigger
         protected override void SetupTrigger(World world)
         {
 #if EDITOR
 
 #else
-            Vector2 bodyPos = Vector2.Zero;
-            bodyPos.Y -= this._texture.Height + (_height / 2);
-            bodyPos = SpinAssist.ModifyVectorByOrientation(bodyPos, _orientation);
+            //Vector2 bodyPos = Vector2.Zero;
+            //bodyPos.Y -= this._texture.Height + (this.TriggerHeight * 0.5f);
+            //bodyPos = SpinAssist.ModifyVectorByOrientation(bodyPos, _orientation);
 
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height), 1.0f); 
-            this.Body.Position = ConvertUnits.ToSimUnits(this.Position + bodyPos);
-            this.Body.BodyType = BodyType.Static;
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(TriggerWidth), ConvertUnits.ToSimUnits(TriggerHeight), 1.0f); 
+            this.Body.Position = GetTriggerPosition(true);
             this.Body.IsSensor = true;
-            this.Body.IgnoreCollisionWith(Player.Instance.Body);
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
 #endif
@@ -279,7 +385,8 @@ namespace GameLibrary.Objects
 
             for (int i = TouchingFixtures.Count - 1; i >= 0; i--)
             {
-                if (TouchingFixtures[i] == Player.Instance.WheelBody.FixtureList[0])
+                if (TouchingFixtures[i] == Player.Instance.WheelBody.FixtureList[0] || 
+                    TouchingFixtures[i] == Player.Instance.Body.FixtureList[1])
                 {
                     Player.Instance.ApplyForce(dir, 70.0f);
                     continue;
