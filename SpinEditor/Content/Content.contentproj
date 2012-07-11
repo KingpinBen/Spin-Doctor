@@ -805,6 +805,40 @@
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Images\Textures\Environment\Cog 18T_damaged_2.png">
+      <Name>Cog 18T_damaged_2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\Cog 18T_damaged_2_Sml.png">
+      <Name>Cog 18T_damaged_2_Sml</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\Cog 18T_damaged_3.png">
+      <Name>Cog 18T_damaged_3</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\Cog 18T_damaged_3_Sml.png">
+      <Name>Cog 18T_damaged_3_Sml</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Assets\Images\Textures\Environment\Cog 18T_damaged_Sml.png">
+      <Name>Cog 18T_damaged_Sml</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Assets\Images\Textures\Piston\PistonEnd_Spike.png">
+      <Name>PistonEnd_Spike</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

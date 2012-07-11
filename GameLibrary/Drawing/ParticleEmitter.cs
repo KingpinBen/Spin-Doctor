@@ -167,7 +167,7 @@ namespace GameLibrary.Drawing
 #if EDITOR
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
-            _texture = content.Load<Texture2D>(_textureAsset);
+            _texture = content.Load<Texture2D>(FileLoc.BlankPixel());
             _isActive = true;
 
             this._particles = new List<Particle>(_particleCount);
