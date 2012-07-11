@@ -84,11 +84,6 @@ namespace GameLibrary.Objects
             {
                 return;
             }
-
-            if (Input.Interact())
-            {
-                Player.Instance.CreateWeldToPlayer(this.Body.FixtureList[0], _contactPoint);
-            }
 #endif
         }
         #endregion
