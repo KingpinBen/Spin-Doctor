@@ -198,30 +198,11 @@ namespace GameLibrary.Objects
             //  Every state should be able to jump.
             if (Input.Jump())
             {
-                if (this.grabbingJoint != null)
-                {
-                    GameplayScreen.World.RemoveJoint(grabbingJoint);
-                    this.grabbingJoint = null;
-                }
-
                 if (CanJump || CanDoubleJump)
                 {
                     HandleJumping(-GameplayScreen.World.Gravity);
                 }
             }
-            #endregion
-
-            #region Press Interact
-
-            if (Input.Interact())
-            {
-                if (grabbingJoint != null)
-                {
-                    GameplayScreen.World.RemoveJoint(this.grabbingJoint);
-                    this.grabbingJoint = null;
-                }
-            }
-
             #endregion
         }
 
