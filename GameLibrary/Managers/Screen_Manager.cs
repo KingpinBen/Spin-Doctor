@@ -124,7 +124,7 @@ namespace GameLibrary.Managers
 
         public void Load()
         {
-            Input.Load();
+            InputManager.Instance.Load();
             Audio.Load();
             Fonts.Load(Content);
 
@@ -136,11 +136,11 @@ namespace GameLibrary.Managers
 
         public override void Update(GameTime gameTime)
         {
-            Input.Update(gameTime);
+            InputManager.Instance.Update(gameTime);
             Audio.Update();
             HUD.Update(gameTime);
 
-            if (Input.IsNewKeyPress(Keys.F12))
+            if (InputManager.Instance.IsNewKeyPress(Keys.F12))
             {
                 _deviceManager.PreferredBackBufferHeight = 1080;
                 _deviceManager.PreferredBackBufferWidth = 1920;
