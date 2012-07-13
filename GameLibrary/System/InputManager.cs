@@ -36,42 +36,70 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using GameLibrary.Drawing;
 using GameLibrary.Screens;
+using System.Threading;
 #endregion
 
 namespace GameLibrary.Assists
 {
-    public static class Input
+    internal class InputManager
     {
         #region Fields
 
-        private static KeyboardState _currentKeyboardState, _lastKeyboardState;
-        private static MouseState _currentMouseState, _lastMouseState;
-        private static GamePadState _currentGamepadState, _lastGamepadState;
+        private static InputManager _singleton = null;
+        private static object _singletonLock = new object();
+        public static InputManager Instance
+        {
+            get
+            {
+                if (InputManager._singleton == null)
+                {
+                    object obj;
+                    Monitor.Enter(obj = InputManager._singletonLock);
+                    try
+                    {
+                        InputManager._singleton = new InputManager();
+                    }
+                    finally
+                    {
+                        Monitor.Exit(obj);
+                    }
+                }
+                return InputManager._singleton;
+            }
+        }
 
-        public static GamePadState CurrentGpState
+        private KeyboardState _currentKeyboardState, _lastKeyboardState;
+        private MouseState _currentMouseState, _lastMouseState;
+        private GamePadState _currentGamepadState, _lastGamepadState;
+
+        public GamePadState CurrentGpState
         {
             get { return _currentGamepadState; }
         }
 
-        public static MouseState CurrentMouseState
+        public MouseState CurrentMouseState
         {
             get { return _currentMouseState; }
         }
 
-        public static KeyboardState CurrentKbState
+        public KeyboardState CurrentKbState
         {
             get { return _currentKeyboardState; }
         }
 
-        public static Vector2 Cursor { get; internal set; }
+        public Vector2 Cursor { get; internal set; }
 
-        public static float VibrationTime { get; internal set; }
-        public static float VibrationIntensity { get; internal set;}
+        public float VibrationTime { get; internal set; }
+        public float VibrationIntensity { get; internal set;}
 
-        public static bool isGamePad { get; set; }
+        public bool isGamePad { get; set; }
         #endregion
 
-        public static void Load()
+        private InputManager()
+        {
+        }
+
+        public void Load()
         {
             if (GamePad.GetState(PlayerIndex.One).IsConnected)
                 isGamePad = true;
@@ -83,42 +111,42 @@ namespace GameLibrary.Assists
         #region PC
 
         #region Function Keys
-        public static bool F12
+        public bool F12
         {
             get { return IsNewKeyPress(Keys.F12); }
         }
 
-        public static bool F11
+        public bool F11
         {
             get { return IsNewKeyPress(Keys.F11); }
         }
 
-        public static bool F10
+        public bool F10
         {
             get { return IsNewKeyPress(Keys.F10); }
         }
 
-        public static bool F9
+        public bool F9
         {
             get { return IsNewKeyPress(Keys.F9); }
         }
 
-        public static bool F8
+        public bool F8
         {
             get { return IsNewKeyPress(Keys.F8); }
         }
 
-        public static bool F7
+        public bool F7
         {
             get { return IsNewKeyPress(Keys.F7); }
         }
 
-        public static bool F6
+        public bool F6
         {
             get { return IsNewKeyPress(Keys.F6); }
         }
 
-        public static bool F5
+        public bool F5
         {
             get
             {
@@ -126,7 +154,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool F4
+        public bool F4
         {
             get
             {
@@ -134,7 +162,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool F3
+        public bool F3
         {
             get
             {
@@ -142,7 +170,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool F2
+        public bool F2
         {
             get
             {
@@ -150,7 +178,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool F1
+        public bool F1
         {
             get
             {
@@ -159,7 +187,7 @@ namespace GameLibrary.Assists
         }
 
         
-        public static bool Quit
+        public bool Quit
         {
             get
             {
@@ -169,7 +197,7 @@ namespace GameLibrary.Assists
         #endregion 
 
         #region Arrow Keys
-        public static bool Up
+        public bool Up
         {
             get
             {
@@ -184,7 +212,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool Down
+        public bool Down
         {
             get
             {
@@ -199,7 +227,7 @@ namespace GameLibrary.Assists
             }
         }         
 
-        public static bool Left
+        public bool Left
         {
             get
             {
@@ -216,7 +244,7 @@ namespace GameLibrary.Assists
             } 
         }       
 
-        public static bool Right
+        public bool Right
         {
             get
             {
@@ -234,7 +262,7 @@ namespace GameLibrary.Assists
         #endregion
 
         #region Normal Keys
-        public static bool Enter
+        public bool Enter
         {
             get
             {
@@ -249,7 +277,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool Space
+        public bool Space
         {
             get
             {
@@ -265,7 +293,7 @@ namespace GameLibrary.Assists
             }
         }         
 
-        public static bool Tab
+        public bool Tab
         {
             get
             {
@@ -281,7 +309,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool SHIFT_L
+        public bool SHIFT_L
         {
             get
             {
@@ -297,7 +325,7 @@ namespace GameLibrary.Assists
 
         }
 
-        public static bool SHIFT_R
+        public bool SHIFT_R
         {
             get
             {
@@ -313,7 +341,7 @@ namespace GameLibrary.Assists
 
         }
 
-        public static bool CTRL
+        public bool CTRL
         {
             get
             {
@@ -329,7 +357,7 @@ namespace GameLibrary.Assists
 
         }
         
-        public static bool Escape
+        public bool Escape
         {
             get
             {
@@ -346,7 +374,7 @@ namespace GameLibrary.Assists
         }
 
 
-        public static bool One
+        public bool One
         {
             get
             {
@@ -362,7 +390,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool Two
+        public bool Two
         {
             get
             {
@@ -378,7 +406,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool Three
+        public bool Three
         {
             get
             {
@@ -394,7 +422,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool Four
+        public bool Four
         {
             get
             {
@@ -410,7 +438,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool E
+        public bool E
         {
             get
             {
@@ -425,7 +453,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool W
+        public bool W
         {
             get
             {
@@ -440,7 +468,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool A
+        public bool A
         {
             get
             {
@@ -456,7 +484,7 @@ namespace GameLibrary.Assists
 
         }
 
-        public static bool S
+        public bool S
         {
             get
             {
@@ -472,7 +500,7 @@ namespace GameLibrary.Assists
 
         }
 
-        public static bool D
+        public bool D
         {
             get
             {
@@ -492,7 +520,7 @@ namespace GameLibrary.Assists
 
         #region Mouse Stuff
 
-        public static Vector2 MouseXY
+        public Vector2 MouseXY
         {
             get
             {
@@ -500,12 +528,12 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool lMouseButton
+        public bool lMouseButton
         {
             get { return LMouseButtonPress(); }
         }
 
-        public static bool rMouseButton
+        public bool rMouseButton
         {
             get { return RMouseButtonPress(); }
         }
@@ -516,7 +544,7 @@ namespace GameLibrary.Assists
         #region GamePad
 
         #region ABXY
-        public static bool GP_A
+        public bool GP_A
         {
             get
             {
@@ -531,7 +559,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool GP_B
+        public bool GP_B
         {
             get
             {
@@ -546,7 +574,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool GP_X
+        public bool GP_X
         {
             get
             {
@@ -561,7 +589,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool GP_Y
+        public bool GP_Y
         {
             get
             {
@@ -578,7 +606,7 @@ namespace GameLibrary.Assists
         #endregion
 
         #region Triggers
-        public static bool GP_LB
+        public bool GP_LB
         {
             get
             {
@@ -592,7 +620,7 @@ namespace GameLibrary.Assists
                 }
             }
         }
-        public static bool GP_LT
+        public bool GP_LT
         {
             get
             {
@@ -606,7 +634,7 @@ namespace GameLibrary.Assists
                 }
             }
         }
-        public static bool GP_RB
+        public bool GP_RB
         {
             get
             {
@@ -620,7 +648,7 @@ namespace GameLibrary.Assists
                 }
             }
         }
-        public static bool GP_RT
+        public bool GP_RT
         {
             get
             {
@@ -637,7 +665,7 @@ namespace GameLibrary.Assists
         #endregion
 
         #region Others
-        public static bool GP_DPLeft
+        public bool GP_DPLeft
         {
             get
             {
@@ -652,7 +680,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool GP_DPRight
+        public bool GP_DPRight
         {
             get
             {
@@ -667,7 +695,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool GP_DPDown
+        public bool GP_DPDown
         {
             get
             {
@@ -682,7 +710,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool GP_DPUp
+        public bool GP_DPUp
         {
             get
             {
@@ -697,7 +725,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool GP_Start
+        public bool GP_Start
         {
             get
             {
@@ -712,7 +740,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool GP_Back
+        public bool GP_Back
         {
             get
             {
@@ -736,22 +764,22 @@ namespace GameLibrary.Assists
 
         #region PC
 
-        public static bool IsKeyPress(Keys keys)
+        public bool IsKeyPress(Keys keys)
         {
             return _currentKeyboardState.IsKeyDown(keys);
         }
 
-        public static bool LMouseButtonPress()
+        public bool LMouseButtonPress()
         {
             return (_lastMouseState.LeftButton == ButtonState.Released) && (_currentMouseState.LeftButton == ButtonState.Pressed);
         }
 
-        public static bool RMouseButtonPress()
+        public bool RMouseButtonPress()
         {
             return (_lastMouseState.RightButton == ButtonState.Released) && (_currentMouseState.RightButton == ButtonState.Pressed);
         }
 
-        public static bool IsNewKeyPress(Keys keys) //triggers when the key was NOT depressed during the last statecheck
+        public bool IsNewKeyPress(Keys keys) //triggers when the key was NOT depressed during the last statecheck
         {
             return (_lastKeyboardState.IsKeyUp(keys)) && (_currentKeyboardState.IsKeyDown(keys));
         }
@@ -759,36 +787,36 @@ namespace GameLibrary.Assists
         #endregion
 
         #region Gamepad
-        public static bool LeftThumbstick()
+        public bool LeftThumbstick()
         {
             if (_currentGamepadState.ThumbSticks.Left != Vector2.Zero)
                 return true;
             return false;
         }
 
-        public static bool RightThumbstick()
+        public bool RightThumbstick()
         {
             if (_currentGamepadState.ThumbSticks.Right != Vector2.Zero)
                 return true;
             return false;
         }
 
-        public static Vector2 GP_LeftThumbstick
+        public Vector2 GP_LeftThumbstick
         {
             get { return _currentGamepadState.ThumbSticks.Left; }
         }
 
-        public static Vector2 GP_RightThumbstick
+        public Vector2 GP_RightThumbstick
         {
             get { return _currentGamepadState.ThumbSticks.Right; }
         }
 
-        public static bool IsNewGpPress(Buttons btn)
+        public bool IsNewGpPress(Buttons btn)
         {
             return (_lastGamepadState.IsButtonUp(btn)) && (_currentGamepadState.IsButtonDown(btn));
         }
 
-        public static bool IsGpPressed(Buttons btn)
+        public bool IsGpPressed(Buttons btn)
         {
             return _currentGamepadState.IsButtonDown(btn);
         }
@@ -797,7 +825,7 @@ namespace GameLibrary.Assists
         #endregion
 
         #region Update
-        public static void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (isGamePad)
             {
@@ -830,7 +858,7 @@ namespace GameLibrary.Assists
 
         #region Gameplay
 
-        public static bool Interact()
+        public bool Interact()
         {
             if (isGamePad)
                 return GP_Y;
@@ -838,7 +866,7 @@ namespace GameLibrary.Assists
                 return E;
         }
 
-        public static bool Jump()
+        public bool Jump()
         {
             if (isGamePad)
                 return GP_A;
@@ -846,7 +874,7 @@ namespace GameLibrary.Assists
                 return Space;
         }
 
-        public static bool Menu()
+        public bool Menu()
         {
             if (isGamePad)
                 return GP_Start;
@@ -854,7 +882,7 @@ namespace GameLibrary.Assists
                 return Escape;
         }
 
-        public static bool Return()
+        public bool Return()
         {
             if (isGamePad)
                 return GP_B;
@@ -862,7 +890,7 @@ namespace GameLibrary.Assists
                 return Escape;
         }
 
-        public static bool MenuSelect()
+        public bool MenuSelect()
         {
             if (isGamePad)
                 return GP_A;
@@ -870,7 +898,7 @@ namespace GameLibrary.Assists
                 return lMouseButton;
         }
 
-        public static bool Grab()
+        public bool Grab()
         {
             if (isGamePad)
                 return GP_X;
@@ -878,7 +906,7 @@ namespace GameLibrary.Assists
                 return E;
         }
 
-        public static bool LeftCheck()
+        public bool LeftCheck()
         {
             if (isGamePad)
             {
@@ -893,7 +921,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool RightCheck()
+        public bool RightCheck()
         {
             if (isGamePad)
             {
@@ -908,7 +936,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool UpCheck()
+        public bool UpCheck()
         {
             if (isGamePad)
             {
@@ -923,7 +951,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool DownCheck()
+        public bool DownCheck()
         {
             if (isGamePad)
             {
@@ -938,7 +966,7 @@ namespace GameLibrary.Assists
             }
         }
 
-        public static bool RotateLeft()
+        public bool RotateLeft()
         {
             if (isGamePad)
                 return GP_LT;
@@ -946,7 +974,7 @@ namespace GameLibrary.Assists
                 return Left;
         }
 
-        public static bool RotateRight()
+        public bool RotateRight()
         {
             if (isGamePad)
                 return GP_RT;
@@ -962,7 +990,7 @@ namespace GameLibrary.Assists
         /// </summary>
         /// <param name="time">How long in milliseconds</param>
         /// <param name="intensity">float between 0.0 and 1.0</param>
-        public static void VibrateGP(float time, float intensity)
+        public void VibrateGP(float time, float intensity)
         {
             //  Added this outside isGamePad check for development check incase you're
             //  using a PC input.
@@ -979,7 +1007,7 @@ namespace GameLibrary.Assists
         }
         #endregion
 
-        public static string GetInputName()
+        public string GetInputName()
         {
             if (isGamePad)
                 return "Game Pad";

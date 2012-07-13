@@ -90,15 +90,15 @@ namespace GameLibrary.Assists
             Console.WriteLine("Zoom: " + Camera.Zoom.ToString());
 
             Console.WriteLine("--------------------[ CONTROLS ]--------------------"); 
-            Console.Write("Gamepad Input?: " + Input.isGamePad.ToString());
-            if (Input.isGamePad)
+            Console.Write("Gamepad Input?: " + InputManager.Instance.isGamePad.ToString());
+            if (InputManager.Instance.isGamePad)
             {
-                Console.WriteLine(". LeftThumbstick : " + new Vector2((float)Math.Round(Input.GP_LeftThumbstick.X, 2), (float)Math.Round(Input.GP_LeftThumbstick.Y, 2)).ToString());
-                Console.WriteLine("ButtonsPushed  : " + Input.CurrentGpState.Buttons.ToString());
+                Console.WriteLine(". LeftThumbstick : " + new Vector2((float)Math.Round(InputManager.Instance.GP_LeftThumbstick.X, 2), (float)Math.Round(InputManager.Instance.GP_LeftThumbstick.Y, 2)).ToString());
+                Console.WriteLine("ButtonsPushed  : " + InputManager.Instance.CurrentGpState.Buttons.ToString());
             }
             else
             {
-                Console.WriteLine(".  Buttons pushed: " + Input.CurrentKbState.GetPressedKeys().ToString());
+                Console.WriteLine(".  Buttons pushed: " + InputManager.Instance.CurrentKbState.GetPressedKeys().ToString());
             }
 
             Console.WriteLine("---------------------[ PLAYER ]---------------------");
