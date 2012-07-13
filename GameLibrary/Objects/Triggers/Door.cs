@@ -143,7 +143,7 @@ namespace GameLibrary.Objects.Triggers
 #if EDITOR
 
 #else
-            if (Input.Interact() && Triggered)
+            if (InputManager.Instance.Interact() && Triggered)
             {
                 Screen_Manager.LoadLevel(_nextLevel);
             }

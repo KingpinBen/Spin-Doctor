@@ -253,7 +253,7 @@ namespace GameLibrary.Objects
 
             if (_inGrabbingRange)
             {
-                if (Input.Grab())
+                if (InputManager.Instance.Grab())
                 {
                     if (Grabbed)
                     {

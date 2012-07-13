@@ -49,7 +49,7 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            if (Input.Interact() && Triggered)
+            if (InputManager.Instance.Interact() && Triggered)
             {
                 CreatePopUp();
             }

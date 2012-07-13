@@ -163,7 +163,7 @@ namespace GameLibrary.Objects
 
             if (!_aboutToRotate)
             {
-                if (Input.Interact())
+                if (InputManager.Instance.Interact())
                 {
                     _aboutToRotate = true;
                 }

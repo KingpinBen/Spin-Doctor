@@ -169,7 +169,7 @@ namespace GameLibrary.Objects
 
             if (!GameplayScreen.World.JointList.Contains(_ropeJoint))
             {
-                if (Input.Grab() && _inRange)
+                if (InputManager.Instance.Grab() && _inRange)
                 {
                     int index = 0;
                     float smallestDistance = (float)(Math.Pow(Player.Instance.Body.Position.X - _touchedRopeFixtures[0].Body.Position.X, 2.0) + Math.Pow(Player.Instance.Body.Position.Y - _touchedRopeFixtures[0].Body.Position.Y, 2.0));
@@ -197,7 +197,7 @@ namespace GameLibrary.Objects
             {
                 Player.Instance.GrabRotation = _pathBodies[_grabbedIndex].Rotation;
 
-                if (Input.Jump() || Player.Instance.PlayerState == pState.Dead)
+                if (InputManager.Instance.Jump() || Player.Instance.PlayerState == pState.Dead)
                 {
                     GameplayScreen.World.RemoveJoint(_ropeJoint);
                     GameplayScreen.World.RemoveJoint(_ropePlayerJoint);
