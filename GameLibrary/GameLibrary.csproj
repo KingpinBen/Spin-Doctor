@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;EDITOR</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -93,6 +93,7 @@
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
       <Private>False</Private>
     </Reference>
@@ -109,17 +110,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assists\Audio.cs" />
-    <Compile Include="Assists\ConvertUnits.cs" />
-    <Compile Include="Assists\DevDisplay.cs" />
-    <Compile Include="Assists\FileLoc.cs" />
-    <Compile Include="Assists\Fonts.cs" />
-    <Compile Include="Assists\Input.cs" />
-    <Compile Include="Assists\PrimGrid.cs" />
-    <Compile Include="Assists\PrimitiveBatch.cs" />
-    <Compile Include="Assists\SpinAssist.cs" />
-    <Compile Include="Assists\TexVertOutput.cs" />
-    <Compile Include="Drawing\Camera.cs" />
+    <Compile Include="Keybindings.cs" />
+    <Compile Include="System\Audio.cs" />
+    <Compile Include="Helpers\ConvertUnits.cs" />
+    <Compile Include="System\DevDisplay.cs" />
+    <Compile Include="Helpers\FileLoc.cs" />
+    <Compile Include="System\ErrorReport.cs" />
+    <Compile Include="System\Fonts.cs" />
+    <Compile Include="System\InputManager.cs" />
+    <Compile Include="Helpers\PrimitiveBatch.cs" />
+    <Compile Include="Helpers\SpinAssist.cs" />
+    <Compile Include="Helpers\TexVertOutput.cs" />
+    <Compile Include="Drawing\Camera\Camera.cs" />
     <Compile Include="Drawing\AnimatedText.cs" />
     <Compile Include="Drawing\Camera\CameraType.cs" />
     <Compile Include="Drawing\Camera\WheresUp.cs" />
