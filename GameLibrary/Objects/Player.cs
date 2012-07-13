@@ -154,12 +154,12 @@ namespace GameLibrary.Objects
                 ToggleBodies(true);
             }
 
-            if (Input.LeftCheck())
+            if (InputManager.Instance.LeftCheck())
             {
                 this.WheelJoint.MotorSpeed = -_movementSpeed;
                 LookingDirection = SpriteEffects.FlipHorizontally;
             }
-            else if (Input.RightCheck())
+            else if (InputManager.Instance.RightCheck())
             {
                 this.WheelJoint.MotorSpeed = _movementSpeed;
                 LookingDirection = SpriteEffects.None;
@@ -196,7 +196,7 @@ namespace GameLibrary.Objects
 
             #region Press Jump
             //  Every state should be able to jump.
-            if (Input.Jump())
+            if (InputManager.Instance.Jump())
             {
                 if (CanJump || CanDoubleJump)
                 {
@@ -354,11 +354,11 @@ namespace GameLibrary.Objects
                 {
                     force *= 3.0f;
 
-                    if (Input.LeftCheck())
+                    if (InputManager.Instance.LeftCheck())
                     {
                         force += SpinAssist.ModifyVectorByUp(new Vector2(-150, 0));
                     }
-                    else if (Input.RightCheck())
+                    else if (InputManager.Instance.RightCheck())
                     {
                         force += SpinAssist.ModifyVectorByUp(new Vector2(150, 0));
                     }
@@ -382,9 +382,9 @@ namespace GameLibrary.Objects
                 force *= _jumpForce;
 
                 // Apply 2 forces. Up and then directiona;
-                if (Math.Abs(Input.GP_LeftThumbstick.X) >= 0.2)
+                if (Math.Abs(InputManager.Instance.GP_LeftThumbstick.X) >= 0.2)
                 {
-                    Vector2 direction = new Vector2(Input.GP_LeftThumbstick.X, 0);
+                    Vector2 direction = new Vector2(InputManager.Instance.GP_LeftThumbstick.X, 0);
                     direction.Normalize();
                     direction *= 15.0f;
 
@@ -435,17 +435,17 @@ namespace GameLibrary.Objects
         {
             Vector2 direction = Vector2.Zero;
 
-            if (Input.isGamePad)
+            if (InputManager.Instance.isGamePad)
             {
                 //  Using a % mod on movement speed fixes a separation issue with 
                 //  ladders where separation should disconnect player doesn't.
-                if (Input.GP_LeftThumbstick.Y <= -0.25f)
+                if (InputManager.Instance.GP_LeftThumbstick.Y <= -0.25f)
                 {
                     ToggleBodies(true);
                     this.CurrentAnimation.SetPlayback(true);
                     direction = (GameplayScreen.World.Gravity / 6f);
                 }
-                else if (Input.GP_LeftThumbstick.Y >= 0.25f)
+                else if (InputManager.Instance.GP_LeftThumbstick.Y >= 0.25f)
                 {
                     ToggleBodies(true);
                     this.CurrentAnimation.SetPlayback(false);
@@ -458,13 +458,13 @@ namespace GameLibrary.Objects
             }
             else
             {
-                if (Input.W)
+                if (InputManager.Instance.W)
                 {
                     ToggleBodies(true);
                     this.CurrentAnimation.SetPlayback(true);
                     direction = -(GameplayScreen.World.Gravity / 6f);
                 }
-                else if (Input.S)
+                else if (InputManager.Instance.S)
                 {
                     ToggleBodies(true);
                     this.CurrentAnimation.SetPlayback(false);
@@ -531,11 +531,11 @@ namespace GameLibrary.Objects
         {
             mainBody.Rotation = GrabRotation;
 
-            if (Input.LeftCheck())
+            if (InputManager.Instance.LeftCheck())
             {
                 this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(-_midAirForce * 1.5f, 0)));
             }
-            else if (Input.RightCheck())
+            else if (InputManager.Instance.RightCheck())
             {
                 this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(_midAirForce * 1.5f, 0)));
             }
@@ -563,11 +563,11 @@ namespace GameLibrary.Objects
                 }
             }
 
-            if (Input.LeftCheck())
+            if (InputManager.Instance.LeftCheck())
             {
                 this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(-_midAirForce, 0)));
             }
-            else if (Input.RightCheck())
+            else if (InputManager.Instance.RightCheck())
             {
                 this.WheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(_midAirForce, 0)));
             }
@@ -575,11 +575,11 @@ namespace GameLibrary.Objects
 
         void HandlePulling(GameTime gameTime)
         {
-            if (Input.LeftCheck())
+            if (InputManager.Instance.LeftCheck())
             {
                 this.WheelJoint.MotorSpeed = -_movementSpeed;
             }
-            else if (Input.RightCheck())
+            else if (InputManager.Instance.RightCheck())
             {
                 this.WheelJoint.MotorSpeed = _movementSpeed;
             }

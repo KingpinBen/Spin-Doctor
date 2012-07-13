@@ -229,7 +229,7 @@ namespace GameLibrary.Objects
             }
 
             Vector2 tempPosition = ConvertUnits.ToDisplayUnits(this.Body.Position - this.wheelBody.Position);
-            this.TexturePosition = ConvertUnits.ToDisplayUnits(this.Body.Position) + (tempPosition * 0.25f);
+            this.TexturePosition = ConvertUnits.ToDisplayUnits(this.WheelBody.Position) + (tempPosition);
 
             HandleAnimation(gameTime);
         }
@@ -333,18 +333,20 @@ namespace GameLibrary.Objects
 
         protected void SetUpPhysics(World world)
         {
+            float height = charHeight * 0.6f;
+
             //  Body
-            //this.mainBody = new Body(world);
+            this.mainBody = new Body(world);
             //Fixture mainBodyFixture = FixtureFactory.AttachCircle(ConvertUnits.ToSimUnits(CharWidth * 0.5f), 0.0f, mainBody);
-            //Fixture mainBodyFixture = FixtureFactory.AttachEllipse(ConvertUnits.ToSimUnits(CharWidth * 0.4f), ConvertUnits.ToSimUnits(charHeight * 0.5f), 4, 0.0f, mainBody);
-            this.mainBody = BodyFactory.CreateCircle(world, ConvertUnits.ToSimUnits(28), 0);
+            Fixture mainBodyFixture = FixtureFactory.AttachEllipse(ConvertUnits.ToSimUnits(CharWidth * 0.4f), ConvertUnits.ToSimUnits(height), 8, 0.0f, mainBody);
+            //this.mainBody = BodyFactory.CreateCircle(world, ConvertUnits.ToSimUnits(28), 0);
             this.mainBody.BodyType = BodyType.Dynamic;
             this.mainBody.Position = ConvertUnits.ToSimUnits(StartPosition);
             this.mainBody.Restitution = 0f;
             this.mainBody.Friction = 0.0f;
             
             //  Wheel
-            float MotorPivot = (charHeight * 0.5f) - 8.0f;
+            float MotorPivot = (height) - 8.0f;
             this.wheelBody = BodyFactory.CreateBody(world);
             this.wheelBody.Position = ConvertUnits.ToSimUnits(StartPosition + new Vector2(0, MotorPivot));
             this.wheelBody.BodyType = BodyType.Dynamic;
@@ -357,7 +359,7 @@ namespace GameLibrary.Objects
             this.wheelJoint = new RevoluteJoint(Body, WheelBody, ConvertUnits.ToSimUnits(Vector2.UnitY * MotorPivot), Vector2.Zero);
             this.wheelJoint.MotorEnabled = true;
             this.wheelJoint.MotorSpeed = 0f;
-            this.wheelJoint.MaxMotorTorque = float.MaxValue;
+            this.wheelJoint.MaxMotorTorque = 10000f;
             world.AddJoint(wheelJoint);
 
             //  Settings
