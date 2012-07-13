@@ -42,6 +42,10 @@ using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Collision;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
+using System.Windows.Forms;
+using System.IO;
+using GameLibrary.System;
+using Microsoft.Xna.Framework.Content.Pipeline;
 #endregion
 
 namespace GameLibrary.Screens
@@ -240,22 +244,22 @@ namespace GameLibrary.Screens
         #region HandleInput
         private void HandleInput()
         {
-            if (Player.Instance.PlayerState == pState.Dead && Input.Jump())
+            if (Player.Instance.PlayerState == pState.Dead && InputManager.Instance.Jump())
             {
                 LoadLevel();
             }
 
-            if (Input.IsNewGpPress(Buttons.DPadUp) || Input.IsNewKeyPress(Keys.F8))
+            if (InputManager.Instance.IsNewGpPress(Buttons.DPadUp) || InputManager.Instance.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F8))
             {
                 GameSettings.ToggleShadows();
             }
 
-            if (Input.IsNewGpPress(Buttons.DPadDown) || Input.IsNewKeyPress(Keys.F1))
+            if (InputManager.Instance.IsNewGpPress(Buttons.DPadDown) || InputManager.Instance.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F1))
             {
                 GameSettings.ToggleDoubleJump();
             }
 
-            if (Input.GP_Start || Input.Escape)
+            if (InputManager.Instance.GP_Start || InputManager.Instance.Escape)
             {
                 GameMenu pause = new GameMenu(this._graphicsDevice);
                 Screen_Manager.AddScreen(pause);
@@ -290,9 +294,24 @@ namespace GameLibrary.Screens
                 Level = new Level();
             }
 
-            using (XmlReader read = XmlReader.Create( FileLoc.Level(LevelID) ))
+            try
             {
-                Level = IntermediateSerializer.Deserialize<Level>(read, null);
+                using (XmlReader read = XmlReader.Create(FileLoc.Level(LevelID)))
+                {
+                    Level = IntermediateSerializer.Deserialize<Level>(read, null);
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                MessageBox.Show("Something went wrong when trying to load level: '" + LevelID + "'");
+                string value = e.InnerException.ToString();
+                ErrorReport.GenerateReport(value, null);
+            }
+            catch (InvalidContentException e)
+            {
+                MessageBox.Show("Something went wrong deserializing level: '" + LevelID + "'");
+                string value = e.Message.ToString();
+                ErrorReport.GenerateReport(value, null);
             }
             
             Level.Load(World);
