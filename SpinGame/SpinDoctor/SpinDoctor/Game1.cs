@@ -123,30 +123,32 @@ namespace SpinDoctor
         {
             for (int i = 0; i < args.Length; i++)
             {
-                if (args[i].ToLower() == "-dev")
+                args[i].ToLowerInvariant();
+
+                if (args[i].Contains("-dev"))
                 {
                     SessionSettings.SetDevelopment(this, true);
                 }
-                else if (args[i] == "-loadlevel")
+                else if (args[i].Contains("-loadlevel"))
                 {
                     _startLevel = Convert.ToInt32(args[i + 1]);
                     i++;
                 }
-                else if (args[i] == "+x")
+                else if (args[i].Contains("+x"))
                 {
                     _backbufferWidth = Convert.ToInt32(args[i + 1]);
                     i++;
                 }
-                else if (args[i] == "+y")
+                else if (args[i].Contains("+y"))
                 {
                     _backbufferHeight = Convert.ToInt32(args[i + 1]);
                     i++;
                 }
-                else if (args[i] == "-fullscreen")
+                else if (args[i].Contains("-fullscreen"))
                 {
                     _fullScreen = true;
                 }
-                else if (args[i] == "-skipStartup")
+                else if (args[i].Contains("-skipStartup"))
                 {
                     _showStartup = false;
                 }
