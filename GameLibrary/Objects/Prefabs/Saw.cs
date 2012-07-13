@@ -50,9 +50,6 @@ namespace GameLibrary.Objects
 
 #else
         private Texture2D _bloodiedTexture;
-        private Texture2D _wallDecalEnd;
-        private Texture2D _wallDecalMiddle;
-        private Rectangle _decalRectangle;
         private List<Fixture> TouchingFixtures = new List<Fixture>();
         //private Vector2 
         private bool _touched = false;
@@ -151,52 +148,6 @@ namespace GameLibrary.Objects
 
 #else
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
-            this._wallDecalEnd = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalEndPiece");
-            this._wallDecalMiddle = content.Load<Texture2D>("Assets/Images/Textures/Saw/i_sawDecalMiddlePiece");
-
-            #region Sort out the wall indents
-            if (_movementDirection == Direction.Horizontal)
-            {
-                _decalRotation = -MathHelper.PiOver2;
-
-                if (EndPosition.X > Position.X)
-                {
-                    _decalRectangle = new Rectangle(
-                        -(int)Math.Abs(Position.X),
-                        -(int)Math.Abs(Position.Y + this._wallDecalEnd.Height / 2),
-                        (int)(this._wallDecalEnd.Height),
-                        (int)Math.Abs(EndPosition.X - Position.X));
-                }
-                else
-                {
-                    _decalRectangle = new Rectangle(
-                        -(int)Math.Abs(EndPosition.X),
-                        -(int)Math.Abs(EndPosition.Y + this._wallDecalEnd.Height / 2),
-                        (int)this._wallDecalEnd.Height,
-                        (int)Math.Abs(Position.X - EndPosition.X));
-                }
-            }
-            else
-            {
-                if (EndPosition.Y > Position.Y)
-                {
-                    _decalRectangle = new Rectangle(
-                        (int)Position.X - this._wallDecalEnd.Width / 2,
-                        (int)Position.Y,
-                        (int)(this._wallDecalEnd.Width),
-                        (int)(EndPosition.Y - Position.Y));
-                }
-                else
-                {
-                    _decalRectangle = new Rectangle(
-                        (int)EndPosition.X - this._wallDecalEnd.Width / 2,
-                        (int)EndPosition.Y,
-                        (int)(this._wallDecalEnd.Width),
-                        (int)(Position.Y - EndPosition.Y));
-                }
-
-            }
-            #endregion
 
             this.SetupPhysics(world);
 #endif
@@ -229,15 +180,8 @@ namespace GameLibrary.Objects
 #else
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_wallDecalEnd, this.Position, null, Color.White, _decalRotation,
-                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.75f);
-            sb.Draw(_wallDecalEnd, this.EndPosition, null, Color.White, (float)Math.PI + _decalRotation,
-                new Vector2(this._wallDecalEnd.Width * 0.5f, this._wallDecalEnd.Height * 0.5f), 1.0f, SpriteEffects.None, 0.75f);
-            sb.Draw(_wallDecalMiddle, _decalRectangle, null, Color.White, _decalRotation,
-                Vector2.Zero, SpriteEffects.None, 0.75f);
-
-            sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, Color.White, 
-                TextureRotation, Origin, _scale, SpriteEffects.None, zLayer); 
+            sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, 
+                TextureRotation, Origin, _scale, SpriteEffects.None, this._zLayer); 
 
 #if Development
             sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed: " + this.PrismaticJoint.MotorSpeed + ". IsMoving: " + this._isMoving, 
