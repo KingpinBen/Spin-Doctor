@@ -51,14 +51,14 @@ namespace GameLibrary.Screens
         #region Update
         public override void Update(GameTime gameTime)
         {
-            if (Input.isGamePad)
+            if (InputManager.Instance.isGamePad)
             {
-                if (Input.Menu() || Input.GP_A || Input.GP_B)
+                if (InputManager.Instance.Menu() || InputManager.Instance.GP_A || InputManager.Instance.GP_B)
                     Screen_Manager.FadeOut(null);
             }
             else
             {
-                if (Input.Menu() || Input.Space || Input.lMouseButton || Input.Enter)
+                if (InputManager.Instance.Menu() || InputManager.Instance.Space || InputManager.Instance.lMouseButton || InputManager.Instance.Enter)
                     Screen_Manager.FadeOut(null);
             }
 

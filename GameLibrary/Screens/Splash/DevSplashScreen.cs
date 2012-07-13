@@ -63,7 +63,7 @@ namespace GameLibrary.Screens
 
         public override void Update(GameTime gameTime)
         {
-            if (Input.Escape || Input.GP_Start || Input.lMouseButton)
+            if (InputManager.Instance.Escape || InputManager.Instance.GP_Start || InputManager.Instance.lMouseButton)
                 Screen_Manager.DeleteScreen();
 
             base.Update(gameTime);

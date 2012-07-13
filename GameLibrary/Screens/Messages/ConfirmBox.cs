@@ -60,7 +60,7 @@ namespace GameLibrary.Screens.Messages
         #region Update
         public override void Update(GameTime gameTime)
         {
-            if (Input.Return())
+            if (InputManager.Instance.Return())
                 CompleteAction(optionType.Opt2);
 
             base.Update(gameTime);

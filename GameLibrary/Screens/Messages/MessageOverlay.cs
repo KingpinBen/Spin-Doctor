@@ -83,7 +83,7 @@ namespace GameLibrary.Screens.Messages
 
         public override void Update(GameTime gameTime)
         {
-            if (Input.GP_A || Input.Enter)
+            if (InputManager.Instance.GP_A || InputManager.Instance.Enter)
                 Screen_Manager.DeleteScreen();
         }
 

@@ -162,7 +162,7 @@ namespace GameLibrary.Screens.Menu
                         (int)_menuItemArray[x, y].Position.Y - height / 2,
                         width, height);
 
-                    Vector2 mousePos = Input.Cursor;
+                    Vector2 mousePos = InputManager.Instance.Cursor;
 
                     if (itemArea.Contains((int)mousePos.X, (int)mousePos.Y))
                     {
@@ -180,12 +180,12 @@ namespace GameLibrary.Screens.Menu
         /// </summary>
         private void HandleInput()
         {
-            if (Input.isGamePad)
+            if (InputManager.Instance.isGamePad)
             {
                 Point selectedOption = this.SelectionOption;
 
                 #region Gamepad
-                if (Input.GP_DPDown)
+                if (InputManager.Instance.GP_DPDown)
                 {
                     //  Increment Y selected position
                     if (SelectionOption.Y + 1 >= _menuArrayCount.Y)
@@ -194,7 +194,7 @@ namespace GameLibrary.Screens.Menu
                         selectedOption.Y++;
                 }
 
-                if (Input.GP_DPUp)
+                if (InputManager.Instance.GP_DPUp)
                 {
                     //  Decrement Y selected position
                     if (SelectionOption.Y - 1 < 0)
@@ -203,7 +203,7 @@ namespace GameLibrary.Screens.Menu
                         selectedOption.Y--;
                 }
 
-                if (Input.GP_DPLeft)
+                if (InputManager.Instance.GP_DPLeft)
                 {
                     //  Decrement X selected position
                     if (SelectionOption.X - 1 < 0)
@@ -212,7 +212,7 @@ namespace GameLibrary.Screens.Menu
                         selectedOption.X--;
                 }
 
-                if (Input.GP_DPRight)
+                if (InputManager.Instance.GP_DPRight)
                 {
                     //  Increment X selected position
                     if (SelectionOption.X + 1 >= _menuArrayCount.X)
@@ -221,10 +221,10 @@ namespace GameLibrary.Screens.Menu
                         selectedOption.X++;
                 }
 
-                if (Input.MenuSelect())
+                if (InputManager.Instance.MenuSelect())
                     CompleteAction(_menuItemArray[SelectionOption.X, SelectionOption.Y].OptionType);
 
-                if (Input.Return())
+                if (InputManager.Instance.Return())
                     Screen_Manager.DeleteScreen();
 
                 this.SelectionOption = selectedOption;
@@ -238,7 +238,7 @@ namespace GameLibrary.Screens.Menu
 
                 FindMenuOption();
 
-                if (Input.MenuSelect())
+                if (InputManager.Instance.MenuSelect())
                     CompleteAction(_menuItemArray[SelectionOption.X, SelectionOption.Y].OptionType);
             }
 

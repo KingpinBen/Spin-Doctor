@@ -103,7 +103,7 @@ namespace GameLibrary.Screens
                 sprite.Update(gameTime);
             }
 
-            if (!Screen_Manager.LoadingContent && Input.Jump())
+            if (!Screen_Manager.LoadingContent && InputManager.Instance.Jump())
                 Screen_Manager.FadeOut(null);
 
             base.Update(gameTime);
