@@ -47,6 +47,8 @@ namespace GameLibrary.Objects
         private bool _rotatesWithLevel;
         [ContentSerializer]
         private float _motorSpeed;
+        [ContentSerializer(Optional = true)]
+        private bool _motorEnabled;
 
         #endregion
 
@@ -110,6 +112,7 @@ namespace GameLibrary.Objects
 
             this._rotatesWithLevel = true;
             this._useBodyRotation = true;
+            this._motorEnabled = true;
         }
         #endregion
 
@@ -142,7 +145,7 @@ namespace GameLibrary.Objects
 #if EDITOR
 
 #else
-            if (_rotatesWithLevel)
+            if (_rotatesWithLevel && _motorEnabled)
             {
                 if (this.Body.Rotation != TargetRotation)
                 {
