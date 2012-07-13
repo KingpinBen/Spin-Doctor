@@ -254,7 +254,7 @@ namespace GameLibrary.Drawing
             #region Cancel
             if (_buttonType == ImgType.Cancel)
             {
-                if (Input.isGamePad)
+                if (InputManager.Instance.isGamePad)
                 {
                     _texture = content.Load<Texture2D>
                         ("Assets/Other/Controls/B");
@@ -272,7 +272,7 @@ namespace GameLibrary.Drawing
             #region Continue
             else if (_buttonType == ImgType.Continue)
             {
-                if (Input.isGamePad)
+                if (InputManager.Instance.isGamePad)
                 {
                     _texture = content.Load<Texture2D>
                         ("Assets/Other/Controls/A");
@@ -290,7 +290,7 @@ namespace GameLibrary.Drawing
             #region Interact
             else if (_buttonType == ImgType.Interact)
             {
-                if (Input.isGamePad)
+                if (InputManager.Instance.isGamePad)
                 {
                     _texture = content.Load<Texture2D>
                         ("Assets/Other/Controls/Y");
