@@ -106,12 +106,23 @@ namespace SpinEditor
         /// <returns></returns>
         public bool CheckIfComplete()
         {
+            string path = Directory.GetCurrentDirectory();
+
             //  The texture must be changed here.
             if (rearWall == "" && roomType != RoomTypeEnum.NonRotating)
             {
                 MessageBox.Show("Put a texture name in for the background.");
                 return false;
             }
+
+            string fileloc = path + "\\Content\\Assets\\Images\\Textures\\RoomSetup\\" + rearWall + ".xnb";
+
+            if (!File.Exists(fileloc))
+            {
+                MessageBox.Show("File doesn't exist. Try again.");
+                return false;
+            }
+
             if (roomType != RoomTypeEnum.NonRotating)
             {
                 rearWall = "Assets/Images/Textures/RoomSetup/" + rearWall;
