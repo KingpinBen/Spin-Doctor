@@ -269,8 +269,8 @@ namespace GameLibrary.Objects
                 {
                     if ((int)type != 1)
                     {
-                        //this.Kill();
-                        //return true;
+                        this.Kill();
+                        return true;
                     }
                 }
                 //Input.VibrateGP(100f, 0.6f);

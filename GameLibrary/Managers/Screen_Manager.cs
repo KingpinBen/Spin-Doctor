@@ -150,7 +150,7 @@ namespace GameLibrary.Managers
             #region Dev
             if (SessionSettings.DevelopmentMode)
             {
-                DevDisplay.Update(gameTime);
+                DevDisplay.Instance.Update(gameTime);
             }
             #endregion
 
@@ -239,7 +239,7 @@ namespace GameLibrary.Managers
             #region Development
             if (SessionSettings.DevelopmentMode)
             {
-                DevDisplay.Draw(gameTime, stopWatch);
+                DevDisplay.Instance.Draw(gameTime, stopWatch);
                 stopWatch.Reset();
             }
 

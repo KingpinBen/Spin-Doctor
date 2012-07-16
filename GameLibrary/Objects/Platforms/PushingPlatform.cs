@@ -313,7 +313,8 @@ namespace GameLibrary.Objects
             _exhaustSprite.Rotation = this.TextureRotation;
             _exhaustSprite.Tint = Color.White;
             _exhaustSprite.TimesToPlay = 1;
-            //_exhaustSprite.Texture = Content.Load<Texture2D>(_exhaustTextureAsset);
+            _exhaustSprite.SetTexture(Content.Load<Texture2D>(_exhaustTextureAsset));
+            _exhaustSprite.Animate = false;
             //_exhaustSprite.Load();
 #endif
         }

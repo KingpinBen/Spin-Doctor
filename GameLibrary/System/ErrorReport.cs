@@ -7,6 +7,8 @@ using System.Threading;
 using System.Diagnostics;
 using System.Windows.Forms;
 using GameLibrary.Managers;
+using GameLibrary.Objects;
+using GameLibrary.Assists;
 
 namespace GameLibrary.System
 {
@@ -42,6 +44,14 @@ namespace GameLibrary.System
 					frame.GetMethod().Name
 				});
             }
+            textWriter.WriteLine("\n");
+            textWriter.WriteLine("Dev:\nPlayer Position : {0}.\nState: {1}.\nFPS:{2}", new object[] 
+            {
+                ConvertUnits.ToDisplayUnits(Player.Instance.Body.Position), 
+                Player.Instance.PlayerState.ToString(),
+                DevDisplay.Instance.FPS.ToString()
+            });
+
             textWriter.Close();
             textWriter.Dispose();
             if (!Debugger.IsAttached)

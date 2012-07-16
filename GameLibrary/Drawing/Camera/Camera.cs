@@ -54,7 +54,6 @@ namespace GameLibrary.Drawing
         private static bool _levelRotates;
         private static bool _allowLevelRotation;
         private static bool _levelRotating;
-        private static Vector2 _worldGravity;
         private static Vector2 _cameraPosition;
         private static float _worldRotation;
         private static float _currentCameraZoom;

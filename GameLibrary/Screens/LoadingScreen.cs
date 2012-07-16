@@ -70,8 +70,8 @@ namespace GameLibrary.Screens
             int locx = Screen_Manager.GraphicsDevice.Viewport.Width - (int)(102 * sprite.Scale);
             int locy = Screen_Manager.GraphicsDevice.Viewport.Height - (int)(102 * sprite.Scale);
             sprite.Init(new Vector2(locx, locy), new Point(102, 102), new Point(8, 1), -1);
-            sprite.ZLayer = 0.0f;
-            sprite.Load(content, "Assets/Other/Game/LoadingIcon");
+            sprite.ZLayer = 0.3f;
+            sprite.Load(content.Load<Texture2D>("Assets/Other/Game/LoadingIcon"));
 
             ContinueText = new AnimatedText("to Continue", ImgType.Continue,1.0f, Alignment.Left);
             ContinueText.AnchorPoint = ScreenAnchorLocation.BottomLeft;

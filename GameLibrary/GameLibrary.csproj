@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Keybindings.cs" />
+    <Compile Include="Objects\Prefabs\NewPiston.cs" />
     <Compile Include="System\Audio.cs" />
     <Compile Include="Helpers\ConvertUnits.cs" />
     <Compile Include="System\DevDisplay.cs" />

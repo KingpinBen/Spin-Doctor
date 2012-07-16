@@ -54,21 +54,15 @@ namespace GameLibrary.Objects
 
         [ContentSerializer]
         private new Direction _orientation;
-
         [ContentSerializer]
         private int _climbableSections;
 
-        [ContentSerializerIgnore]
-        private bool _inGrabbingRange;
-
-        [ContentSerializerIgnore]
-        private bool _grabbed;
-
-        [ContentSerializerIgnore]
-        List<Fixture> TouchingBodies = new List<Fixture>();
-
 #if EDITOR
         private Texture2D editorTexture;
+#else
+        private bool _inGrabbingRange;
+        private bool _grabbed;
+        List<Fixture> TouchingBodies = new List<Fixture>();
 #endif
 
         #endregion
@@ -404,6 +398,8 @@ namespace GameLibrary.Objects
         /// </summary>
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
+#if EDITOR
+#else
             //  Whichever body just separated, remove it form the list.
             TouchingBodies.Remove(fixtureB);
 
@@ -416,12 +412,15 @@ namespace GameLibrary.Objects
             //  Initiate disconnecting the player.
             _inGrabbingRange = false;
             DisconnectPlayer();
+#endif
         }
         /// <summary>
         /// Set the player in range to enable climbing
         /// </summary>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR
+#else
             //  If the list doesn't already have this fixture as touching the Body, add it.
             if (!TouchingBodies.Contains(fixtureB))
             {
@@ -437,7 +436,7 @@ namespace GameLibrary.Objects
             {
                 _inGrabbingRange = true;
             }
-
+#endif
             return true;
         }
         #endregion

@@ -39,8 +39,12 @@ namespace GameLibrary.Objects
         [ContentSerializer]
         private float _restitution;
 
+#if EDITOR
+
+#else
         private float lastTouched;
         private const float _bounceCooldown = 2f;
+#endif
 
         #endregion
 

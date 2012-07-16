@@ -237,7 +237,7 @@ namespace GameLibrary.Drawing
 
             if (_roomType != RoomTypeEnum.NonRotating)
             {
-                _gears.Load(_content, Vector2.Zero, Camera.LevelDiameter);
+                _gears.Load(_content,Camera.LevelDiameter);
             }
 
             for (int i = 0; i < this._objectList.Count; i++)
@@ -326,7 +326,7 @@ namespace GameLibrary.Drawing
             if (this._roomType == RoomTypeEnum.Rotating)
                 canRotate = true;
 
-            Camera.Load(canRotate, largestLevelDimension / 2);
+            Camera.Load(canRotate, largestLevelDimension * 0.5f);
         }
 
         #endregion

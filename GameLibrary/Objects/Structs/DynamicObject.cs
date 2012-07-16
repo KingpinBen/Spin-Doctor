@@ -262,7 +262,7 @@ namespace GameLibrary.Objects
             }
 
             if  ((this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit && !this.MovingToStart) ||
-                (this.PrismaticJoint.JointTranslation <= 0 && this.MovingToStart) ||
+                (this.PrismaticJoint.JointTranslation <= this.PrismaticJoint.LowerLimit && this.MovingToStart) ||
                 _elapsedTimer > 0.0f)
             {
                 //  If so zero the speed. Fixes bouncing errors in farseer.
@@ -299,7 +299,7 @@ namespace GameLibrary.Objects
         /// Make sure it's used afterwards otherwise you'll have issues.
         /// </summary>
         /// <param name="world"></param>
-        protected void SetUpJoint(World world)
+        protected virtual void SetUpJoint(World world)
         {
 #if EDITOR
 

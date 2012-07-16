@@ -91,6 +91,33 @@ namespace GameLibrary.Objects
                 _scale = value;
             }
         }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public new Direction MovementDirection
+        {
+            get
+            {
+                return _movementDirection;
+            }
+            set
+            {
+                Direction oldDirection = _movementDirection;
+                if (oldDirection != value)
+                {
+                    Vector2 dist = _endPosition - Position;
+
+                    _movementDirection = value;
+
+                    if (oldDirection == Direction.Horizontal)
+                    {
+                        _endPosition = new Vector2(dist.X, 0);
+                    }
+                    else
+                    {
+                        _endPosition = new Vector2(0, dist.Y);
+                    }
+                }
+            }
+        }
 #else
         [ContentSerializerIgnore]
         public Texture2D TextureToUse

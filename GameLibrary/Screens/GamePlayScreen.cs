@@ -192,16 +192,15 @@ namespace GameLibrary.Screens
             Level.DrawBackdrop(_spriteBatch);
             _spriteBatch.End();
 
-            
-
             this.DrawObjects(cameraTransform, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
 
             if (GameSettings.DrawShadows)
             {
-                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
+                _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
                 _spriteBatch.Draw(_gameObjects, Vector2.Zero, Color.White);
                 _spriteBatch.End();
             }
+
             _spriteBatch.Begin();
             HUD.Draw(_spriteBatch);
             _spriteBatch.End();
@@ -235,6 +234,12 @@ namespace GameLibrary.Screens
             {
                 Level.ObjectsList[i].Draw(_spriteBatch);
             }
+
+            if (drawDecals)
+            {
+                Sprite_Manager.Draw(_spriteBatch);
+            }
+
             _spriteBatch.End();
         }
 

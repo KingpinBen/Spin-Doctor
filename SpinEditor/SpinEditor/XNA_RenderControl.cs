@@ -130,7 +130,6 @@ namespace SpinEditor
         void tick(object sender, EventArgs e)
         {
             this.Invalidate();
-
         }
         #endregion
 

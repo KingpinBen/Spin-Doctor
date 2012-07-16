@@ -61,12 +61,13 @@ namespace GameLibrary.Objects
         /// </summary>
         /// <param name="LC">Rotation Centre</param>
         /// <param name="CR">Radius of the Circle</param>
-        public void Load(ContentManager content, Vector2 LC, float CR)
+        public void Load(ContentManager content, float CR)
         {
             _gearsTex = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/gear");
             _background = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/rock");
-            //float offset = (CR - _gearsTex.Width) + 25f;
-            float offset = CR * 0.5f + _gearsTex.Width;
+
+            float texHyp = (float)Math.Sqrt((this._gearsTex.Width * this._gearsTex.Width + 50) * 2.0f);
+            float offset = CR * 0.5f + ((texHyp * Scale));
 
             TopLeftGear = Vector2.Zero + new Vector2(-offset, -offset);
             TopRightGear = Vector2.Zero + new Vector2(offset,-offset);

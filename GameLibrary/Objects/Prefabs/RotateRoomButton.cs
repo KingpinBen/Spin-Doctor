@@ -43,6 +43,10 @@ namespace GameLibrary.Objects
     {
         #region Fields
 
+        [ContentSerializer]
+        private RotateDirection enumDirection = RotateDirection.Clockwise;
+        [ContentSerializer]
+        private float _delayBeforeRotate = 1.0f;
 #if EDITOR
 
 #else
@@ -50,11 +54,6 @@ namespace GameLibrary.Objects
         private float _elapsed;
 #endif
 
-        [ContentSerializer]
-        private RotateDirection enumDirection = RotateDirection.Clockwise;
-        [ContentSerializer]
-        private float _delayBeforeRotate;
-        
         #endregion
 
         #region Properties
@@ -82,6 +81,18 @@ namespace GameLibrary.Objects
             }
             set
             {
+            }
+        }
+        [ContentSerializerIgnore]
+        public float DelayBeforeRotation
+        {
+            get
+            {
+                return _delayBeforeRotate;
+            }
+            set
+            {
+                _delayBeforeRotate = value;
             }
         }
 #else
@@ -136,17 +147,19 @@ namespace GameLibrary.Objects
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
-            this._origin = new Vector2(_width / 2, _height / 2);
+            this._origin = new Vector2(_width * 0.5f, _height * 0.5f);
             //base.Load(content, world);
 
 #if EDITOR
             if (_width == 0 || _height == 0)
             {
-                this._width = this._texture.Width / 2;
-                this._height = this._texture.Height / 2;
+                this._width = this._texture.Width;
+                this._height = this._texture.Height;
             }
 #else
             this._message = " to rotate " + RDirection;
+            this._triggerWidth = this._triggerHeight = this._texture.Width * 0.5f;
+
             SetupTrigger(world);
 #endif
         }

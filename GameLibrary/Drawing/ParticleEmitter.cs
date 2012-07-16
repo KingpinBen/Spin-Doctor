@@ -21,13 +21,13 @@ namespace GameLibrary.Drawing
         private int _devHeight = 35;
         private int _devWidth = 35;
 #else
-        
-#endif
         List<Particle> _particles;
         Queue<Particle> _queuedParticles;
-        float _elapsed;
-
+        float _elapsed = 0.0f;
         Texture2D _texture;
+#endif
+
+
         [ContentSerializer]
         bool _isActive;
         [ContentSerializer]
@@ -58,18 +58,6 @@ namespace GameLibrary.Drawing
         #region Properties
 
 #if EDITOR
-        [ContentSerializerIgnore]
-        public Vector2 Position
-        {
-            get
-            {
-                return _position;
-            }
-            set
-            {
-                _position = value;
-            }
-        }
         [ContentSerializerIgnore]
         public int MaxParticles
         {
@@ -144,6 +132,55 @@ namespace GameLibrary.Drawing
             }
 
         }
+        [ContentSerializerIgnore]
+        public float LifeTimeMin
+        {
+            get
+            {
+                return _minLifeTime;
+            }
+            set
+            {
+                _minLifeTime = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public float LifeTimeMax
+        {
+            get 
+            {
+                return _maxLifeTime;
+            }
+            set
+            {
+                _maxLifeTime = value;
+            }
+               
+        }
+        [ContentSerializerIgnore]
+        public float SpawnAngleMin
+        {
+            get
+            {
+                return _minSpawnAngle;
+            }
+            set
+            {
+                _minSpawnAngle = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public float SpawnAngleMax
+        {
+            get
+            {
+                return _maxSpawnAngle;
+            }
+            set
+            {
+                _maxSpawnAngle = value;
+            }
+        }
 #else
 
 #endif
@@ -160,16 +197,20 @@ namespace GameLibrary.Drawing
             this._position = position;
             this._timeNewParticle = 1 / 60;
             this._textureAsset = texAsset;
+            this._gravityModifier = 1.0f;
+            this._useGravity = true;
+            this._maxParticles = 60;
+            this._minParticles = 10;
         }
 
-        public override void  Load(ContentManager content, World world)
+        public override void Load(ContentManager content, World world)
         {
 #if EDITOR
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
-            _texture = content.Load<Texture2D>(FileLoc.BlankPixel());
-            _isActive = true;
-
+            this._texture = content.Load<Texture2D>(FileLoc.BlankPixel());
+            this._isActive = true;
+            this._particleCount = 10;
             this._particles = new List<Particle>(_particleCount);
             this._queuedParticles = new Queue<Particle>(_particleCount);
 
@@ -216,6 +257,7 @@ namespace GameLibrary.Drawing
 #endif
         }
 
+        #region Draw
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
@@ -238,16 +280,29 @@ namespace GameLibrary.Drawing
             }
         }
 #endif
+        #endregion
+
+        #region Private Methods
 
         void AddParticle()
         {
+#if EDITOR
+#else
             int numParticles = SpinAssist.GetRandom(_minParticles, _maxParticles);
 
             for (int i = 0; i < numParticles; i++)
             {
-                Particle particle = _queuedParticles.Dequeue();
-                SetupParticle(particle);
+                try
+                {
+                    Particle particle = _queuedParticles.Dequeue();
+                    SetupParticle(particle);
+                }
+                catch
+                {
+
+                }
             }
+#endif
         }
 
         void SetupParticle(Particle particle)
@@ -256,5 +311,7 @@ namespace GameLibrary.Drawing
             Vector2 acceleration = Vector2.Zero;
             particle.Init(this._position, -GameplayScreen.World.Gravity, acceleration, life);
         }
+
+        #endregion
     }
 }

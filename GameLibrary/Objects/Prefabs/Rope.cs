@@ -52,18 +52,22 @@ namespace GameLibrary.Objects
     {
         #region Fields
 
+        private Texture2D endTexture;
         [ContentSerializer]
         private Vector2 _endPosition;
         [ContentSerializer]
         private int _chainCount;
 
+#if EDITOR
+#else
         private List<Body> _pathBodies;
         private List<Fixture> _touchedRopeFixtures = new List<Fixture>();
         private WeldJoint _ropePlayerJoint;
         private bool _inRange;
-        private Texture2D endTexture;
         private RopeJoint _ropeJoint;
         private int _grabbedIndex;
+
+#endif
 
         #endregion
 
@@ -243,6 +247,8 @@ namespace GameLibrary.Objects
         #region SetupPhysics
         protected override void SetupPhysics(World world)
         {
+#if EDITOR
+#else
             this._pathBodies = new List<Body>();
             float width = ConvertUnits.ToSimUnits(this._texture.Width / 2);
             float height = ConvertUnits.ToSimUnits(this._texture.Height / 2);
@@ -294,12 +300,15 @@ namespace GameLibrary.Objects
                 prevBody = body;
                 _pathBodies.Add(body);
             }
+#endif
         }
         #endregion
 
         #region Collisions
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
+#if EDITOR
+#else
             if (_touchedRopeFixtures.Contains(fixtureA) && fixtureB == Player.Instance.Body.FixtureList[0])
             {
                 _touchedRopeFixtures.Remove(fixtureA);
@@ -309,10 +318,13 @@ namespace GameLibrary.Objects
             {
                 _inRange = false;
             }
+#endif
         }
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+#if EDITOR
+#else
             if (fixtureB != Player.Instance.Body.FixtureList[0])
             {
                 return true;
@@ -327,7 +339,7 @@ namespace GameLibrary.Objects
                     _inRange = true;
                 }
             }
-
+#endif
             return true;
         }
         #endregion

@@ -36,28 +36,51 @@ using System.Diagnostics;
 
 namespace GameLibrary.Assists
 {
-    public static class DevDisplay
+    internal class DevDisplay
     {
         #region Fields/Variables
 
-        private static DebugViewXNA _debugView;
+        private static DevDisplay _singleton = null;
+        public static DevDisplay Instance
+        {
+            get
+            {
+                return _singleton;
+            }
+        }
+
+        private DebugViewXNA _debugView;
         private const float MeterInPixels = 24f;
 
-        private static int frameCounter;
-        private static int frameRate;
-        private static TimeSpan elapsedTime;
-        private static World _world;
+        private int frameCounter;
+        private int frameRate;
+        private int averageFPS;
+        private TimeSpan elapsedTime;
+        private World _world;
+
+        public float FPS
+        {
+            get
+            {
+                return frameRate;
+            }
+        }
 
         #endregion
 
-        public static void Load(World world)
+        private DevDisplay(World world)
         {
             LoadCreateDebugView(world);
             _world = world;
         }
 
+        public static void Load(World world)
+        {
+            _singleton = new DevDisplay(world);
+        }
+
         #region Update
-        public static void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             FPSCount(gameTime);
         }
@@ -65,7 +88,7 @@ namespace GameLibrary.Assists
 
         #region Draw
 
-        public static void Draw(GameTime gameTime, Stopwatch stopWatch)
+        public void Draw(GameTime gameTime, Stopwatch stopWatch)
         {
             Draw_DebugData();
 
@@ -115,7 +138,7 @@ namespace GameLibrary.Assists
         /// Updates the FPS reset check.
         /// </summary>
         /// <param name="gameTime"></param>
-        private static void FPSCount(GameTime gameTime)
+        private void FPSCount(GameTime gameTime)
         {
             
             elapsedTime += gameTime.ElapsedGameTime;
@@ -130,7 +153,7 @@ namespace GameLibrary.Assists
         #endregion
 
         #region Farseer Debug
-        static void LoadCreateDebugView(World world)
+        void LoadCreateDebugView(World world)
         {
             //create and configure the debug view
             _debugView = new DebugViewXNA(world);
@@ -140,7 +163,7 @@ namespace GameLibrary.Assists
             _debugView.LoadContent(Screen_Manager.GraphicsDevice, Screen_Manager.Content);
         }
 
-        static void Draw_DebugData()
+        void Draw_DebugData()
         {
             Matrix projection = Matrix.CreateOrthographicOffCenter(0f, Screen_Manager.GraphicsDevice.Viewport.Width / MeterInPixels,
                 Screen_Manager.GraphicsDevice.Viewport.Height / MeterInPixels, 0f, 0f, 1f);

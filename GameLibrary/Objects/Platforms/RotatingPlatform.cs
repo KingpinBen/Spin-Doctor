@@ -90,6 +90,18 @@ namespace GameLibrary.Objects
                 
             }
         }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public bool Enabled
+        {
+            get
+            {
+                return _motorEnabled;
+            }
+            set
+            {
+                _motorEnabled = value;
+            }
+        }
 #else
         private float TargetRotation
         {
@@ -186,7 +198,7 @@ namespace GameLibrary.Objects
         }
 #endif
 
-        #region new methods
+        #region Private Methods
 
         #region SetUpPhysics
         protected override void SetupPhysics(World world)
@@ -225,7 +237,7 @@ namespace GameLibrary.Objects
             else
             {
                 this.Body.BodyType = BodyType.Static;
-
+                this.Body.Rotation = this._rotation;
                 float newSpeed = 1 / _motorSpeed;
                 this._motorSpeed = newSpeed;
             }

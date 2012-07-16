@@ -35,140 +35,143 @@ namespace GameLibrary.Drawing
     public class Sprite : NodeObject
     {
         #region Fields
-
-        private float elapsed = 0.0f;
-        private float rotation = 0.0f;
-        private float scale = 1.0f;
-        private float alpha = 1.0f;
-        private float zLayer = 0.7f;
-        private bool isAnimated;
-        private bool isAnimating = true;
-        private bool isDead = false;
-        private bool isDying = false;
-        private int timesToPlay = 1;
-        private Texture2D spriteTexture;
-        private Point singleFrameDimensions = new Point(0, 0);
-        private Point currentFrame = new Point(0, 0);
-        private Point frameCount = new Point(1, 1);
-        private Vector2 position = Vector2.Zero;
-        private Vector2 velocity = Vector2.Zero;
-        private Color tint = Color.White;
+#if EDITOR
+#else
+        private float _elapsed = 0.0f;
+#endif
+        
+        private float _rotation = 0.0f;
+        private float _scale = 1.0f;
+        private float _alpha = 1.0f;
+        private bool _isAnimated;
+        private bool _isAnimating = true;
+        private bool _isDead = false;
+        private bool _isDying = false;
+        private int _timesToPlay = 1;
+        private Texture2D _spriteTexture;
+        private Point _singleFrameDimensions = new Point(0, 0);
+        private Point _currentFrame = new Point(0, 0);
+        private Point _frameCount = new Point(1, 1);
+        private Vector2 _velocity = Vector2.Zero;
+        private Color _tint = Color.White;
         
         #endregion
 
         #region Properties
-
-        public float ZLayer
-        {
-            get
-            {
-                return zLayer;
-            }
-            set
-            {
-                zLayer = value;
-            }
-        }
-
+        [ContentSerializerIgnore]
         public float Scale
         {
             get
             {
-                return scale;
+                return _scale;
             }
             set
             {
-                scale = value;
+                _scale = value;
             }
         }
-
+        [ContentSerializerIgnore]
         public Color Tint
         {
             get
             {
-                return tint * alpha;
+                return _tint * _alpha;
             }
             set
             {
-                tint = value;
+                _tint = value;
             }
         }
-
+        [ContentSerializerIgnore]
         public float Rotation
         {
             get
             {
-                return rotation;
+                return _rotation;
             }
             set
             {
-                rotation = value;
+                _rotation = value;
             }
         }
-
+        [ContentSerializerIgnore]
         public int TimesToPlay
         {
             get
             {
-                return timesToPlay;
+                return _timesToPlay;
             }
             set
             {
-                if (!isAnimated) 
+                if (!_isAnimated) 
                     return;
 
-                timesToPlay = value;
+                _timesToPlay = value;
             }
         }
-
+        [ContentSerializerIgnore]
         public Vector2 Velocity
         {
             get
             {
-                return velocity;
+                return _velocity;
             }
             set
             {
-                velocity = value;
+                _velocity = value;
             }
         }
-
-        public Texture2D Texture
-        {
-            set
-            {
-                this.spriteTexture = value;
-            }
-        }
-
+        [ContentSerializerIgnore]
         public float Alpha
         {
             get
             {
-                return alpha;
+                return _alpha;
             }
             set
             {
-                alpha = value;
+                _alpha = MathHelper.Clamp(value, 0.0f, 1.0f);
             }
         }
-
+        [ContentSerializerIgnore]
+        public bool Animate
+        {
+            get
+            {
+                return _isAnimated;
+            }
+            set
+            {
+                this._isAnimated = value;
+            }
+        }
+        [ContentSerializerIgnore]
         public bool IsDead
         {
             get
             {
-                return isDead;
+                return _isDead;
             }
+        }
+        [ContentSerializerIgnore]
+        public new float ZLayer
+        {
+            get
+            {
+                return this._zLayer;
+            }
+            set
+            {
+                this._zLayer = MathHelper.Clamp(value, 0.0f, 0.9f);
+            }
+
         }
 
         #endregion
 
         #region Constructors and Init
 
-        public Sprite()
-        {
-            
-        }
+        public Sprite() { }
 
         /// <summary>
         /// Initializes an animated sprite
@@ -178,15 +181,15 @@ namespace GameLibrary.Drawing
         /// <param name="timesToPlay">how many times the animation should play. -1 for infinite</param>
         public void Init(Vector2 position, Point frameDimensions, Point spriteSheetDims, int timesToPlay)
         {
-            this.singleFrameDimensions = frameDimensions;
-            this.frameCount = spriteSheetDims;
-            this.timesToPlay = timesToPlay;
-            this.isAnimated = true;
+            this._singleFrameDimensions = frameDimensions;
+            this._frameCount = spriteSheetDims;
+            this._timesToPlay = timesToPlay;
+            this._isAnimated = true;
         }
 
         public void Init()
         {
-            this.isAnimated = false;
+            this._isAnimated = false;
         }
 
         #endregion
@@ -197,53 +200,56 @@ namespace GameLibrary.Drawing
         /// in Sprite (for separate, not instanced sprites).
         /// </summary>
         /// <param name="tex">The textures content location.</param>
-        public void Load(ContentManager content, string tex)
+        public void Load(Texture2D texture)
         {
-            spriteTexture = content.Load<Texture2D>(tex);
+            this._spriteTexture = texture;
 
             this.Load();
         }
 
         public void Load()
         {
-            if (!isAnimated)
+            if (!_isAnimated)
             {
-                singleFrameDimensions = new Point((int)spriteTexture.Width, (int)spriteTexture.Height);
+                _singleFrameDimensions = new Point((int)_spriteTexture.Width, (int)_spriteTexture.Height);
             }
 
-            this.isAnimating = true;
+            this._isAnimating = true;
         }
         #endregion
 
         #region Update
         public override void Update(GameTime gameTime)
         {
-            if (velocity != Vector2.Zero) position += velocity;
+            if (_velocity != Vector2.Zero) _position += _velocity;
 
-            if (isDying)
+            if (_isDying)
             {
-                alpha -= 0.02f;
-                if (alpha <= 0) isDead = true;
+                _alpha -= 0.02f;
+                if (_alpha <= 0)
+                {
+                    _isDead = true;
+                }
             }
 
             //  Code below this is for animated sprites - may as well
             //  break out if it's not needed.
-            if (isDead || !isAnimated) return;
+            if (_isDead || !_isAnimated) return;
 
-            elapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+            this._elapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
 
-            if (elapsed > 1 / 2)
+            if (_elapsed > 1 / 2)
             {
-                ++currentFrame.X;
+                ++_currentFrame.X;
 
-                if (currentFrame.X >= frameCount.X)
+                if (_currentFrame.X >= _frameCount.X)
                 {
-                    currentFrame.X = 0;
-                    ++currentFrame.Y;
+                    _currentFrame.X = 0;
+                    ++_currentFrame.Y;
 
-                    if (currentFrame.Y >= frameCount.Y)
+                    if (_currentFrame.Y >= _frameCount.Y)
                     {
-                        currentFrame.Y = 0;
+                        _currentFrame.Y = 0;
 
                         //  Allows sprites to indefinitely cycle if set to -1
                         if (TimesToPlay > 0)
@@ -251,14 +257,14 @@ namespace GameLibrary.Drawing
                             TimesToPlay -= 1;
                             if (TimesToPlay == 0)
                             {
-                                isDead = true;
+                                _isDead = true;
                             }
                         }
                     }
                     
                 }
 
-                elapsed = 0.0f;
+                _elapsed = 0.0f;
             }
         }
         #endregion
@@ -266,14 +272,14 @@ namespace GameLibrary.Drawing
         #region Draw
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(spriteTexture, position,
+            sb.Draw(_spriteTexture, _position,
                 new Rectangle(
-                    currentFrame.X * singleFrameDimensions.X,
-                    currentFrame.Y * singleFrameDimensions.Y,
-                    singleFrameDimensions.X,
-                    singleFrameDimensions.Y), Tint, rotation,
-                    new Vector2(singleFrameDimensions.X / 2,
-                        singleFrameDimensions.Y / 2), scale, SpriteEffects.None, zLayer);
+                    _currentFrame.X * _singleFrameDimensions.X,
+                    _currentFrame.Y * _singleFrameDimensions.Y,
+                    _singleFrameDimensions.X,
+                    _singleFrameDimensions.Y), Tint, _rotation,
+                    new Vector2(_singleFrameDimensions.X * 0.5f,
+                        _singleFrameDimensions.Y * 0.5f), _scale, SpriteEffects.None, _zLayer);
         }
         #endregion
 
@@ -285,9 +291,9 @@ namespace GameLibrary.Drawing
         public void Kill(bool fade)
         {
             if (fade)
-                isDying = true;
+                _isDying = true;
             else
-                isDead = true;
+                _isDead = true;
         }
         #endregion
 
@@ -295,12 +301,12 @@ namespace GameLibrary.Drawing
 
         public void ToggleAnimating()
         {
-            this.SetAnimation(!isAnimating);
+            this.SetAnimation(!_isAnimating);
         }
 
         public void ActivateAnimation()
         {
-            if (isAnimating)
+            if (_isAnimating)
             {
                 return;
             }
@@ -310,7 +316,7 @@ namespace GameLibrary.Drawing
 
         public void DeactivateAnimation()
         {
-            if (!isAnimating)
+            if (!_isAnimating)
             {
                 return;
             }
@@ -320,9 +326,14 @@ namespace GameLibrary.Drawing
 
         private void SetAnimation(bool state)
         {
-            isAnimating = state;
+            _isAnimating = state;
         }
 
         #endregion
+
+        public void SetTexture(Texture2D texture)
+        {
+            this._spriteTexture = texture;
+        }
     }
 }
