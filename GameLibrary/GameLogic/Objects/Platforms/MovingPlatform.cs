@@ -143,9 +143,8 @@ namespace GameLibrary.GameLogic.Objects
         {
 #if EDITOR
 #else
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this._width), ConvertUnits.ToSimUnits(this._height), ConvertUnits.ToSimUnits(_mass));
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this.Width), ConvertUnits.ToSimUnits(this.Height), ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Dynamic;
-            this.Body.Rotation = _rotation;
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.Friction = 3.0f;
             this.SetUpJoint(world);

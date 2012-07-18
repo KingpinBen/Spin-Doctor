@@ -237,7 +237,7 @@ namespace GameLibrary.GameLogic.Objects
             }
             else
             {
-                this.Body.BodyType = BodyType.Static;
+                this.Body.BodyType = BodyType.Dynamic;
                 this.Body.Rotation = this._rotation;
                 float newSpeed = 1 / _motorSpeed;
                 this._motorSpeed = newSpeed;
