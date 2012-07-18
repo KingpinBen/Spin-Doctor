@@ -33,15 +33,14 @@ using FarseerPhysics.Common.PolygonManipulation;
 using FarseerPhysics.Common.Decomposition;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
-using GameLibrary.Drawing;
-using GameLibrary.Objects;
 using FarseerPhysics.Dynamics.Joints;
-using GameLibrary.Screens;
 using System.Runtime.Serialization;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using GameLibrary.Graphics.Camera;
+using GameLibrary.GameLogic.Objects;
 
-namespace GameLibrary.Assists
+namespace GameLibrary.Helpers
 {
     public static class SpinAssist
     {
@@ -62,7 +61,7 @@ namespace GameLibrary.Assists
         public static TexVertOutput TexToVert(World world, Texture2D texture, float mass, float scale)
         {
             Vertices verts;
-            TexVertOutput output;
+            TexVertOutput output = new TexVertOutput();
             //  Creates an array for every pixel in the texture
             uint[] data = new uint[texture.Width * texture.Height];
 
@@ -73,7 +72,8 @@ namespace GameLibrary.Assists
             //  Origin needs to be altered so it uses the origin of the verts
             //  rather than the texture's centre.
             Vector2 centroid = -verts.GetCentroid();
-            verts.Translate(ref centroid);
+            Vector2 centre = ConvertUnits.ToSimUnits(new Vector2(texture.Width * 0.5f, texture.Height * 0.5f));
+            //verts.Translate(ref centre);
 
             Vector2 Scale = new Vector2(ConvertUnits.ToSimUnits(scale), ConvertUnits.ToSimUnits(scale));
             verts.Scale(ref Scale);
@@ -82,9 +82,10 @@ namespace GameLibrary.Assists
 
             Body body = BodyFactory.CreateCompoundPolygon(world, BayazitDecomposer.ConvexPartition(verts), mass);
             body.BodyType = BodyType.Dynamic;
+            body.LocalCenter = centre;
 
             output.Body = body;
-            output.Origin = -centroid;
+            output.Origin = ConvertUnits.ToDisplayUnits(centre);
 
             return output;
         }
@@ -101,7 +102,7 @@ namespace GameLibrary.Assists
         {
             Vector2 tempVec = Vector2.Zero;
 
-            switch (Camera.UpIs)
+            switch (Camera.Instance.UpIs)
             {
                 case UpIs.Up:
                     tempVec = new Vector2(inVector.X, inVector.Y);

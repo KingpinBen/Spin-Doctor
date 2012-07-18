@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.IO;
 using System.Windows.Forms;
-using GameLibrary.System;
+using GameLibrary.Helpers;
 
 namespace SpinDoctor
 {

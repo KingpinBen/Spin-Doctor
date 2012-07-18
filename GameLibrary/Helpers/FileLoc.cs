@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GameLibrary.Assists
+namespace GameLibrary.Helpers
 {
     public static class FileLoc
     {

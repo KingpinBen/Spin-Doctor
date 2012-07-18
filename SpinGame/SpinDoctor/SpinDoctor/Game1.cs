@@ -27,11 +27,10 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using GameLibrary.Screens;
-using GameLibrary.Assists;
-using GameLibrary.Screens.Messages;
-using GameLibrary.Managers;
-using GameLibrary.Screens.Menu;
+using GameLibrary.Helpers;
+using GameLibrary.GameLogic;
+using GameLibrary.GameLogic.Screens;
+using GameLibrary.GameLogic.Screens.Splash;
 
 #endregion
 
@@ -42,7 +41,7 @@ namespace SpinDoctor
         #region Fields
         private GraphicsDeviceManager _graphics;
 
-        Screen_Manager _screenMan;
+        ScreenManager _screenMan;
 
         int _startLevel = 0;
         int _backbufferWidth = 1280;
@@ -77,18 +76,18 @@ namespace SpinDoctor
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += ChangeWindowSize;
 
-            _screenMan = new Screen_Manager(this, _graphics);
+            _screenMan = new ScreenManager(this, _graphics);
             _screenMan.Load();
             Components.Add(_screenMan);
             
 
             GameplayScreen gamescreen = new GameplayScreen(_startLevel, this.GraphicsDevice);
-            Screen_Manager.AddScreen(gamescreen);
+            ScreenManager.AddScreen(gamescreen);
 
             if (_showStartup)
             {
                 IntroScreen introScreen = new IntroScreen(this._graphics.GraphicsDevice);
-                Screen_Manager.AddScreen(introScreen);
+                ScreenManager.AddScreen(introScreen);
             }
 
             base.Initialize();

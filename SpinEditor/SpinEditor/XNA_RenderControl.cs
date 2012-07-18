@@ -15,6 +15,7 @@ using Microsoft.Xna.Framework;
 using GameLibrary;
 using FarseerPhysics;
 using GameLibrary.Objects;
+using GameLibrary.Graphics;
 
 namespace SpinEditor
 {
@@ -27,11 +28,11 @@ namespace SpinEditor
         Timer timer;
         GameTime gameTime; //create the game time using the above values
         SpriteBatch spriteBatch;
-        SpriteFont font;
         Random randomizer;
         Texture2D debugOverlay;
         Texture2D crosshair;
         PrimitiveBatch primBatch;
+        SpriteFont font;
 
         int xLineCount;
         int yLineCount;
@@ -76,7 +77,6 @@ namespace SpinEditor
             Camera = new Camera2D();
 
             
-
             //  hook the mouse to the XNA graphic display control,
             if (Mouse.WindowHandle != this.Handle)
                 Mouse.WindowHandle = this.Handle;
@@ -84,8 +84,8 @@ namespace SpinEditor
             //  Load some textures and fonts,
             debugOverlay = contentMan.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
             crosshair = contentMan.Load<Texture2D>("Assets/Other/Dev/9pxCrosshair");
-            font = contentMan.Load<SpriteFont>("Assets/Fonts/Debug");
             devCharacter = contentMan.Load<Texture2D>("Assets/Other/Dev/devHarland");
+            font = contentMan.Load<SpriteFont>("Assets/Fonts/Debug");
 
             //  Setup the grid initially
             RefreshGrid();
@@ -126,12 +126,10 @@ namespace SpinEditor
             elapsed.Start();
         }
 
-        #region Tick
         void tick(object sender, EventArgs e)
         {
             this.Invalidate();
         }
-        #endregion
 
         #endregion
 
@@ -332,8 +330,8 @@ namespace SpinEditor
             xySpacing = 32 * Camera.Zoom;
             xLineCount = (int)Math.Ceiling(this.GraphicsDevice.Viewport.Width / xySpacing);
             yLineCount = (int)Math.Ceiling(this.GraphicsDevice.Viewport.Height / xySpacing);
-            xOffset = (this.GraphicsDevice.Viewport.Width / 2) - (xLineCount / 2 * xySpacing) - ((Camera.Pos.X * Camera.Zoom) % xySpacing);
-            yOffset = (this.GraphicsDevice.Viewport.Height / 2) - (yLineCount / 2 * xySpacing) - ((Camera.Pos.Y * Camera.Zoom) % xySpacing);
+            xOffset = (this.GraphicsDevice.Viewport.Width * 0.5f) - (xLineCount * 0.5f * xySpacing) - ((Camera.Pos.X * Camera.Zoom) % xySpacing);
+            yOffset = (this.GraphicsDevice.Viewport.Height * 0.5f) - (yLineCount * 0.5f * xySpacing) - ((Camera.Pos.Y * Camera.Zoom) % xySpacing);
         }
         #endregion
     }

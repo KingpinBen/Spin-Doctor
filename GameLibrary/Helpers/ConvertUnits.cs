@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 
-namespace GameLibrary.Assists
+namespace GameLibrary.Helpers
 {
     /// <summary>
     /// Convert units between display and simulation units.

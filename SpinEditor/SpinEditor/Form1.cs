@@ -18,6 +18,7 @@ using GameLibrary.Drawing;
 using GameLibrary.Objects;
 using FarseerPhysics.Dynamics;
 using GameLibrary.Objects.Triggers;
+using GameLibrary.Graphics;
 #endregion
 
 namespace SpinEditor
@@ -74,8 +75,6 @@ namespace SpinEditor
             listBox_Assets1.SelectedItem = "icon";
             listBox_Assets2.SelectedItem = "icon";
             Align_Relative.SelectedItem = "Last Selected";
-
-            Fonts.Load(xnA_RenderControl1.contentMan);
 
             NewFile();
 
@@ -235,7 +234,7 @@ namespace SpinEditor
                 case "Pushing Platform":
                     {
                         PushingPlatform pushPlat = new PushingPlatform();
-                        pushPlat.Init(Position, texloc0, "Assets/Sprites/Effects/explosion");
+                        pushPlat.Init(Position, texloc0);
                         pushPlat.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(pushPlat);
                     }
@@ -564,6 +563,10 @@ namespace SpinEditor
                                     {
                                         STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
                                         xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
+                                    }
+                                    else
+                                    {
+                                        xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
                                     }
 
                                     if (RoomForm.drawWallsCheckBox1.Checked)
@@ -2758,7 +2761,7 @@ namespace SpinEditor
                                 {
                                     case (OBJECT_TYPE.Physics):
                                         {
-                                            newRect = new Microsoft.Xna.Framework.Rectangle(
+                                            newRect = new Rectangle(
                                                     (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width * 0.5f),
                                                     (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height * 0.5f),
                                                     (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
@@ -2767,7 +2770,7 @@ namespace SpinEditor
                                         break;
                                     case (OBJECT_TYPE.Decal):
                                         {
-                                            newRect = new Microsoft.Xna.Framework.Rectangle(
+                                            newRect = new Rectangle(
                                                     (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width * 0.5f),
                                                     (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - (int)(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height * 0.5f),
                                                     (int)STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width,
@@ -2796,6 +2799,7 @@ namespace SpinEditor
                                                 {
                                                     STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position += moveDis;
                                                     Type t = STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
+
                                                     if (t.BaseType == typeof(DynamicObject))
                                                     {
                                                         DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];

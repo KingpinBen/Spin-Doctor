@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using FarseerPhysics.Dynamics;
 
-namespace GameLibrary.Assists
+namespace GameLibrary.Helpers
 {
     public struct TexVertOutput
     {
