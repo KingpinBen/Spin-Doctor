@@ -69,6 +69,7 @@ namespace GameLibrary.Audio
         private WaveBank _waveBank;
 
         #endregion
+
         #region Properties
 
         public int SoundVolume

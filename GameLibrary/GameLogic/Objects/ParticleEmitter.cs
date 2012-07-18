@@ -9,8 +9,9 @@ using FarseerPhysics.Dynamics;
 using GameLibrary.GameLogic.Objects;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Screens;
+using GameLibrary.Graphics;
 
-namespace GameLibrary.Graphics
+namespace GameLibrary.GameLogic.Objects
 {
     public class ParticleEmitter : NodeObject
     {

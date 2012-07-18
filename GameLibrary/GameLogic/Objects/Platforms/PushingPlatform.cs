@@ -235,12 +235,13 @@ namespace GameLibrary.GameLogic.Objects
         {
 #if EDITOR
 #else
-            _elapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+            float delta = (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+            _elapsed += delta;
 
             if (Triggered)
             {
                 //  While it's triggered, we want to make some sprites come out of it.
-                createDelay -= (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+                createDelay -= delta;
 
                 if (createDelay <= 0.0f)
                 {

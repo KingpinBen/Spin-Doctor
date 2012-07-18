@@ -9,11 +9,13 @@ namespace SpinEditor
     {
         public int Index;
         public OBJECT_TYPE Type;
+        public float ZLayer;
 
-        public ObjectIndex(OBJECT_TYPE type, int index)
+        public ObjectIndex(OBJECT_TYPE type, int index, float z)
         {
             Type = type;
             Index = index;
+            ZLayer = z;
         }
     }
 

@@ -45,6 +45,10 @@ namespace GameLibrary.GameLogic.Objects
         protected bool _startsMoving;
         [ContentSerializer]
         protected float _timeToReverse;
+        [ContentSerializer(Optional = true)]
+        protected float _startTranslation;
+
+
 #if EDITOR
 
 #else
@@ -232,7 +236,7 @@ namespace GameLibrary.GameLogic.Objects
             if (this._textureAsset != "")
                 _texture = content.Load<Texture2D>(this._textureAsset);
 
-            this._origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+            this._origin = new Vector2(_texture.Width, _texture.Height) * 0.5f;
 
 #if EDITOR
             if (_width == 0 || _height == 0)

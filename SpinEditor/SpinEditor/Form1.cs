@@ -13,12 +13,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using GameLibrary;
-using GameLibrary.Assists;
-using GameLibrary.Drawing;
-using GameLibrary.Objects;
 using FarseerPhysics.Dynamics;
-using GameLibrary.Objects.Triggers;
 using GameLibrary.Graphics;
+using GameLibrary.GameLogic.Objects;
+using GameLibrary.GameLogic.Objects.Triggers;
+using GameLibrary.Levels;
+using GameLibrary.Helpers;
 #endregion
 
 namespace SpinEditor
@@ -300,7 +300,7 @@ namespace SpinEditor
                         {
                             STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
                         }
-                        STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Decal, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count - 1));
+                        STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Decal, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count - 1, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList.Count - 1].ZLayer));
                     }
                     break;
                 default:
@@ -309,7 +309,7 @@ namespace SpinEditor
                         {
                             STATIC_EDITOR_MODE.selectedObjectIndices.Clear();
                         }
-                        STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Physics, STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count - 1));
+                        STATIC_EDITOR_MODE.selectedObjectIndices.Add(new ObjectIndex(OBJECT_TYPE.Physics, STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count - 1, STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count - 1].ZLayer));
                     }
                     break;
             }
@@ -559,13 +559,14 @@ namespace SpinEditor
                                     STATIC_EDITOR_MODE.levelInstance.RoomType = RoomForm.roomType;
 
                                     //  Load the background texture and attach it to the level.
-                                    if (RoomForm.roomType == RoomTypeEnum.Rotating)
+                                    if (RoomForm.roomType == RoomType.Rotating)
                                     {
                                         STATIC_EDITOR_MODE.levelInstance.BackgroundFile = RoomForm.rearWall;
                                         xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(RoomForm.rearWall);
                                     }
                                     else
                                     {
+                                        STATIC_EDITOR_MODE.levelInstance.BackgroundFile = String.Empty;
                                         xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
                                     }
 
@@ -594,9 +595,9 @@ namespace SpinEditor
                                         leftWall.Position = new Vector2(-alteredRoomSize.X * 0.5f, 0) - new Vector2(textureHeight * 0.5f, 0);
                                         rightWall.Position = new Vector2(alteredRoomSize.X * 0.5f, 0) + new Vector2(textureHeight * 0.5f, 0);
 
-                                        bottomWall.Orientation = GameLibrary.Objects.Orientation.Down;
-                                        leftWall.Orientation = GameLibrary.Objects.Orientation.Left;
-                                        rightWall.Orientation = GameLibrary.Objects.Orientation.Right;
+                                        bottomWall.Orientation = GameLibrary.GameLogic.Objects.Orientation.Down;
+                                        leftWall.Orientation = GameLibrary.GameLogic.Objects.Orientation.Left;
+                                        rightWall.Orientation = GameLibrary.GameLogic.Objects.Orientation.Right;
 
                                         topWall.Width = bottomWall.Width = alteredRoomSize.X;
                                         leftWall.Height = rightWall.Height = alteredRoomSize.Y + (leftWall.Texture.Height * 2) - 8;
@@ -638,7 +639,7 @@ namespace SpinEditor
 
                         STATIC_EDITOR_MODE.levelInstance = IntermediateSerializer.Deserialize<Level>(input, null);
 
-                        if (STATIC_EDITOR_MODE.levelInstance.RoomType == RoomTypeEnum.Rotating)
+                        if (STATIC_EDITOR_MODE.levelInstance.RoomType == RoomType.Rotating)
                         {
                             xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(STATIC_EDITOR_MODE.levelInstance.BackgroundFile);
                         }
@@ -2713,7 +2714,7 @@ namespace SpinEditor
 
                                 if (BoundingBox.Contains(MousePos))
                                 {
-                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Physics, i));
+                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Physics, i, STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].ZLayer));
                                 }
                             }
                         }
@@ -2733,21 +2734,19 @@ namespace SpinEditor
 
                                 if (BoundingBox.Contains(MousePos))
                                 {
-                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Decal, i));
+                                    lst_ObjectsUnderCursor.Add(new ObjectIndex(OBJECT_TYPE.Decal, i, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[i].ZLayer));
                                 }
                             }
                         }
-
-                        //int topIndexZ = 0;
-                        //for (int j = 0; j < lst_ObjectsUnderCursor.Count; j++)
-                        //{
-                        //    if (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[j]].zLayer > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[lst_ObjectsUnderCursor[topIndexZ]].zLayer)
-                        //    {
-                        //        topIndexZ = j;
-                        //    }
-                        //}
                         #endregion
-                    }
+
+                        //  Sort them out by their Zlayer
+                        lst_ObjectsUnderCursor.Sort(delegate(ObjectIndex objA, ObjectIndex objB)
+                            {
+                                return objA.ZLayer.CompareTo(objB.ZLayer);
+                            });
+
+                        }
                     break;
                 case EDITOR_MODE.MOVE:
                     {

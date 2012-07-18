@@ -68,9 +68,10 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #if EDITOR
 
 #else
-            this.Body = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(Width), ConvertUnits.ToSimUnits(Height), ConvertUnits.ToSimUnits(5), ConvertUnits.ToSimUnits(5), 3, ConvertUnits.ToSimUnits(_mass));
+            this.Body = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(5), ConvertUnits.ToSimUnits(5), 3, ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Static;
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
+            this.Body.Rotation = _rotation;
             this.Body.IsSensor = true;
             //this.Body.Rotation = SpinAssist.RotationByOrientation(_orientation);
             this.Body.OnCollision += Body_OnCollision;

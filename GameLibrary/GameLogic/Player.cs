@@ -518,6 +518,7 @@ namespace GameLibrary.GameLogic
         public void ForceFall()
         {
             this.ToggleBodies(true);
+
             if (PlayerState != PlayerState.Grounded || PlayerState == PlayerState.Running)
             {
                 PlayerState = PlayerState.Falling;

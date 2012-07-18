@@ -24,7 +24,6 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using GameLibrary.Screens;
 using GameLibrary.GameLogic.Objects;
 using GameLibrary.GameLogic;
 #endregion

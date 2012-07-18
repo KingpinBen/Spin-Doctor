@@ -10,12 +10,12 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
-using GameLibrary.Assists;
 using Microsoft.Xna.Framework;
 using GameLibrary;
 using FarseerPhysics;
-using GameLibrary.Objects;
 using GameLibrary.Graphics;
+using GameLibrary.Helpers;
+using GameLibrary.GameLogic.Objects;
 
 namespace SpinEditor
 {
@@ -238,7 +238,7 @@ namespace SpinEditor
                 #region Movement paths
                 if (!HideMovementPath)
                 {
-                    Vector2 offset = new Vector2((GraphicsDevice.Viewport.Width / 2 / Camera.Zoom) - Camera.Pos.X, (GraphicsDevice.Viewport.Height / 2 / Camera.Zoom) - Camera.Pos.Y);
+                    Vector2 offset = new Vector2(((GraphicsDevice.Viewport.Width * 0.5f) / Camera.Zoom) - Camera.Pos.X, ((GraphicsDevice.Viewport.Height * 0.5f) / Camera.Zoom) - Camera.Pos.Y);
                     for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i++)
                     {
                         Type t = STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].GetType();

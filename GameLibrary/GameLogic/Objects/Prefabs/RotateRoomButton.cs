@@ -36,8 +36,9 @@ using FarseerPhysics.Dynamics.Contacts;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.Helpers;
+using GameLibrary.GameLogic.Objects.Triggers;
 
-namespace GameLibrary.GameLogic.Objects.Triggers
+namespace GameLibrary.GameLogic.Objects
 {
     public class RotateRoomButton : Trigger
     {

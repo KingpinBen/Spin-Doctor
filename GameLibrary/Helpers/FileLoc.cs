@@ -7,7 +7,7 @@ namespace GameLibrary.Helpers
 {
     public static class FileLoc
     {
-        private static string LevelLoc = "Content/Assets/Other/Xml/level";
+        private static string LevelLoc = "Content/Assets/Levels/level";
         private static string blankPixel = "Assets/Images/Basics/BlankPixel";
         private static string devTexture = "Assets/Other/Dev/Trigger";
 

@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;EDITOR</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -137,13 +137,13 @@
     <Compile Include="Graphics\UI\AnimatedText.cs" />
     <Compile Include="Graphics\Camera\CameraType.cs" />
     <Compile Include="Graphics\Camera\UpIs.cs" />
-    <Compile Include="Graphics\Decal.cs" />
+    <Compile Include="Graphics\Drawing\Decal.cs" />
     <Compile Include="Graphics\Animation\FrameAnimation.cs" />
     <Compile Include="Graphics\UI\FullscreenPicture.cs" />
     <Compile Include="Graphics\UI\HUD.cs" />
-    <Compile Include="Graphics\Particle.cs" />
+    <Compile Include="Graphics\Drawing\Particle.cs" />
     <Compile Include="Level\RoomTheme.cs" />
-    <Compile Include="Graphics\Drawing\ParticleEmitter.cs" />
+    <Compile Include="GameLogic\Objects\ParticleEmitter.cs" />
     <Compile Include="Level\RoomType.cs" />
     <Compile Include="Graphics\UI\TextString.cs" />
     <Compile Include="Level\LevelBackdrop.cs" />

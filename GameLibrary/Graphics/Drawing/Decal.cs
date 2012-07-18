@@ -177,7 +177,7 @@ namespace GameLibrary.Graphics
         public void Load(ContentManager Content)
         {
             this._decalTexture = Content.Load<Texture2D>(_decalAsset);
-            this._origin = new Vector2(this._decalTexture.Width / 2, this._decalTexture.Height / 2);
+            this._origin = new Vector2(this._decalTexture.Width, this._decalTexture.Height) * 0.5f;
 #if EDITOR
             if (this.Width == 0 || this.Height == 0)
             {

@@ -313,8 +313,8 @@ namespace GameLibrary.GameLogic.Screens
             }
             //catch (InvalidContentException e)
             //{
-            //    MessageBox.Show("Something went wrong deserializing level: '" + LevelID + "'");
-            //    string value = e.Message.ToString();
+            //    MessageBox.Show("Something went wrong deserializing level: '" + LevelID + "'.\nInvalid Content");
+            //    string value = "Invalid Content declared.\n" + e.InnerException.ToString();
             //    ErrorReport.GenerateReport(value, null);
             //}
 

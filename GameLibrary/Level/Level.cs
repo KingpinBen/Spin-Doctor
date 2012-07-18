@@ -127,7 +127,7 @@ namespace GameLibrary.Levels
             }
         }
         [ContentSerializerIgnore]
-        public RoomTypeEnum RoomType
+        public RoomType RoomType
         {
             get
             {

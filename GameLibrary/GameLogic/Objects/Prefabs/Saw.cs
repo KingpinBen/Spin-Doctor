@@ -175,17 +175,14 @@ namespace GameLibrary.GameLogic.Objects
 
 #else
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
-
             this.SetupPhysics(world);
 #endif
         }
 
         public override void Update(GameTime gameTime)
         {
-#if EDITOR
-
-#else
-            if (this._prismaticJoint.MotorSpeed != 0)
+#if !EDITOR
+            if (_prismaticJoint.MotorEnabled)
             {
                 _rotation += 0.3f;
 
@@ -194,6 +191,7 @@ namespace GameLibrary.GameLogic.Objects
                     _rotation -= 4;
                 }
             }
+
             base.Update(gameTime);
 #endif
         }
@@ -208,7 +206,7 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, 
-                TextureRotation, Origin, _scale, SpriteEffects.None, this._zLayer); 
+                TextureRotation, new Vector2(this.TextureToUse.Width, this.TextureToUse.Height) * 0.5f, _scale, SpriteEffects.None, this._zLayer); 
 
 #if Development
             sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed: " + this.PrismaticJoint.MotorSpeed + ". IsMoving: " + this._isMoving, 

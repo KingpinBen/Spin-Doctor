@@ -162,7 +162,6 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-
             if (Camera.Instance.IsLevelRotating)
             {
                 if (_pathBodies[_pathBodies.Count - 1].Awake == false)
@@ -203,6 +202,11 @@ namespace GameLibrary.GameLogic.Objects
                 {
                     GameplayScreen.World.RemoveJoint(_ropeJoint);
                     GameplayScreen.World.RemoveJoint(_ropePlayerJoint);
+
+                    if (Player.Instance.PlayerState == PlayerState.Swinging)
+                    {
+                        Player.Instance.ForceFall();
+                    }
                 }
             }
 #endif

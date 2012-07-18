@@ -6,16 +6,16 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using GameLibrary.Drawing;
 using Microsoft.Xna.Framework;
 using System.IO;
+using GameLibrary.Levels;
 
 namespace SpinEditor
 {
     public partial class RoomSetupForm : Form
     {
-        public RoomTypeEnum roomType = RoomTypeEnum.Rotating;
-        public RoomThemeEnum roomTheme = RoomThemeEnum.Industrial;
+        public RoomType roomType = RoomType.Rotating;
+        public RoomTheme roomTheme = RoomTheme.Industrial;
         public Vector2 roomSize = new Vector2(1, 1);
         public string rearWall = "";
 
@@ -35,19 +35,19 @@ namespace SpinEditor
                     {
                         roomSizeY.Value = roomSizeX.Value;
                         roomSizeY.Enabled = false;
-                        roomType = RoomTypeEnum.Rotating;
+                        roomType = RoomType.Rotating;
                     }
                     break;
                 case 1:
                     {
                         roomSizeY.Enabled = true;
-                        roomType = RoomTypeEnum.NonRotating;
+                        roomType = RoomType.NonRotating;
                     }
                     break;
                 case 2:
                     {
                         roomSizeY.Enabled = true;
-                        roomType = RoomTypeEnum.Hub;
+                        roomType = RoomType.Hub;
                     }
                     break;
             }
@@ -74,22 +74,22 @@ namespace SpinEditor
             {
                 case 0:
                     {
-                        roomTheme = RoomThemeEnum.Industrial;
+                        roomTheme = RoomTheme.Industrial;
                     }
                     break;
                 case 1:
                     {
-                        roomTheme = RoomThemeEnum.Medical;
+                        roomTheme = RoomTheme.Medical;
                     }
                     break;
                 case 2:
                     {
-                        roomTheme = RoomThemeEnum.Study;
+                        roomTheme = RoomTheme.Study;
                     }
                     break;
                 case 3:
                     {
-                        roomTheme = RoomThemeEnum.General;
+                        roomTheme = RoomTheme.General;
                     }
                     break;
             }
@@ -106,7 +106,7 @@ namespace SpinEditor
         /// <returns></returns>
         public bool CheckIfComplete()
         {
-            if (roomType == RoomTypeEnum.Rotating)
+            if (roomType == RoomType.Rotating)
             {
                 string path = Directory.GetCurrentDirectory();
 
