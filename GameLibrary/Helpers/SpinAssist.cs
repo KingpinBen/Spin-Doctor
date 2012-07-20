@@ -53,12 +53,12 @@ namespace GameLibrary.Helpers
         /// <param name="texture">Texture to get vertices from</param>
         /// <param name="mass">Desired mass for the body (SHOULD BE CONVERTED WHEN PASSED IN)</param>
         /// <returns>the Body</returns>
-        public static TexVertOutput TexToVert(World world, Texture2D texture, float mass)
+        public static TexVertOutput TexToVert(World world, Texture2D texture, float mass, bool useCentroid)
         {
-            return TexToVert(world, texture, mass, 1.0f);
+            return TexToVert(world, texture, mass, useCentroid, 1.0f);
         }
 
-        public static TexVertOutput TexToVert(World world, Texture2D texture, float mass, float scale)
+        public static TexVertOutput TexToVert(World world, Texture2D texture, float mass, bool useCentroid, float scale)
         {
             Vertices verts;
             TexVertOutput output = new TexVertOutput();
@@ -69,23 +69,36 @@ namespace GameLibrary.Helpers
             
             verts = PolygonTools.CreatePolygon(data, texture.Width, false);
 
+            Vector2 centroid = Vector2.Zero;
             //  Origin needs to be altered so it uses the origin of the verts
             //  rather than the texture's centre.
-            Vector2 centroid = -verts.GetCentroid();
-            Vector2 centre = ConvertUnits.ToSimUnits(new Vector2(texture.Width * 0.5f, texture.Height * 0.5f));
-            //verts.Translate(ref centre);
+            if (useCentroid)
+            {
+                centroid = -verts.GetCentroid();
+                verts.Translate(ref centroid);
+            }
+            else
+            {
+                centroid = ConvertUnits.ToSimUnits(new Vector2(texture.Width, texture.Height) * 0.5f);
+            }
+            
 
-            Vector2 Scale = new Vector2(ConvertUnits.ToSimUnits(scale), ConvertUnits.ToSimUnits(scale));
+            float simScale = ConvertUnits.ToSimUnits(scale);
+            Vector2 Scale = new Vector2(simScale, simScale);
             verts.Scale(ref Scale);
 
-            //verts = SimplifyTools.ReduceByDistance(verts, f);
+            verts = SimplifyTools.ReduceByDistance(verts, ConvertUnits.ToSimUnits(4f));
 
-            Body body = BodyFactory.CreateCompoundPolygon(world, BayazitDecomposer.ConvexPartition(verts), mass);
+            Body body = BodyFactory.CreateCompoundPolygon(world, EarclipDecomposer.ConvexPartition(verts), mass);
             body.BodyType = BodyType.Dynamic;
-            body.LocalCenter = centre;
+
+            if (!useCentroid)
+            {
+                body.LocalCenter = centroid;
+            }
 
             output.Body = body;
-            output.Origin = ConvertUnits.ToDisplayUnits(centre);
+            output.Origin = ConvertUnits.ToDisplayUnits(centroid);
 
             return output;
         }

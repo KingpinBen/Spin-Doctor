@@ -233,18 +233,21 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 #else
             this.Body = BodyFactory.CreateCircle(world,
-                ConvertUnits.ToSimUnits((this._texture.Width / 2) * _scale),
+                ConvertUnits.ToSimUnits((this._texture.Width * 0.5f) * _scale),
                 ConvertUnits.ToSimUnits(_mass));
 
             this.Body.BodyType = BodyType.Dynamic;
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
             this.Body.Friction = 1.0f;
-            this.Body.Restitution = 0.5f;
+            this.Body.Restitution = 0.2f;
 
             base.SetUpJoint(world);
 
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+
+            this.Body.CollisionCategories = Category.Cat20;
+            this.Body.CollidesWith = Category.All & ~Category.Cat20;
 #endif
         }
 

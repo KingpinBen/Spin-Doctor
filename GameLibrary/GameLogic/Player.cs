@@ -319,9 +319,7 @@ namespace GameLibrary.GameLogic
 
             this._wheelBody.OnCollision += Body_OnCollision;
             this._wheelBody.OnSeparation += Body_OnSeparation;
-            //this.WheelBody.AngularDamping = 10.0f;
-            //this.WheelBody.LinearDamping = 0.7f;
-            this._wheelBody.CollisionCategories = Category.Cat12;
+            this._wheelBody.CollisionCategories = Category.Cat10;
             this._mainBody.CollisionCategories = Category.Cat10;
             this._mainBody.IsSensor = false;
 

@@ -412,7 +412,7 @@ namespace GameLibrary.GameLogic.Objects
             }
 
             _texture = content.Load<Texture2D>(_textureAsset);
-            _origin = new Vector2(_texture.Width / 2, _texture.Height / 2);
+            _origin = new Vector2(_texture.Width, _texture.Height) * 0.5f;
 
 #if EDITOR
             if (this.Width == 0.0f || this.Height == 0.0f)
@@ -453,7 +453,7 @@ namespace GameLibrary.GameLogic.Objects
             //  This function will have to be changed if we have things that aren't going to be square/rectangles.
             //  Fortunately, Farseer will allow us to use the Texture to find the outline. Haven't tried it with 
             //  full coloured images, only outlines. Will have to research! More demos!
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(this.Mass), ConvertUnits.ToSimUnits(this.Position));
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(this._mass), ConvertUnits.ToSimUnits(this.Position));
             //  Give it a 0 for no flags.
             this.Body.FixtureList[0].UserData = (int)0;
             this.Body.Rotation = _rotation;

@@ -158,7 +158,7 @@ namespace GameLibrary.GameLogic.Objects
                 _bodies.Add(body);
             }
 
-            TexVertOutput input = SpinAssist.TexToVert(world, _endTexture, ConvertUnits.ToSimUnits(10));
+            TexVertOutput input = SpinAssist.TexToVert(world, _endTexture, ConvertUnits.ToSimUnits(10), true);
 
             _endOrigin = input.Origin;
             this.Body = input.Body;

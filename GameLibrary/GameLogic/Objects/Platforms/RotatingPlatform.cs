@@ -219,15 +219,36 @@ namespace GameLibrary.GameLogic.Objects
 
 #if EDITOR
 #else
+            bool useCentroid = false;
 
-            TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass));
+            if (_rotatesWithLevel)
+            {
+                useCentroid = true;
+            }
+
+            TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass), useCentroid);
             Vector2 simPosition = ConvertUnits.ToSimUnits(this._position);
 
-            this.Origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
+            if (_rotatesWithLevel)
+            {
+                this._origin = input.Origin;
+            }
+            else
+            {
+                this.Origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
+            }
+
             this.Body = input.Body;
             this.Body.Position = simPosition;
+            if (useCentroid)
+            {
+                this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, Vector2.Zero, simPosition);
+            }
+            else
+            {
+                this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
+            }
             
-            this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
             this.revoluteJoint.MaxMotorTorque = float.MaxValue;
             this.revoluteJoint.MotorEnabled = true;
 
@@ -252,9 +273,11 @@ namespace GameLibrary.GameLogic.Objects
                 this.revoluteJoint.MotorSpeed = 0.0f;
             }
 
+            this.Body.CollidesWith = Category.All & ~Category.Cat20;
+            this.Body.CollisionCategories = Category.Cat20;
             
-            this.Body.IgnoreGravity = true;
-            this.Body.IgnoreCCD = true;
+            //this.Body.IgnoreGravity = true;
+            //this.Body.IgnoreCCD = true;
             this.Body.Restitution = 0.0f;
             this.Body.Friction = 3.0f;
 #endif

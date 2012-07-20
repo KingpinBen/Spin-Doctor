@@ -189,7 +189,7 @@ namespace GameLibrary.GameLogic.Objects
             }
 
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
-            _endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width / 2)), _orientation);
+            _endPosition = _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, 282 + (endBodyTexture.Width * 0.5f)), _orientation);
             
 #else
             firstBodyTexture = content.Load<Texture2D>("Assets/Images/Textures/Piston/i_Piston2");
@@ -241,25 +241,25 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(Texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null,
-                _tint, this.Body.Rotation, new Vector2(Texture.Width / 2, Texture.Height / 2), 1.0f,
+                _tint, this.Body.Rotation, new Vector2(Texture.Width, Texture.Height) * 0.5f, 1.0f,
                 SpriteEffects.None, zLayer);
 
             sb.Draw(firstBodyTexture,
                 ConvertUnits.ToDisplayUnits(this.firstBody.Position), null,
                 Color.White, this.firstBody.Rotation,
-                new Vector2(this.firstBodyTexture.Width / 2, this.firstBodyTexture.Height / 2),
+                new Vector2(this.firstBodyTexture.Width, this.firstBodyTexture.Height) * 0.5f,
                 1.0f, SpriteEffects.None, zLayer + 0.02f);
 
             sb.Draw(secondBodyTexture,
                 ConvertUnits.ToDisplayUnits(this.secondBody.Position), null,
                 Color.White, this.secondBody.Rotation,
-                new Vector2(secondBodyTexture.Width/2, secondBodyTexture.Height/2),
+                new Vector2(secondBodyTexture.Width, secondBodyTexture.Height) * 0.5f,
                 1.0f, SpriteEffects.None, zLayer + 0.01f);
 
             //  TODO : Replace the rectangle sizes when we have a final end piece texture. + SpinAssist.ModifyVectorByOrientation(new Vector2(0, 5), this._orientation)
             sb.Draw(endBodyTexture, ConvertUnits.ToDisplayUnits(this.endBody.Position),
                 null, _tint, this.endBody.Rotation,
-                this._origin,
+                new Vector2(this.endBodyTexture.Width, this.endBodyTexture.Height) * 0.5f,
                 1.0f, SpriteEffects.None, zLayer + 0.03f);
 
 #if Development
@@ -317,9 +317,9 @@ namespace GameLibrary.GameLogic.Objects
             //  End piece
             //this.endBody = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(endTexture.Width * 0.8), ConvertUnits.ToSimUnits(endTexture.Height * 0.8), ConvertUnits.ToSimUnits(10f));
 
-            TexVertOutput input = SpinAssist.TexToVert(world, endBodyTexture, ConvertUnits.ToSimUnits(10.0f), 1.0f);
+            TexVertOutput input = SpinAssist.TexToVert(world, endBodyTexture, ConvertUnits.ToSimUnits(10.0f), true);
 
-            this._origin = input.Origin;
+            this._origin = ConvertUnits.ToSimUnits(input.Origin);
             
             this.endBody = input.Body;
             this.endBody.Rotation = SpinAssist.RotationByOrientation(_orientation);
@@ -333,8 +333,8 @@ namespace GameLibrary.GameLogic.Objects
             {
                 Fixture fix = FixtureFactory.AttachRectangle(
                     ConvertUnits.ToSimUnits(endBodyTexture.Width - 20), 
-                    ConvertUnits.ToSimUnits(endBodyTexture.Height / 2), 
-                    1.0f, ConvertUnits.ToSimUnits(new Vector2(0, -endBodyTexture.Height / 2)), 
+                    ConvertUnits.ToSimUnits(endBodyTexture.Height * 0.5f), 
+                    1.0f, ConvertUnits.ToSimUnits(new Vector2(0, -endBodyTexture.Height * 0.5f)), 
                     endBody);
                 fix.IsSensor = true;
                 fix.IgnoreCollisionWith(this.endBody.FixtureList[0]);
@@ -344,21 +344,21 @@ namespace GameLibrary.GameLogic.Objects
 
             this._prismaticJoint = JointFactory.CreateFixedPrismaticJoint(world, this.endBody, ConvertUnits.ToSimUnits(Position), axis);
             this._prismaticJoint.UpperLimit = Texture1.Y + Texture2.Y;
-            this._prismaticJoint.LowerLimit = -(endTexture.Y / 2) + ConvertUnits.ToSimUnits(40);   //  Give a 25 pixel offset on the y when UpIs == Up
+            this._prismaticJoint.LowerLimit = -(endTexture.Y * 0.5f) + ConvertUnits.ToSimUnits(40);   //  Give a 25 pixel offset on the y when UpIs == Up
             this._prismaticJoint.LimitEnabled = true;
             this._prismaticJoint.MotorEnabled = true;
             this._prismaticJoint.MaxMotorForce = float.MaxValue;
 
             this.firstBodyJoint = JointFactory.CreateFixedPrismaticJoint(world, this.firstBody, ConvertUnits.ToSimUnits(Position), axis);
             this.firstBodyJoint.UpperLimit = Texture1.Y * 2;
-            this.firstBodyJoint.LowerLimit = -(Texture1.Y / 2) + ConvertUnits.ToSimUnits(75);   //  Give a 25 pixel offset on the y when UpIs == Up
+            this.firstBodyJoint.LowerLimit = -(Texture1.Y * 0.5f) + ConvertUnits.ToSimUnits(75);   //  Give a 25 pixel offset on the y when UpIs == Up
             this.firstBodyJoint.LimitEnabled = true;
             this.firstBodyJoint.MotorEnabled = true;
             this.firstBodyJoint.MaxMotorForce = float.MaxValue;
 
             this.secondBodyJoint = JointFactory.CreateFixedPrismaticJoint(world, this.secondBody, ConvertUnits.ToSimUnits(Position), axis);
             this.secondBodyJoint.UpperLimit = Texture2.Y;
-            this.secondBodyJoint.LowerLimit = -(Texture2.Y / 2) + ConvertUnits.ToSimUnits(70);   //  Give a 25 pixel offset on the y when UpIs == Up
+            this.secondBodyJoint.LowerLimit = -(Texture2.Y * 0.5f) + ConvertUnits.ToSimUnits(70);   //  Give a 25 pixel offset on the y when UpIs == Up
             this.secondBodyJoint.LimitEnabled = true;
             this.secondBodyJoint.MotorEnabled = true;
             this.secondBodyJoint.MaxMotorForce = float.MaxValue;
@@ -401,6 +401,7 @@ namespace GameLibrary.GameLogic.Objects
             }
 #endif
         }
+
         bool TouchedLethal(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
 #if EDITOR
@@ -420,6 +421,7 @@ namespace GameLibrary.GameLogic.Objects
             return true;
 #endif
         }
+
         void LeftLethal(Fixture fixtureA, Fixture fixtureB)
         {
 #if EDITOR

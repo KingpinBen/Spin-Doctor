@@ -43,7 +43,8 @@ namespace GameLibrary.GameLogic
     {
         #region Fields
 
-        static List<Screen> _screenList;
+        //static List<Screen> _screenList;
+        static Dictionary<int, Screen> _screenList = new Dictionary<int,Screen>();
         static List<Screen> _screensToAdd;
         static Game _game;
         static SpriteBatch _spriteBatch;
@@ -72,13 +73,22 @@ namespace GameLibrary.GameLogic
                 _game = value;
             }
         }
-        public static List<Screen> ScreenList
+        //public static List<Screen> ScreenList
+        //{
+        //    get
+        //    {
+        //        return _screenList;
+        //    }
+        //}
+
+        public static Dictionary<int, Screen> ScreenList
         {
             get
             {
                 return _screenList;
             }
         }
+
         public static ContentManager Content
         {
             get
@@ -119,7 +129,7 @@ namespace GameLibrary.GameLogic
             _game = game;
             _content = new ContentManager(game.Services, "Content");
             _deviceManager = graphicsManager;
-            _screenList = new List<Screen>();
+            //_screenList = new List<Screen>();
             _screensToAdd = new List<Screen>();
             _spriteBatch = new SpriteBatch(_game.GraphicsDevice);
             _currentState = State.FadeIn;
@@ -177,7 +187,8 @@ namespace GameLibrary.GameLogic
                     //  and remove any screens ontop.
                     for (int i = ScreenList.Count; i > 1; i--)
                     {
-                        ScreenList.RemoveAt(i - 1);
+                        //ScreenList.RemoveAt(i - 1);
+                        _screenList.Remove(i - 1);
                     }
                 }
                 else
@@ -191,7 +202,7 @@ namespace GameLibrary.GameLogic
                 //  We want to add all the screens we want to,
                 for (int i = _screensToAdd.Count - 1; i >= 0; i--)
                 {
-                    _screenList.Add(_screensToAdd[i]);
+                    _screenList.Add(_screenList.Count + 1, _screensToAdd[i]);
                 }
                 //  Clear it for the future and start fading in to show
                 //  the new screens.
@@ -246,7 +257,8 @@ namespace GameLibrary.GameLogic
         public static void AddScreen(Screen screen)
         {
             screen.Load();
-            ScreenList.Add(screen);
+            _screenList.Add(_screenList.Count + 1, screen);
+            //ScreenList.Add(screen);
         }
 
         public static void DeleteScreen()
@@ -254,7 +266,8 @@ namespace GameLibrary.GameLogic
             int i = ScreenList.Count - 1;
 
             ScreenList[i].Unload();
-            ScreenList.RemoveAt(i);
+            _screenList.Remove(i);
+            //ScreenList.RemoveAt(i);
         }
 
         public static void LoadLevel(int id)

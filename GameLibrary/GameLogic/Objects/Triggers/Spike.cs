@@ -31,7 +31,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
-            this._origin = new Vector2(_texture.Width / 2, _texture.Height);
+            this._origin = new Vector2(_texture.Width * 0.5f, _texture.Height);
 
 #if EDITOR
             if (_width == 0 || _height == 0)
@@ -76,6 +76,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             //this.Body.Rotation = SpinAssist.RotationByOrientation(_orientation);
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+
+            this.Body.CollisionCategories = Category.Cat20;
+            this.Body.CollisionCategories = Category.All & ~Category.Cat20;
 #endif
         }
 
