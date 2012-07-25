@@ -287,6 +287,14 @@ namespace SpinEditor
                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(staticObj);
                     }
                     break;
+                case "Trigger":
+                    {
+                        Trigger trigObj = new Trigger();
+                        trigObj.Init(Position);
+                        trigObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(trigObj);
+                        break;
+                    }
                 default:
                     return;
             }

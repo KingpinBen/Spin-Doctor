@@ -98,8 +98,8 @@ namespace SpinEditor
             this.BUTTON_ALIGN_9 = new System.Windows.Forms.Button();
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.openAssetFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
+            this.openAssetFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -457,7 +457,8 @@ namespace SpinEditor
             "Rotating Platform",
             "Saw Blade",
             "Spikes",
-            "Static Object"});
+            "Static Object",
+            "Trigger"});
             this.listBox_Classes.Location = new System.Drawing.Point(12, 16);
             this.listBox_Classes.Name = "listBox_Classes";
             this.listBox_Classes.Size = new System.Drawing.Size(206, 95);
@@ -764,10 +765,6 @@ namespace SpinEditor
             this.panel2.Size = new System.Drawing.Size(898, 651);
             this.panel2.TabIndex = 13;
             // 
-            // openAssetFileDialog1
-            // 
-            this.openAssetFileDialog1.FileName = "Select Asset";
-            // 
             // xnA_RenderControl1
             // 
             this.xnA_RenderControl1.Camera = null;
@@ -789,6 +786,10 @@ namespace SpinEditor
             this.xnA_RenderControl1.Click += new System.EventHandler(this.xnA_RenderControl1_Click);
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
+            // 
+            // openAssetFileDialog1
+            // 
+            this.openAssetFileDialog1.FileName = "Select Asset";
             // 
             // Form1
             // 
