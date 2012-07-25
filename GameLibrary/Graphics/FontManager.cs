@@ -29,14 +29,10 @@ namespace GameLibrary.Graphics
             }
         }
 
-        ContentManager _content;
-
         FontType[] _fonts;
 
         private FontManager()
         {
-            _content = new ContentManager(ScreenManager.Game.Services, "Content");
-
             _fonts = new FontType[6];
             _fonts[0] = new FontType();
             _fonts[1] = new FontType();
@@ -46,30 +42,20 @@ namespace GameLibrary.Graphics
             _fonts[5] = new FontType();
         }
 
-        public void Load()
+        public void Load(ContentManager content)
         {
-            _content.Unload();
-
-            _fonts[0].Load(_content.Load<SpriteFont>("Assets/Fonts/Default"));  //  Game
-            _fonts[1].Load(_content.Load<SpriteFont>("Assets/Fonts/Menu")); //  Menu Title
-            _fonts[2].Load(_content.Load<SpriteFont>("Assets/Fonts/Menu")); //  MenuOption
+            _fonts[0].Load(content.Load<SpriteFont>("Assets/Fonts/Default"));  //  Game
+            _fonts[1].Load(content.Load<SpriteFont>("Assets/Fonts/Menu")); //  Menu Title
+            _fonts[2].Load(content.Load<SpriteFont>("Assets/Fonts/Menu")); //  MenuOption
             _fonts[2].Spacing = 1;
-            _fonts[3].Load(_content.Load<SpriteFont>("Assets/Fonts/Menu"));  //  GUI
-            _fonts[4].Load(_content.Load<SpriteFont>("Assets/Fonts/Notes"));    //  Notes
-            _fonts[5].Load(_content.Load<SpriteFont>("Assets/Fonts/Debug"));    // Debug
+            _fonts[3].Load(content.Load<SpriteFont>("Assets/Fonts/Menu"));  //  GUI
+            _fonts[4].Load(content.Load<SpriteFont>("Assets/Fonts/Notes"));    //  Notes
+            _fonts[5].Load(content.Load<SpriteFont>("Assets/Fonts/Debug"));    // Debug
         }
 
-        public void UnloadContent()
+        public SpriteFont GetFont(FontList fontName)
         {
-            if (this._content != null)
-            {
-                _content.Unload();
-            }
-        }
-
-        public FontType GetFont(FontList fontName)
-        {
-            return _fonts[(int)fontName];
+            return _fonts[(int)fontName].Font;
         }
     }
 }

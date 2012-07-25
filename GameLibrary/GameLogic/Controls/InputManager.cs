@@ -384,7 +384,6 @@ namespace GameLibrary.GameLogic.Controls
                 {
                     return false;
                 }
-                //return IsKeyPress(Keys.Tab);
             }
         }
 
@@ -400,7 +399,6 @@ namespace GameLibrary.GameLogic.Controls
                 {
                     return false;
                 }
-                //return IsKeyPress(Keys.Tab);
             }
         }
 
@@ -416,7 +414,6 @@ namespace GameLibrary.GameLogic.Controls
                 {
                     return false;
                 }
-                //return IsKeyPress(Keys.Tab);
             }
         }
 
@@ -432,7 +429,6 @@ namespace GameLibrary.GameLogic.Controls
                 {
                     return false;
                 }
-                //return IsKeyPress(Keys.Tab);
             }
         }
 
@@ -823,7 +819,7 @@ namespace GameLibrary.GameLogic.Controls
         #endregion
 
         #region Update
-        public void Update(GameTime gameTime)
+        public void Update(float delta)
         {
             if (isGamePad)
             {
@@ -832,7 +828,7 @@ namespace GameLibrary.GameLogic.Controls
 
                 if (VibrationTime > 0)
                 {
-                    VibrationTime -= (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                    VibrationTime -= delta;
                     GamePad.SetVibration(PlayerIndex.One, VibrationIntensity, VibrationIntensity);
                 }
                 else

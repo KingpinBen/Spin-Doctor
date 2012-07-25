@@ -60,7 +60,8 @@ namespace GameLibrary.Graphics.Camera
         }
 
         #region Fields
-
+        ScreenManager screenManager;
+        GameplayScreen _gameScreen;
         private const float _rotationSpeed = 0.08f;
         //  90% of largest dimension
         private const float largestDimensionModifier = 0.9f;    
@@ -184,6 +185,12 @@ namespace GameLibrary.Graphics.Camera
             }
         }
 
+        public void SetUpIs(UpIs val)
+        {
+            this._upIs = val;
+            ChangeGravity();
+        }
+
         public float LevelDiameter
         {
             get
@@ -192,14 +199,24 @@ namespace GameLibrary.Graphics.Camera
             }
         }
 
+        public GameplayScreen GetGameScreen()
+        {
+            return _gameScreen;
+        }
+        public void SetGameplayScreen(GameplayScreen screen)
+        {
+            this._gameScreen = screen;
+        }
+
         #endregion
 
         private Camera()
         {
         }
 
-        public void Load(bool levelCanRotate, float LargestLevelDimension)
+        public void Load(GameplayScreen gameScreen, bool levelCanRotate, float LargestLevelDimension)
         {
+            this._gameScreen = gameScreen;
             this._levelRotates = levelCanRotate;
             this.AllowRotation = _levelRotates;
             this.UpIs = UpIs.Up;
@@ -215,7 +232,7 @@ namespace GameLibrary.Graphics.Camera
             
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(float delta)
         {
             if (_cameraType == CameraType.Level && Position != Vector2.Zero)
             {
@@ -257,7 +274,7 @@ namespace GameLibrary.Graphics.Camera
             }
 #endif
                 HandleInput();
-                HandleRotation(gameTime);
+                HandleRotation(delta);
         }
 
         #region Private Methods
@@ -272,36 +289,39 @@ namespace GameLibrary.Graphics.Camera
 
         private void ChangeGravity()
         {
+#if !EDITOR
+
             switch (UpIs)
             {
                 case UpIs.Up:
                     {
-                        GameplayScreen.World.Gravity = new Vector2(0, _gravityForce);
+                        _gameScreen.World.Gravity = new Vector2(0, _gravityForce);
                         break;
                     }
                 case UpIs.Down:
                     {
-                        GameplayScreen.World.Gravity = new Vector2(0, -_gravityForce);
+                        _gameScreen.World.Gravity = new Vector2(0, -_gravityForce);
                         break;
                     }
                 case UpIs.Left:
                     {
-                        GameplayScreen.World.Gravity = new Vector2(_gravityForce, 0);
+                        _gameScreen.World.Gravity = new Vector2(_gravityForce, 0);
                         break;
                     }
                 case UpIs.Right:
                     {
-                        GameplayScreen.World.Gravity = new Vector2(-_gravityForce, 0);
+                        _gameScreen.World.Gravity = new Vector2(-_gravityForce, 0);
                         break;
                     }
             }
+#endif
         }
 
-        private void HandleRotation(GameTime gameTime)
+        private void HandleRotation(float delta)
         {
             if (_rotateDelayTimer > 0)
             {
-                _rotateDelayTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                _rotateDelayTimer -= delta;
             }
             else if (_rotateDelayTimer < 0)
             {
@@ -508,7 +528,7 @@ namespace GameLibrary.Graphics.Camera
 
         public void CalculateZoom()
         {
-            _currentCameraZoom = (ScreenManager.GraphicsDevice.Viewport.Height * 0.5f) / (_largestLevelDimension * largestDimensionModifier);
+            _currentCameraZoom = (_gameScreen.ScreenManager.GraphicsDevice.Viewport.Height * 0.5f) / (_largestLevelDimension * largestDimensionModifier);
         }
 
         public Matrix TransformMatrix()
@@ -516,7 +536,7 @@ namespace GameLibrary.Graphics.Camera
             Matrix _transform = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0)) *
                                          Matrix.CreateRotationZ((float)_worldRotation) *
                                          Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
-                                         Matrix.CreateTranslation(new Vector3((new Vector2(ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height) * 0.5f), 0));
+                                         Matrix.CreateTranslation(new Vector3((new Vector2(_gameScreen.ScreenManager.GraphicsDevice.Viewport.Width, _gameScreen.ScreenManager.GraphicsDevice.Viewport.Height) * 0.5f), 0));
             return _transform;
         }
 

@@ -26,6 +26,7 @@ namespace GameLibrary.GameLogic.Objects
         Queue<Particle> _queuedParticles;
         float _elapsed = 0.0f;
         Texture2D _texture;
+        World _world;
 #endif
 
 
@@ -215,6 +216,8 @@ namespace GameLibrary.GameLogic.Objects
             this._particles = new List<Particle>(_particleCount);
             this._queuedParticles = new Queue<Particle>(_particleCount);
 
+            this._world = world;
+
             for (int i = 0; i < _particleCount; i++)
             {
                 _particles.Add(new Particle());
@@ -223,14 +226,14 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
 #else
             if (!_isActive) return;
 
-            _elapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+            _elapsed += delta;
 
             for (int i = _particles.Count - 1; i >= 0; i--)
             {
@@ -238,7 +241,7 @@ namespace GameLibrary.GameLogic.Objects
                 {
                     if (_useGravity)
                     {
-                        _particles[i].Acceleration += (GameplayScreen.World.Gravity * _gravityModifier)* _elapsed;
+                        _particles[i].Acceleration += (_world.Gravity * _gravityModifier) * _elapsed;
                     }
 
                     _particles[i].Update(_elapsed);
@@ -265,11 +268,8 @@ namespace GameLibrary.GameLogic.Objects
             sb.Draw(_devTexture, this._position, new Rectangle(0,0,_devWidth, _devHeight), Color.White * 0.7f, 0.0f, new Vector2(_devTexture.Width / 2, _devTexture.Height/ 2), 1.0f, SpriteEffects.None, _zLayer); 
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font, "QueueCount: " + _queuedParticles.Count, this.Position + new Vector2(0, 20), Color.White);
-            sb.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font, "Count: " + _particles.Count, this.Position + new Vector2(0, 5), Color.White);
-
             for (int i = 0; i < _particles.Count; i++)
             {
                 if (!_particles[i].Alive)
@@ -298,9 +298,9 @@ namespace GameLibrary.GameLogic.Objects
                     Particle particle = _queuedParticles.Dequeue();
                     SetupParticle(particle);
                 }
-                catch
+                catch (IndexOutOfRangeException e)
                 {
-
+                    ErrorReport.GenerateReport("A particle emitter tried making more particles than it could hold. OOR\n" + e.ToString(), null);
                 }
             }
 #endif
@@ -308,9 +308,13 @@ namespace GameLibrary.GameLogic.Objects
 
         void SetupParticle(Particle particle)
         {
+#if EDITOR
+#else
+
             float life = SpinAssist.GetRandom(_minLifeTime, _maxLifeTime);
             Vector2 acceleration = Vector2.Zero;
-            particle.Init(this._position, -GameplayScreen.World.Gravity, acceleration, life);
+            particle.Init(this._position, -_world.Gravity, acceleration, life);
+#endif
         }
 
         #endregion

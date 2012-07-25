@@ -193,12 +193,13 @@ namespace GameLibrary.GameLogic
 
         public Character()
         {
-            _content = new ContentManager(ScreenManager.Game.Services, "Content");
             _animations = new Dictionary<string, FrameAnimation>();
         }
 
-        public virtual void Load(ContentManager content, World _world, Vector2 position)
+        public virtual void Load(Game game, World _world, Vector2 position)
         {
+            _content = new ContentManager(game.Services, "Content");
+
             this._charHeight = 128f;
             this._charWidth = _charHeight;
             this._charMass = 60f;
@@ -211,7 +212,7 @@ namespace GameLibrary.GameLogic
             SetUpPhysics(_world);
         }
 
-        public virtual void Update(GameTime gameTime)
+        public virtual void Update(float delta, World world)
         {
             if (this._mainBody.Enabled == false)
             {
@@ -221,31 +222,19 @@ namespace GameLibrary.GameLogic
             Vector2 tempPosition = ConvertUnits.ToDisplayUnits(this.Body.Position - this._wheelBody.Position);
             this._texturePosition = ConvertUnits.ToDisplayUnits(this.WheelBody.Position) + (tempPosition);
 
-            HandleAnimation(gameTime);
+            HandleAnimation(delta);
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            #region Development
-#if Development
-            //spriteBatch.Draw(CharTexture,
-            //    new Rectangle((int)ConvertUnits.ToDisplayUnits(Body.Position.X), (int)ConvertUnits.ToDisplayUnits(Body.Position.Y), (int)CharWidth, (int)CharHeight),
-            //    null, Color.White, Body.Rotation, Origin, SpriteEffects.None, 0.01f);
-
-            ////Uncomment if you want to see the wheel. Only to show the works
-            //spriteBatch.Draw(CharTexture,
-            //    new Rectangle((int)ConvertUnits.ToDisplayUnits(WheelBody.Position.X), (int)ConvertUnits.ToDisplayUnits(WheelBody.Position.Y), (int)CharWidth, (int)CharWidth),
-            //    null, new Color(150f, 150f, 255f, 0.3f), WheelBody.Rotation, Origin, SpriteEffects.None, 0f);
-
-#endif
-            #endregion
-
             spriteBatch.Draw(CurrentAnimation.CurrentAnimationTexture,
             this._texturePosition, CurrentAnimation.CurrentRect, Color.White,
             this._mainBody.Rotation, CurrentAnimation.FrameOrigin, 0.43f, _lookingDirection, 0.3f);
         } 
 
         #region Animations
+
+
         /// <summary>
         /// Adds required aniations to the dict.
         /// </summary>
@@ -271,10 +260,11 @@ namespace GameLibrary.GameLogic
             _animations.Add("Dead", new FrameAnimation(death, 21, new Point(550, 458), 20.0f, new Point(4, 5), true, 40));
         }
 
+
         /// <summary>
         /// Changeds animation dependant on PlayerState.
         /// </summary>
-        protected virtual void HandleAnimation(GameTime gameTime)
+        protected virtual void HandleAnimation(float delta)
         {
             string oldAnimation = CurrentAnimationName;
 
@@ -316,9 +306,11 @@ namespace GameLibrary.GameLogic
             //  Play through the animation
             if (CurrentAnimation != null)
             {
-                CurrentAnimation.Update(gameTime);
+                CurrentAnimation.Update(delta);
             }
         }
+
+
         #endregion
 
         protected void SetUpPhysics(World world)

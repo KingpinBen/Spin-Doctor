@@ -27,6 +27,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using GameLibrary.GameLogic;
+using GameLibrary.GameLogic.Screens;
 
 //NOTE: Anything in a comment in this is going to be a plan on a better way of drawing everything.
 
@@ -39,6 +40,7 @@ namespace GameLibrary.Graphics
         private List<Decal> _decalList;
         private ContentManager _content;
         private Texture2D _decalMesh;
+        GameplayScreen _gameScreen;
         #endregion
 
         #region Properties
@@ -74,12 +76,10 @@ namespace GameLibrary.Graphics
         }
 
         #region Load
-        public void Load()
+        public void Load(GameplayScreen screen)
         {
-            //  Get a new spriteBatch.
-            //SpriteBatch sb = new SpriteBatch(Screen_Manager.Game.GraphicsDevice);
-
-            _content = new ContentManager(ScreenManager.Game.Services, "Content");
+            _gameScreen = screen;
+            _content = new ContentManager(screen.ScreenManager.Game.Services, "Content");
 
             //  Generate a render target and make it default.
 
@@ -103,7 +103,6 @@ namespace GameLibrary.Graphics
                 _decalList[i].Draw(sb);
             }
             //  Draw the collage of textures as one large texture.
-            //sb.Draw(_decalMesh, Vector2.Zero, null, Color.White);
         }
         #endregion
     }

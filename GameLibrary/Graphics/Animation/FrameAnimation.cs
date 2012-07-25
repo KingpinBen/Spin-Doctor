@@ -140,14 +140,14 @@ namespace GameLibrary.Graphics.Animation
         }
         #endregion
 
-        public void Update(GameTime gameTime)
+        public void Update(float delta)
         {
             if (PlayOnce && currentFrame == 0)
             {
                 return;
             }
 
-            timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+            timer += delta;
 
             if (timer >= frameLength)
             {

@@ -114,11 +114,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Audio\Banks.cs" />
+    <Compile Include="GameLogic\Controls\InputAction.cs" />
+    <Compile Include="GameLogic\Controls\InputState.cs" />
+    <Compile Include="GameLogic\Events\Event.cs" />
+    <Compile Include="GameLogic\Events\EventManager.cs" />
+    <Compile Include="GameLogic\Events\EventType.cs" />
+    <Compile Include="GameLogic\Objects\IGameObject.cs" />
+    <Compile Include="GameLogic\Objects\ObjectShape.cs" />
     <Compile Include="GameLogic\Objects\SpecialBodyFlags.cs" />
     <Compile Include="GameLogic\PlayerState.cs" />
-    <Compile Include="GameLogic\Screens\Menu\Options\OptionType.cs" />
-    <Compile Include="GameLogic\Screens\Messages\MessageType.cs" />
-    <Compile Include="Graphics\UI\Alignment.cs" />
+    <Compile Include="GameLogic\Screens\GameplayScreen.cs" />
+    <Compile Include="GameLogic\Screens\GameScreen.cs" />
+    <Compile Include="GameLogic\Screens\LoadingScreen.cs" />
+    <Compile Include="GameLogic\Screens\Menu\BackgroundScreen.cs" />
+    <Compile Include="GameLogic\Screens\Menu\MainMenuScreen.cs" />
+    <Compile Include="GameLogic\Screens\Menu\MenuScreen.cs" />
+    <Compile Include="GameLogic\Screens\Menu\MessageBoxScreen.cs" />
+    <Compile Include="GameLogic\Screens\Menu\OptionsMenuScreen.cs" />
+    <Compile Include="GameLogic\Screens\Menu\Options\MenuEntry.cs" />
+    <Compile Include="GameLogic\Screens\Menu\Options\Resolutions.cs" />
+    <Compile Include="GameLogic\Screens\Menu\PauseMenuScreen.cs" />
+    <Compile Include="GameLogic\Screens\MessageOverlay.cs" />
+    <Compile Include="GameLogic\Screens\PlayerIndexEventArgs.cs" />
+    <Compile Include="GameLogic\ScreenManager.cs" />
+    <Compile Include="GameLogic\Screens\ScreenState.cs" />
+    <Compile Include="Graphics\UI\TextAlignment.cs" />
     <Compile Include="Graphics\UI\AnimatedTextType.cs" />
     <Compile Include="Graphics\UI\ButtonIcon.cs" />
     <Compile Include="Graphics\UI\ScaleType.cs" />
@@ -146,11 +166,11 @@
     <Compile Include="Graphics\UI\FullscreenPicture.cs" />
     <Compile Include="Graphics\UI\HUD.cs" />
     <Compile Include="Graphics\Drawing\Particle.cs" />
-    <Compile Include="Level\RoomTheme.cs" />
+    <Compile Include="Levels\RoomTheme.cs" />
     <Compile Include="GameLogic\Objects\ParticleEmitter.cs" />
-    <Compile Include="Level\RoomType.cs" />
+    <Compile Include="Levels\RoomType.cs" />
     <Compile Include="Graphics\UI\TextString.cs" />
-    <Compile Include="Level\LevelBackdrop.cs" />
+    <Compile Include="Levels\LevelBackdrop.cs" />
     <Compile Include="Graphics\DecalManager.cs" />
     <Compile Include="Graphics\SpriteManager.cs" />
     <Compile Include="GameLogic\Objects\Structs\DynamicObject.cs" />
@@ -158,7 +178,7 @@
     <Compile Include="GameLogic\Objects\Structs\Orientation.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\BouncePad.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Collectable.cs" />
-    <Compile Include="Level\Level.cs" />
+    <Compile Include="Levels\Level.cs" />
     <Compile Include="Graphics\Drawing\Sprite.cs" />
     <Compile Include="GameLogic\Objects\Platforms\CushionedPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Ladder.cs" />
@@ -178,27 +198,13 @@
     <Compile Include="GameLogic\Objects\Triggers\TriggerOnce.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameLogic\Character.cs" />
-    <Compile Include="Level\Gears.cs" />
+    <Compile Include="Levels\Gears.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\PhysicsObject.cs" />
     <Compile Include="GameLogic\Player.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Rope.cs" />
     <Compile Include="GameLogic\Objects\Platforms\RotatingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Platforms\StaticObject.cs" />
-    <Compile Include="GameLogic\Screens\GamePlayScreen.cs" />
     <Compile Include="GameLogic\GameSettings.cs" />
-    <Compile Include="GameLogic\Screens\LoadingScreen.cs" />
-    <Compile Include="GameLogic\Screens\Menu\GameMenu.cs" />
-    <Compile Include="GameLogic\Screens\Menu\GraphicsScreen.cs" />
-    <Compile Include="GameLogic\Screens\Menu\MainMenu.cs" />
-    <Compile Include="GameLogic\Screens\Menu\Options\MenuOption.cs" />
-    <Compile Include="GameLogic\Screens\Menu\MenuScreen.cs" />
-    <Compile Include="GameLogic\Screens\Messages\ConfirmBox.cs" />
-    <Compile Include="GameLogic\Screens\Messages\MessageOverlay.cs" />
-    <Compile Include="GameLogic\Screens\Screen.cs" />
-    <Compile Include="GameLogic\ScreenManager.cs" />
-    <Compile Include="GameLogic\Screens\Splash\DevSplashScreen.cs" />
-    <Compile Include="GameLogic\Screens\Splash\IntroScreen.cs" />
-    <Compile Include="GameLogic\Screens\State.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DebugView XNA\DebugView XNA.csproj">

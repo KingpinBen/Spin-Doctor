@@ -42,6 +42,7 @@ namespace GameLibrary.Graphics.UI
     {
         #region Fields
         protected string _text;
+        protected SpriteFont _font;
         protected ScreenAnchorLocation _anchorPoint;
         protected Vector2 _textOrigin;
         protected Vector2 _offset;
@@ -50,8 +51,9 @@ namespace GameLibrary.Graphics.UI
         protected Color _tint;
         protected ButtonIcon _buttonType;
         protected Texture2D _texture;
-        protected Alignment _textAlignment;
+        protected TextAlignment _textAlignment;
         private Vector2 _textureOffset;
+        protected Vector2 _position;
 
         #endregion
 
@@ -68,50 +70,13 @@ namespace GameLibrary.Graphics.UI
                 _text = value;
             }
         }
-        public Vector2 Position
+
+        public virtual Vector2 Position
         {
             get
             {
-                switch (_anchorPoint)
-                {
-                    case ScreenAnchorLocation.Top:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Center.X, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Top);
-                        }
-                    case ScreenAnchorLocation.TopLeft:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Left, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Top);
-                        }
-                    case ScreenAnchorLocation.TopRight:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Right, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Top);
-                        }
-                    case ScreenAnchorLocation.Bottom:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Center.X, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Bottom);
-                        }
-                    case ScreenAnchorLocation.BottomLeft:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Left, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Bottom);
-                        }
-                    case ScreenAnchorLocation.BottomRight:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Right, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Bottom);
-                        }
-                    case ScreenAnchorLocation.Left:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Left, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Center.Y);
-                        }
-                    case ScreenAnchorLocation.Centre:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Center.X, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Center.Y);
-                        }
-                    case ScreenAnchorLocation.Right:
-                        {
-                            return new Vector2(ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Right, ScreenManager.GraphicsDevice.Viewport.TitleSafeArea.Center.Y);
-                        }
-                }
-                return Vector2.Zero;
+                
+                return _position;
             }
         }
         public Vector2 Origin
@@ -150,6 +115,7 @@ namespace GameLibrary.Graphics.UI
                 return _alpha;
             }
         }
+
         public Color Tint
         {
             get
@@ -171,7 +137,7 @@ namespace GameLibrary.Graphics.UI
                 return _texture;
             }
         }
-        public Alignment TextAlignment
+        public TextAlignment TextAlignment
         {
             get
             {
@@ -192,11 +158,6 @@ namespace GameLibrary.Graphics.UI
 
         #endregion
 
-        #region Constructor
-        /// <summary>
-        /// Display text on screen.
-        /// </summary>
-        /// <param name="text">Text to display.</param>
         public TextString(string text)
         {
             this._text = text;
@@ -205,7 +166,6 @@ namespace GameLibrary.Graphics.UI
             this._tint = Color.White;
             this._anchorPoint = ScreenAnchorLocation.Centre;
         }
-        #endregion
 
         #region Load
         /// <summary>
@@ -216,6 +176,7 @@ namespace GameLibrary.Graphics.UI
         public virtual void Load(ContentManager content)
         {
             #region Button Texture Load
+
             #region Cancel
             if (_buttonType == ButtonIcon.Cancel)
             {
@@ -276,46 +237,73 @@ namespace GameLibrary.Graphics.UI
             }
             #endregion
 
+            _font = FontManager.Instance.GetFont(FontList.GUI);
+
             UpdateOrigin();
         }
         #endregion
 
-        #region Update
-        public virtual void Update(GameTime gameTime) { }
-        #endregion
+        public virtual void Update(float delta) { }
 
-        #region Draw
-        public virtual void Draw(SpriteBatch sb)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
-            sb.DrawString(FontManager.Instance.GetFont(Graphics.FontList.GUI).Font, _text, Position + _offset + (this._textureOffset * Scale), _tint * _alpha, 0f, _textOrigin, _scale, SpriteEffects.None, 0.1f);
+            spriteBatch.DrawString(_font, _text, _position + _offset + (this._textureOffset * Scale), _tint * _alpha, 0f, _textOrigin, _scale, SpriteEffects.None, 0.1f);
 
-            if (_buttonType == ButtonIcon.None) 
-                return;
-
-            sb.Draw(_texture, Position + _offset, null, Color.White * _alpha, 0f,
-                _textOrigin, _scale, SpriteEffects.None, 0.1f); 
+            if (_buttonType != ButtonIcon.None)
+                spriteBatch.Draw(_texture, _position + _offset, null, Color.White * _alpha, 0f, _textOrigin, _scale, SpriteEffects.None, 0.1f);
         }
-        #endregion
 
-        #region Origin Update
         public virtual void UpdateOrigin()
         {
-            Vector2 textSize = FontManager.Instance.GetFont(Graphics.FontList.GUI).MeasureString(_text);
+            Vector2 textSize = _font.MeasureString(_text);
 
             switch (_textAlignment)
             {
-                case Alignment.Centre:
+                case TextAlignment.Centre:
                     _textOrigin = textSize;
                     _textOrigin.X *= 0.5f;
                     break;
-                case Alignment.Left:
+                case TextAlignment.Left:
                     _textOrigin.Y = textSize.Y;
                     break;
-                case Alignment.Right:
+                case TextAlignment.Right:
                     _textOrigin = textSize;
                     break;
             }
         }
-        #endregion
+
+        public void SetPosition(ScreenAnchorLocation location, GraphicsDevice graphics)
+        {
+            switch (location)
+            {
+                case ScreenAnchorLocation.Top:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Center.X, graphics.Viewport.TitleSafeArea.Top);
+                    break;
+                case ScreenAnchorLocation.TopLeft:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Left, graphics.Viewport.TitleSafeArea.Top);
+                    break;
+                case ScreenAnchorLocation.TopRight:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Right, graphics.Viewport.TitleSafeArea.Top);
+                    break;
+                case ScreenAnchorLocation.Bottom:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Center.X, graphics.Viewport.TitleSafeArea.Bottom);
+                    break;
+                case ScreenAnchorLocation.BottomLeft:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Left, graphics.Viewport.TitleSafeArea.Bottom);
+                    break;
+                case ScreenAnchorLocation.BottomRight:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Right, graphics.Viewport.TitleSafeArea.Bottom);
+                    break;
+                case ScreenAnchorLocation.Left:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Left, graphics.Viewport.TitleSafeArea.Center.Y);
+                    break;
+                case ScreenAnchorLocation.Centre:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Center.X, graphics.Viewport.TitleSafeArea.Center.Y);
+                    break;
+                case ScreenAnchorLocation.Right:
+                    _position = new Vector2(graphics.Viewport.TitleSafeArea.Right, graphics.Viewport.TitleSafeArea.Center.Y);
+                    break;
+            }
+        }
     }
 }

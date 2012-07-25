@@ -101,11 +101,13 @@ namespace GameLibrary.Graphics.UI
 
         #region Constructor
         /// <summary>
-        /// Defaults to Left aligned
+        /// Constructor for the Animated Text
         /// </summary>
-        /// <param name="TextToDisplay"></param>
-        /// <param name="TimeForFade"></param>
-        public AnimatedText(string TextToDisplay, ButtonIcon ButtonType, float AnimationTime, Alignment alignment)
+        /// <param name="TextToDisplay">Text to display</param>
+        /// <param name="ButtonType">What type, if at all, button should be shown next to the text</param>
+        /// <param name="AnimationTime">How long between animation cusps</param>
+        /// <param name="alignment">From the position of the text, where should the text be aligned from?</param>
+        public AnimatedText(string TextToDisplay, ButtonIcon ButtonType, float AnimationTime, TextAlignment alignment)
             : base(TextToDisplay)
         {
             this._animationPeak = false;
@@ -114,66 +116,55 @@ namespace GameLibrary.Graphics.UI
             this._animationTime = AnimationTime;
             this._buttonType = ButtonType;
             this._alpha = _minimumAlpha;
-
-            UpdateOrigin();
         }
         #endregion
 
-        #region Update
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
             if (_textType == AnimatedTextType.Flash)
             {
-                float speed = (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
-
                 if (_animationPeak)
-                    _alpha = Math.Max(_alpha - speed, 0.0f);
+                    _alpha = Math.Max(_alpha - delta, 0.0f);
                 else
-                    _alpha = Math.Min(_alpha + speed, 1.0f);
+                    _alpha = Math.Min(_alpha + delta, 1.0f);
 
                 if (_alpha >= 1 || _alpha <= 0.0f)
                     _animationPeak = !_animationPeak;
             }
             else if (TextType == AnimatedTextType.Grow)
             {
-                //  BROKEN WITH THE NEW FONTMANAGER
-                float speed = (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
-
                 if (_animationPeak)
-                    _textSpacing = Math.Max(_textSpacing - speed, 0.0f);
+                    _textSpacing = Math.Max(_textSpacing - delta, 0.0f);
                 else
-                    _textSpacing = Math.Min(_textSpacing + speed, 1.0f);
+                    _textSpacing = Math.Min(_textSpacing + delta, 1.0f);
 
                 if (_textSpacing >= 1 || _textSpacing <= 0)
                     _animationPeak = !_animationPeak;
 
-                //_font.Spacing = _textSpacing;
+                _font.Spacing = _textSpacing;
                 UpdateOrigin();
             }
             else if (TextType == AnimatedTextType.Fade)
             {
-                float speed = (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
-
                 if (_animationPeak)
-                    _alpha = Math.Max(_alpha - speed, 0.0f);
+                    _alpha = Math.Max(_alpha - delta, 0.0f);
                 else
-                    _alpha = Math.Min(_alpha + speed, 1.0f);
+                    _alpha = Math.Min(_alpha + delta, 1.0f);
             }
         }
-        #endregion
 
-        #region Draw
         public override void Draw(SpriteBatch sb)
         {
             base.Draw(sb);
         }
-        #endregion
+
+        #region Public Methods
 
         public void ToggleState()
         {
             if (_animationPeak == true)
 
-            _animationPeak = !_animationPeak;
+                _animationPeak = !_animationPeak;
         }
 
         public void Reset()
@@ -185,5 +176,7 @@ namespace GameLibrary.Graphics.UI
                 _alpha = 0.0f;
             }
         }
+
+        #endregion
     }
 }

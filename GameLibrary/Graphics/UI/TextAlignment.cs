@@ -5,10 +5,10 @@ using System.Text;
 
 namespace GameLibrary.Graphics.UI
 {
-    public enum Alignment
+    public enum TextAlignment
     {
         Left,
-        Right,
-        Centre
+        Centre,
+        Right
     }
 }

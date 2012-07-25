@@ -41,7 +41,7 @@ namespace GameLibrary.GameLogic
 
     public static class SessionSettings
     {
-        private static bool _developmentMode = false;
+        private static bool _developmentMode = true;
 
         public static bool DevelopmentMode
         {
@@ -53,10 +53,7 @@ namespace GameLibrary.GameLogic
 
         public static void SetDevelopment(object sender, bool state)
         {
-            if (sender is Game)
-            {
                 _developmentMode = state;
-            }
         }
     }
 }

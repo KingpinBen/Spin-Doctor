@@ -33,6 +33,8 @@ using GameLibrary.GameLogic.Controls;
 using GameLibrary.GameLogic;
 using GameLibrary.GameLogic.Screens;
 using GameLibrary.Graphics;
+using Microsoft.Xna.Framework.Content;
+using GameLibrary.GameLogic.Events;
 #endregion
 
 namespace GameLibrary.Helpers
@@ -49,6 +51,9 @@ namespace GameLibrary.Helpers
                 return _singleton;
             }
         }
+
+        ScreenManager screenManager;
+        ContentManager _content;
 
         private DebugViewXNA _debugView;
         private const float MeterInPixels = 24f;
@@ -69,15 +74,17 @@ namespace GameLibrary.Helpers
 
         #endregion
 
-        private DevDisplay(World world)
+        private DevDisplay(ScreenManager screenManager, World world)
         {
+            this.screenManager = screenManager;
+            this._content = new ContentManager(screenManager.Game.Services, "Content");
             LoadCreateDebugView(world);
             _world = world;
         }
 
-        public static void Load(World world)
+        public static void Load(ScreenManager screenManager, World world)
         {
-            _singleton = new DevDisplay(world);
+            _singleton = new DevDisplay(screenManager, world);
         }
 
         #region Update
@@ -89,24 +96,16 @@ namespace GameLibrary.Helpers
 
         #region Draw
 
-        public void Draw(GameTime gameTime, Stopwatch stopWatch)
+        public void Draw(GraphicsDevice graphics)
         {
-            Draw_DebugData();
+            Draw_DebugData(graphics);
 
-            // Increment every draw cycle to calculate the FPS
             frameCounter++;
             Console.Clear();
 
-            Console.WriteLine("---------------------[ GENERAL ]---------------------");
-            for (int i = 0; i < ScreenManager.ScreenList.Count; i++)
-            {
-                Console.WriteLine("Screen [" + i + "] = [" + 
-                    ScreenManager.ScreenList[i].Name + "]" + ".");
-            }
             Console.WriteLine("---------------------[ RENDER ]---------------------");
 
             Console.Write("FPS: " + frameRate.ToString() + ".  SpriteCount: " + SpriteManager.Instance.ListCount());
-            Console.WriteLine("DrawTime: " + stopWatch.ElapsedMilliseconds + "ms.");
             
             Console.WriteLine("---------------[ CAMERA & ROTATION ]----------------");
             Console.WriteLine("World Rotation: " + Camera.Instance.Rotation / Math.PI + ". Up is: " + Camera.Instance.UpIs.ToString());
@@ -129,8 +128,9 @@ namespace GameLibrary.Helpers
             Console.WriteLine("Position: " + Player.Instance.Body.Position.ToString());
             Console.Write("State: " + Player.Instance.PlayerState.ToString());
             Console.WriteLine("Jump: " + Player.Instance.CanJump.ToString() + ". DoubJump: " + Player.Instance.CanDoubleJump.ToString());
-            Console.WriteLine("---------------------[ PHYSICS ]---------------------");
-            Console.Write("Bodies: " + GameplayScreen.World.Island.BodyCount + ". Contacts" + GameplayScreen.World.Island.ContactCount);
+            Console.WriteLine("---------------------[ Events ]---------------------");
+            Console.WriteLine("Registered: " + EventManager.Instance.GetEventCount() + ". Timed: " + EventManager.Instance.GetTimedEventCount());
+            Console.WriteLine("Object count: " + EventManager.Instance.GetObjectsCount());
         }
         #endregion
 
@@ -161,19 +161,19 @@ namespace GameLibrary.Helpers
             _debugView.AppendFlags(DebugViewFlags.DebugPanel | DebugViewFlags.AABB | DebugViewFlags.PerformanceGraph | DebugViewFlags.ContactPoints | DebugViewFlags.Controllers);
             _debugView.DefaultShapeColor = Color.Blue;
             _debugView.SleepingShapeColor = Color.LightGray;
-            _debugView.LoadContent(ScreenManager.GraphicsDevice, ScreenManager.Content);
+            _debugView.LoadContent(screenManager.GraphicsDevice, _content);
         }
 
-        void Draw_DebugData()
+        void Draw_DebugData(GraphicsDevice graphics)
         {
-            Matrix projection = Matrix.CreateOrthographicOffCenter(0f, ScreenManager.GraphicsDevice.Viewport.Width / MeterInPixels,
-                ScreenManager.GraphicsDevice.Viewport.Height / MeterInPixels, 0f, 0f, 1f);
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0f, screenManager.GraphicsDevice.Viewport.Width / MeterInPixels,
+                screenManager.GraphicsDevice.Viewport.Height / MeterInPixels, 0f, 0f, 1f);
 
             Matrix view =
                 Matrix.CreateTranslation(new Vector3((-Camera.Instance.Position / MeterInPixels), 0f)) *
                 Matrix.CreateScale(Camera.Instance.Zoom, Camera.Instance.Zoom, 0f) *
                 Matrix.CreateRotationZ(Camera.Instance.Rotation) *
-                Matrix.CreateTranslation(new Vector3(((new Vector2(ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height) * 0.5f) / MeterInPixels), 0f));
+                Matrix.CreateTranslation(new Vector3(((new Vector2(graphics.Viewport.Width, graphics.Viewport.Height) * 0.5f) / MeterInPixels), 0f));
             _debugView.RenderDebugData(ref projection, ref view);
         }
         #endregion
