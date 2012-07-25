@@ -30,49 +30,99 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using GameLibrary.GameLogic;
+using System.Threading;
 #endregion
 
 namespace GameLibrary.Graphics.UI
 {
-    public static class HUD
+    public class HUD
     {
         #region Fields
 
-        public static bool ShowPopup { get; internal set; }
+        private static HUD _singleton = null;
+        private static object _singletonLock = new object();
+        public static HUD Instance
+        {
+            get
+            {
+                if (HUD._singleton == null)
+                {
+                    object obj;
+                    Monitor.Enter(obj = HUD._singletonLock);
+                    try
+                    {
+                        if (HUD._singleton == null)
+                        {
+                            HUD._singleton = new HUD();
+                        }
+                    }
+                    finally
+                    {
+                        Monitor.Exit(obj);
+                    }
+                }
 
-        private static AnimatedText _overlayText;
+                return HUD._singleton;
+            }
+        }
+        ScreenManager _screenManager;
+        bool _showPopup;
+        public bool ShowPopup
+        {
+            get
+            {
+                return _showPopup;
+            }
+            internal set
+            {
+                _showPopup = value;
+            }
+        }
 
-        private static ContentManager content;
+        private AnimatedText _overlayText;
+
+        private ContentManager _content;
 
 #if Development
         private static PrimitiveBatch _primBatch = new PrimitiveBatch(Screen_Manager.Graphics);
 #endif
         #endregion
 
-        #region Load
-        public static void Load()
+        private HUD()
         {
-            content = new ContentManager(ScreenManager.Game.Services, "Content");
-            _overlayText = new AnimatedText("", ButtonIcon.Interact, 0.5f, Alignment.Left);
+        }
+
+        #region Load
+        public void Load(ScreenManager screenManager)
+        {
+            this._screenManager = screenManager;
+            _content = new ContentManager(screenManager.Game.Services, "Content");
+            _overlayText = new AnimatedText("", ButtonIcon.Interact, 0.5f, TextAlignment.Left);
+            _overlayText.SetPosition(ScreenAnchorLocation.BottomLeft, screenManager.GraphicsDevice);
             _overlayText.TextType = AnimatedTextType.Flash;
             _overlayText.AnchorPoint = ScreenAnchorLocation.BottomLeft;
             _overlayText.Offset = new Vector2(20, -20);
-            _overlayText.Load(content);
+            _overlayText.Load(_content);
             _overlayText.Scale = 0.5f;
+
+            this._screenManager.GraphicsDevice.DeviceReset += DeviceReset;
         }
         #endregion
 
         #region Update
-        public static void Update(GameTime gameTime)
+        public void Update(float delta)
         {
-            if (!ShowPopup) return;
+            if (!ShowPopup)
+            {
+                return;
+            }
 
-            _overlayText.Update(gameTime);
+            _overlayText.Update(delta);
         }
         #endregion
 
         #region Draw
-        public static void Draw(SpriteBatch sb)
+        public void Draw(SpriteBatch sb)
         {
 #if Development
             sb.End();
@@ -108,16 +158,16 @@ namespace GameLibrary.Graphics.UI
         #endregion
 
         #region Message toggle
-        public static void ShowOnScreenMessage(bool set)
+        public void ShowOnScreenMessage(bool set)
         {
             ShowOnScreenMessage(set, "");
         }
 
-        public static void ShowOnScreenMessage(bool set, string message)
+        public void ShowOnScreenMessage(bool set, string message)
         {
-            if (ShowPopup != set)
-                ShowPopup = set;
-            else return;
+            if (_showPopup == set) return;
+
+            _showPopup = set;
 
             _overlayText.Reset();
 
@@ -129,7 +179,12 @@ namespace GameLibrary.Graphics.UI
         }
         #endregion
 
-        public static void RefreshHUD()
+        void DeviceReset(object sender, EventArgs e)
+        {
+            _overlayText.SetPosition(ScreenAnchorLocation.BottomLeft, this._screenManager.GraphicsDevice);
+        }
+
+        public void RefreshHUD()
         {
             ShowPopup = false;
             _overlayText.Reset();
