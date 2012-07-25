@@ -75,12 +75,16 @@ namespace GameLibrary.Levels
         #endregion
 
         #region Update
-        public void Update(GameTime gameTime)
+        public void Update(float delta)
         {
             if (Camera.Instance.IsLevelRotating)
+            {
                 GearRotation = (float)-Camera.Instance.Rotation * 3;
+            }
             else
+            {
                 GearRotation = 0.0f;
+            }
         }
         #endregion
 

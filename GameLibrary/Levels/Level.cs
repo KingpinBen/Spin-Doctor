@@ -40,20 +40,24 @@ using GameLibrary.Graphics;
 using GameLibrary.GameLogic.Objects;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic;
+using GameLibrary.GameLogic.Screens;
+using GameLibrary.GameLogic.Events;
 #endregion
 
 namespace GameLibrary.Levels
 {
-    public class Level
+    public class Level : IDisposable
     {
         #region Fields
-#if EDITOR
 
-#else
         ContentManager _content;
         Gears _gears;
-        bool _initialized = false;
         LevelBackdrop _levelBackdrop;
+
+#if EDITOR
+#else
+        GameplayScreen _gameScreen;
+        
 #endif
 
         [ContentSerializer]
@@ -152,11 +156,6 @@ namespace GameLibrary.Levels
         }
 #else
         [ContentSerializerIgnore]
-        public bool IsInitialized
-        {
-            get { return _initialized; }
-        }
-        [ContentSerializerIgnore]
         public ContentManager Content
         {
             get
@@ -206,75 +205,98 @@ namespace GameLibrary.Levels
 #if EDITOR
             this._backgroundTint = Color.White;
 #else
-
-#endif
-        }
-
-        public void Init()
-        {
-#if EDITOR
-#else
-            this._content = new ContentManager(ScreenManager.Game.Services, "Content");
             this._levelBackdrop = new LevelBackdrop();
-            this._initialized = false;
-
-            _gears = new Gears();
+            this._gears = new Gears();
 #endif
         }
+
         #endregion
 
         #region Load and Unload
-        public void Load(World world)
+
+
+        #region Load
+
+        /// <summary>
+        /// Setup and load the level and everything in it.
+        /// </summary>
+        /// <param name="screen">The gameplay screen</param>
+        public void Load(GameplayScreen screen)
         {
-#if EDITOR
-#else
-            Init();
+            //  This should only be called for the game so we ignore the
+            //  editor. Plus, some fields used aren't for the editor.
+#if !EDITOR
+            this._content = new ContentManager(screen.ScreenManager.Game.Services, "Content");
+
+            //  We want a reference to the gameplay screen in case
+            //  we need it later on.
+            this._gameScreen = screen;
+
+            //  Set up the camera to work correctly with the level.
             this.SetupCamera();
-            Player.Instance.Load(_content, world, _spawnLocation);
 
+            //  Setup the player to start on the spawn position.
+            Player.Instance.Load(screen.ScreenManager.Game, screen.World, 
+                _spawnLocation);
+
+            //  Refresh the decal manager
+            this._decalManager.Load(screen);
+
+            //  Setup the backgrounds of the level so it looks the way it should.
             this._levelBackdrop.Tint = this._backgroundTint;
-            this._levelBackdrop.Load(_content, _roomDimensions, _roomTheme, _roomType, _backgroundFile);
+            this._levelBackdrop.Load(_content, _roomDimensions, _roomTheme,
+                _roomType, _backgroundFile);
 
-            if (_roomType != RoomType.NonRotating)
+            //  We only need the gears for a rotating room, so don't bother
+            //  if it's not.
+            if (_roomType == RoomType.Rotating)
             {
                 _gears.Load(_content, Camera.Instance.LevelDiameter);
             }
 
+            //  Create all the objects for the level world.
             for (int i = 0; i < this._objectList.Count; i++)
             {
-                this._objectList[i].Load(_content, world);
+                this._objectList[i].Load(_content, _gameScreen.World);
             }
-
-            this._decalManager.Load();
-
-            _initialized = true;
 #endif
         }
 
-        public void Unload()
-        {
-#if EDITOR
-#else
-            _content.Unload();
-#endif
-        }
         #endregion
 
-        public void Update(GameTime gameTime)
+        #region Unload
+
+
+        /// <summary>
+        /// Unload all the content
+        /// </summary>
+        public void Unload()
+        {
+            _content.Unload();
+        }
+
+
+        #endregion
+
+
+        #endregion
+
+        public void Update(float delta)
         {
 #if EDITOR
 
 #else
-            Player.Instance.Update(gameTime);
+            Player.Instance.Update(delta, _gameScreen.World);
+            EventManager.Instance.Update(delta);
 
             for (int i = this._objectList.Count; i > 0; i--)
             {
-                this._objectList[i - 1].Update(gameTime);
+                this._objectList[i - 1].Update(delta);
             }
 
             if (_roomType != RoomType.NonRotating)
             {
-                _gears.Update(gameTime);
+                _gears.Update(delta);
             }
 #endif
         }
@@ -284,31 +306,31 @@ namespace GameLibrary.Levels
 
 #else
         #region Draw NonRotating
+
+        /// <summary>
+        /// Draw the non-rotating background elements.
+        /// </summary>
+        /// <param name="SpriteBatch">The non-transformed Spritebatch</param>
         public void DrawBackground(SpriteBatch sb)
         {
-            if (_roomType == RoomType.NonRotating)
-            {
-                return;
-            }
-            else
+            //  Gears can only be drawn if the level is rotating
+            if (_roomType == RoomType.Rotating)
             {
                 _gears.Draw(sb);
             }
         }
+
+
         #endregion
 
         #region Draw Gameplay
+
         public void DrawBackdrop(SpriteBatch sb)
         {
-            
-            
-
             if (_roomType == RoomType.Rotating)
             {
                 this._levelBackdrop.Draw(sb);
             }
-
-            this._decalManager.Draw(sb);
         }
         #endregion
 #endif
@@ -318,6 +340,9 @@ namespace GameLibrary.Levels
 
         void SetupCamera()
         {
+#if EDITOR
+
+#else
             float largestLevelDimension = 0;
             bool canRotate = false;
 
@@ -326,9 +351,21 @@ namespace GameLibrary.Levels
             if (this._roomType == RoomType.Rotating)
                 canRotate = true;
 
-            Camera.Instance.Load(canRotate, largestLevelDimension * 0.5f);
+            Camera.Instance.Load(_gameScreen, canRotate, largestLevelDimension * 0.5f);
+#endif
         }
 
         #endregion
+
+        public void Dispose()
+        {
+#if !EDITOR
+            this._gameScreen = null;
+            this._content.Unload();
+            this._content = null;
+            this._gears = null;
+            this._levelBackdrop = null;
+#endif
+        }
     }
 }
