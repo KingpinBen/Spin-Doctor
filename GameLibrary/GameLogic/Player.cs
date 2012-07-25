@@ -123,19 +123,21 @@ namespace GameLibrary.GameLogic
 
         public Player() : base() { }
 
-        public override void Load(ContentManager content, World world, Vector2 position)
+        public override void Load(Game game, World world, Vector2 position)
         {
-            base.Load(content, world, position);
+            base.Load(game, world, position);
 
             SetupPlayerSettings();
 
             if (_animations.Count == 0)
+            {
                 AddAnimations();
+            }
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta, World world)
         {
-            base.Update(gameTime);
+            base.Update(delta, world);
 
             //Keeps the body rotation up, moving with the camera.
             if (Camera.Instance.IsLevelRotating || (this._mainBody.Rotation != (float)-Camera.Instance.Rotation && PlayerState != PlayerState.Swinging))
@@ -172,22 +174,22 @@ namespace GameLibrary.GameLogic
             switch (PlayerState)
             {
                 case PlayerState.Climbing:
-                    HandleClimbing(gameTime);
+                    HandleClimbing(delta, world);
                     break;
                 case PlayerState.Falling:
-                    HandleAir(gameTime);
+                    HandleAir(delta);
                     break;
                 case PlayerState.Jumping:
-                    HandleAir(gameTime);
+                    HandleAir(delta);
                     break;
                 case PlayerState.Pulling:
-                    HandlePulling(gameTime);
+                    HandlePulling(delta);
                     break;
                 case PlayerState.Swinging:
-                    HandleSwinging(gameTime);
+                    HandleSwinging(delta);
                     break;
                 default:
-                    HandleMoving(gameTime);
+                    HandleMoving(delta);
                     break;
             }
 
@@ -199,7 +201,8 @@ namespace GameLibrary.GameLogic
             {
                 if (CanJump || CanDoubleJump)
                 {
-                    HandleJumping(-GameplayScreen.World.Gravity);
+                    HandleJumping(-world.Gravity);
+                    this._airTime = 0.0f;
                 }
             }
             #endregion
@@ -207,7 +210,6 @@ namespace GameLibrary.GameLogic
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font, "AirTime: " + _airTime, ConvertUnits.ToDisplayUnits(this.Body.Position), Color.White);
             base.Draw(spriteBatch);
         }
 
@@ -381,7 +383,7 @@ namespace GameLibrary.GameLogic
             {
                 force *= _jumpForce;
 
-                // Apply 2 forces. Up and then directiona;
+                // Apply 2 forces. Up and then direction
                 if (Math.Abs(InputManager.Instance.GP_LeftThumbstick.X) >= 0.2)
                 {
                     Vector2 direction = new Vector2(InputManager.Instance.GP_LeftThumbstick.X, 0);
@@ -397,7 +399,7 @@ namespace GameLibrary.GameLogic
             }
         }
 
-        void HandleMoving(GameTime gameTime)
+        void HandleMoving(float delta)
         {
             if (WheelJoint.MotorSpeed == 0)
                 this.PlayerState = PlayerState.Grounded;
@@ -431,7 +433,7 @@ namespace GameLibrary.GameLogic
 
         #region Climbing and Ladders
 
-        void HandleClimbing(GameTime gameTime)
+        void HandleClimbing(float delta, World world)
         {
             Vector2 direction = Vector2.Zero;
 
@@ -443,13 +445,13 @@ namespace GameLibrary.GameLogic
                 {
                     ToggleBodies(true);
                     this.CurrentAnimation.SetPlayback(true);
-                    direction = (GameplayScreen.World.Gravity / 6f);
+                    direction = (world.Gravity / 6f);
                 }
                 else if (InputManager.Instance.GP_LeftThumbstick.Y >= 0.25f)
                 {
                     ToggleBodies(true);
                     this.CurrentAnimation.SetPlayback(false);
-                    direction = -(GameplayScreen.World.Gravity / 6f);
+                    direction = -(world.Gravity / 6f);
                 }
                 else
                 {
@@ -462,13 +464,13 @@ namespace GameLibrary.GameLogic
                 {
                     ToggleBodies(true);
                     this.CurrentAnimation.SetPlayback(true);
-                    direction = -(GameplayScreen.World.Gravity / 6f);
+                    direction = -(world.Gravity / 6f);
                 }
                 else if (InputManager.Instance.S)
                 {
                     ToggleBodies(true);
                     this.CurrentAnimation.SetPlayback(false);
-                    direction = (GameplayScreen.World.Gravity / 6f);
+                    direction = (world.Gravity / 6f);
                 }
                 else
                 {
@@ -528,7 +530,7 @@ namespace GameLibrary.GameLogic
 
         #region Swinging and Rope
 
-        void HandleSwinging(GameTime gameTime)
+        void HandleSwinging(float delta)
         {
             this._mainBody.Rotation = GrabRotation;
 
@@ -549,9 +551,9 @@ namespace GameLibrary.GameLogic
 
         #endregion
 
-        void HandleAir(GameTime gameTime)
+        void HandleAir(float delta)
         {
-            _airTime += ((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f) * Math.Abs(SpinAssist.ModifyVectorByUp(Vector2.Normalize(this.Body.LinearVelocity)).Y);
+            _airTime += delta * Math.Abs(SpinAssist.ModifyVectorByUp(Vector2.Normalize(this.Body.LinearVelocity)).Y);
 
             if (PlayerState != PlayerState.Falling)
             {
@@ -574,7 +576,7 @@ namespace GameLibrary.GameLogic
             }
         }
 
-        void HandlePulling(GameTime gameTime)
+        void HandlePulling(float delta)
         {
             if (InputManager.Instance.LeftCheck())
             {
