@@ -57,9 +57,10 @@ namespace GameLibrary.Audio
         private AudioEngine _engine;
         private SoundBank[] _soundBanks;
         private WaveBank[] _waveBanks;
-        private int _soundVolume;
-        private int _musicVolume;
-        private bool _isPlayingMusic;
+        private uint _soundVolume;
+        private uint _musicVolume;
+        private bool _isMusicEnabled;
+        private bool _isSoundEnabled;
 
         /// <summary>
         /// Temporary banks for testing.
@@ -72,7 +73,13 @@ namespace GameLibrary.Audio
 
         #region Properties
 
-        public int SoundVolume
+        #region Sound Getters and Setters
+
+
+        /// <summary>
+        /// Sound level get/set
+        /// </summary>
+        public uint SoundVolume
         {
             get
             {
@@ -80,16 +87,54 @@ namespace GameLibrary.Audio
             }
             set
             {
-                _soundVolume = (int)MathHelper.Clamp(_soundVolume, 0, 10);
+                SetSoundVolume(value);
+            }
+        }
 
-                if (this._engine != null)
+        /// <summary>
+        /// Is sound currently enabled?
+        /// </summary>
+        /// <returns>Is the sound enabled?</returns>
+        public bool GetEnabledSound()
+        {
+            return _isSoundEnabled;
+        }
+
+        /// <summary>
+        /// Set the current volume level between 0 and 10
+        /// </summary>
+        /// <param name="Volume Level">What should the volume level be?</param>
+        public void SetSoundVolume(uint volumeLevel)
+        {
+            _soundVolume = (uint)MathHelper.Clamp(_soundVolume, 0, 10);
+
+            if (this._engine != null)
+            {
+                this._engine.GetCategory("Sound").SetVolume(this._soundVolume * 0.1f);
+
+                if (_soundVolume == 0)
                 {
-                    this._engine.GetCategory("Sound").SetVolume(this._soundVolume * 0.1f);
+                    this._isSoundEnabled = false;
+                }
+                else
+                {
+                    this._isSoundEnabled = true;
                 }
             }
         }
 
-        public int MusicVolume
+
+
+        #endregion
+
+        #region Music Related Getter and Setters
+
+
+
+        /// <summary>
+        /// Music Volume GetSet
+        /// </summary>
+        public uint MusicVolume
         {
             get
             {
@@ -97,15 +142,46 @@ namespace GameLibrary.Audio
             }
             set
             {
-                _musicVolume = (int)MathHelper.Clamp(_musicVolume, 0, 10);
+                SetMusicVolume(value);
+            }
+        }
 
-                if (this._engine != null)
+        /// <summary>
+        /// Is music enabled?
+        /// </summary>
+        /// <returns>Is music enabled</returns>
+        public bool GetEnabledMusic()
+        {
+            return _isMusicEnabled;
+        }
+
+        /// <summary>
+        /// Set the music volume
+        /// </summary>
+        /// <param name="volumeLevel">Desired volume level. 0-10</param>
+        public void SetMusicVolume(uint volumeLevel)
+        {
+            //  Cap the volume level between 0 and 10
+            _musicVolume = (uint)MathHelper.Clamp(volumeLevel, 0, 10);
+
+            //  If we can use the 
+            if (this._engine != null)
+            {
+                this._engine.GetCategory("Music").SetVolume(this._musicVolume * 0.1f);
+
+                if (_musicVolume == 0)
                 {
-                    this._engine.GetCategory("Music").SetVolume(this._musicVolume * 0.1f);
+                    this._isMusicEnabled = false;
+                }
+                else
+                {
+                    this._isMusicEnabled = true;
                 }
             }
         }
 
+
+        #endregion
 
         #endregion
 
@@ -124,7 +200,7 @@ namespace GameLibrary.Audio
                     DialogResult result = MessageBox.Show("Couldn't find a sound device.", "Error loading audio engine", MessageBoxButtons.AbortRetryIgnore);
                     if (result == DialogResult.Abort)
                     {
-                        ErrorReport.GenerateReport("Couldn't find an active sound device.", null);
+                        ErrorReport.GenerateReport("Couldn't find an active sound device.\n" + e.ToString(), null);
                     }
                     else if (result == DialogResult.Retry)
                     {
