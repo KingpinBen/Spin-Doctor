@@ -59,7 +59,7 @@ namespace GameLibrary.Helpers
 
             MessageBox.Show("Uh oh, you've crashed.\nAn error report has been put alongside this executable.");
 
-            ScreenManager.ExitGame();
+            //ScreenManager.ExitGame();
         }
     }
 }
