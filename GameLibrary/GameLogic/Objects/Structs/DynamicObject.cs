@@ -255,7 +255,7 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
@@ -276,7 +276,7 @@ namespace GameLibrary.GameLogic.Objects
                 }
 
                 //  Update stationary timers
-                this._elapsedTimer += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+                this._elapsedTimer += delta;
 
                 //  Check if the stationary time exceeds the pause time
                 if (_elapsedTimer >= _timeToReverse)

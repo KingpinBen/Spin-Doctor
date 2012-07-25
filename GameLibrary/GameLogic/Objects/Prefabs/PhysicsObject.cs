@@ -46,9 +46,6 @@ namespace GameLibrary.GameLogic.Objects
 {
     public class PhysicsObject : StaticObject
     {
-        //[ContentSerializer]
-        //protected string _name;
-
         #region Construct and Initialize
         public PhysicsObject() : base()
         {
@@ -78,7 +75,7 @@ namespace GameLibrary.GameLogic.Objects
         }
         #endregion
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
@@ -106,17 +103,17 @@ namespace GameLibrary.GameLogic.Objects
             //  Doesn't strech image. Tiles instead
             spriteBatch.Draw(_texture, this._position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1f, SpriteEffects.None, _zLayer);
+                Tint, TextureRotation, new Vector2(this._texture.Width, this._texture.Height) * 0.5f, 1f, SpriteEffects.None, _zLayer);
 
             
         }
 #else
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             //  Doesn't strech image. Tiles instead
             spriteBatch.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, this.TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, _zLayer);
+                Tint, this.Body.Rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, _zLayer);
         }
 #endif
         #endregion

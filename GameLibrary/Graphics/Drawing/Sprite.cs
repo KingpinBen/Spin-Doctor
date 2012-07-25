@@ -256,7 +256,7 @@ namespace GameLibrary.Graphics.Drawing
         }
         #endregion
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if !EDITOR
             this._position += this._velocity;
@@ -277,7 +277,7 @@ namespace GameLibrary.Graphics.Drawing
                 return;
             }
 
-            this._elapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+            this._elapsed += delta;
 
             if (_elapsed > 1 / 2)
             {
@@ -310,10 +310,16 @@ namespace GameLibrary.Graphics.Drawing
 #endif
         }
 
+#if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            BlendState bstate = ScreenManager.GraphicsDevice.BlendState;
-            ScreenManager.GraphicsDevice.BlendState = BlendState.Additive;
+            base.Draw(sb);
+        }
+#else
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
+        {
+            BlendState bstate = graphics.BlendState;
+            graphics.BlendState = BlendState.Additive;
 
             if (this._isAnimated)
             {
@@ -333,12 +339,14 @@ namespace GameLibrary.Graphics.Drawing
                     new Vector2(this._spriteTexture.Width * 0.5f, this._spriteTexture.Height * 0.5f), 
                     _scale, SpriteEffects.None, this._zLayer);
             }
-            ScreenManager.GraphicsDevice.BlendState = bstate;
+
+            graphics.BlendState = bstate;
         }
+#endif
 
         #region Activate / Deactivate Animation
 
-        public void Enable()
+        public override void Enable()
         {
             if (_isAnimated)
             {
@@ -353,7 +361,7 @@ namespace GameLibrary.Graphics.Drawing
             }
         }
 
-        public void Disable()
+        public override void Disable()
         {
             if (_isAnimated)
             {

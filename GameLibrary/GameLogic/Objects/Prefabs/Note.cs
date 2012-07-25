@@ -26,8 +26,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using GameLibrary.GameLogic.Objects.Triggers;
 using GameLibrary.GameLogic.Controls;
-using GameLibrary.GameLogic.Screens.Messages;
 using GameLibrary.Graphics.UI;
+using GameLibrary.GameLogic.Screens;
+using FarseerPhysics.Dynamics;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -39,12 +40,12 @@ namespace GameLibrary.GameLogic.Objects
 
         }
 
-        public override void Load(ContentManager content, FarseerPhysics.Dynamics.World world)
+        public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
@@ -59,12 +60,12 @@ namespace GameLibrary.GameLogic.Objects
         {
 #if EDITOR
 #else
-            MessageOverlay newOverlay = new MessageOverlay(MessageType.FullScreen, 1, ScreenManager.GraphicsDevice);
-            newOverlay.Load();
+            //MessageOverlay newOverlay = new MessageOverlay(MessageType.FullScreen, 1, ScreenManager.GraphicsDevice);
+            //newOverlay.Load();
 
-            ScreenManager.AddScreen(newOverlay);
+            //ScreenManager.AddScreen(newOverlay);
 
-            HUD.ShowOnScreenMessage(false);
+            HUD.Instance.ShowOnScreenMessage(false);
             this.Triggered = false;
             this.BeenCollected = true;
 #endif

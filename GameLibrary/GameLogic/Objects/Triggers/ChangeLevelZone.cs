@@ -71,20 +71,29 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this._showHelp = false;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 #else
             if (Triggered)
-                ScreenManager.LoadLevel(_nextLevel);
+            {
+                //ScreenManager.LoadLevel(_nextLevel);
+            }
 #endif
         }
 
+#if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-#if EDITOR
-            sb.Draw(_devTexture, this._position, new Rectangle(0,0,(int)Width, (int)Height), Color.White * 0.4f, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, this._zLayer); 
-#endif
+            sb.Draw(_devTexture, this._position, new Rectangle(0, 0, (int)Width, (int)Height), Color.White * 0.4f, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, this._zLayer);
         }
+#else
+
+
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
+        {
+            
+        }
+#endif
     }
 }

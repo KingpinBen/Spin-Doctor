@@ -59,9 +59,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         }
         
 
-        public override void Init(Vector2 position, float tWidth, float tHeight)
+        public override void Init(Vector2 position)
         {
-            base.Init(position, tWidth, tHeight);
+            base.Init(position);
 
             _firedOnce = false;
             this.ShowHelp = false;
@@ -94,9 +94,15 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #endregion
 
         #region Draw
+#if EDITOR
         public override void Draw(SpriteBatch sb)
         {
             base.Draw(sb);
+        }
+#else
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
+        {
+            base.Draw(sb, graphics);
 
             #region Development
 #if Development
@@ -106,6 +112,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #endif
             #endregion
         }
+#endif
         #endregion
     }
 }

@@ -114,9 +114,9 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
-            base.Update(gameTime);
+            base.Update(delta);
         }
 
         #region Draw
@@ -125,16 +125,16 @@ namespace GameLibrary.GameLogic.Objects
         {
             spriteBatch.Draw(_texture, this._position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
+                Tint, TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
 
             spriteBatch.Draw(_texture, this._endPosition,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint * 0.4f, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
+                Tint * 0.4f, TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
         }
 #else
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            base.Draw(spriteBatch);
+            base.Draw(spriteBatch, graphics);
         }
 #endif
         #endregion
@@ -143,7 +143,8 @@ namespace GameLibrary.GameLogic.Objects
         {
 #if EDITOR
 #else
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this.Width), ConvertUnits.ToSimUnits(this.Height), ConvertUnits.ToSimUnits(_mass));
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(this._width), ConvertUnits.ToSimUnits(this._height), ConvertUnits.ToSimUnits(_mass));
+            this.Body.Rotation = _rotation;
             this.Body.BodyType = BodyType.Dynamic;
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.Friction = 3.0f;

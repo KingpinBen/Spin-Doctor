@@ -37,6 +37,8 @@ using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics.Contacts;
 using System.ComponentModel;
 using GameLibrary.Helpers;
+using GameLibrary.GameLogic.Events;
+using GameLibrary.GameLogic.Controls;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -206,20 +208,23 @@ namespace GameLibrary.GameLogic.Objects
             {
                 this._prismaticJoint.MotorSpeed = MotorSpeed;
             }
+
+            RegisterEvent();
 #endif
         }
         #endregion
 
         #region Update
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
 #else
-            base.Update(gameTime);
 
-            HandleExtraJoint(gameTime, firstBodyJoint);
-            HandleExtraJoint(gameTime, secondBodyJoint);
+            base.Update(delta);
+
+            HandleExtraJoint(delta, firstBodyJoint);
+            HandleExtraJoint(delta, secondBodyJoint);
 #endif
             
         }
@@ -238,7 +243,7 @@ namespace GameLibrary.GameLogic.Objects
                 this._rotation, new Vector2(this.endBodyTexture.Width / 2, this.endBodyTexture.Height / 2), 1.0f, SpriteEffects.None, this._zLayer);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(Texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null,
                 _tint, this.Body.Rotation, new Vector2(Texture.Width, Texture.Height) * 0.5f, 1.0f,
@@ -379,7 +384,7 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        void HandleExtraJoint(GameTime gameTime, FixedPrismaticJoint joint)
+        void HandleExtraJoint(float delta, FixedPrismaticJoint joint)
         {
 #if EDITOR
 

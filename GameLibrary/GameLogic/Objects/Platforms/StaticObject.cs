@@ -58,8 +58,6 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer]
         protected Color _tint;
         [ContentSerializer]
-        protected bool _useBodyRotation;
-        [ContentSerializer]
         protected float _rotation;
         [ContentSerializer]
         protected Orientation _orientation;
@@ -67,6 +65,7 @@ namespace GameLibrary.GameLogic.Objects
         // Can't serialize Texture2D files. Texture is init'd in Load() anyway.
         protected Texture2D _texture;
         protected Vector2 _origin;
+        //protected World _world;
 
         #endregion
 
@@ -148,28 +147,11 @@ namespace GameLibrary.GameLogic.Objects
         {
             get
             {
-                if (_useBodyRotation)
-                    return 0;
                 return _rotation;
             }
             set
             {
                 _rotation = MathHelper.ToRadians(value);
-            }
-        }
-        [ContentSerializerIgnore, CategoryAttribute("General")]
-        public virtual bool UseBodyRotation
-        {
-            get
-            {
-                return _useBodyRotation;
-            }
-            set
-            {
-                _useBodyRotation = value;
-
-                if (value)
-                    GetRotationFromOrientation();
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
@@ -272,7 +254,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             get
             {
-                return new Vector2(this.Width / 2, this.Height / 2);
+                return _origin;
             }
             protected set
             {
@@ -304,13 +286,10 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore]
-        public virtual float TextureRotation
+        public virtual float Rotation
         {
             get
             {
-
-                if (_useBodyRotation)
-                    return Body.Rotation;
                 return _rotation;
             }
             protected set
@@ -331,18 +310,6 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore]
-        public virtual bool UseBodyRotation
-        {
-            get
-            {
-                return _useBodyRotation;
-            }
-            protected set
-            {
-                _useBodyRotation = value;
-            }
-        }
-        [ContentSerializerIgnore]
         public virtual Orientation Orientation
         {
             get
@@ -354,36 +321,7 @@ namespace GameLibrary.GameLogic.Objects
                 _orientation = value;
                 GetRotationFromOrientation();
             }
-        }
-        //[ContentSerializerIgnore]
-        //        public float Scale
-        //        {
-        //            get
-        //            {
-        //                return _scale;
-        //            }
-        //#if EDITOR
-        //            set
-        //#else
-        //            protected set
-        //#endif
-        //            {
-        //                _scale = value;
-        //            }
-        //        }
-        //        public string Name
-        //        {
-        //            get { return _name; }
-        //#if EDITOR
-        //            set
-        //#else
-        //            protected set
-        //#endif
-        //            {
-        //                _name = value;
-        //            }
-        //        }
-        
+        }       
 #endif
         #endregion
         
@@ -421,6 +359,7 @@ namespace GameLibrary.GameLogic.Objects
                 this.Height = this._texture.Height;
             }
 #else
+
             SetupPhysics(world);
 #endif
         }
@@ -431,14 +370,14 @@ namespace GameLibrary.GameLogic.Objects
         {
             spriteBatch.Draw(_texture, this._position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
+                Tint, TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(_texture, _position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, _zLayer);
+                Tint, this.Body.Rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
         }
 #endif
         #endregion

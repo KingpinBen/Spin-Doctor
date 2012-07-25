@@ -137,19 +137,18 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Init(Vector2 position, string tex)
         {
-            this.Position = position;
             this._textureAsset = tex;
             this._message = "AUTO CHOSEN";
 
-            base.Init(position, 25, 25);
+            base.Init(position);
+            this._triggerHeight = this._triggerWidth = 30;
         }
         #endregion
 
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
-            this._origin = new Vector2(this._texture.Width * 0.5f, this._texture.Height * 0.5f);
-            //base.Load(content, world);
+            this._origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
 
 #if EDITOR
             if (_width == 0 || _height == 0)
@@ -165,7 +164,7 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
@@ -188,7 +187,7 @@ namespace GameLibrary.GameLogic.Objects
             }
             else
             {
-                _elapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+                _elapsed += delta;
 
                 if (_elapsed >= _delayBeforeRotate)
                 {
@@ -216,9 +215,9 @@ namespace GameLibrary.GameLogic.Objects
         }
 
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(this.Texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this.Tint, this.TextureRotation, this.Origin, 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this.Texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this.Tint, this._rotation, this.Origin, 1.0f, SpriteEffects.None, this.zLayer);
         }
 #endif
         #endregion

@@ -30,6 +30,7 @@ using Microsoft.Xna.Framework.Content;
 using System.ComponentModel;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.Camera;
+using GameLibrary.Graphics;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -49,6 +50,10 @@ namespace GameLibrary.GameLogic.Objects
         private float _motorSpeed;
         [ContentSerializer(Optional = true)]
         private bool _motorEnabled;
+        [ContentSerializer(Optional = true)]
+        private bool _useShape = true;
+        [ContentSerializer(Optional = true)]
+        private ObjectShape _shapeType = ObjectShape.Quadrilateral;
 
         #endregion
 
@@ -76,18 +81,6 @@ namespace GameLibrary.GameLogic.Objects
             set
             {
                 _rotatesWithLevel = value;
-            }
-        }
-        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
-        public override bool UseBodyRotation
-        {
-            get
-            {
-                return base.UseBodyRotation;
-            }
-            set
-            {
-                
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
@@ -123,8 +116,9 @@ namespace GameLibrary.GameLogic.Objects
             base.Init(position, tex);
 
             this._rotatesWithLevel = true;
-            this._useBodyRotation = true;
             this._motorEnabled = true;
+            this._useShape = true;
+            this._shapeType = ObjectShape.Quadrilateral;
         }
         #endregion
 
@@ -137,7 +131,7 @@ namespace GameLibrary.GameLogic.Objects
             if (this._textureAsset != "")
                 _texture = content.Load<Texture2D>(this._textureAsset);
 
-            this._origin = new Vector2(_texture.Width * 0.5f, _texture.Height * 0.5f);
+            this._origin = new Vector2(_texture.Width, _texture.Height) * 0.5f;
 
 #if EDITOR
             if (this.Width == 0.0f || this.Height == 0.0f)
@@ -147,12 +141,13 @@ namespace GameLibrary.GameLogic.Objects
             }
 #else
             SetupPhysics(world);
+            RegisterEvent();
 #endif
         }
         #endregion
 
         #region Update
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
@@ -190,14 +185,53 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(_texture, _position, null, _tint, 0.0f, _origin, 1.0f, SpriteEffects.None, this._zLayer);
-            sb.Draw(_texture, _position, null, _tint * 0.4f, MathHelper.PiOver2, _origin, 1.0f, SpriteEffects.None, this._zLayer);
+            sb.Draw(_texture, _position, null, _tint * 0.4f, MathHelper.PiOver2, _origin, 1.0f, SpriteEffects.None, this._zLayer + 0.01f);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, this.Body.Rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
+
+            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "Enabled: " + this.revoluteJoint.MotorEnabled.ToString() + ". Speed: " + this.revoluteJoint.MotorSpeed.ToString(), this.Position, Color.White);
         }
 #endif
+        #endregion
+
+        #region Public Methods
+
+        public override void Toggle()
+        {
+#if EDITOR
+#else
+            if (this.revoluteJoint.MotorSpeed ==  0.0f)
+            {
+                this.revoluteJoint.MotorSpeed = this._motorSpeed;
+            }
+            else
+            {
+                this.revoluteJoint.MotorSpeed = 0.0f;
+            }
+#endif
+        }
+
+        public override void Start()
+        {
+#if EDITOR
+
+#else
+            this.revoluteJoint.MotorSpeed = this._motorSpeed;
+#endif
+        }
+
+        public override void Stop()
+        {
+#if EDITOR
+
+#else
+            this.revoluteJoint.MotorSpeed = 0.0f;
+#endif
+        }
+
         #endregion
 
         #region Private Methods
@@ -219,36 +253,58 @@ namespace GameLibrary.GameLogic.Objects
 
 #if EDITOR
 #else
-            bool useCentroid = false;
-
-            if (_rotatesWithLevel)
-            {
-                useCentroid = true;
-            }
-
-            TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass), useCentroid);
             Vector2 simPosition = ConvertUnits.ToSimUnits(this._position);
 
-            if (_rotatesWithLevel)
+            if (_useShape)
             {
-                this._origin = input.Origin;
-            }
-            else
-            {
-                this.Origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
-            }
+                float simHeight = ConvertUnits.ToSimUnits(this._height);
+                float simWidth = ConvertUnits.ToSimUnits(this._width);
+                this.Body = new Body(world);
+                this._origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
 
-            this.Body = input.Body;
-            this.Body.Position = simPosition;
-            if (useCentroid)
-            {
+                switch (_shapeType)
+                {
+                    case ObjectShape.Quadrilateral:
+                        {
+                            Fixture fixture = FixtureFactory.AttachRectangle(simWidth, simHeight, 100, Vector2.Zero, this.Body);
+                            break;
+                        }
+                    case ObjectShape.Circle:
+                        {
+                            Fixture fixture = FixtureFactory.AttachCircle(simWidth * 0.5f, 100, this.Body);
+                            break;
+                        }
+                }
+
                 this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, Vector2.Zero, simPosition);
             }
             else
             {
+                bool useCentroid = false;
+
+                if (_rotatesWithLevel)
+                {
+                    useCentroid = true;
+                }
+
+                TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass), useCentroid);
+
+                if (_rotatesWithLevel)
+                {
+                    this._origin = input.Origin;
+                }
+                else
+                {
+                    this.Origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
+                }
+
+                this.Body = input.Body;
+                //this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, Vector2.Zero, simPosition);
                 this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
             }
-            
+
+            this.Body.Position = simPosition;
+
             this.revoluteJoint.MaxMotorTorque = float.MaxValue;
             this.revoluteJoint.MotorEnabled = true;
 
@@ -276,8 +332,7 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.CollidesWith = Category.All & ~Category.Cat20;
             this.Body.CollisionCategories = Category.Cat20;
             
-            //this.Body.IgnoreGravity = true;
-            //this.Body.IgnoreCCD = true;
+            this.Body.IgnoreCCD = true;
             this.Body.Restitution = 0.0f;
             this.Body.Friction = 3.0f;
 #endif

@@ -23,6 +23,8 @@
 //--    
 //-------------------------------------------------------------------------------
 
+#define Development
+
 #region Using Statements
 using System;
 using System.Collections.Generic;
@@ -54,14 +56,17 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         [ContentSerializer]
         protected string _message = " to use.";
 
-#if EDITOR
+#if EDITOR || Development
         private Texture2D _devTexture;
-#else
+#endif
+#if !EDITOR
         [ContentSerializerIgnore]
         protected List<Fixture> TouchingFixtures = new List<Fixture>();
         [ContentSerializerIgnore]
         private bool _triggered;
 #endif
+
+        private bool _fired = false;
 
         #endregion
 
@@ -215,13 +220,13 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         }
         
 
-        public virtual void Init(Vector2 position, float tWidth, float tHeight)
+        public override void Init(Vector2 position)
         {
-            this.TriggerWidth = tWidth;
-            this.TriggerHeight = tHeight;
+            this.TriggerWidth = 200;
+            this.TriggerHeight = 200;
             this._position = position;
             this._tint = Color.White;
-            this._showHelp = true;
+            this._showHelp = false;
             this._message = " to use.";
             this._zLayer = 0.5f;
         }
@@ -230,11 +235,21 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            base.Load(content, world);
 #if EDITOR
             _devTexture = content.Load
                 <Texture2D>(FileLoc.DevTexture());
+
+            if (this.Width == 0.0f || this.Height == 0.0f)
+            {
+                this.Width = TriggerWidth;
+                this.Height = TriggerHeight;
+            }
 #else
+#if Development
+            _devTexture = content.Load
+                <Texture2D>(FileLoc.DevTexture());
+#endif
+
             //  Adds a space if there isn't one. Used to place the words correctly in the hud.
             //  Should really go in the editor... Remind Sam.
             if (ShowHelp)
@@ -251,16 +266,22 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 
             this.Triggered = false;
-
+            this.RegisterEvent();
             this.SetupTrigger(world);
 #endif
         }
         #endregion
 
         #region Update
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
-            
+#if EDITOR
+#else
+            if (_triggered)
+            {
+                this.FireEvent();
+            }
+#endif
         }
         #endregion
 
@@ -270,15 +291,15 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         {
             sb.Draw(_devTexture, Position,
                 new Rectangle(0, 0, (int)Width, (int)Height),
-                Color.White, this._rotation, new Vector2(this.Width/2, this.Height/2), 1f, SpriteEffects.None, 0f);
+                Color.White * 0.7f, this._rotation, new Vector2(this.Width, this.Height) * 0.5f, 1f, SpriteEffects.None, 0.3f);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
 #if Development
             sb.Draw(_devTexture, ConvertUnits.ToDisplayUnits(Body.Position),
                 new Rectangle(0, 0, (int)Width, (int)Height),
-                Color.White, Body.Rotation, new Vector2(this.Width/2, this.Height/2), 1f, SpriteEffects.None, 0f);
+                Color.White, Body.Rotation, new Vector2(this.Width, this.Height) * 0.5f, 1f, SpriteEffects.None, 0.2f);
 #endif
         }
 #endif
@@ -317,7 +338,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
                 if (this.ShowHelp)
                 {
-                    HUD.ShowOnScreenMessage(true, Message);
+                    HUD.Instance.ShowOnScreenMessage(true, Message);
                 }
             }
 
@@ -340,9 +361,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 this.Triggered = false;
 
-                if (this.ShowHelp && HUD.ShowPopup)
+                if (this.ShowHelp && HUD.Instance.ShowPopup)
                 {
-                    HUD.ShowOnScreenMessage(false);
+                    HUD.Instance.ShowOnScreenMessage(false);
                 }
             }
 #endif
@@ -355,12 +376,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #if EDITOR
 #else
             Vector2 trigPos = Position;
-            trigPos.Y -= Height / 2;
+            trigPos.Y -= Height * 0.5f;
 
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_triggerWidth), ConvertUnits.ToSimUnits(_triggerHeight), 0f);
             this.Body.Position = ConvertUnits.ToSimUnits(trigPos);
             this.Body.IsSensor = true;
-            //this.Body.CollidesWith = Category.Cat10;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
 #endif

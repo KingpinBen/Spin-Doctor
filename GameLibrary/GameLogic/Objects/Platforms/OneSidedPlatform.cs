@@ -89,9 +89,8 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
-            //base.Update(gameTime);
         }
 
         #region Draw
@@ -99,11 +98,11 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height), 
-                Color.White * 0.5f, this.TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, 0.2f);
+                Color.White * 0.5f, this.TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, 0.2f);
         }
 
 #else
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
 #if Development
             spriteBatch.DrawString(Fonts.DebugFont, "PosY: " + Player.Instance.WheelBody.Position.Y, this.Position + new Vector2(0, -100), Color.Red, 0.0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);
@@ -111,7 +110,7 @@ namespace GameLibrary.GameLogic.Objects
             spriteBatch.DrawString(Fonts.DebugFont, top + " " + radius, this.Position + new Vector2(0, -70), Color.Red, 0.0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);
 
             spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Color.White * 0.7f, this.TextureRotation, new Vector2(this._width / 2, this._height / 2), 1.0f, SpriteEffects.None, 0.0f);
+                Color.White * 0.7f, this.TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, 0.0f);
 #endif
             //base.Draw(spriteBatch);
         }

@@ -23,7 +23,7 @@ namespace GameLibrary.GameLogic.Objects
         private Vector2 _endOrigin;
 
         [ContentSerializer]
-        private int _shaftPieces;
+        private int _shaftPieces = 0;
         [ContentSerializer]
         private string _endTextureAsset;
 
@@ -78,15 +78,15 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 #else
-            base.Update(gameTime);
+            base.Update(delta);
 
             for (int i = 0; i < _joints.Count; i++)
             {
-                this.HandleJoint(gameTime, _joints[i]);
+                this.HandleJoint(delta, _joints[i]);
             }
 #endif
         }
@@ -98,10 +98,8 @@ namespace GameLibrary.GameLogic.Objects
             sb.Draw(_texture, this._position, null, this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
         }
 #else
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            spriteBatch.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font, this._isMoving.ToString(), Vector2.Zero, Color.Red);
-
             for (int i = 0; i < _bodies.Count; i++)
             {
                 spriteBatch.Draw(_texture, ConvertUnits.ToDisplayUnits(_bodies[i].Position), null, this._tint, this._bodies[i].Rotation, this._origin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * i)));
@@ -109,13 +107,13 @@ namespace GameLibrary.GameLogic.Objects
 
             spriteBatch.Draw(_endTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._endOrigin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * _shaftPieces)));
 
-            spriteBatch.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font,
-                        "Speed: " + this._prismaticJoint.MotorSpeed +
-                        ".\nUL: " + this._prismaticJoint.UpperLimit.ToString() +
-                        ". LL: " + this._prismaticJoint.LowerLimit.ToString() +
-                        ".\nTransl: " + this._prismaticJoint.JointTranslation.ToString() +
-                        ". Elapsed: " + _elapsedTimer.ToString() +
-                    ".\nMovingToStart: " + this.MovingToStart, ConvertUnits.ToDisplayUnits(this.Body.Position), Color.Red);
+            //spriteBatch.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font,
+            //            "Speed: " + this._prismaticJoint.MotorSpeed +
+            //            ".\nUL: " + this._prismaticJoint.UpperLimit.ToString() +
+            //            ". LL: " + this._prismaticJoint.LowerLimit.ToString() +
+            //            ".\nTransl: " + this._prismaticJoint.JointTranslation.ToString() +
+            //            ". Elapsed: " + _elapsedTimer.ToString() +
+            //        ".\nMovingToStart: " + this.MovingToStart, ConvertUnits.ToDisplayUnits(this.Body.Position), Color.Red)
         }
 #endif
         #endregion
@@ -194,7 +192,7 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        void HandleJoint(GameTime gameTime, FixedPrismaticJoint joint)
+        void HandleJoint(float delta, FixedPrismaticJoint joint)
         {
 #if EDITOR
 

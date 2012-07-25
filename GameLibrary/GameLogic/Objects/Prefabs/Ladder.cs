@@ -201,7 +201,6 @@ namespace GameLibrary.GameLogic.Objects
         {
             base.Init(position, texLoc);
 
-            this._useBodyRotation = false;
             this._orientation = Direction.Vertical;
             this._climbableSections = 1;
         }
@@ -229,7 +228,7 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
             
@@ -286,7 +285,7 @@ namespace GameLibrary.GameLogic.Objects
         }
 #else
 
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
         #region Development
 #if Development
@@ -298,14 +297,13 @@ namespace GameLibrary.GameLogic.Objects
 
             sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
                 new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
-                this.Tint, this.TextureRotation, new Vector2(this._texture.Width / 2, (this._texture.Height * _climbableSections) / 2), 1.0f, SpriteEffects.None, zLayer);
+                this.Tint, this._rotation, new Vector2(this._texture.Width, (this._texture.Height * _climbableSections)) * 0.5f, 1.0f, SpriteEffects.None, zLayer);
         }
 #endif
         #endregion
 
         #region Private Methods
 
-        #region Player connection handling
         /// <summary>
         /// Break the player off the ladder.
         /// </summary>
@@ -356,7 +354,6 @@ namespace GameLibrary.GameLogic.Objects
             Player.Instance.JoinLadder(ConvertUnits.ToSimUnits(Moveto));
 #endif
         }
-        #endregion
 
         #region Setup Body
         protected override void SetupPhysics(World world)

@@ -31,6 +31,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
+using GameLibrary.Graphics.Drawing;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
@@ -40,7 +41,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Fields
 
         protected bool _beenCollected = false;
-        //private Sprite LookAtMeSprite;
+        private Sprite LookAtMeSprite;
         #endregion
 
         #region Properties
@@ -90,21 +91,20 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this.TriggerWidth = 25.0f;
             this.TriggerHeight = 25.0f;
 #else
-            //LookAtMeSprite = new Sprite();
-            //LookAtMeSprite.Init(new Point(64, 64), new Point(8, 4), -1);
-            //LookAtMeSprite.Load(content, "Assets/Sprites/Effects/Explosions");
-            //LookAtMeSprite.Position = Position;
-            //LookAtMeSprite.Alpha = 0.7f;
-            //LookAtMeSprite.Scale = 1.5f;
+            LookAtMeSprite = new Sprite();
+            LookAtMeSprite.Init(this._position, new Point(64, 64), new Point(8, 4), -1);
+            LookAtMeSprite.Load(content.Load<Texture2D>("Assets/Sprites/Effects/Explosions"));
+            LookAtMeSprite.Alpha = 0.7f;
+            LookAtMeSprite.Scale = 1.5f;
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
 #else
-            //LookAtMeSprite.Update(gameTime);
+            LookAtMeSprite.Update(delta);
 #endif
         }
 
@@ -113,18 +113,18 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            //base.Draw(sb);
+            base.Draw(sb);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             if (!BeenCollected)
             {
-                //LookAtMeSprite.Draw(sb);
+                LookAtMeSprite.Draw(sb, graphics);
                 sb.Draw(this._texture, this._position, null, this._tint, 0f, this._origin, 1f, SpriteEffects.None, this.zLayer);
             }
 
-            base.Draw(sb);
+            base.Draw(sb, graphics);
         }
 #endif
         #endregion

@@ -22,7 +22,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 #region Using Statements
 using System;
@@ -64,6 +64,7 @@ namespace GameLibrary.GameLogic.Objects
         private bool _inRange;
         private RopeJoint _ropeJoint;
         private int _grabbedIndex;
+        private World _world;
 
 #endif
 
@@ -123,10 +124,6 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
-        #region Constructor
-        /// <summary>
-        /// A rope is fixed to a point at one end
-        /// </summary>
         public Rope() : base() { }
 
         public override void Init(Vector2 StartVec, string texLoc)
@@ -136,9 +133,7 @@ namespace GameLibrary.GameLogic.Objects
             this._chainCount = 10;
             this._textureAsset = texLoc;
         }
-        #endregion
 
-        #region Load
         public override void Load(ContentManager content, World world)
         {
             endTexture = content.Load<Texture2D>("Assets/Images/Textures/Rope/ropeEnd");
@@ -152,12 +147,12 @@ namespace GameLibrary.GameLogic.Objects
                 this._endPosition = this._position + new Vector2(0, _texture.Height * ChainCount);
             }
 #else
+            _world = world;
             SetupPhysics(world);
 #endif
         }
-        #endregion
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
@@ -168,7 +163,7 @@ namespace GameLibrary.GameLogic.Objects
                     _pathBodies[_pathBodies.Count - 1].Awake = true;       
             }
 
-            if (!GameplayScreen.World.JointList.Contains(_ropeJoint))
+            if (!_world.JointList.Contains(_ropeJoint))
             {
                 if (InputManager.Instance.Grab() && _inRange)
                 {
@@ -187,9 +182,9 @@ namespace GameLibrary.GameLogic.Objects
                     }
 
                     _ropeJoint = new RopeJoint(_pathBodies[0], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
-                    GameplayScreen.World.AddJoint(_ropeJoint);
+                    _world.AddJoint(_ropeJoint);
                     _ropePlayerJoint = new WeldJoint(_touchedRopeFixtures[index].Body, Player.Instance.Body, Vector2.Zero, Vector2.Zero);
-                    GameplayScreen.World.AddJoint(_ropePlayerJoint);
+                    _world.AddJoint(_ropePlayerJoint);
 
                     Player.Instance.GrabRope();
                 }
@@ -200,8 +195,8 @@ namespace GameLibrary.GameLogic.Objects
 
                 if (InputManager.Instance.Jump() || InputManager.Instance.Grab() || Player.Instance.PlayerState == PlayerState.Dead)
                 {
-                    GameplayScreen.World.RemoveJoint(_ropeJoint);
-                    GameplayScreen.World.RemoveJoint(_ropePlayerJoint);
+                    _world.RemoveJoint(_ropeJoint);
+                    _world.RemoveJoint(_ropePlayerJoint);
 
                     if (Player.Instance.PlayerState == PlayerState.Swinging)
                     {
@@ -220,40 +215,38 @@ namespace GameLibrary.GameLogic.Objects
             sb.Draw(endTexture, this._endPosition, null, Color.White, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 0.6f, SpriteEffects.None, this._zLayer);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(endTexture, ConvertUnits.ToDisplayUnits(_pathBodies[0].Position), null,
-                    Tint, _pathBodies[0].Rotation, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 1f,
+                    Tint, _pathBodies[0].Rotation, new Vector2(endTexture.Width, endTexture.Height) * 0.5f, 1f,
                     SpriteEffects.None, zLayer);
 
             for (int i = 1; i < _pathBodies.Count; i++)
             {
                 sb.Draw(Texture, ConvertUnits.ToDisplayUnits(_pathBodies[i].Position), null,
-                    Tint, _pathBodies[i].Rotation, new Vector2(Texture.Width / 2, Texture.Height / 2), 1f,
+                    Tint, _pathBodies[i].Rotation, new Vector2(Texture.Width, Texture.Height) * 0.5f, 1f,
                     SpriteEffects.None, zLayer);
             }
+
 #if Development
             if (_touchedRopeFixtures.Count > 0)
             {
                 sb.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font, "Touching: " + _touchedRopeFixtures.Count, this._position, Color.Red);
             }
 #endif
-
         }
-        
 #endif
         #endregion
 
         #region Private Methods
 
-        #region SetupPhysics
         protected override void SetupPhysics(World world)
         {
 #if EDITOR
 #else
             this._pathBodies = new List<Body>();
-            float width = ConvertUnits.ToSimUnits(this._texture.Width / 2);
-            float height = ConvertUnits.ToSimUnits(this._texture.Height / 2);
+            float width = ConvertUnits.ToSimUnits(this._texture.Width * 0.5f);
+            float height = ConvertUnits.ToSimUnits(this._texture.Height * 0.5f);
 
             Path _ropePath = new Path();
             _ropePath.Add(ConvertUnits.ToSimUnits(this._position));
@@ -274,8 +267,6 @@ namespace GameLibrary.GameLogic.Objects
                 {
                     Fixture fixture = body.CreateFixture(rotationPointShape);
                     fixture.Friction = 0.2f;
-                    //fixture.CollisionCategories = Category.All;
-                    //fixture.CollidesWith = Category.All & ~Category.Cat2;
                     body.AngularDamping = 0.4f;
                     
                     FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, body, Vector2.Zero, ConvertUnits.ToSimUnits(Position));
@@ -287,10 +278,9 @@ namespace GameLibrary.GameLogic.Objects
                     Fixture sensorFix = body.CreateFixture(sensorShape);
                     sensorFix.IsSensor = true;
 
-                    //fixture.CollisionCategories = Category.All;
                     fixture.CollidesWith = Category.All & ~Category.Cat10 & ~Category.Cat12;
 
-                    RopeJoint rj = new RopeJoint(prevBody, body, new Vector2(0.0f, height), new Vector2(0.0f, -height / 2));
+                    RopeJoint rj = new RopeJoint(prevBody, body, new Vector2(0.0f, height), new Vector2(0.0f, -height * 0.5f));
 
                     rj.CollideConnected = false;
                     world.AddJoint(rj);
@@ -304,7 +294,6 @@ namespace GameLibrary.GameLogic.Objects
             }
 #endif
         }
-        #endregion
 
         #region Collisions
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)

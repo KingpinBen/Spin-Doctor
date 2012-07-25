@@ -39,6 +39,7 @@ using GameLibrary.Helpers;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.Graphics.UI;
+using GameLibrary.GameLogic.Events;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
@@ -103,7 +104,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public Door()
             : base()
         {
-
+            
         }
 
         public override void Init(Vector2 position, string texLoc)
@@ -111,7 +112,8 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this._nextLevel = 0;
             this._textureAsset = texLoc;
 
-            base.Init(position, 30, 30);
+            base.Init(position);
+            this._triggerHeight = this._triggerWidth = 30;
         }
         #endregion
 
@@ -119,7 +121,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
-            this._origin = new Vector2(this._texture.Width / 2, this._texture.Height / 2);
+            this._origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
 
 #if EDITOR
             if (_width == 0 || _height == 0)
@@ -131,18 +133,23 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this.TriggerWidth = 30;
             this.TriggerHeight = 30;
             this.SetupTrigger(world);
+
+            if (this.Name != null || this.Name != "")
+                this._objectEvents.Add(new Event(this.Name, null, EventType.CHANGE_LEVEL, 0.0f, 0));
+
+            RegisterEvent();
 #endif
         }
         #endregion
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
 #else
             if (InputManager.Instance.Interact() && Triggered)
             {
-                ScreenManager.LoadLevel(_nextLevel);
+                FireEvent();
             }
 #endif
         }
@@ -161,7 +168,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 SpriteEffects.None, this._zLayer);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
 #if Development
             sb.DrawString(Fonts.DebugFont, "Touching: " + TouchingFixtures.Count, ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(0, -70), Color.Blue, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0.0f);
@@ -214,9 +221,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 this.Triggered = true;
             }
 
-            if (this.ShowHelp && !HUD.ShowPopup) 
+            if (this.ShowHelp && !HUD.Instance.ShowPopup) 
             {
-                HUD.ShowOnScreenMessage(true, " to use.");
+                HUD.Instance.ShowOnScreenMessage(true, " to use.");
             }
 
             return true;
@@ -236,7 +243,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             if (fixtureB == Player.Instance.WheelBody.FixtureList[0])
             {
                 this.Triggered = false;
-                HUD.ShowOnScreenMessage(false);
+                HUD.Instance.ShowOnScreenMessage(false);
             } 
 #endif
         }

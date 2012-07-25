@@ -179,7 +179,7 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if !EDITOR
             if (_prismaticJoint.MotorEnabled)
@@ -192,7 +192,7 @@ namespace GameLibrary.GameLogic.Objects
                 }
             }
 
-            base.Update(gameTime);
+            base.Update(delta);
 #endif
         }
 
@@ -203,10 +203,10 @@ namespace GameLibrary.GameLogic.Objects
             spriteBatch.Draw(this._texture, this._position, null, this._tint, 0.0f, _origin, _scale, SpriteEffects.None, this._zLayer);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, 
-                TextureRotation, new Vector2(this.TextureToUse.Width, this.TextureToUse.Height) * 0.5f, _scale, SpriteEffects.None, this._zLayer); 
+                this._rotation, new Vector2(this.TextureToUse.Width, this.TextureToUse.Height) * 0.5f, _scale, SpriteEffects.None, this._zLayer); 
 
 #if Development
             sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed: " + this.PrismaticJoint.MotorSpeed + ". IsMoving: " + this._isMoving, 

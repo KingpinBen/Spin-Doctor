@@ -106,7 +106,7 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
         #region Update
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 
@@ -122,7 +122,7 @@ namespace GameLibrary.GameLogic.Objects
 
             if (lastTouched >= 0)
             {
-                lastTouched += (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
+                lastTouched += delta;
 
                 if (this.Body.Restitution == _restitution)
                 {
@@ -142,10 +142,9 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
 #if !EDITOR
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            spriteBatch.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font, "Rest: " + this.Body.Restitution + ". LastT: " + lastTouched, this.Position - new Vector2(0, 30), Color.Red);
-            base.Draw(spriteBatch);
+            base.Draw(spriteBatch, graphics);
         }
 #endif
 

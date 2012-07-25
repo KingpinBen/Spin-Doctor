@@ -41,7 +41,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 #else
             this.SetupPhysics(world);
-            this.GetRotationFromOrientation();
 #endif
         }
 
@@ -53,10 +52,10 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 Color.White, this.TextureRotation, new Vector2(_width / 2, _height / 2), SpriteEffects.None, this._zLayer);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(this._texture, new Rectangle((int)(Position.X), (int)(Position.Y), (int)_width, (int)_height),
-                new Rectangle(0,0,(int)_width, (int)_height), this.Tint, this.TextureRotation, new Vector2(_width/2, _height/2), SpriteEffects.None, zLayer);
+                new Rectangle(0, 0, (int)_width, (int)_height), this.Tint, this.Body.Rotation, new Vector2(_width, _height) * 0.5f, SpriteEffects.None, zLayer);
         }
 #endif
         #endregion
@@ -73,7 +72,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
             this.Body.Rotation = _rotation;
             this.Body.IsSensor = true;
-            //this.Body.Rotation = SpinAssist.RotationByOrientation(_orientation);
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
 

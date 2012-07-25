@@ -56,7 +56,6 @@ namespace GameLibrary.GameLogic.Objects
         {
         }
 
-        #region Load
         public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
@@ -64,7 +63,7 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-            CircleShape fixture = new CircleShape(ConvertUnits.ToSimUnits(Width / 1.5), 0.0f);
+            CircleShape fixture = new CircleShape(ConvertUnits.ToSimUnits(Width * 0.66667f), 0.0f);
             this.Body.CreateFixture(fixture);
             this.Body.FixtureList[1].IsSensor = true;
 
@@ -72,14 +71,12 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.FixtureList[1].Body.OnSeparation += Body_OnSeparation;
 #endif
         }
-        #endregion
 
-        #region Update
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 #else
-            base.Update(gameTime);
+            base.Update(delta);
 
             if (!_inRange || _locked)
             {
@@ -87,16 +84,13 @@ namespace GameLibrary.GameLogic.Objects
             }
 #endif
         }
-        #endregion
 
         #region Draw
 #if EDITOR
 #else
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            base.Draw(spriteBatch);
-
-            spriteBatch.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font, "InRange: " + _inRange, ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(0, -50), Color.Red);
+            base.Draw(spriteBatch, graphics);
         }
 #endif
         #endregion

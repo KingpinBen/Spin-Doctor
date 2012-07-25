@@ -176,18 +176,15 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
 #else
+
 #endif
         
 
         #endregion
 
-        #region Constructor
-        public PushingPlatform()
-        {
-            
-        }
+        public PushingPlatform() : base() { }
 
-        public void Init(Vector2 position, string texLoc)
+        public override void Init(Vector2 position, string texLoc)
         {
             base.Init(position);
 
@@ -199,14 +196,12 @@ namespace GameLibrary.GameLogic.Objects
             this._timePulsing = 1.0f;
             this._timeBetweenPulses = 3.0f;
         }
-        #endregion
 
-        #region Load
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(this._textureAsset);
 
-            this._origin = new Vector2(this._texture.Width * 0.5f, this._texture.Height * 0.5f);
+            this._origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
 
             this.GetRotationFromOrientation();
 
@@ -229,13 +224,11 @@ namespace GameLibrary.GameLogic.Objects
             this.CreateSprite(content);
 #endif
         }
-        #endregion
 
-        public override void Update(GameTime gameTime)
+        public override void Update(float delta)
         {
 #if EDITOR
 #else
-            float delta = (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
             _elapsed += delta;
 
             if (Triggered)
@@ -283,9 +276,9 @@ namespace GameLibrary.GameLogic.Objects
                 this._rotation, new Vector2(_triggerWidth * 0.5f, _triggerHeight * 0.5f), 1.0f, SpriteEffects.None, this._zLayer - 0.01f);
         }
 #else
-        public override void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, this._origin, 1f, SpriteEffects.None, this._zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, this._rotation, this._origin, 1f, SpriteEffects.None, this._zLayer);
 
 #if Development
             sb.DrawString(Fonts.DebugFont, "Count: " + TouchingFixtures.Count, this.Position + new Vector2(0, 50), Color.Red);
@@ -297,21 +290,36 @@ namespace GameLibrary.GameLogic.Objects
 
         #region Private Methods
 
+        /// <summary>
+        /// Get the position of the trigger.
+        /// </summary>
+        /// <param name="convert">Should the output return it converted to sim units?</param>
+        /// <returns>The trigger position</returns>
         private Vector2 GetTriggerPosition(bool convert)
         {
             Vector2 bodyPos = Vector2.Zero;
+
+            //  We want the bottom of the trigger placed at the top of the trigger.
             bodyPos.Y = (this.Height + this.TriggerHeight) * 0.5f;
+
+            //  Modify it for the objects rotation
             bodyPos = SpinAssist.ModifyVectorByOrientation(bodyPos, _orientation);
+
+            //  Modify the offset for later calculation
             Vector2 newOffset = SpinAssist.ModifyVectorByOrientation(_triggerOffset, _orientation);
+
             if (convert)
-                return ConvertUnits.ToSimUnits(this._position - bodyPos + newOffset);// + bodyPos);// +newOffset;
+            {
+                return ConvertUnits.ToSimUnits(this._position - bodyPos + newOffset);
+            }
             else
+            {
                 return this._position - bodyPos + newOffset;
+            }
         }
 
 #if !EDITOR
 
-        #region CreateSprite
         private void CreateSprite(ContentManager Content)
         {
             _exhaustSprite = new Sprite();
@@ -325,9 +333,7 @@ namespace GameLibrary.GameLogic.Objects
             _exhaustSprite.ScaleFactor = SpinAssist.GetRandom(0.0005f, 0.01f);
             _exhaustSprite.Tint = Color.White;
         }
-        #endregion
 
-        #region Collisions
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
             TouchingFixtures.Remove(fixtureB);
@@ -335,6 +341,7 @@ namespace GameLibrary.GameLogic.Objects
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+            //  We want to add all the bodies that come into contact with it.
             if (!TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);
@@ -342,58 +349,71 @@ namespace GameLibrary.GameLogic.Objects
 
             return true;
         }
-        #endregion
 
-        
-
-        #region SetupTrigger
         protected override void SetupTrigger(World world)
         {
-            //Vector2 bodyPos = Vector2.Zero;
-            //bodyPos.Y -= this._texture.Height + (this.TriggerHeight * 0.5f);
-            //bodyPos = SpinAssist.ModifyVectorByOrientation(bodyPos, _orientation);
-
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(TriggerWidth), ConvertUnits.ToSimUnits(TriggerHeight), 1.0f); 
             this.Body.Position = GetTriggerPosition(true);
             this.Body.IsSensor = true;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
         }
-        #endregion
 
+        /// <summary>
+        /// Apply the force to the player.
+        /// </summary>
         private void ApplyForces()
         {
+            //  What direction the player should be pushed. In this case, Up before modify.
             Vector2 dir = SpinAssist.ModifyVectorByOrientation(new Vector2(0, -100), _orientation);
+            
+            //  Normalize the direction...
             dir.Normalize();
+
+            //  Then apply a speed.
             dir *= 15;
 
+            //  Check all the fixtures that are touching the trigger and apply a force to them.
             for (int i = TouchingFixtures.Count - 1; i >= 0; i--)
             {
+
+                //  We have a special way to push the player, so check if 'i' is a player fixture.
                 if (TouchingFixtures[i] == Player.Instance.WheelBody.FixtureList[0] || 
                     TouchingFixtures[i] == Player.Instance.Body.FixtureList[1])
                 {
+
+                    //  It is the player, so apply the force
                     Player.Instance.ApplyForce(dir, 70.0f);
                     continue;
                 }
 
+                //  It's a random object, so apply a force to it too.
                 TouchingFixtures[i].Body.ApplyForce(dir);
             }
         }
 
-        void AddSprite()
+        /// <summary>
+        /// Add a steam sprite that is expelled from the platform.
+        /// </summary>
+        private void AddSprite()
         {
-
+            //  Get a random offset for the x acceleration to differentiate the numerous clouds
             float xVelo = SpinAssist.GetRandom(-2.0f, 2.0f);
 
+            //  Create a new velocity and rotation for this sprite to fire.
             this._exhaustSprite.Velocity = SpinAssist.ModifyVectorByOrientation(new Vector2(xVelo, -20), _orientation);
             this._exhaustSprite.Rotation = SpinAssist.GetRandom(0, MathHelper.TwoPi);
 
+            //  Clone the editted base steam sprite to expell
             Sprite newSprite = (Sprite)_exhaustSprite.Clone();
 
             SpriteManager.Instance.AddSprite(newSprite);
-            createDelay = 0.07f;
 
+            //  How long should it wait before expelling another steam sprite.
+            createDelay = 0.07f;
         }
+
+
 #endif
 
         #endregion
