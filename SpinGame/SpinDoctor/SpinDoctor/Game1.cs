@@ -30,8 +30,8 @@ using Microsoft.Xna.Framework.Graphics;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic;
 using GameLibrary.GameLogic.Screens;
-using GameLibrary.GameLogic.Screens.Splash;
 using System.Windows.Forms;
+using GameLibrary.GameLogic.Screens.Menu;
 
 #endregion
 
@@ -42,9 +42,9 @@ namespace SpinDoctor
         #region Fields
         private GraphicsDeviceManager _graphics;
 
-        ScreenManager _screenMan;
+        ScreenManager screenManager;
 
-        int _startLevel = 0;
+        uint _startLevel = 0;
         int _backbufferWidth = 1280;
         int _backbufferHeight = 720;
         bool _fullScreen = false;
@@ -63,6 +63,10 @@ namespace SpinDoctor
             _graphics = new GraphicsDeviceManager(this);
             
             ConvertUnits.SetDisplayUnitToSimUnitRatio(24f);
+
+            // Create the screen manager component.
+            screenManager = new ScreenManager(this);
+            Components.Add(screenManager);
         }
 
         protected override void Initialize()
@@ -77,19 +81,6 @@ namespace SpinDoctor
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += ChangeWindowSize;
 
-            _screenMan = new ScreenManager(this, _graphics);
-            _screenMan.Load();
-            Components.Add(_screenMan);
-            
-
-            GameplayScreen gamescreen = new GameplayScreen(_startLevel, this.GraphicsDevice);
-            ScreenManager.AddScreen(gamescreen);
-
-            if (_showStartup)
-            {
-                IntroScreen introScreen = new IntroScreen(this._graphics.GraphicsDevice);
-                ScreenManager.AddScreen(introScreen);
-            }
 
             base.Initialize();
         }
@@ -105,6 +96,8 @@ namespace SpinDoctor
 
         protected override void Draw(GameTime gameTime)
         {
+            this.GraphicsDevice.Clear(Color.Black);
+
             base.Draw(gameTime);
         }
 
@@ -123,7 +116,7 @@ namespace SpinDoctor
         {
             for (int i = 0; i < args.Length; i++)
             {
-                args[i].ToLowerInvariant();
+                //args[i].ToUpperInvariant();
 
                 if (args[i].Contains("-dev"))
                 {
@@ -131,24 +124,24 @@ namespace SpinDoctor
                 }
                 else if (args[i].Contains("-loadlevel"))
                 {
-                    _startLevel = Convert.ToInt32(args[i + 1]);
+                    screenManager.StartLevel = (uint)Convert.ToInt32(args[i + 1]);
                     i++;
                 }
-                else if (args[i].Contains("+x"))
+                else if (args[i].Contains("+X"))
                 {
                     _backbufferWidth = Convert.ToInt32(args[i + 1]);
                     i++;
                 }
-                else if (args[i].Contains("+y"))
+                else if (args[i].Contains("+Y"))
                 {
                     _backbufferHeight = Convert.ToInt32(args[i + 1]);
                     i++;
                 }
-                else if (args[i].Contains("-fullscreen"))
+                else if (args[i].Contains("-FULLSCREEN"))
                 {
                     _fullScreen = true;
                 }
-                else if (args[i].Contains("-skipStartup"))
+                else if (args[i].Contains("-SKIPSTARTUP"))
                 {
                     _showStartup = false;
                 }
