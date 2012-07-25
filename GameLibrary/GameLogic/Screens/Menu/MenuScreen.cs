@@ -1,229 +1,204 @@
-﻿//--------------------------------------------------------------------------
-//--    
-//--    Spin Doctor - MenuScreen
-//--    
-//--    Current Revision 1.005
-//--    
-//--    Description
-//--    ===============
-//--    
-//--    
-//--    Revision List
-//--    ===============
-//--    BenG - Initial
-//--    BenG - Added an easy shading to the underlying screen (Gameplay)
-//--    BenG - Introduced input methods to find what options
-//--    BenG - Now working, but needs to be made better/towards desired
-//--           design...
-//--    BenG - Fixed mouse selection detection and correctly spaced out options
-//--    BenG - Updated menuscreent to be a base class. Old MenuScreen is now 
-//--           GameMenu. Moved completeAction() from MenuOptions into Menu for
-//--           greater global option control.
-//--    BenG - Better memory handling
-//--    
-//--    TBD
-//--    ==============
-//--    Make selecting "Return to HUB" do something.
-//--    
-//--
-//--
-//--------------------------------------------------------------------------
-
-//#define Development
-
-#region Using Statements
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
+using System.Text;
+using GameLibrary.GameLogic.Screens.Menu.Options;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using GameLibrary.GameLogic.Controls;
-using GameLibrary.GameLogic;
-using GameLibrary.GameLogic.Screens.Menu.Options;
-
-#endregion
+using GameLibrary.Graphics;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
-    public class MenuScreen : Screen
+    /// <summary>
+    /// Base class for screens that contain a menu of options. The user can
+    /// move up and down to select an entry, or cancel to back out of the screen.
+    /// </summary>
+    public abstract class MenuScreen : GameScreen
     {
-        #region Fields/Variables
+        #region Fields
 
-        protected MenuItem[,] _menuItemArray;
+        protected List<MenuEntry> menuEntries = new List<MenuEntry>();
+        protected int selectedEntry = 0;
+        string menuTitle;
+        SpriteFont _titleFont;
+        protected Vector2 _itemsPosition;
 
-        protected Point _menuArrayCount;
-        private Point _selectionOption;
-
-        protected bool isPopUp;
-
-        private SpriteFont _font;
-
-        public SpriteFont Font
-        {
-            get
-            {
-                return _font;
-            }
-
-            protected set
-            {
-                _font = value;
-            }
-        }
-
-        public Point SelectionOption
-        {
-            get
-            {
-                return _selectionOption;
-            }
-            protected set
-            {
-                _selectionOption = value;
-            }
-        }
-
+        InputAction menuUp;
+        InputAction menuDown;
+        InputAction menuSelect;
+        InputAction menuCancel;
 
         #endregion
 
-        #region Constructor
+        #region Properties
 
-        public MenuScreen(string name, GraphicsDevice graphics)
-            : base(name, graphics)
-        {
-            _selectionOption = Point.Zero;
-        }
-        public MenuScreen(GraphicsDevice graphics)
-            : base("PauseMenu", graphics)
-        {
-            _selectionOption = Point.Zero;
-        }
-        #endregion
 
-        #region Load
-        public override void Load()
-        {
-
-        }
-        #endregion
-
-        #region Update
-        public override void Update(GameTime gameTime)
-        {
-            HandleInput();
-
-            for (int x = 0; x < _menuArrayCount.X; x++)
-            {
-                for (int y = 0; y < _menuArrayCount.Y; y++)
-                {
-                    _menuItemArray[x, y].Update(gameTime);
-                }
-            }
-        }
-        #endregion
-
-        #region Draw
-        public override void Draw(SpriteBatch sb)
-        {
-            if (!isPopUp)
-            {
-                //  Adds this on top to hide more gameplay.
-                sb.Draw(ScreenManager.Textures[0],
-                    new Rectangle(0, 0, (int)ScreenManager.GraphicsDevice.Viewport.Width, (int)ScreenManager.GraphicsDevice.Viewport.Height),
-                    Color.Black * 0.8f);
-            }
-
-            for (int x = 0; x < _menuArrayCount.X; x++)
-            {
-                for (int y = 0; y < _menuArrayCount.Y; y++)
-                {
-                    _menuItemArray[x, y].Draw(sb);
-                }
-            }
-        }
-        #endregion
-
-        #region HandleInput
         /// <summary>
-        /// Method contains all functionality for checking user input.
+        /// Gets the list of menu entries, so derived classes can add
+        /// or change the menu contents.
         /// </summary>
-        private void HandleInput()
+        protected IList<MenuEntry> MenuEntries
         {
-            Point selectedOption = this.SelectionOption;
-
-            if (InputManager.Instance.GP_DPDown || InputManager.Instance.IsNewKeyPress(Keys.Down))
-            {
-                //  Increment Y selected position
-                if (SelectionOption.Y + 1 >= _menuArrayCount.Y)
-                    selectedOption.Y = 0;
-                else
-                    selectedOption.Y++;
-            }
-
-            if (InputManager.Instance.GP_DPUp || InputManager.Instance.IsNewKeyPress(Keys.Up))
-            {
-                //  Decrement Y selected position
-                if (SelectionOption.Y - 1 < 0)
-                    selectedOption.Y = _menuArrayCount.Y - 1;
-                else
-                    selectedOption.Y--;
-            }
-
-            if (InputManager.Instance.GP_DPLeft || InputManager.Instance.IsNewKeyPress(Keys.Left))
-            {
-                //  Decrement X selected position
-                if (SelectionOption.X - 1 < 0)
-                    selectedOption.X = _menuArrayCount.X - 1;
-                else
-                    selectedOption.X--;
-            }
-
-            if (InputManager.Instance.GP_DPRight || InputManager.Instance.IsNewKeyPress(Keys.Right))
-            {
-                //  Increment X selected position
-                if (SelectionOption.X + 1 >= _menuArrayCount.X)
-                    selectedOption.X = 0;
-                else
-                    selectedOption.X++;
-            }
-
-            if (InputManager.Instance.MenuSelect())
-            {
-                CompleteAction(_menuItemArray[SelectionOption.X, SelectionOption.Y].OptionType);
-            }
-
-            if (InputManager.Instance.Return())
-            {
-                ScreenManager.DeleteScreen();
-            }
-
-            this.SelectionOption = selectedOption;
-
-
-            for (int x = 0; x < _menuArrayCount.X; x++)
-            {
-                for (int y = 0; y < _menuArrayCount.Y; y++)
-                {
-                    if (x == SelectionOption.X && y == SelectionOption.Y)
-                    {
-                        _menuItemArray[x, y].Highlighted = true;
-                    }
-                    else
-                    {
-                        _menuItemArray[x, y].Highlighted = false;
-                    }
-                }
-            }
+            get { return menuEntries; }
         }
+
+
         #endregion
 
-        #region CompleteAction
+        #region Initialization
 
-        protected virtual void CompleteAction(OptionType type)
+        public MenuScreen(string menuTitle)
         {
+            this.menuTitle = menuTitle;
+            this._titleFont = FontManager.Instance.GetFont(FontList.MenuTitle);
 
+            TransitionOnTime = TimeSpan.FromSeconds(0.5);
+            TransitionOffTime = TimeSpan.FromSeconds(0.5);
+
+            menuUp = new InputAction(
+                new Buttons[] { Buttons.DPadUp, Buttons.LeftThumbstickUp },
+                new Keys[] { Keys.Up },
+                true);
+            menuDown = new InputAction(
+                new Buttons[] { Buttons.DPadDown, Buttons.LeftThumbstickDown },
+                new Keys[] { Keys.Down },
+                true);
+            menuSelect = new InputAction(
+                new Buttons[] { Buttons.A, Buttons.Start },
+                new Keys[] { Keys.Enter, Keys.Space },
+                true);
+            menuCancel = new InputAction(
+                new Buttons[] { Buttons.B, Buttons.Back },
+                new Keys[] { Keys.Escape },
+                true);
         }
+
+        public override void Activate()
+        {
+            _itemsPosition = new Vector2(0, ScreenManager.GraphicsDevice.Viewport.Height * 0.75f);
+
+            base.Activate();
+        }
+
+        #endregion
+
+        #region Handle Input
+
+        public override void HandleInput(GameTime gameTime, InputState input)
+        {
+            PlayerIndex playerIndex;
+
+            // Move to the previous menu entry?
+            if (menuUp.Evaluate(input, ControllingPlayer, out playerIndex))
+            {
+                selectedEntry--;
+
+                if (selectedEntry < 0)
+                    selectedEntry = menuEntries.Count - 1;
+            }
+
+            // Move to the next menu entry?
+            if (menuDown.Evaluate(input, ControllingPlayer, out playerIndex))
+            {
+                selectedEntry++;
+
+                if (selectedEntry >= menuEntries.Count)
+                    selectedEntry = 0;
+            }
+
+            if (menuSelect.Evaluate(input, ControllingPlayer, out playerIndex))
+            {
+                OnSelectEntry(selectedEntry, playerIndex);
+            }
+            else if (menuCancel.Evaluate(input, ControllingPlayer, out playerIndex))
+            {
+                OnCancel(playerIndex);
+            }
+        }
+
+        protected virtual void OnSelectEntry(int entryIndex, PlayerIndex playerIndex)
+        {
+            menuEntries[entryIndex].OnSelectEntry(playerIndex);
+        }
+
+        protected virtual void OnCancel(PlayerIndex playerIndex)
+        {
+            ExitScreen();
+        }
+
+        protected void OnCancel(object sender, PlayerIndexEventArgs e)
+        {
+            OnCancel(e.PlayerIndex);
+        }
+
+
+        #endregion
+
+        #region Update and Draw
+
+        protected virtual void UpdateMenuEntryLocations()
+        {
+            Vector2 position = _itemsPosition;
+
+            for (int i = menuEntries.Count - 1; i >= 0; i--)
+            {
+                MenuEntry menuEntry = menuEntries[i];
+
+                position.X = (ScreenManager.GraphicsDevice.Viewport.Width - 40.0f ) - menuEntry.GetWidth(this) * 0.5f;
+                menuEntry.Position = position;
+
+                position.Y -= menuEntry.GetHeight(this);
+            }
+        }
+
+        public override void Update(float delta, bool otherScreenHasFocus, bool coveredByOtherScreen)
+        {
+            base.Update(delta, otherScreenHasFocus, coveredByOtherScreen);
+
+            for (int i = 0; i < menuEntries.Count; i++)
+            {
+                bool isSelected = IsActive && (i == selectedEntry);
+
+                menuEntries[i].Update(this, isSelected, delta);
+            }
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            // make sure our entries are in the right place before we draw them
+            UpdateMenuEntryLocations();
+
+            GraphicsDevice graphics = ScreenManager.GraphicsDevice;
+            SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
+
+            spriteBatch.Begin();
+
+            // Draw each menu entry in turn.
+            for (int i = 0; i < menuEntries.Count; i++)
+            {
+                MenuEntry menuEntry = menuEntries[i];
+
+                bool isSelected = IsActive && (i == selectedEntry);
+
+                menuEntry.Draw(this, isSelected, gameTime);
+            }
+
+            float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
+
+            Vector2 titlePosition = new Vector2(graphics.Viewport.Width * 0.5f, 80);
+            Vector2 titleOrigin = _titleFont.MeasureString(menuTitle) * 0.5f;
+            Color titleColor = new Color(192, 192, 192) * TransitionAlpha;
+            float titleScale = 1.25f;
+
+            spriteBatch.DrawString(_titleFont, menuTitle, titlePosition, titleColor, 0,
+                                   titleOrigin, titleScale, SpriteEffects.None, 0);
+
+            spriteBatch.End();
+        }
+
+
         #endregion
     }
 }

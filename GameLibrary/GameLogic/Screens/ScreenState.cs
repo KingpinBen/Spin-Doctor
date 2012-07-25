@@ -5,11 +5,11 @@ using System.Text;
 
 namespace GameLibrary.GameLogic.Screens
 {
-    public enum State
+    public enum ScreenState
     {
-        FadeIn, 
-        FadeOut,
-        Show, 
-        Hidden
+        TransitionOn,
+        Active,
+        TransitionOff,
+        Hidden,
     }
 }
