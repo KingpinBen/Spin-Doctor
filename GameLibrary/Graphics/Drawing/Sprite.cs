@@ -47,7 +47,6 @@ namespace GameLibrary.Graphics.Drawing
         private Vector2 _velocity = Vector2.Zero;
         private Color _tint = Color.White;
         private bool _isDead = false;
-        private bool _isDying = false;
         private int _timesToPlay = 1;
         private Texture2D _spriteTexture;
 
@@ -226,14 +225,12 @@ namespace GameLibrary.Graphics.Drawing
             this._frameCount = spriteSheetDims;
             this._timesToPlay = timesToPlay;
             this._isAnimated = true;
-            this._tint = Color.White;
         }
 
         public override void Init(Vector2 position)
         {
             this._isAnimated = false;
             this._position = position;
-            this._tint = Color.White;
         }
 
         #endregion
@@ -346,6 +343,8 @@ namespace GameLibrary.Graphics.Drawing
 
         #region Activate / Deactivate Animation
 
+#if !EDITOR
+
         public override void Enable()
         {
             if (_isAnimated)
@@ -375,6 +374,7 @@ namespace GameLibrary.Graphics.Drawing
 
             }
         }
+#endif
 
         void SetAnimation(bool state)
         {

@@ -31,7 +31,7 @@ namespace GameLibrary.GameLogic
 
         bool isInitialized;
         bool traceEnabled = true;
-        public uint StartLevel = 14;
+        public int StartLevel = 0;
 
         #endregion
 

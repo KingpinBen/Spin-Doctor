@@ -31,9 +31,9 @@ namespace GameLibrary.GameLogic.Objects
 
 
         [ContentSerializer]
-        bool _isActive;
+        bool _isActive = true;
         [ContentSerializer]
-        bool _useGravity;
+        bool _useGravity = true;
         [ContentSerializer]
         string _textureAsset;
 
@@ -44,11 +44,11 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer]
         float _maxSpawnAngle;
         [ContentSerializer]
-        float _gravityModifier;
+        float _gravityModifier = 1.0f;
         [ContentSerializer]
-        float _minLifeTime;
+        float _minLifeTime = 0.5f;
         [ContentSerializer]
-        float _maxLifeTime;
+        float _maxLifeTime = 2.0f;
         [ContentSerializer]
         int _particleCount;
         [ContentSerializer]
@@ -199,8 +199,6 @@ namespace GameLibrary.GameLogic.Objects
             this._position = position;
             this._timeNewParticle = 1 / 60;
             this._textureAsset = texAsset;
-            this._gravityModifier = 1.0f;
-            this._useGravity = true;
             this._maxParticles = 60;
             this._minParticles = 10;
         }
@@ -211,7 +209,6 @@ namespace GameLibrary.GameLogic.Objects
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
             this._texture = content.Load<Texture2D>(FileLoc.BlankPixel());
-            this._isActive = true;
             this._particleCount = 10;
             this._particles = new List<Particle>(_particleCount);
             this._queuedParticles = new Queue<Particle>(_particleCount);
