@@ -17,11 +17,13 @@ namespace GameLibrary.GameLogic.Objects
         #region Fields
 
         [ContentSerializer(Optional = true)]
-        protected string _name;
+        protected string _name = String.Empty;
+        [ContentSerializer(Optional = true)]
+        protected bool _enabled = true;
         [ContentSerializer]
-        protected Vector2 _position;
+        protected Vector2 _position = Vector2.Zero;
         [ContentSerializer]
-        protected float _zLayer;
+        protected float _zLayer = 0.6f;
         [ContentSerializer(Optional = true)]
         protected List<Event> _objectEvents = new List<Event>();
 
@@ -42,6 +44,19 @@ namespace GameLibrary.GameLogic.Objects
                 _name = value;
             }
         }
+        [ContentSerializerIgnore, CategoryAttribute("General")]
+        public bool Enabled
+        {
+            get
+            {
+                return _enabled;
+            }
+            set
+            {
+                _enabled = value;
+            }
+        }
+
         [ContentSerializerIgnore, CategoryAttribute("General")]
         public Vector2 Position
         {
@@ -124,6 +139,14 @@ namespace GameLibrary.GameLogic.Objects
                 return _objectEvents;
             }
         }
+        [ContentSerializerIgnore]
+        public virtual float ZLayer
+        {
+            get
+            {
+                return this._zLayer;
+            }
+        }
 #endif
 
         #endregion
@@ -133,19 +156,14 @@ namespace GameLibrary.GameLogic.Objects
 
         }
 
-        public virtual void Init(Vector2 position)
+        public virtual void Init(Vector2 position) 
         {
             this._position = position;
-            this._zLayer = 0.6f;
         }
 
-        public virtual void Load(ContentManager content, World world)
-        { }
+        public virtual void Load(ContentManager content, World world) { }
 
-        public virtual void Update(float delta)
-        {
-
-        }
+        public virtual void Update(float delta) { }
 
         #region Draw
 #if EDITOR
@@ -173,25 +191,41 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
         #region Event Stuff
-#if !EDITOR
 
-
-        protected void RegisterEvent()
+#if EDITOR
+        
+#else
+        /// <summary>
+        /// Register this objects and all of its events with the 
+        /// EventManager. If the object has no events but has a name,
+        /// it'll also be added for use. Call once from Load.
+        /// </summary>
+        protected void RegisterObject()
         {
             EventManager.Instance.RegisterObject(this);
         }
 
+        /// <summary>
+        /// Fire all of the objects events. Timed events will have delays.
+        /// </summary>
         protected void FireEvent() 
         {
             EventManager.Instance.FireEvent(this._name);
         }
-#endif
 
         public virtual void Toggle() { }
         public virtual void Enable() { }
         public virtual void Disable() { }
         public virtual void Start() { }
         public virtual void Stop() { }
+        public virtual Body GetBody()
+        {
+            return null;
+        }
+
+#endif
+
+        
 
         #endregion
     }
