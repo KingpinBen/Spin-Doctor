@@ -16,15 +16,16 @@ namespace GameLibrary.GameLogic.Events
         ON_KILL,
         ON_ACTIVATION,
         ON_DEACTIVATION,
-        
-        ENABLE_COLLISION,
-        DISABLE_COLLISION,
 
-        //  Motor events
-        START_MOTOR,
-        STOP_MOTOR,
-        CHANGE_SPEED,
-        TOGGLE,
+        TRIGGER_ENABLE,
+        TRIGGER_DISABLE,
+
+        TRIGGER_START,
+        TRIGGER_STOP,
+        TRIGGER_CHANGESPEED,
+        TRIGGER_TOGGLE,
+
+        TRIGGER_REMOVE,
 
         //  System
         CHANGE_LEVEL,
