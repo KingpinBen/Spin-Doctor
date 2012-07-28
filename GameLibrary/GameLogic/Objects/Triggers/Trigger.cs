@@ -48,25 +48,27 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Fields
 
         [ContentSerializer]
-        protected bool _showHelp;
+        protected bool _showHelp = false;
         [ContentSerializer]
         protected float _triggerWidth;
         [ContentSerializer]
         protected float _triggerHeight;
         [ContentSerializer]
         protected string _message = " to use.";
+        [ContentSerializer(Optional=true)]
+        private bool _triggerOnce = true;
 
 #if EDITOR || Development
         private Texture2D _devTexture;
 #endif
+
 #if !EDITOR
-        [ContentSerializerIgnore]
         protected List<Fixture> TouchingFixtures = new List<Fixture>();
-        [ContentSerializerIgnore]
-        private bool _triggered;
+        protected bool _triggered = false;
+        private bool _fired = false;
 #endif
 
-        private bool _fired = false;
+        
 
         #endregion
 
@@ -121,6 +123,19 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 _message = value;
             }
         }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public bool TriggerOnce
+        {
+            get
+            {
+                return _triggerOnce;
+            }
+            set
+            {
+                _triggerOnce = value;
+            }
+        }
+
 #else
         [ContentSerializerIgnore]
         public virtual string Message
@@ -158,7 +173,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 _triggered = value;
             }
         }
-                [ContentSerializerIgnore]
+        [ContentSerializerIgnore]
         public float TriggerWidth
         {
             get
@@ -184,7 +199,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 }
             }
         }
-                [ContentSerializerIgnore]
+        [ContentSerializerIgnore]
         public float TriggerHeight
         {
             get
@@ -214,18 +229,14 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #endregion
 
         #region Constructor
-        public Trigger()
-        {
 
-        }
-        
+        public Trigger() { }        
 
         public override void Init(Vector2 position)
         {
             this.TriggerWidth = 200;
             this.TriggerHeight = 200;
             this._position = position;
-            this._tint = Color.White;
             this._showHelp = false;
             this._message = " to use.";
             this._zLayer = 0.5f;
@@ -266,40 +277,55 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 
             this.Triggered = false;
-            this.RegisterEvent();
+            this.RegisterObject();
             this.SetupTrigger(world);
 #endif
         }
         #endregion
 
-        #region Update
         public override void Update(float delta)
         {
-#if EDITOR
-#else
-            if (_triggered)
+#if !EDITOR
+            //  If it's set to fire once and has been fired, we don't 
+            //  need to go any further.
+            if (_triggerOnce && _fired)
             {
+                return;
+            }
+
+            //  First check if it's been enabled.
+            if (this.Body.Enabled && _triggered)
+            {
+                //  Fire off all the events.
                 this.FireEvent();
+                //  and turn off the trigger.
+                this._triggered = false;
+
+                //  If it's set to only fire once, change it so it can't
+                //  fire again.
+                if (_triggerOnce)
+                {
+                    _fired = true;
+                }
             }
 #endif
         }
-        #endregion
 
         #region Draw
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_devTexture, Position,
-                new Rectangle(0, 0, (int)Width, (int)Height),
-                Color.White * 0.7f, this._rotation, new Vector2(this.Width, this.Height) * 0.5f, 1f, SpriteEffects.None, 0.3f);
+            sb.Draw(_devTexture, this._position,
+                new Rectangle(0, 0, (int)_width, (int)_height),
+                Color.White * 0.7f, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, 0.3f);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
 #if Development
-            sb.Draw(_devTexture, ConvertUnits.ToDisplayUnits(Body.Position),
-                new Rectangle(0, 0, (int)Width, (int)Height),
-                Color.White, Body.Rotation, new Vector2(this.Width, this.Height) * 0.5f, 1f, SpriteEffects.None, 0.2f);
+            sb.Draw(_devTexture, this._position,
+                new Rectangle(0, 0, (int)_width, (int)_height),
+                Color.White, this.Body.Rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, 0.2f);
 #endif
         }
 #endif
@@ -307,7 +333,8 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         #region Protected/Private Methods
 
-        #region Collisions
+#if !EDITOR
+#region Collisions
         /// <summary>
         /// Event handler on collision
         /// 
@@ -323,13 +350,14 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         /// <returns></returns>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-#if EDITOR
-            return true;
-#else
-            if (!TouchingFixtures.Contains(fixtureB) && 
-            (fixtureB == Player.Instance.Body.FixtureList[0] || fixtureB == Player.Instance.WheelBody.FixtureList[0]))
+            if (!TouchingFixtures.Contains(fixtureB) && Player.Instance.CheckBodyBox(fixtureB))
             {
                 TouchingFixtures.Add(fixtureB);
+            }
+            else
+            {
+                //  If it's not the player, we can just ignore it.
+                return true;
             }
 
             if (!Triggered)
@@ -343,22 +371,20 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 
             return true;
-#endif
-
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-#if EDITOR
-
-#else
+            //  Only the players body boxes are added to the touchingfixtures list.
             if (TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Remove(fixtureB);
             }
 
+            //  So if it's empty, the player has fully left the trigger.
             if (TouchingFixtures.Count == 0)
             {
+                //  so turn it off.
                 this.Triggered = false;
 
                 if (this.ShowHelp && HUD.Instance.ShowPopup)
@@ -366,26 +392,21 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                     HUD.Instance.ShowOnScreenMessage(false);
                 }
             }
-#endif
         }
+
         #endregion
 
         #region Setup Trigger
         protected virtual void SetupTrigger(World world)
         {
-#if EDITOR
-#else
-            Vector2 trigPos = Position;
-            trigPos.Y -= Height * 0.5f;
-
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_triggerWidth), ConvertUnits.ToSimUnits(_triggerHeight), 0f);
-            this.Body.Position = ConvertUnits.ToSimUnits(trigPos);
+            this.Body.Position = ConvertUnits.ToSimUnits(this._position);
             this.Body.IsSensor = true;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
-#endif
         }
         #endregion
+#endif
 
         #endregion
     }
