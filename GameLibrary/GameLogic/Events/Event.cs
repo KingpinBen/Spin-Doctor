@@ -10,7 +10,6 @@ namespace GameLibrary.GameLogic.Events
 {
     public class Event
     {
-        private uint MAX_ARGS = 4;
         [ContentSerializer]
         private string _objectName;
         [ContentSerializer]
@@ -89,31 +88,15 @@ namespace GameLibrary.GameLogic.Events
             this._targetName = "Enter the TARGETS name here";
             this._eventType = Events.EventType.NONE;
             this._eventDelay = 0.0f;
-            this._argument = new object[MAX_ARGS];
         }
 
-        public Event(string name, string target, EventType type, float delay, params object[] args)
+        public Event(string name, string target, EventType type, float delay, object arg)
         {
-            if (args != null)
-            {
-                if (args.Length > MAX_ARGS)
-                {
-                    string error = "Object: " + name + " contains too many arguments.";
-
-                    MessageBox.Show(error);
-                    ErrorReport.GenerateReport(error + args.ToString(), null);
-                }
-                else
-                {
-                    this.Argument = args;
-                }
-            }
-
             this.ObjectName = name;
             this.TargetName = target;
             this.EventDelay = delay;
             this.EventType = type;
-            
+            this.Argument = arg;
         }
     }
 }

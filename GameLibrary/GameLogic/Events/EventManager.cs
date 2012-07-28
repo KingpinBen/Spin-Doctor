@@ -55,6 +55,13 @@ namespace GameLibrary.GameLogic.Events
 #endif
         }
 
+        public GameplayScreen GameScreen
+        {
+            get 
+            { 
+                return gameScreen;
+            }
+        }
         
 
 #if !EDITOR
@@ -65,7 +72,7 @@ namespace GameLibrary.GameLogic.Events
         public void RegisterObject(NodeObject obj)
         {
             //  No need to register anything without a name.
-            if (obj.Name != null)
+            if (obj.Name != null && obj.Name != "")
             {
                 //  As the object has a name, we'll be using it for an event
                 //  at some point.
@@ -120,19 +127,18 @@ namespace GameLibrary.GameLogic.Events
             switch (objEvent.EventType)
             {
                 case EventType.CHANGE_LEVEL:
-                    uint id = 0;
-                    try
                     {
-                        id = Convert.ToUInt32(objEvent.Argument);
+                        try
+                        {
+                            this.gameScreen.CurrentLevelID = Convert.ToInt32(objEvent.Argument);
+                        }
+                        catch
+                        {
+                            ErrorReport.GenerateReport("Tried loading a level with an invalid target level definition in\nlevel " + this.gameScreen.CurrentLevelID, null);
+                        }
                     }
-                    catch
-                    {
-                        ErrorReport.GenerateReport(objEvent.ObjectName +
-                            " tried to fire a changelevel without a convertable argument", null);
-                    }
-                    this.gameScreen.CurrentLevelID = id;
                     break;
-                case EventType.STOP_MOTOR:
+                case EventType.TRIGGER_STOP:
                     {
                         NodeObject output;
 
@@ -143,7 +149,7 @@ namespace GameLibrary.GameLogic.Events
 
                         break;
                     }
-                case EventType.START_MOTOR:
+                case EventType.TRIGGER_START:
                     {
                         NodeObject output;
 
@@ -153,7 +159,7 @@ namespace GameLibrary.GameLogic.Events
                         }
                         break;
                     }
-                case EventType.TOGGLE:
+                case EventType.TRIGGER_TOGGLE:
                     {
                         NodeObject output;
 
@@ -164,6 +170,46 @@ namespace GameLibrary.GameLogic.Events
 
                         break;
                     }
+                case EventType.TRIGGER_ENABLE:
+                    {
+                        NodeObject output;
+
+                        if (this.objects.TryGetValue(objEvent.TargetName, out output))
+                        {
+                            output.Enable();
+                        }
+
+                        break;
+                    }
+                case EventType.TRIGGER_DISABLE:
+                    {
+                        NodeObject output;
+
+                        if (this.objects.TryGetValue(objEvent.TargetName, out output))
+                        {
+                            output.Disable();
+                        }
+
+                        break;
+                    }
+                case EventType.TRIGGER_REMOVE:
+                    {
+                        NodeObject output;
+
+                        if (this.objects.TryGetValue(objEvent.TargetName, out output))
+                        {
+                            if (output.GetBody() != null)
+                            {
+                                this.gameScreen.World.RemoveBody(output.GetBody());
+                            }
+
+                            this.gameScreen.Level.ObjectsList.Remove(output);
+                        }
+
+                        break;
+                    }
+                default:
+                    break;
             }
         }
 #endif
