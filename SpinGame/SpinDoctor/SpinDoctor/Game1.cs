@@ -124,7 +124,7 @@ namespace SpinDoctor
                 }
                 else if (args[i].Contains("-loadlevel"))
                 {
-                    screenManager.StartLevel = (uint)Convert.ToInt32(args[i + 1]);
+                    screenManager.StartLevel = Convert.ToInt32(args[i + 1]);
                     i++;
                 }
                 else if (args[i].Contains("+X"))

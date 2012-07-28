@@ -60,7 +60,6 @@ namespace GameLibrary.Helpers
 
         private int frameCounter;
         private int frameRate;
-        private int averageFPS;
         private TimeSpan elapsedTime;
         private World _world;
 

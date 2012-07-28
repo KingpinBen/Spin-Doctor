@@ -11,7 +11,7 @@ namespace GameLibrary.Helpers
         private static string blankPixel = "Assets/Images/Basics/BlankPixel";
         private static string devTexture = "Assets/Other/Dev/Trigger";
 
-        public static string Level(uint levelID)
+        public static string Level(int levelID)
         {
             return LevelLoc + levelID + ".xml";
         }

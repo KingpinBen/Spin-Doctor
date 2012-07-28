@@ -333,6 +333,9 @@ namespace GameLibrary.GameLogic
             this._canJump = true;
             this._airTime = 0.0f;
 
+            this.Body.UserData = "Player";
+            this.WheelBody.UserData = "Player";
+
             if (GameSettings.DoubleJumpEnabled)
             {
                 _canDoubleJump = true;
@@ -595,5 +598,12 @@ namespace GameLibrary.GameLogic
         #endregion
 
         #endregion
+
+        public bool CheckBodyBox(Fixture fixture)
+        {
+            if (fixture == Body.FixtureList[0] || fixture == WheelBody.FixtureList[0])
+                return true;
+            return false;
+        }
     }
 }

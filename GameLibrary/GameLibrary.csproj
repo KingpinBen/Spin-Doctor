@@ -61,6 +61,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'New|x86'">
     <OutputPath>bin\x86\New\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>cog_1.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
@@ -195,7 +198,6 @@
     <Compile Include="GameLogic\Objects\Triggers\Door.cs" />
     <Compile Include="GameLogic\Objects\Triggers\Spike.cs" />
     <Compile Include="GameLogic\Objects\Triggers\Trigger.cs" />
-    <Compile Include="GameLogic\Objects\Triggers\TriggerOnce.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GameLogic\Character.cs" />
     <Compile Include="Levels\Gears.cs" />
@@ -217,6 +219,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="cog_1.ico" />
     <Content Include="Notes.txt" />
   </ItemGroup>
   <ItemGroup />

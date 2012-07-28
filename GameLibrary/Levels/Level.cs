@@ -71,11 +71,11 @@ namespace GameLibrary.Levels
         [ContentSerializer]
         private DecalManager _decalManager;
         [ContentSerializer]
-        private Vector2 _roomDimensions;
+        private Vector2 _roomDimensions = Vector2.Zero;
         [ContentSerializer]
-        private string _backgroundFile;
+        private string _backgroundFile = String.Empty;
         [ContentSerializer]
-        private Color _backgroundTint;
+        private Color _backgroundTint = Color.White;
 
         #endregion
 
@@ -367,5 +367,7 @@ namespace GameLibrary.Levels
             this._levelBackdrop = null;
 #endif
         }
+
+
     }
 }

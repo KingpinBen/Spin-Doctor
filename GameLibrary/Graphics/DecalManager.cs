@@ -39,7 +39,6 @@ namespace GameLibrary.Graphics
         [ContentSerializer]
         private List<Decal> _decalList;
         private ContentManager _content;
-        private Texture2D _decalMesh;
         GameplayScreen _gameScreen;
         #endregion
 
@@ -81,15 +80,9 @@ namespace GameLibrary.Graphics
             _gameScreen = screen;
             _content = new ContentManager(screen.ScreenManager.Game.Services, "Content");
 
-            //  Generate a render target and make it default.
-
             for (int i = _decalList.Count - 1; i >= 0; i--)
             {
                 _decalList[i].Load(_content);
-                
-                //  if the zLayer is >0.3 (whatever players zLayer is)
-                //      Draw it to the rendertarget
-                //      Remove it from the list.
             }
         }
         #endregion
@@ -97,12 +90,10 @@ namespace GameLibrary.Graphics
         #region Draw
         public void Draw(SpriteBatch sb)
         {
-            //  Below: Draw everything thats left.
             for (int i = 0; i < _decalList.Count; i++)
             {
                 _decalList[i].Draw(sb);
             }
-            //  Draw the collage of textures as one large texture.
         }
         #endregion
     }

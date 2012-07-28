@@ -9,7 +9,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
 {
     public class MainMenuScreen : MenuScreen
     {
-        uint _levelToLoad;
+        int _levelToLoad;
 
         #region Initialization
 
@@ -17,7 +17,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
         /// <summary>
         /// Constructor fills in the menu contents.
         /// </summary>
-        public MainMenuScreen(uint levelToLoad)
+        public MainMenuScreen(int levelToLoad)
             : base("Main Menu")
         {
             this._levelToLoad = levelToLoad;

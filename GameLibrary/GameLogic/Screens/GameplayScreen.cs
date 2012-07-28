@@ -21,6 +21,7 @@ using Microsoft.Xna.Framework.Content.Pipeline;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.Graphics.UI;
 using GameLibrary.GameLogic.Events;
+using GameLibrary.GameLogic.Objects;
 
 namespace GameLibrary.GameLogic.Screens
 {
@@ -28,9 +29,7 @@ namespace GameLibrary.GameLogic.Screens
     {
         #region Fields
 
-        uint _currentLevelID;
-
-        public event EventHandler<EventArgs> LevelChanged;
+        int _currentLevelID;
 
         public World World
         {
@@ -52,7 +51,7 @@ namespace GameLibrary.GameLogic.Screens
             }
         }
         Level _level;
-        public uint CurrentLevelID
+        public int CurrentLevelID
         {
             get
             {
@@ -73,14 +72,14 @@ namespace GameLibrary.GameLogic.Screens
 
         #region Initialization
 
-        public GameplayScreen(uint levelToLoad)
+        public GameplayScreen(int levelToLoad)
         {
             this._currentLevelID = levelToLoad;
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
             pauseAction = new InputAction(
-                new Buttons[] { Buttons.Start, Buttons.Back },
+                new Buttons[] { Buttons.Start},
                 new Microsoft.Xna.Framework.Input.Keys[] { Microsoft.Xna.Framework.Input.Keys.Escape },
                 true);          
         }
@@ -255,6 +254,7 @@ namespace GameLibrary.GameLogic.Screens
             catch (FileNotFoundException e)
             {
                 MessageBox.Show("Something went wrong when trying to load level: '" + this._currentLevelID + "'\nThe level wasn't found.");
+                ErrorReport.GenerateReport("The level " + this._currentLevelID + " could not be found.\n" + e.ToString(), null);
                 ScreenManager.Game.Exit();
             }
             catch (InvalidContentException e)
