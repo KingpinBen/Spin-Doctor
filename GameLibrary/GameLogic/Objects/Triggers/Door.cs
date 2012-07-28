@@ -94,7 +94,18 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 return base.TriggerHeight;
             }
         }
-        
+        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
+        public new bool ShowHelp
+        {
+            get
+            {
+                return _showHelp;
+            }
+            internal set
+            {
+                _showHelp = value;
+            }
+        }
 #else
 
 #endif
@@ -109,10 +120,10 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         public override void Init(Vector2 position, string texLoc)
         {
+            base.Init(position);
             this._nextLevel = 0;
             this._textureAsset = texLoc;
-
-            base.Init(position);
+            this._showHelp = true;
             this._triggerHeight = this._triggerWidth = 30;
         }
         #endregion
@@ -135,9 +146,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this.SetupTrigger(world);
 
             if (this.Name != null || this.Name != "")
-                this._objectEvents.Add(new Event(this.Name, null, EventType.CHANGE_LEVEL, 0.0f, 0));
+            {
+                this._objectEvents.Add(new Event(this.Name, null, EventType.CHANGE_LEVEL, 0.0f, _nextLevel));
+            }
 
-            RegisterEvent();
+            RegisterObject();
 #endif
         }
         #endregion
@@ -170,9 +183,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-#if Development
-            sb.DrawString(Fonts.DebugFont, "Touching: " + TouchingFixtures.Count, ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(0, -70), Color.Blue, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0.0f);
-#endif
             sb.Draw(Texture, new Rectangle(
                 (int)(this._position.X),
                 (int)(this._position.Y),
@@ -184,12 +194,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         #region Private Methods
 
+#if !EDITOR
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-#if EDITOR
-            return true;
-#else
+
             if (fixtureB != Player.Instance.WheelBody.FixtureList[0])
             {
                 return false;
@@ -227,14 +236,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 
             return true;
-#endif
+
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-#if EDITOR
-
-#else
             if (TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Remove(fixtureB);
@@ -245,15 +251,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 this.Triggered = false;
                 HUD.Instance.ShowOnScreenMessage(false);
             } 
-#endif
         }
         #endregion
 
         protected override void SetupTrigger(World world)
         {
-#if EDITOR
-
-#else
             this.Body = BodyFactory.CreateRectangle(world, 
                 ConvertUnits.ToSimUnits(TriggerWidth), 
                 ConvertUnits.ToSimUnits(TriggerHeight), 
@@ -270,9 +272,10 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             
             this.Body.IsSensor = true;
             //this.Body.CollisionCategories = Category.Cat10;
-#endif
         }
 
+        
+#endif
         #endregion
     }
 }

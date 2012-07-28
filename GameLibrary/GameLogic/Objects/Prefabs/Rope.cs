@@ -296,10 +296,9 @@ namespace GameLibrary.GameLogic.Objects
         }
 
         #region Collisions
+#if !EDITOR
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-#if EDITOR
-#else
             if (_touchedRopeFixtures.Contains(fixtureA) && fixtureB == Player.Instance.Body.FixtureList[0])
             {
                 _touchedRopeFixtures.Remove(fixtureA);
@@ -309,13 +308,11 @@ namespace GameLibrary.GameLogic.Objects
             {
                 _inRange = false;
             }
-#endif
+
         }
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-#if EDITOR
-#else
             if (fixtureB != Player.Instance.Body.FixtureList[0])
             {
                 return true;
@@ -330,9 +327,9 @@ namespace GameLibrary.GameLogic.Objects
                     _inRange = true;
                 }
             }
-#endif
             return true;
         }
+#endif
         #endregion
 
         #endregion

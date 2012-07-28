@@ -92,6 +92,8 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
+        #region Constructor and Initialization
+
         public MovingPlatform()
             : base()
         {
@@ -102,6 +104,8 @@ namespace GameLibrary.GameLogic.Objects
         {
             base.Init(position, tex);
         }
+
+        #endregion
 
         public override void Load(ContentManager content, World world)
         {
@@ -139,6 +143,8 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
+        #region Private Methods
+
         protected override void SetupPhysics(World world)
         {
 #if EDITOR
@@ -151,5 +157,7 @@ namespace GameLibrary.GameLogic.Objects
             this.SetUpJoint(world);
 #endif
         }
+
+        #endregion
     }
 }

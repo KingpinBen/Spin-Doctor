@@ -222,20 +222,5 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
-        #region Private Methods
-
-        #region Collisions
-        protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
-        {
-            base.Body_OnSeparation(fixtureA, fixtureB);
-        }
-
-        protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
-        {
-            return base.Body_OnCollision(fixtureA, fixtureB, contact);
-        }
-        #endregion
-
-        #endregion
     }
 }

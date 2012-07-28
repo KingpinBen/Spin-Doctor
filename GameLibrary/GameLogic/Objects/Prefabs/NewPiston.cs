@@ -25,7 +25,7 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer]
         private int _shaftPieces = 0;
         [ContentSerializer]
-        private string _endTextureAsset;
+        private string _endTextureAsset = String.Empty;
 
         #endregion
 

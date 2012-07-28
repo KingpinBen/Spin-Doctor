@@ -131,14 +131,10 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         #region Private Methods
 
-        
-
+#if !EDITOR 
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-#if EDITOR 
-            return true;
-#else
             if (BeenCollected)
             {
                 return true;
@@ -147,10 +143,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             base.Body_OnCollision(fixtureA, fixtureB, contact);
 
             return true;
-#endif
         }
         #endregion
-
+#endif
         #endregion
     }
 }

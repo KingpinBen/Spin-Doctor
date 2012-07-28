@@ -13,10 +13,6 @@
 //--    BenG - Added texture so the editor/developmentmode can properly see it 
 //--           without the need for farseer debug.
 //--    
-//--    TBD
-//--    ==============
-//--    Make it work with different orientations.
-//--    Fix the y detection. make sure it uses the radius of wheel.
 //--    
 //-------------------------------------------------------------------------------
 
@@ -42,6 +38,14 @@ using GameLibrary.Graphics.Camera;
 
 namespace GameLibrary.GameLogic.Objects
 {
+    /// <summary>
+    /// Notes:
+    /// Radius is the radius of the Players wheel.
+    /// Top is calculated in SetupPhysics
+    /// 
+    /// Enable/Disable are the only triggers that'll change
+    /// how this object behaves
+    /// </summary>
     public class OneSidedPlatform : StaticObject
     {
         #region Fields
@@ -52,21 +56,11 @@ namespace GameLibrary.GameLogic.Objects
         private float top;
         private float radius;
         private Fixture _platform;
+        private World _world;
 #endif
         #endregion
 
-        #region Constructor
-        public OneSidedPlatform()
-            : base()
-        {
-
-        }
-
-        public override void Init(Vector2 position)
-        {
-            base.Init(position);
-        }
-        #endregion
+        public OneSidedPlatform() : base() { }
 
         public override void Load(ContentManager content, World world)
         {
@@ -87,10 +81,6 @@ namespace GameLibrary.GameLogic.Objects
 #else
             SetupPhysics(world);
 #endif
-        }
-
-        public override void Update(float delta)
-        {
         }
 
         #region Draw
@@ -119,20 +109,33 @@ namespace GameLibrary.GameLogic.Objects
 
         #region Private Methods
 
+        /// <summary>
+        /// Change the presolve for the world so that it can understand when a collision
+        /// should occur ahead of time for one sided platforms.
+        /// </summary>
+        /// <param name="contact"></param>
+        /// <param name="oldManifold"></param>
         protected void PreSolve(Contact contact, ref Manifold oldManifold)
         {
 #if EDITOR
+
 #else
-            Fixture fixtureA = contact.FixtureA;
-            Fixture fixtureB = contact.FixtureB;
+            //  Get both collision bodies.
+            Fixture fixtureA = contact.FixtureA;    //  A = Surface
+            Fixture fixtureB = contact.FixtureB;    //  B = Player
 
-
-            if (fixtureA == this.Body.FixtureList[0])
+            if (fixtureA == this.Body.FixtureList[0] || fixtureB == this.Body.FixtureList[0])
             {
+                //  We only want a contact with the player
+                //  As it's not the player, disable the contact
                 contact.Enabled = false;
 
                 if (fixtureB == Player.Instance.WheelBody.FixtureList[0])
                 {
+                    //  If the centre of the player wheel is above (depending on the orientation 
+                    //  and the world rotation) to the top point (1/2 w/h depending on ^) and the
+                    //  radius of the wheel + a small bounding number.
+
                     switch (_orientation)
                     {
                         case Orientation.Up:
@@ -173,13 +176,16 @@ namespace GameLibrary.GameLogic.Objects
         {
 #if EDITOR
 #else
+            this._world = world;
             this.Body = BodyFactory.CreateBody(world);
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
+            this.Body.CollidesWith = Category.Cat10;
+            
+            Fixture fixture = FixtureFactory.AttachRectangle(ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), 1.0f, Vector2.Zero, this.Body);
+            this.Body.Mass = ConvertUnits.ToSimUnits(10000);
+            this.Body.Rotation = _rotation;
 
-            PolygonShape shape = new PolygonShape(1);
-            shape.SetAsBox(ConvertUnits.ToSimUnits(Width * 0.5f), ConvertUnits.ToSimUnits(Height * 0.5f));
-            _platform = this.Body.CreateFixture(shape);
-
+            
             //  The Player wheel radius.
             radius = ConvertUnits.ToSimUnits(28);
             switch (_orientation)
@@ -197,9 +203,8 @@ namespace GameLibrary.GameLogic.Objects
                     top = ConvertUnits.ToSimUnits(this._position.X + (_width * 0.5f));
                     break;
             }
-            
 
-            world.ContactManager.PreSolve += PreSolve;
+            _world.ContactManager.PreSolve += this.PreSolve;
 
             //  Apply it after attaching the fixture so it applies to all fixtures
             //  without having to redo it to newer ones later.

@@ -46,9 +46,14 @@ namespace GameLibrary.GameLogic.Objects
         //  
 
         [ContentSerializer]
-        bool _locked;
-        bool _inRange;
+        bool _locked = false;
+        
+#if EDITOR
+
+#else
         Contact _contactPoint;
+        bool _inRange = false;
+#endif
         #endregion
 
         public PullableObject()
@@ -96,6 +101,7 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
         #region Collisions
+#if !EDITOR
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
             if (_locked)
@@ -120,6 +126,7 @@ namespace GameLibrary.GameLogic.Objects
                 this._contactPoint = null;
             }
         }
+#endif
         #endregion
     }
 }

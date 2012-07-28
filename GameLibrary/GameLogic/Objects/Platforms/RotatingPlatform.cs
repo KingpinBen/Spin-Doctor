@@ -60,6 +60,30 @@ namespace GameLibrary.GameLogic.Objects
         #region Properties
 #if EDITOR
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public bool UseBasicShape
+        {
+            get
+            {
+                return _useShape;
+            }
+            set
+            {
+                _useShape = value;
+            }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public ObjectShape ShapeType
+        {
+            get
+            {
+                return _shapeType;
+            }
+            set
+            {
+                _shapeType = value;
+            }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public float MotorSpeed
         {
             get
@@ -118,6 +142,7 @@ namespace GameLibrary.GameLogic.Objects
             this._rotatesWithLevel = true;
             this._motorEnabled = true;
             this._useShape = true;
+            this._motorSpeed = 5;
             this._shapeType = ObjectShape.Quadrilateral;
         }
         #endregion
@@ -141,7 +166,7 @@ namespace GameLibrary.GameLogic.Objects
             }
 #else
             SetupPhysics(world);
-            RegisterEvent();
+            RegisterObject();
 #endif
         }
         #endregion
@@ -191,18 +216,17 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(this._texture, this._position, null, this._tint, this.Body.Rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
-
-            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "Enabled: " + this.revoluteJoint.MotorEnabled.ToString() + ". Speed: " + this.revoluteJoint.MotorSpeed.ToString(), this.Position, Color.White);
         }
 #endif
         #endregion
 
-        #region Public Methods
+        #region Events
+#if EDITOR
+#else
 
         public override void Toggle()
         {
-#if EDITOR
-#else
+
             if (this.revoluteJoint.MotorSpeed ==  0.0f)
             {
                 this.revoluteJoint.MotorSpeed = this._motorSpeed;
@@ -211,27 +235,19 @@ namespace GameLibrary.GameLogic.Objects
             {
                 this.revoluteJoint.MotorSpeed = 0.0f;
             }
-#endif
+
         }
 
         public override void Start()
         {
-#if EDITOR
-
-#else
             this.revoluteJoint.MotorSpeed = this._motorSpeed;
-#endif
         }
 
         public override void Stop()
         {
-#if EDITOR
-
-#else
             this.revoluteJoint.MotorSpeed = 0.0f;
-#endif
         }
-
+#endif
         #endregion
 
         #region Private Methods

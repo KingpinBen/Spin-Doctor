@@ -5,9 +5,9 @@ using System.Text;
 
 namespace GameLibrary.GameLogic.Objects
 {
-    [Flags]
-    public enum SpecialBodyFlags
+    internal enum SpecialBodyFlags
     {
-        FallImmune = 1
+        FallImmune = 1,
+        OneDirectional = 2
     }
 }

@@ -78,7 +78,7 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer]
         private string endBodyTexAsset;
         [ContentSerializer]
-        private bool _isLethal;
+        private bool _isLethal = false;
 
         #endregion
 
@@ -209,7 +209,7 @@ namespace GameLibrary.GameLogic.Objects
                 this._prismaticJoint.MotorSpeed = MotorSpeed;
             }
 
-            RegisterEvent();
+            RegisterObject();
 #endif
         }
         #endregion

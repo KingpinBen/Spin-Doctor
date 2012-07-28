@@ -31,7 +31,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
-            this._origin = new Vector2(_texture.Width * 0.5f, _texture.Height);
+            
 
 #if EDITOR
             if (_width == 0 || _height == 0)
@@ -42,6 +42,8 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #else
             this.SetupPhysics(world);
 #endif
+
+            this._origin = new Vector2(_width, _height) * 0.5f;
         }
 
         #region Draw
@@ -49,24 +51,22 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(_texture, new Rectangle((int)_position.X, (int)_position.Y, (int)_width,(int)_height), new Rectangle(0, 0, (int)_width, (int)_height),
-                Color.White, this.TextureRotation, new Vector2(_width / 2, _height / 2), SpriteEffects.None, this._zLayer);
+                this._tint, this.TextureRotation, this._origin, SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(this._texture, new Rectangle((int)(Position.X), (int)(Position.Y), (int)_width, (int)_height),
-                new Rectangle(0, 0, (int)_width, (int)_height), this.Tint, this.Body.Rotation, new Vector2(_width, _height) * 0.5f, SpriteEffects.None, zLayer);
+                new Rectangle(0, 0, (int)_width, (int)_height), this._tint, this.Body.Rotation, this._origin, SpriteEffects.None, this._zLayer);
         }
 #endif
         #endregion
 
         #region Private Methods
-
+#if !EDITOR
         protected override void SetupPhysics(World world)
         {
-#if EDITOR
 
-#else
             this.Body = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(5), ConvertUnits.ToSimUnits(5), 3, ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Static;
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
@@ -77,15 +77,12 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
             this.Body.CollisionCategories = Category.Cat20;
             this.Body.CollisionCategories = Category.All & ~Category.Cat20;
-#endif
+
         }
 
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-#if EDITOR
-            return true;
-#else
             if (!TouchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
             {
                 TouchingFixtures.Add(fixtureB);
@@ -93,22 +90,17 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 
             return true;
-#endif
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-#if EDITOR
-
-#else
             if (TouchingFixtures.Contains(fixtureB))
             {
                 TouchingFixtures.Remove(fixtureB);
             }
-#endif
         }
         #endregion
-
+#endif
         #endregion
     }
 }

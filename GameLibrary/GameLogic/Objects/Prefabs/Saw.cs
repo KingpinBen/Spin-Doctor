@@ -52,8 +52,7 @@ namespace GameLibrary.GameLogic.Objects
         private Texture2D _bloodiedTexture;
         private List<Fixture> TouchingFixtures = new List<Fixture>();
         //private Vector2 
-        private bool _touched = false;
-        private float _decalRotation;        
+        private bool _touched = false;     
 #endif
         #endregion
 
@@ -228,10 +227,9 @@ namespace GameLibrary.GameLogic.Objects
 
         #region Private Methods
 
+#if !EDITOR
         protected override void SetupPhysics(World world)
         {
-#if EDITOR
-#else
             this.Body = BodyFactory.CreateCircle(world,
                 ConvertUnits.ToSimUnits((this._texture.Width * 0.5f) * _scale),
                 ConvertUnits.ToSimUnits(_mass));
@@ -248,14 +246,11 @@ namespace GameLibrary.GameLogic.Objects
 
             this.Body.CollisionCategories = Category.Cat20;
             this.Body.CollidesWith = Category.All & ~Category.Cat20;
-#endif
+
         }
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-#if EDITOR
-            return true;
-#else
             if (!TouchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
             {
                 TouchingFixtures.Add(fixtureB);
@@ -268,17 +263,13 @@ namespace GameLibrary.GameLogic.Objects
             }
 
             return true;
-#endif
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-#if EDITOR
-
-#else
             TouchingFixtures.Remove(fixtureB);
-#endif
         }
+#endif
 
         #endregion
     }

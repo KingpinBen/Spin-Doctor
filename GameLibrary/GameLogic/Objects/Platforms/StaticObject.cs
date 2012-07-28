@@ -47,20 +47,20 @@ namespace GameLibrary.GameLogic.Objects
     {
         #region Fields
         [ContentSerializer]
-        protected float _width;
+        protected float _width = 0.0f;
         [ContentSerializer]
-        protected float _height;
+        protected float _height = 0.0f;
         [ContentSerializer]
-        protected float _mass;
+        protected float _mass = 0.0f;
         [ContentSerializer]
-        protected string _textureAsset;
+        protected string _textureAsset = String.Empty;
 
         [ContentSerializer]
-        protected Color _tint;
+        protected Color _tint = Color.White;
         [ContentSerializer]
-        protected float _rotation;
+        protected float _rotation = 0;
         [ContentSerializer]
-        protected Orientation _orientation;
+        protected Orientation _orientation = Orientation.Up;
 
         // Can't serialize Texture2D files. Texture is init'd in Load() anyway.
         protected Texture2D _texture;
@@ -123,7 +123,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             get
             {
-                return new Vector2(this.Width / 2, this.Height / 2);
+                return new Vector2(this.Width, this.Height) * 0.5f;
             }
             protected set
             {
@@ -324,23 +324,22 @@ namespace GameLibrary.GameLogic.Objects
         }       
 #endif
         #endregion
-        
-        #region Constructors
-        public StaticObject()
-            : base()
-        {
 
-        }
+        public StaticObject() : base() { }
 
         public virtual void Init(Vector2 position, string tex)
         {
-            this._position = position;
+            base.Init(position);
+
+            //  Set the texture
             this._textureAsset = tex;
-            this._tint = Color.White;
+
+            //  Behind the player.
             this._zLayer = 0.5f;
+
+            //  Static objects are given high mass for collision calculations.
             this._mass = 1000.0f;
         }
-        #endregion
 
         public override void Load(ContentManager content, World world)
         {
@@ -361,6 +360,7 @@ namespace GameLibrary.GameLogic.Objects
 #else
 
             SetupPhysics(world);
+            this.RegisterObject();
 #endif
         }
 
@@ -404,7 +404,10 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.Friction = 5.0f;
 #endif
         }
+#if EDITOR
 
+#else
+        
         #region Collisions
         protected virtual bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
@@ -415,7 +418,35 @@ namespace GameLibrary.GameLogic.Objects
         {
 
         }
+        
+
         #endregion
+
+        #region Events
+
+        public override void Enable()
+        {
+            this.Body.Enabled = true;
+        }
+
+        public override void Disable()
+        {
+            this.Body.Enabled = false;
+        }
+
+        public override void Toggle()
+        {
+            this.Body.Enabled = !this.Body.Enabled;
+        }
+
+        public override Body GetBody()
+        {
+            return this.Body;
+        }
+
+        #endregion
+
+#endif
 
         protected virtual void GetRotationFromOrientation()
         {

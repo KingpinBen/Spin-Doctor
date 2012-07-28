@@ -390,6 +390,9 @@ namespace GameLibrary.GameLogic.Objects
         }
 
         #region Collisions
+
+        #if EDITOR
+#else
         /// <summary>
         /// When the player separates from the body we'll need to set the player as 
         /// out of range of the body and disconnect the player from it. We'll need to disconnect
@@ -397,8 +400,7 @@ namespace GameLibrary.GameLogic.Objects
         /// </summary>
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-#if EDITOR
-#else
+
             //  Whichever body just separated, remove it form the list.
             TouchingBodies.Remove(fixtureB);
 
@@ -411,15 +413,13 @@ namespace GameLibrary.GameLogic.Objects
             //  Initiate disconnecting the player.
             _inGrabbingRange = false;
             DisconnectPlayer();
-#endif
+
         }
         /// <summary>
         /// Set the player in range to enable climbing
         /// </summary>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-#if EDITOR
-#else
             //  If the list doesn't already have this fixture as touching the Body, add it.
             if (!TouchingBodies.Contains(fixtureB))
             {
@@ -435,9 +435,9 @@ namespace GameLibrary.GameLogic.Objects
             {
                 _inGrabbingRange = true;
             }
-#endif
             return true;
         }
+#endif
         #endregion
 
         #endregion

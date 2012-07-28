@@ -149,10 +149,10 @@ namespace GameLibrary.GameLogic.Objects
 #endif
 
         #region Collisions
+#if !EDITOR
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
-#if EDITOR
-#else
+
             if (fixtureB != Player.Instance.WheelBody.FixtureList[0])
             {
                 return false;
@@ -162,9 +162,10 @@ namespace GameLibrary.GameLogic.Objects
             {
                 lastTouched = 0.0f;
             }
-#endif
+
             return true;
         }
+#endif
         #endregion
     }
 }

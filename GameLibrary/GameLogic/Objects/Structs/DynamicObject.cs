@@ -211,7 +211,8 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
-        #region Constructor
+        #region Constructor and Initialization
+
         public DynamicObject()
             : base()
         {
@@ -229,6 +230,7 @@ namespace GameLibrary.GameLogic.Objects
             this._startsMoving = true;
             this._endPosition = position + new Vector2(200, 0);
         }
+
         #endregion
 
         public override void Load(ContentManager content, World world)
@@ -358,11 +360,15 @@ namespace GameLibrary.GameLogic.Objects
         }
         #endregion
 
-        public void ToggleMotor()
-        {
-#if EDITOR
 
-#else
+
+        #endregion
+
+        #region Events
+
+#if !EDITOR
+        public override void Toggle()
+        {
             if (_isMoving)
             {
                 this._prismaticJoint.MotorSpeed = 0.0f;
@@ -371,9 +377,20 @@ namespace GameLibrary.GameLogic.Objects
             {
                 this._prismaticJoint.MotorSpeed = _motorSpeed;
             }
-#endif
         }
 
+        public override void Start()
+        {
+            this._prismaticJoint.MotorSpeed = _motorSpeed;
+        }
+
+        public override void Stop()
+        {
+            this._prismaticJoint.MotorSpeed = 0.0f;
+        }
+
+        
+#endif
         #endregion
 
     }

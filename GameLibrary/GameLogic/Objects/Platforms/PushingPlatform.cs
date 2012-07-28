@@ -63,7 +63,7 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer]
         private float _timePulsing;
         [ContentSerializer]
-        private Vector2 _triggerOffset;
+        private Vector2 _triggerOffset = Vector2.Zero;
 
         #endregion
 
@@ -221,7 +221,19 @@ namespace GameLibrary.GameLogic.Objects
             }
 #else
             this.SetupTrigger(world);
-            this.CreateSprite(content);
+
+            #region Setup the steam sprite
+            _exhaustSprite = new Sprite();
+            _exhaustSprite.Init(ConvertUnits.ToDisplayUnits(this.Body.Position) + SpinAssist.ModifyVectorByOrientation(new Vector2(0, _triggerHeight * 0.5f), _orientation));
+            _exhaustSprite.SetTexture(content.Load<Texture2D>(_exhaustTextureAsset));
+            _exhaustSprite.Alpha = 0.4f;
+            _exhaustSprite.AlphaDecay = 0.01f;
+            _exhaustSprite.ZLayer = this._zLayer + 0.01f;
+            _exhaustSprite.Scale = 0.3f;
+            _exhaustSprite.RotationSpeed = 0.001f;
+            _exhaustSprite.ScaleFactor = SpinAssist.GetRandom(0.0005f, 0.01f);
+            #endregion
+
 #endif
         }
 
@@ -229,9 +241,14 @@ namespace GameLibrary.GameLogic.Objects
         {
 #if EDITOR
 #else
+            if (!this.Body.Enabled)
+            {
+                return;
+            }
+
             _elapsed += delta;
 
-            if (Triggered)
+            if (_triggered)
             {
                 //  While it's triggered, we want to make some sprites come out of it.
                 createDelay -= delta;
@@ -279,11 +296,6 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(this._texture, this._position, null, this._tint, this._rotation, this._origin, 1f, SpriteEffects.None, this._zLayer);
-
-#if Development
-            sb.DrawString(Fonts.DebugFont, "Count: " + TouchingFixtures.Count, this.Position + new Vector2(0, 50), Color.Red);
-            base.Draw(sb);
-#endif
         }
 #endif
         #endregion
@@ -320,20 +332,6 @@ namespace GameLibrary.GameLogic.Objects
 
 #if !EDITOR
 
-        private void CreateSprite(ContentManager Content)
-        {
-            _exhaustSprite = new Sprite();
-            _exhaustSprite.Init(ConvertUnits.ToDisplayUnits(this.Body.Position) + SpinAssist.ModifyVectorByOrientation(new Vector2(0, _triggerHeight * 0.5f), _orientation));
-            _exhaustSprite.SetTexture(Content.Load<Texture2D>(_exhaustTextureAsset));
-            _exhaustSprite.Alpha = 0.4f;
-            _exhaustSprite.AlphaDecay = 0.01f;
-            _exhaustSprite.ZLayer = this._zLayer + 0.01f;
-            _exhaustSprite.Scale = 0.3f;
-            _exhaustSprite.RotationSpeed = 0.001f;
-            _exhaustSprite.ScaleFactor = SpinAssist.GetRandom(0.0005f, 0.01f);
-            _exhaustSprite.Tint = Color.White;
-        }
-
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
             TouchingFixtures.Remove(fixtureB);
@@ -359,6 +357,7 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.OnSeparation += Body_OnSeparation;
         }
 
+        #region Apply the force
         /// <summary>
         /// Apply the force to the player.
         /// </summary>
@@ -391,9 +390,11 @@ namespace GameLibrary.GameLogic.Objects
                 TouchingFixtures[i].Body.ApplyForce(dir);
             }
         }
+#endregion
 
+        #region Add + Randomize sprite
         /// <summary>
-        /// Add a steam sprite that is expelled from the platform.
+        /// Add and randomize a steam sprite that is expelled from the platform.
         /// </summary>
         private void AddSprite()
         {
@@ -412,10 +413,23 @@ namespace GameLibrary.GameLogic.Objects
             //  How long should it wait before expelling another steam sprite.
             createDelay = 0.07f;
         }
+        #endregion
 
 
 #endif
+        #endregion
 
+        #region Events
+
+#if !EDITOR
+        public override void Disable()
+        {
+            base.Disable();
+
+            //  Incase it's triggered, turn it off.
+            this._triggered = false;
+        }
+#endif
         #endregion
     }
 }
