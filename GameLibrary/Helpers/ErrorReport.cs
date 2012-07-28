@@ -7,6 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Windows.Forms;
 using GameLibrary.GameLogic;
+using GameLibrary.GameLogic.Events;
 
 namespace GameLibrary.Helpers
 {
@@ -42,24 +43,19 @@ namespace GameLibrary.Helpers
 					frame.GetMethod().Name
 				});
             }
-            textWriter.WriteLine("\n");
-            textWriter.WriteLine("Dev:\nPlayer Position : {0}.\nState: {1}.\nFPS:{2}", new object[] 
-            {
-                ConvertUnits.ToDisplayUnits(Player.Instance.Body.Position), 
-                Player.Instance.PlayerState.ToString(),
-                DevDisplay.Instance.FPS.ToString()
-            });
 
             textWriter.Close();
             textWriter.Dispose();
+
+            MessageBox.Show("Uh oh, you've crashed.\nAn error report has been put alongside this executable.");
+
             if (!Debugger.IsAttached)
             {
                 Process.GetCurrentProcess().Kill();
             }
 
-            MessageBox.Show("Uh oh, you've crashed.\nAn error report has been put alongside this executable.");
-
-            //ScreenManager.ExitGame();
+            //  ...don't judge me. I'm desperate.
+            EventManager.Instance.GameScreen.ScreenManager.Game.Exit();
         }
     }
 }
