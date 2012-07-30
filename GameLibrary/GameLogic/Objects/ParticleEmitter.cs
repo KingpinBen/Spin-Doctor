@@ -19,19 +19,18 @@ namespace GameLibrary.GameLogic.Objects
         
 #if EDITOR
         private Texture2D _devTexture;
-        private int _devHeight = 35;
-        private int _devWidth = 35;
+        private Texture2D _arrow;
+        private int _devHeight;
+        private int _devWidth;
 #else
         List<Particle> _particles;
         Queue<Particle> _queuedParticles;
         float _elapsed = 0.0f;
         Texture2D _texture;
         World _world;
+        Vector2 _velocity;
 #endif
 
-
-        [ContentSerializer]
-        bool _isActive = true;
         [ContentSerializer]
         bool _useGravity = true;
         [ContentSerializer]
@@ -40,9 +39,9 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer]
         float _timeNewParticle;
         [ContentSerializer]
-        float _minSpawnAngle;
+        float _minSpawnAngle = 0;
         [ContentSerializer]
-        float _maxSpawnAngle;
+        float _maxSpawnAngle = 360;
         [ContentSerializer]
         float _gravityModifier = 1.0f;
         [ContentSerializer]
@@ -50,16 +49,44 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer]
         float _maxLifeTime = 2.0f;
         [ContentSerializer]
-        int _particleCount;
+        int _particleCount = 30;
         [ContentSerializer]
-        int _minParticles;
+        int _minParticles = 5;
         [ContentSerializer]
-        int _maxParticles;
+        int _maxParticles = 20;
+        [ContentSerializer]
+        float _minSpeed = 10;
+        [ContentSerializer]
+        float _maxSpeed = 100;
         #endregion
 
         #region Properties
 
 #if EDITOR
+        [ContentSerializerIgnore]
+        public float SpeedMin
+        {
+            get
+            {
+                return _minSpeed;
+            }
+            set
+            {
+                _minSpeed = value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public float SpeedMax
+        {
+            get
+            {
+                return _maxSpeed;
+            }
+            set
+            {
+                _maxSpeed = value;
+            }
+        }
         [ContentSerializerIgnore]
         public int MaxParticles
         {
@@ -81,19 +108,7 @@ namespace GameLibrary.GameLogic.Objects
             }
             set
             {
-                _maxParticles = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public bool StartActive
-        {
-            get
-            {
-                return _isActive;
-            }
-            set
-            {
-                _isActive = value;
+                _minParticles = value;
             }
         }
         [ContentSerializerIgnore]
@@ -106,7 +121,7 @@ namespace GameLibrary.GameLogic.Objects
             set
             {   
                 //  Approx. 1/60
-                _timeNewParticle = value * 0.017f;
+                _timeNewParticle = value / 60;
             }
         }
         [ContentSerializerIgnore]
@@ -168,7 +183,7 @@ namespace GameLibrary.GameLogic.Objects
             }
             set
             {
-                _minSpawnAngle = value;
+                _minSpawnAngle = MathHelper.Clamp(value, 0, 360);
             }
         }
         [ContentSerializerIgnore]
@@ -180,7 +195,7 @@ namespace GameLibrary.GameLogic.Objects
             }
             set
             {
-                _maxSpawnAngle = value;
+                _maxSpawnAngle = MathHelper.Clamp(value, 0, 360);
             }
         }
 #else
@@ -199,20 +214,21 @@ namespace GameLibrary.GameLogic.Objects
             this._position = position;
             this._timeNewParticle = 1 / 60;
             this._textureAsset = texAsset;
-            this._maxParticles = 60;
-            this._minParticles = 10;
         }
 
         public override void Load(ContentManager content, World world)
         {
 #if EDITOR
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
+            _arrow = content.Load<Texture2D>("Assets/Other/Dev/arrow");
+
+            _devHeight = _devTexture.Height;
+            _devWidth = _devTexture.Width;
 #else
-            this._texture = content.Load<Texture2D>(FileLoc.BlankPixel());
-            this._particleCount = 10;
+            this._texture = content.Load<Texture2D>("Assets/Images/Effects/droplet");
             this._particles = new List<Particle>(_particleCount);
             this._queuedParticles = new Queue<Particle>(_particleCount);
-
+            this.RegisterObject();
             this._world = world;
 
             for (int i = 0; i < _particleCount; i++)
@@ -228,9 +244,8 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-            if (!_isActive) return;
-
             _elapsed += delta;
+            //_velocity = this._position;
 
             for (int i = _particles.Count - 1; i >= 0; i--)
             {
@@ -250,10 +265,13 @@ namespace GameLibrary.GameLogic.Objects
                 }
             }
 
-            if (_elapsed >= _timeNewParticle)
+            if (_enabled)
             {
-                AddParticle();
-                _elapsed = 0.0f;
+                if (_elapsed >= _timeNewParticle)
+                {
+                    AddParticle();
+                    _elapsed = 0.0f;
+                }
             }
 #endif
         }
@@ -262,11 +280,21 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_devTexture, this._position, new Rectangle(0,0,_devWidth, _devHeight), Color.White * 0.7f, 0.0f, new Vector2(_devTexture.Width / 2, _devTexture.Height/ 2), 1.0f, SpriteEffects.None, _zLayer); 
+            sb.Draw(_devTexture, this._position, new Rectangle(0,0,_devWidth, _devHeight), Color.White * 0.7f, 0.0f, new Vector2(_devTexture.Width / 2, _devTexture.Height/ 2), 1.0f, SpriteEffects.None, _zLayer);
+
+            float max = MathHelper.ToRadians(_maxSpawnAngle);
+            float min = MathHelper.ToRadians(_minSpawnAngle);
+            float result = max- min;
+
+            sb.Draw(_arrow, this._position, null, Color.White, max , new Vector2(0, _arrow.Height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
+            sb.Draw(_arrow, this._position, null, Color.White, min, new Vector2(0, _arrow.Height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
+            sb.Draw(_arrow, this._position, null, Color.Black, min + (result * 0.5f), new Vector2(0, _arrow.Height) * 0.5f, 0.75f, SpriteEffects.None, _zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
+            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "Parts:" + _particles.Count, this.Position, Color.White);
+            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "Queue:" + _queuedParticles.Count , this.Position + new Vector2(0,15), Color.White);
             for (int i = 0; i < _particles.Count; i++)
             {
                 if (!_particles[i].Alive)
@@ -274,7 +302,7 @@ namespace GameLibrary.GameLogic.Objects
                     continue;
                 }
 
-                sb.Draw(_texture, _particles[i].Position, null, Color.CornflowerBlue, 0.0f, Vector2.Zero, 10.0f, SpriteEffects.None, 0.4f);
+                sb.Draw(_texture, _particles[i].Position, null, Color.CornflowerBlue, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.4f);
             }
         }
 #endif
@@ -288,17 +316,21 @@ namespace GameLibrary.GameLogic.Objects
 #else
             int numParticles = SpinAssist.GetRandom(_minParticles, _maxParticles);
 
-            for (int i = 0; i < numParticles; i++)
+            for (int j = 0; j < numParticles; j++)
             {
-                try
+                if (_queuedParticles.Count == 0)
                 {
-                    Particle particle = _queuedParticles.Dequeue();
-                    SetupParticle(particle);
+                    for (int i = 0; i < numParticles; i++)
+                    {
+                        Particle p = new Particle();
+                        _particles.Add(p);
+                        _queuedParticles.Enqueue(p);
+
+                    }
                 }
-                catch (IndexOutOfRangeException e)
-                {
-                    ErrorReport.GenerateReport("A particle emitter tried making more particles than it could hold. OOR\n" + e.ToString(), null);
-                }
+
+                Particle particle = _queuedParticles.Dequeue();
+                SetupParticle(particle);
             }
 #endif
         }
@@ -307,10 +339,26 @@ namespace GameLibrary.GameLogic.Objects
         {
 #if EDITOR
 #else
-
+            //  Life
             float life = SpinAssist.GetRandom(_minLifeTime, _maxLifeTime);
+
+            //  Velocity
+            float angle = SpinAssist.GetRandom(this._minSpawnAngle, this._maxSpawnAngle);
+            angle = MathHelper.ToRadians(angle);
+            Vector2 direction = new Vector2((float)Math.Cos(angle), (float)Math.Sin(angle));
+
+            float speed = SpinAssist.GetRandom(this._minSpeed, this._maxSpeed);
+            _velocity = direction * speed;
+
             Vector2 acceleration = Vector2.Zero;
-            particle.Init(this._position, -_world.Gravity, acceleration, life);
+
+            if (_useGravity)
+            {
+                acceleration = _world.Gravity * _gravityModifier;
+            }
+
+            
+            particle.Init(this._position, _velocity, acceleration, life);
 #endif
         }
 
