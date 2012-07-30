@@ -16,10 +16,6 @@
 //--           accuracy on objects entering and leaving the sensor.
 //--    
 //--    
-//--    TBD
-//--    ==============
-//--    Make it work properly with other objects
-//--    
 //--    
 //-------------------------------------------------------------------------------
 
@@ -43,19 +39,19 @@ using GameLibrary.Graphics.UI;
 
 namespace GameLibrary.GameLogic.Objects.Triggers
 {
-    public class Trigger : PhysicsObject
+    public class Trigger : StaticObject
     {
         #region Fields
 
         [ContentSerializer]
-        protected bool _showHelp = false;
+        protected TriggerType _triggerType;
         [ContentSerializer]
         protected float _triggerWidth;
         [ContentSerializer]
         protected float _triggerHeight;
         [ContentSerializer]
         protected string _message = " to use.";
-        [ContentSerializer(Optional=true)]
+        [ContentSerializer]
         private bool _triggerOnce = true;
 
 #if EDITOR || Development
@@ -68,7 +64,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         private bool _fired = false;
 #endif
 
-        
 
         #endregion
 
@@ -76,15 +71,15 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
 #if EDITOR
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
-        public virtual bool ShowHelp
+        public virtual TriggerType TriggerType
         {
             get
             {
-                return _showHelp;
+                return _triggerType;
             }
             set
             {
-                _showHelp = value;
+                _triggerType = value;
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
@@ -137,30 +132,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         }
 
 #else
-        [ContentSerializerIgnore]
-        public virtual string Message
-        {
-            get
-            {
-                return _message;
-            }
-            protected set
-            {
-                _message = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public bool ShowHelp
-        {
-            get
-            {
-                return _showHelp;
-            }
-            protected set
-            {
-                _showHelp = value;
-            }
-        }
         [ContentSerializerIgnore]
         public bool Triggered
         {
@@ -237,15 +208,18 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this.TriggerWidth = 200;
             this.TriggerHeight = 200;
             this._position = position;
-            this._showHelp = false;
             this._message = " to use.";
             this._zLayer = 0.5f;
         }
         #endregion
 
-        #region Load
         public override void Load(ContentManager content, World world)
         {
+#if Development && !EDITOR
+            _devTexture = content.Load
+                <Texture2D>(FileLoc.DevTexture());
+#endif
+
 #if EDITOR
             _devTexture = content.Load
                 <Texture2D>(FileLoc.DevTexture());
@@ -256,32 +230,13 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 this.Height = TriggerHeight;
             }
 #else
-#if Development
-            _devTexture = content.Load
-                <Texture2D>(FileLoc.DevTexture());
-#endif
-
-            //  Adds a space if there isn't one. Used to place the words correctly in the hud.
-            //  Should really go in the editor... Remind Sam.
-            if (ShowHelp)
-            {
-                if (_message.Length == 0)
-                {
-                    _message = " FORGOTTEN TO PLACE A MESSAGE.";
-                }
-
-                if (_message[0] != ' ')
-                {
-                    _message.Insert(0, " ");
-                }
-            }
-
             this.Triggered = false;
             this.RegisterObject();
             this.SetupTrigger(world);
 #endif
+
+
         }
-        #endregion
 
         public override void Update(float delta)
         {
@@ -294,7 +249,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 
             //  First check if it's been enabled.
-            if (this.Body.Enabled && _triggered)
+            if (_enabled && _triggered)
             {
                 //  Fire off all the events.
                 this.FireEvent();
@@ -331,10 +286,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #endif
         #endregion
 
-        #region Protected/Private Methods
+        #region Private Methods
 
 #if !EDITOR
-#region Collisions
+
+        #region Collisions
         /// <summary>
         /// Event handler on collision
         /// 
@@ -364,9 +320,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 this.Triggered = true;
 
-                if (this.ShowHelp)
+                if (_triggerType == TriggerType.PlayerInput)
                 {
-                    HUD.Instance.ShowOnScreenMessage(true, Message);
+                    HUD.Instance.ShowOnScreenMessage(true, _message);
                 }
             }
 
@@ -385,9 +341,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             if (TouchingFixtures.Count == 0)
             {
                 //  so turn it off.
-                this.Triggered = false;
+                this._triggered = false;
 
-                if (this.ShowHelp && HUD.Instance.ShowPopup)
+                if (_triggerType == TriggerType.PlayerInput && HUD.Instance.ShowPopup)
                 {
                     HUD.Instance.ShowOnScreenMessage(false);
                 }
@@ -396,16 +352,46 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         #endregion
 
-        #region Setup Trigger
         protected virtual void SetupTrigger(World world)
         {
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_triggerWidth), ConvertUnits.ToSimUnits(_triggerHeight), 0f);
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), 0f);
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);
             this.Body.IsSensor = true;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+
+            this.Body.Enabled = _enabled;
+
+            if (_triggerType == TriggerType.Automatic)
+            {
+
+            }
+            else
+            {
+                if (_message.Length == 0)
+                {
+                    _message = " FORGOTTEN TO PLACE A MESSAGE.";
+                }
+
+                if (_message[0] != ' ')
+                {
+                    _message.Insert(0, " ");
+                }
+            }
         }
-        #endregion
+
+        public override void Enable()
+        {
+            base.Enable();
+            this._triggered = false;
+        }
+
+        public override void Disable()
+        {
+            base.Disable();
+            this._triggered = false;
+        }
+
 #endif
 
         #endregion
