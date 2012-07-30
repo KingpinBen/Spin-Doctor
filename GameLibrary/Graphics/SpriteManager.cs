@@ -180,7 +180,8 @@ namespace GameLibrary.Graphics
         /// </summary>
         public void Clear()
         {
-            _spriteList = new List<Sprite>();
+            this._spriteList = new List<Sprite>();
+            this._spritesToDraw = new List<Sprite>();
         }
 
         #endregion
