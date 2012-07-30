@@ -29,28 +29,34 @@ namespace GameLibrary.GameLogic.Screens
     {
         #region Fields
 
-        int _currentLevelID;
+        private ContentManager _content;
 
-        public World World
-        {
-            get
-            {
-                return _world;
-            }
-        }
-        World _world = new World(Vector2.Zero);
-        public Level Level
-        {
-            get
-            {
-                return _level;
-            }
-            set
-            {
-                _level = value;
-            }
-        }
-        Level _level;
+        private World _world = new World(Vector2.Zero);
+
+        private Level _level;
+
+        private int _currentLevelID;
+
+        private float pauseAlpha;
+
+        private InputAction pauseAction;
+
+        private Effect _silhouetteEffect;
+        private Effect _alphaEffect;
+
+        private RenderTarget2D rtMask;
+        private RenderTarget2D rtBlur;
+        private RenderTarget2D rtEffect;
+
+        private Texture2D _objectsTexture;
+        private Texture2D _shadowTexture;
+
+        #endregion
+
+        #region Properties
+
+        #region Level ID
+
         public int CurrentLevelID
         {
             get
@@ -64,9 +70,51 @@ namespace GameLibrary.GameLogic.Screens
             }
         }
 
-        float pauseAlpha;
+        public int GetLevelID()
+        {
+            return _currentLevelID;
+        }
 
-        InputAction pauseAction;
+        public void SetLevelID(int id)
+        {
+            this._currentLevelID = id;
+            this.ScreenManager.LoadLevel(this);
+        }
+
+
+        #endregion
+
+        #region Level
+        public Level Level
+        {
+            get
+            {
+                return _level;
+            }
+            set
+            {
+                _level = value;
+            }
+        }
+        #endregion
+
+        #region World
+        public World World
+        {
+            get
+            {
+                return _world;
+            }
+        }
+        #endregion
+
+        public GraphicsDevice GraphicsDevice
+        {
+            get
+            {
+                return this.ScreenManager.GraphicsDevice;
+            }
+        }
 
         #endregion
 
@@ -81,8 +129,64 @@ namespace GameLibrary.GameLogic.Screens
             pauseAction = new InputAction(
                 new Buttons[] { Buttons.Start},
                 new Microsoft.Xna.Framework.Input.Keys[] { Microsoft.Xna.Framework.Input.Keys.Escape },
-                true);          
+                true);
+
+            
+
+            
         }
+
+        public override void Activate()
+        {
+#if EDITOR
+
+#else
+            _content = new ContentManager(this.ScreenManager.Game.Services, "Content");
+
+            //  Initiate and setup the level class.
+            //  Load level in a moment
+            Camera.Instance.SetGameplayScreen(this);
+            LoadLevel();
+
+            //  Setup the Hud elements
+            HUD.Instance.Load(this.ScreenManager);
+
+            //  Setup the SpriteManager.
+            SpriteManager.Instance.Load(this.ScreenManager);
+
+            //  Load anything control related
+            InputManager.Instance.Load();
+
+            //  Setup use of shadows if they're enabled.
+            //if (GameSettings.DrawShadows)
+            //{
+                PresentationParameters pp = this.ScreenManager.GraphicsDevice.PresentationParameters;
+
+                rtMask = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
+                rtBlur = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
+                rtEffect = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
+
+                _silhouetteEffect = _content.Load<Effect>("Assets/Other/Effects/MaskEffect");
+                _alphaEffect = _content.Load<Effect>("Assets/Other/Effects/AlphaTexture");
+            //}
+
+
+            //  Simulate something large loading because why not..
+            Thread.Sleep(1000);
+
+            // once the load has finished, we use ResetElapsedTime to tell the game's
+            // timing mechanism that we have just finished a very long frame, and that
+            // it should not try to catch up.
+            ScreenManager.Game.ResetElapsedTime();
+#endif
+
+        }
+
+        public override void Deactivate()
+        {
+            base.Deactivate();
+        }
+
 
         #endregion
 
@@ -148,6 +252,10 @@ namespace GameLibrary.GameLogic.Screens
                 {
                     GameSettings.ToggleDoubleJump();
                 }
+                if (InputManager.Instance.IsNewGpPress(Buttons.DPadUp) || InputManager.Instance.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F8))
+                {
+                    GameSettings.ToggleShadows();
+                }
             }
 #endif
         }
@@ -158,77 +266,75 @@ namespace GameLibrary.GameLogic.Screens
 
 #else
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
-            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.CornflowerBlue, 0, 0);
+            ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Black, 0, 0);
 
-           
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, null, null, Camera.Instance.TransformMatrix());
+            Matrix cameraTransform = Camera.Instance.TransformMatrix();
+
+            if (GameSettings.DrawShadows)
+            {
+                this.GraphicsDevice.SetRenderTarget(rtEffect);
+
+
+                this.GraphicsDevice.Clear(Color.Transparent);
+
+                this.DrawObjects(spriteBatch, SpriteSortMode.Immediate, BlendState.NonPremultiplied, false, true);
+                this._objectsTexture = rtEffect;
+
+                this.GraphicsDevice.SetRenderTarget(rtMask);
+                this.GraphicsDevice.Clear(Color.Transparent);
+
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
+                _silhouetteEffect.CurrentTechnique.Passes[0].Apply();
+                spriteBatch.Draw(_objectsTexture, Vector2.Zero, Color.White);
+                spriteBatch.End();
+
+                _objectsTexture = rtMask;
+
+                this.GraphicsDevice.SetRenderTarget(rtBlur);
+                this.GraphicsDevice.Clear(Color.Transparent);
+
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+                _silhouetteEffect.CurrentTechnique.Passes[1].Apply();
+                spriteBatch.Draw(_objectsTexture, Vector2.Zero, Color.White);
+                spriteBatch.End();
+
+                _objectsTexture = rtBlur;
+            }
+
+            this.GraphicsDevice.SetRenderTarget(null);
+            this.GraphicsDevice.Clear(Color.Black);
+
+            //spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null,
+            //        Matrix.CreateTranslation(new Vector3(-Camera.Instance.Position, 0)) *
+            //        Matrix.CreateRotationZ(bgRotation) *
+            //        Matrix.CreateScale(new Vector3(Camera.Instance.Zoom, Camera.Instance.Zoom, 1)) *
+            //        Matrix.CreateTranslation(new Vector3(ScreenManager.GraphicsDevice.Viewport.Width * 0.5f, ScreenManager.GraphicsDevice.Viewport.Height * 0.5f, 0f)));
+            //{
+            //    Level.DrawBackground(spriteBatch);
+            //}
+            //spriteBatch.End();
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, null, null, cameraTransform);
             Level.DrawBackdrop(spriteBatch);
             spriteBatch.End();
 
             this.DrawObjects(spriteBatch, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
-            
-            
+
+            if (GameSettings.DrawShadows)
+            {
+                spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
+                spriteBatch.Draw(_objectsTexture, Vector2.Zero, Color.White);
+                spriteBatch.End();
+            }
+
             spriteBatch.Begin();
             HUD.Instance.Draw(spriteBatch);
             spriteBatch.End();
-
-
-            // If the game is transitioning on or off, fade it out to black.
-            if (TransitionPosition > 0 || pauseAlpha > 0)
-            {
-                float alpha = MathHelper.Lerp(1f - TransitionAlpha, 1f, pauseAlpha * 0.7f);
-
-                ScreenManager.FadeBackBufferToBlack(alpha);
-            }
-
-            if (SessionSettings.DevelopmentMode)
-            {
-                DevDisplay.Instance.Draw(this.ScreenManager.GraphicsDevice);
-            }
 #endif
         }
 
 
         #endregion
-
-        public override void Activate()
-        {
-            #if EDITOR
-
-#else
-            //  Initiate and setup the level class.
-            //  Load level in a moment
-            //this._level = new Level();
-            //this._level.Load(this);
-            Camera.Instance.SetGameplayScreen(this);
-            LoadLevel();
-
-            //  Setup the Hud elements
-            HUD.Instance.Load(this.ScreenManager);
-
-            //  Setup the SpriteManager.
-            SpriteManager.Instance.Load(this.ScreenManager);
-
-            //  Load anything control related
-            InputManager.Instance.Load();
-
-            
-
-            //  Simulate something large loading because why not..
-            Thread.Sleep(1000);
-
-            // once the load has finished, we use ResetElapsedTime to tell the game's
-            // timing mechanism that we have just finished a very long frame, and that
-            // it should not try to catch up.
-            ScreenManager.Game.ResetElapsedTime();
-#endif
-
-        }
-
-        public override void Deactivate()
-        {
-            base.Deactivate();
-        }
 
 #if !EDITOR
         private void LoadLevel()
@@ -285,36 +391,38 @@ namespace GameLibrary.GameLogic.Screens
 
         }
 
-        void DrawObjects(SpriteBatch spriteBatch, SpriteSortMode sortMode, BlendState blendState, bool drawDecals, bool addAlpha)
+        void DrawObjects(SpriteBatch spriteBatch, SpriteSortMode sortMode, BlendState blendState, bool drawDecals, bool shadowPass)
         {
             Matrix cameraTransform = Camera.Instance.TransformMatrix();
-            GraphicsDevice graphicsDevice = ScreenManager.GraphicsDevice;
+            NodeObject obj = new NodeObject();
 
-            if (cameraTransform == null)
+            spriteBatch.Begin(sortMode, blendState, SamplerState.AnisotropicWrap, null, null, null, cameraTransform);
+            
+            if (shadowPass)
             {
-                spriteBatch.Begin(sortMode, blendState, SamplerState.AnisotropicWrap, null, null);
+                //_alphaEffect.CurrentTechnique.Passes[0].Apply();
             }
-            else
-            {
-                spriteBatch.Begin(sortMode, blendState, SamplerState.LinearWrap, null, null, null, cameraTransform);
-            }
-
-            //if (addAlpha)
-            //{
-            //    alphaEffect.CurrentTechnique.Passes[0].Apply();
-            //}
 
             if (drawDecals)
             {
                 this._level.DecalManager.Draw(spriteBatch);
-                //SpriteManager.Instance.Draw(spriteBatch);
+                SpriteManager.Instance.Draw(spriteBatch);
             }
 
             Player.Instance.Draw(spriteBatch);
 
             for (int i = 0; i < Level.ObjectsList.Count; i++)
             {
-                Level.ObjectsList[i].Draw(spriteBatch, graphicsDevice);
+                obj = Level.ObjectsList[i];
+
+                //  If it is the shadow pass and the object doesn't cast 
+                //  shadows, move on.
+                if (shadowPass && !obj.CastShadows)
+                {
+                    continue;
+                }
+
+                obj.Draw(spriteBatch, GraphicsDevice);
             }
 
             spriteBatch.End();
