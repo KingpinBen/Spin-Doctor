@@ -54,6 +54,15 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Properties
 #if EDITOR
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public override TriggerType TriggerType
+        {
+            get
+            {
+                return _triggerType;
+            }
+            set { }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public int NextLevel
         {
             get
@@ -85,6 +94,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 return base.TriggerWidth;
             }
+            set { }
         }
         [ContentSerializerIgnore, CategoryAttribute("Hidden")]
         public override float TriggerHeight
@@ -93,19 +103,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 return base.TriggerHeight;
             }
+            set { }
         }
-        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
-        public new bool ShowHelp
-        {
-            get
-            {
-                return _showHelp;
-            }
-            internal set
-            {
-                _showHelp = value;
-            }
-        }
+
 #else
 
 #endif
@@ -123,7 +123,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             base.Init(position);
             this._nextLevel = 0;
             this._textureAsset = texLoc;
-            this._showHelp = true;
             this._triggerHeight = this._triggerWidth = 30;
         }
         #endregion
@@ -230,7 +229,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 this.Triggered = true;
             }
 
-            if (this.ShowHelp && !HUD.Instance.ShowPopup) 
+            if (_triggerType == TriggerType.PlayerInput && !HUD.Instance.ShowPopup) 
             {
                 HUD.Instance.ShowOnScreenMessage(true, " to use.");
             }
@@ -271,6 +270,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this.Body.OnCollision += Body_OnCollision;
             
             this.Body.IsSensor = true;
+            this.Body.Enabled = _enabled;
             //this.Body.CollisionCategories = Category.Cat10;
         }
 
