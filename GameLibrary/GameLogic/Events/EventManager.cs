@@ -6,6 +6,7 @@ using GameLibrary.GameLogic.Screens;
 using GameLibrary.GameLogic.Objects;
 using GameLibrary.GameLogic.Objects.Triggers;
 using GameLibrary.Helpers;
+using GameLibrary.Graphics.Camera;
 
 namespace GameLibrary.GameLogic.Events
 {
@@ -208,6 +209,24 @@ namespace GameLibrary.GameLogic.Events
 
                         break;
                     }
+                case EventType.ROTATE_CCW90:
+                    {
+                        Camera.Instance.ForceRotateLeft();
+                    }
+
+                    break;
+                case EventType.ROTATE_CW90:
+                    {
+                        Camera.Instance.ForceRotateRight();
+                    }
+
+                    break;
+                case EventType.ROTATE_180:
+                    {
+                        Camera.Instance.ForceRotateHalf();
+                    }
+
+                    break;
                 default:
                     break;
             }
