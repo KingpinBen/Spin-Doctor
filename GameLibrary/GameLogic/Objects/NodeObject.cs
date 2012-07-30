@@ -26,6 +26,8 @@ namespace GameLibrary.GameLogic.Objects
         protected float _zLayer = 0.6f;
         [ContentSerializer(Optional = true)]
         protected List<Event> _objectEvents = new List<Event>();
+        [ContentSerializer(Optional = true)]
+        protected bool _castShadows;
 
         #endregion
 
@@ -45,6 +47,18 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
+        public virtual bool CastShadow
+        {
+            get
+            {
+                return _castShadows;
+            }
+            set
+            {
+                _castShadows = value;
+            }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("General")]
         public bool Enabled
         {
             get
@@ -58,7 +72,7 @@ namespace GameLibrary.GameLogic.Objects
         }
 
         [ContentSerializerIgnore, CategoryAttribute("General")]
-        public Vector2 Position
+        public virtual Vector2 Position
         {
             get
             {
@@ -147,6 +161,14 @@ namespace GameLibrary.GameLogic.Objects
                 return this._zLayer;
             }
         }
+        [ContentSerializerIgnore]
+        public bool CastShadows
+        {
+            get
+            {
+                return _castShadows;
+            }
+        }
 #endif
 
         #endregion
@@ -161,7 +183,13 @@ namespace GameLibrary.GameLogic.Objects
             this._position = position;
         }
 
-        public virtual void Load(ContentManager content, World world) { }
+        public virtual void Load(ContentManager content, World world) 
+        {
+#if EDITOR
+#else
+            this.RegisterObject();
+#endif
+        }
 
         public virtual void Update(float delta) { }
 
@@ -213,9 +241,21 @@ namespace GameLibrary.GameLogic.Objects
             EventManager.Instance.FireEvent(this._name);
         }
 
-        public virtual void Toggle() { }
-        public virtual void Enable() { }
-        public virtual void Disable() { }
+        public virtual void Toggle() 
+        {
+            this._enabled = !this._enabled;
+        }
+
+        public virtual void Enable() 
+        {
+            this._enabled = true;
+        }
+
+        public virtual void Disable() 
+        {
+            this._enabled = false;
+        }
+
         public virtual void Start() { }
         public virtual void Stop() { }
         public virtual Body GetBody()
