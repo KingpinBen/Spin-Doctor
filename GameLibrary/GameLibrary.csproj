@@ -125,6 +125,7 @@
     <Compile Include="GameLogic\Objects\IGameObject.cs" />
     <Compile Include="GameLogic\Objects\ObjectShape.cs" />
     <Compile Include="GameLogic\Objects\SpecialBodyFlags.cs" />
+    <Compile Include="GameLogic\Objects\Triggers\TriggerType.cs" />
     <Compile Include="GameLogic\PlayerState.cs" />
     <Compile Include="GameLogic\Screens\GameplayScreen.cs" />
     <Compile Include="GameLogic\Screens\GameScreen.cs" />
@@ -149,7 +150,7 @@
     <Compile Include="Graphics\FontList.cs" />
     <Compile Include="Graphics\FontType.cs" />
     <Compile Include="GameLogic\Controls\Keybindings.cs" />
-    <Compile Include="GameLogic\Objects\Prefabs\NewPiston.cs" />
+    <Compile Include="GameLogic\Objects\Dynamics\NewPiston.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Helpers\ConvertUnits.cs" />
     <Compile Include="Helpers\DevDisplay.cs" />
@@ -176,25 +177,24 @@
     <Compile Include="Levels\LevelBackdrop.cs" />
     <Compile Include="Graphics\DecalManager.cs" />
     <Compile Include="Graphics\SpriteManager.cs" />
-    <Compile Include="GameLogic\Objects\Structs\DynamicObject.cs" />
+    <Compile Include="GameLogic\Objects\Dynamics\DynamicObject.cs" />
     <Compile Include="GameLogic\Objects\NodeObject.cs" />
-    <Compile Include="GameLogic\Objects\Structs\Orientation.cs" />
+    <Compile Include="GameLogic\Objects\Orientation.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\BouncePad.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Collectable.cs" />
     <Compile Include="Levels\Level.cs" />
     <Compile Include="Graphics\Drawing\Sprite.cs" />
-    <Compile Include="GameLogic\Objects\Platforms\CushionedPlatform.cs" />
+    <Compile Include="GameLogic\Objects\Prefabs\CushionedPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Ladder.cs" />
-    <Compile Include="GameLogic\Objects\Platforms\MovingPlatform.cs" />
+    <Compile Include="GameLogic\Objects\Dynamics\MovingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Note.cs" />
-    <Compile Include="GameLogic\Objects\Platforms\OneSidedPlatform.cs" />
-    <Compile Include="GameLogic\Objects\Prefabs\Piston.cs" />
+    <Compile Include="GameLogic\Objects\Prefabs\OneSidedPlatform.cs" />
+    <Compile Include="GameLogic\Objects\Dynamics\Piston.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\PullableObject.cs" />
-    <Compile Include="GameLogic\Objects\Platforms\PushingPlatform.cs" />
+    <Compile Include="GameLogic\Objects\Prefabs\PushingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\RotateRoomButton.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Saw.cs" />
-    <Compile Include="GameLogic\Objects\Structs\RotateDirection.cs" />
-    <Compile Include="GameLogic\Objects\Triggers\ChangeLevelZone.cs" />
+    <Compile Include="GameLogic\Objects\RotateDirection.cs" />
     <Compile Include="GameLogic\Objects\Triggers\Door.cs" />
     <Compile Include="GameLogic\Objects\Triggers\Spike.cs" />
     <Compile Include="GameLogic\Objects\Triggers\Trigger.cs" />
@@ -204,8 +204,8 @@
     <Compile Include="GameLogic\Objects\Prefabs\PhysicsObject.cs" />
     <Compile Include="GameLogic\Player.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Rope.cs" />
-    <Compile Include="GameLogic\Objects\Platforms\RotatingPlatform.cs" />
-    <Compile Include="GameLogic\Objects\Platforms\StaticObject.cs" />
+    <Compile Include="GameLogic\Objects\Dynamics\RotatingPlatform.cs" />
+    <Compile Include="GameLogic\Objects\Prefabs\StaticObject.cs" />
     <Compile Include="GameLogic\GameSettings.cs" />
   </ItemGroup>
   <ItemGroup>
