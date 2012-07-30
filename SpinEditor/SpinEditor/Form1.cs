@@ -191,14 +191,14 @@ namespace SpinEditor
                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(movPlat);
                     }
                     break;
-                //case "Note":
-                //    {
-                //        Note shiny = new Note();
-                //        shiny.Init(Position, texloc0);
-                //        shiny.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(shiny);
-                //    }
-                //    break;
+                case "Note":
+                    {
+                        Note shiny = new Note();
+                        shiny.Init(Position, texloc0);
+                        shiny.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(shiny);
+                    }
+                    break;
                 case "One-Sided Platform":
                     {
                         OneSidedPlatform oneSidePlat = new OneSidedPlatform();
@@ -263,7 +263,7 @@ namespace SpinEditor
                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rotPlat);
                     }
                     break;
-                case "Saw Blade":
+                case "Saw":
                     {
                         Saw sawBlade = new Saw();
                         sawBlade.Init(Position, texloc0, texloc1);
@@ -423,6 +423,12 @@ namespace SpinEditor
         {
             ViewMenuHideSpawn.Checked = !ViewMenuHideSpawn.Checked;
             xnA_RenderControl1.HidePlayerSpawn = ViewMenuHideSpawn.Checked;
+        }
+
+        void ViewMenuHideEvents_Click(object sender, EventArgs e)
+        {
+            ViewMenuHideEvents.Checked = !ViewMenuHideEvents.Checked;
+            xnA_RenderControl1.HideEventTargets = ViewMenuHideEvents.Checked;
         }
 
         #endregion
@@ -2429,7 +2435,6 @@ namespace SpinEditor
 
         #region Texture List Methods
 
-
         #region Update TextureList to match changed object type
         private void listBox_Classes_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -2479,7 +2484,7 @@ namespace SpinEditor
                 case "Rotating Platform":
                     amountOfTexturesNeeded = 1;
                     break;
-                case "Saw Blade":
+                case "Saw":
                     amountOfTexturesNeeded = 2;
                     break;
                 case "Spikes":
@@ -3117,6 +3122,8 @@ namespace SpinEditor
             }
         }
         #endregion
+
+        
 
         #region Unused
 #if NOTUSED

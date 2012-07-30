@@ -42,12 +42,8 @@ namespace SpinEditor
         string localCoOrds = "";
         string worldCoOrds = "";
 
-        public Texture2D levelBackground { get; set; }
         private Texture2D devCharacter;
-        public Vector2 levelDimensions { get; set; }
-        public ContentManager contentMan { get; set; }
-        public Camera2D Camera { get; set; }
-        public Form1 form1 { get; set; }
+
         public bool bDoNotDraw = false;
 
         #endregion
@@ -59,6 +55,13 @@ namespace SpinEditor
         public bool HideMovementPath { get; set; }
         public bool HideGrid { get; set; }
         public bool HidePlayerSpawn { get; set; }
+        public bool HideEventTargets { get; set; }
+
+        public Vector2 levelDimensions { get; set; }
+        public ContentManager contentMan { get; set; }
+        public Camera2D Camera { get; set; }
+        public Form1 form1 { get; set; }
+        public Texture2D levelBackground { get; set; }
 
         #endregion
 
@@ -86,6 +89,8 @@ namespace SpinEditor
             crosshair = contentMan.Load<Texture2D>("Assets/Other/Dev/9pxCrosshair");
             devCharacter = contentMan.Load<Texture2D>("Assets/Other/Dev/devHarland");
             font = contentMan.Load<SpriteFont>("Assets/Fonts/Debug");
+
+            this.HideEventTargets = true;
 
             //  Setup the grid initially
             RefreshGrid();
@@ -139,6 +144,10 @@ namespace SpinEditor
         /// </summary>
         protected override void Draw()
         {
+            Vector2 offset = new Vector2(((GraphicsDevice.Viewport.Width * 0.5f) / Camera.Zoom) - Camera.Pos.X, ((GraphicsDevice.Viewport.Height * 0.5f) / Camera.Zoom) - Camera.Pos.Y);
+            List<NodeObject> objListCopy = new List<NodeObject>();
+            objListCopy.AddRange(STATIC_EDITOR_MODE.levelInstance.ObjectsList);
+
             if (!bDoNotDraw)
             {
                 UpdateTime();
@@ -151,24 +160,24 @@ namespace SpinEditor
                 #region Draw Generics
                 if (levelBackground != null)
                 {
-                    spriteBatch.Draw(levelBackground, new Rectangle(-(int)levelDimensions.X / 2, -(int)levelDimensions.Y / 2, (int)levelDimensions.X, (int)levelDimensions.Y),
+                    spriteBatch.Draw(levelBackground, new Rectangle(-(int)(levelDimensions.X * 0.5f), -(int)(levelDimensions.Y * 0.5f), (int)levelDimensions.X, (int)levelDimensions.Y),
                         new Rectangle(0, 0, (int)this.levelDimensions.X, (int)this.levelDimensions.Y), Color.White, 0.0f, Vector2.Zero, SpriteEffects.None, 1.0f);
                 }
 
                 if (!HidePlayerSpawn)
                 {
                     spriteBatch.Draw(devCharacter, STATIC_EDITOR_MODE.levelInstance.PlayerSpawnLocation,
-                    null, Color.White, 0.0f, new Vector2(this.devCharacter.Width / 2, this.devCharacter.Height / 2),
+                    null, Color.White, 0.0f, new Vector2(this.devCharacter.Width, this.devCharacter.Height) * 0.5f,
                     0.43f, SpriteEffects.None, 0.3f);
                 }
                 #endregion
 
                 #region Draw PhysicsObjects and Decals
-                if (STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count > 0)
+                if (objListCopy.Count > 0)
                 {
-                    for (int i = STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i > 0; i--)
+                    for (int i = objListCopy.Count; i > 0; i--)
                     {
-                        STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Draw(spriteBatch);
+                        objListCopy[i - 1].Draw(spriteBatch);
 
                         #region Selection Draw
                         if (!HideOverlay && STATIC_EDITOR_MODE.selectedObjectIndices.Count > 0)
@@ -180,13 +189,13 @@ namespace SpinEditor
                                     if (STATIC_EDITOR_MODE.selectedObjectIndices[j].Index == i - 1)
                                     {
                                         spriteBatch.Draw(debugOverlay,
-                                            new Rectangle((int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Position.X - STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Width / 2),
-                                                (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Position.Y - STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Height / 2),
-                                                (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Width),
-                                                (int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Height)),
+                                            new Rectangle((int)(STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Position.X - objListCopy[i - 1].Width * 0.5f),
+                                                (int)(objListCopy[i - 1].Position.Y - objListCopy[i - 1].Height * 0.5f),
+                                                (int)(objListCopy[i - 1].Width),
+                                                (int)(objListCopy[i - 1].Height)),
                                             new Rectangle(0, 0,
-                                                (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Width,
-                                                (int)STATIC_EDITOR_MODE.levelInstance.ObjectsList[i - 1].Height),
+                                                (int)objListCopy[i - 1].Width,
+                                                (int)objListCopy[i - 1].Height),
                                             Color.Green * 0.4f, 0f, Vector2.Zero, SpriteEffects.None, 0.0f);
                                     }
                                 }
@@ -238,7 +247,7 @@ namespace SpinEditor
                 #region Movement paths
                 if (!HideMovementPath)
                 {
-                    Vector2 offset = new Vector2(((GraphicsDevice.Viewport.Width * 0.5f) / Camera.Zoom) - Camera.Pos.X, ((GraphicsDevice.Viewport.Height * 0.5f) / Camera.Zoom) - Camera.Pos.Y);
+                    
                     for (int i = 0; i < STATIC_EDITOR_MODE.levelInstance.ObjectsList.Count; i++)
                     {
                         Type t = STATIC_EDITOR_MODE.levelInstance.ObjectsList[i].GetType();
@@ -252,8 +261,8 @@ namespace SpinEditor
                         else if (t == typeof(Rope))
                         {
                             Rope ropeObj = (Rope)STATIC_EDITOR_MODE.levelInstance.ObjectsList[i];
-                            primBatch.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Green);
-                            primBatch.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Green);
+                            primBatch.AddVertex((ropeObj.Position + offset) * Camera.Zoom, Color.Red);
+                            primBatch.AddVertex((ropeObj.EndPosition + offset) * Camera.Zoom, Color.Red);
                         }
                     }
                 }
@@ -274,6 +283,42 @@ namespace SpinEditor
                         primBatch.AddVertex(new Vector2(GraphicsDevice.Viewport.Width, yOffset + xySpacing * i), Color.White * 0.2f);
                     }
                 }
+                #endregion
+
+                #region Event Targets
+
+                if (!HideEventTargets)
+                {
+                    NodeObject obj = new NodeObject();
+                    NodeObject target = new NodeObject();
+
+                    for (int i = 0; i < objListCopy.Count; i++)
+                    {
+                        obj = objListCopy[i];
+
+                        if (obj.Name != null && obj.Name != "")
+                        {
+                            if (obj.EventList.Count > 0)
+                            {
+                                for (int j = 0; j < obj.EventList.Count; j++)
+                                {
+                                    for(int x = 0; x < objListCopy.Count; x++)
+                                    {
+                                        if (obj.EventList[j].TargetName == objListCopy[x].Name)
+                                        {
+                                            target = objListCopy[x];
+                                            break;
+                                        }
+                                    }
+
+                                    primBatch.AddVertex((obj.Position + offset) * Camera.Zoom, Color.Pink);
+                                    primBatch.AddVertex((target.Position + offset) * Camera.Zoom, Color.Pink);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 #endregion
 
                 primBatch.End();

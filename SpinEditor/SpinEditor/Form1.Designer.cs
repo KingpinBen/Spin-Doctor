@@ -98,8 +98,9 @@ namespace SpinEditor
             this.BUTTON_ALIGN_9 = new System.Windows.Forms.Button();
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
             this.openAssetFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.ViewMenuHideEvents = new System.Windows.Forms.ToolStripMenuItem();
+            this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -215,7 +216,8 @@ namespace SpinEditor
             this.ViewMenuHideGrid,
             this.ViewMenuHideCoordinates,
             this.ViewMenuHideMovementPath,
-            this.ViewMenuHideSpawn});
+            this.ViewMenuHideSpawn,
+            this.ViewMenuHideEvents});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -223,35 +225,35 @@ namespace SpinEditor
             // ViewMenuHideOverlay
             // 
             this.ViewMenuHideOverlay.Name = "ViewMenuHideOverlay";
-            this.ViewMenuHideOverlay.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideOverlay.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideOverlay.Text = "Hide Object Overlay";
             this.ViewMenuHideOverlay.Click += new System.EventHandler(this.ViewMenuHideOverlay_Click);
             // 
             // ViewMenuHideGrid
             // 
             this.ViewMenuHideGrid.Name = "ViewMenuHideGrid";
-            this.ViewMenuHideGrid.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideGrid.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideGrid.Text = "Hide Grid";
             this.ViewMenuHideGrid.Click += new System.EventHandler(this.ViewMenuHideGrid_Click);
             // 
             // ViewMenuHideCoordinates
             // 
             this.ViewMenuHideCoordinates.Name = "ViewMenuHideCoordinates";
-            this.ViewMenuHideCoordinates.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideCoordinates.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideCoordinates.Text = "Hide Coordinates";
             this.ViewMenuHideCoordinates.Click += new System.EventHandler(this.ViewMenuHideCoordinates_Click);
             // 
             // ViewMenuHideMovementPath
             // 
             this.ViewMenuHideMovementPath.Name = "ViewMenuHideMovementPath";
-            this.ViewMenuHideMovementPath.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideMovementPath.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideMovementPath.Text = "Hide Movement Lines";
             this.ViewMenuHideMovementPath.Click += new System.EventHandler(this.ViewMenuHideMovementPath_Click);
             // 
             // ViewMenuHideSpawn
             // 
             this.ViewMenuHideSpawn.Name = "ViewMenuHideSpawn";
-            this.ViewMenuHideSpawn.Size = new System.Drawing.Size(190, 22);
+            this.ViewMenuHideSpawn.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideSpawn.Text = "Hide Player Spawn";
             this.ViewMenuHideSpawn.Click += new System.EventHandler(this.ViewMenuHideSpawn_Click);
             // 
@@ -450,12 +452,14 @@ namespace SpinEditor
             "One-Sided Platform",
             "Particle Emitter",
             "Piston",
+            "New Piston",
             "Pullable Object",
             "Pushing Platform",
+            "Physics Object",
             "Rope",
             "Rotate Room Button",
             "Rotating Platform",
-            "Saw Blade",
+            "Saw",
             "Spikes",
             "Static Object",
             "Trigger"});
@@ -765,6 +769,17 @@ namespace SpinEditor
             this.panel2.Size = new System.Drawing.Size(898, 651);
             this.panel2.TabIndex = 13;
             // 
+            // openAssetFileDialog1
+            // 
+            this.openAssetFileDialog1.FileName = "Select Asset";
+            // 
+            // ViewMenuHideEvents
+            // 
+            this.ViewMenuHideEvents.Name = "ViewMenuHideEvents";
+            this.ViewMenuHideEvents.Size = new System.Drawing.Size(204, 22);
+            this.ViewMenuHideEvents.Text = "Hide Event Objects Lines";
+            this.ViewMenuHideEvents.Click += new System.EventHandler(this.ViewMenuHideEvents_Click);
+            // 
             // xnA_RenderControl1
             // 
             this.xnA_RenderControl1.Camera = null;
@@ -772,6 +787,7 @@ namespace SpinEditor
             this.xnA_RenderControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.xnA_RenderControl1.form1 = null;
             this.xnA_RenderControl1.HideCoordinates = false;
+            this.xnA_RenderControl1.HideEventTargets = false;
             this.xnA_RenderControl1.HideGrid = false;
             this.xnA_RenderControl1.HideMovementPath = false;
             this.xnA_RenderControl1.HideOverlay = false;
@@ -786,10 +802,6 @@ namespace SpinEditor
             this.xnA_RenderControl1.Click += new System.EventHandler(this.xnA_RenderControl1_Click);
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
-            // 
-            // openAssetFileDialog1
-            // 
-            this.openAssetFileDialog1.FileName = "Select Asset";
             // 
             // Form1
             // 
@@ -895,6 +907,7 @@ namespace SpinEditor
         private Button assetSelectDialog3;
         private Button assetSelectDialog2;
         private GroupBox groupBox1;
+        private ToolStripMenuItem ViewMenuHideEvents;
 
 
     }
