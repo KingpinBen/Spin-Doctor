@@ -37,6 +37,7 @@ using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Objects.Triggers;
+using System.ComponentModel;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -60,7 +61,17 @@ namespace GameLibrary.GameLogic.Objects
         #region Properties
 
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public override TriggerType TriggerType
+        {
+            get
+            {
+                return _triggerType;
+            }
+            set { }
+        }
+
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public RotateDirection RotationDirection
         {
             get
@@ -73,7 +84,7 @@ namespace GameLibrary.GameLogic.Objects
                 enumDirection = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public override string Message
         {
             get
@@ -84,7 +95,7 @@ namespace GameLibrary.GameLogic.Objects
             {
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public float DelayBeforeRotation
         {
             get
@@ -97,15 +108,6 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
 #else
-        [ContentSerializerIgnore]
-        public override string Message
-        {
-            get
-            {
-                return _message;
-            }
-            protected set { }
-        }
         [ContentSerializerIgnore]
         public bool AboutToRotate
         {
@@ -149,6 +151,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
             this._origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
+            this._triggerType = TriggerType.PlayerInput;
 
 #if EDITOR
             if (_width == 0 || _height == 0)
@@ -161,6 +164,7 @@ namespace GameLibrary.GameLogic.Objects
             this._triggerWidth = this._triggerHeight = this._texture.Width * 0.5f;
 
             SetupTrigger(world);
+            this.RegisterObject();
 #endif
         }
 
@@ -169,21 +173,14 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-            if (!Triggered && !_aboutToRotate)
+            if (!_triggered && !_aboutToRotate)
             {
                 return;
             }
 
-            if (!_aboutToRotate)
+            if (!_aboutToRotate && InputManager.Instance.Interact())
             {
-                if (InputManager.Instance.Interact())
-                {
-                    _aboutToRotate = true;
-                }
-                else
-                {
-                    return;
-                }
+                _aboutToRotate = true;
             }
             else
             {

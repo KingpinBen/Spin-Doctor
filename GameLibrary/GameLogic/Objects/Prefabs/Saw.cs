@@ -181,17 +181,20 @@ namespace GameLibrary.GameLogic.Objects
         public override void Update(float delta)
         {
 #if !EDITOR
-            if (_prismaticJoint.MotorEnabled)
+            if (_enabled)
             {
-                _rotation += 0.3f;
-
-                if (_rotation >= 4)
+                if (_prismaticJoint.MotorEnabled)
                 {
-                    _rotation -= 4;
-                }
-            }
+                    _rotation += 0.3f;
 
-            base.Update(delta);
+                    if (_rotation >= 4)
+                    {
+                        _rotation -= 4;
+                    }
+                }
+
+                base.Update(delta);
+            }
 #endif
         }
 

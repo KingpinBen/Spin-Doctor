@@ -78,7 +78,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         {
             base.Init(Position, texLoc);
 
-            this.ShowHelp = true;
             this._message = " to pick up.";
         }
         #endregion
