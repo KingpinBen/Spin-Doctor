@@ -55,12 +55,14 @@ namespace GameLibrary.GameLogic.Objects
         private Vector2 _endPosition;
         [ContentSerializer]
         private int _chainCount;
+        [ContentSerializer(Optional = true)]
+        private string _endTextureAsset;
 
 #if EDITOR
 #else
         private List<Body> _pathBodies;
         private List<Fixture> _touchedRopeFixtures = new List<Fixture>();
-        private WeldJoint _ropePlayerJoint;
+        private RevoluteJoint _ropePlayerJoint;
         private bool _inRange;
         private RopeJoint _ropeJoint;
         private int _grabbedIndex;
@@ -126,17 +128,18 @@ namespace GameLibrary.GameLogic.Objects
 
         public Rope() : base() { }
 
-        public override void Init(Vector2 StartVec, string texLoc)
+        public void Init(Vector2 StartVec, string texLoc, string texLoc2)
         {
             base.Init(StartVec, texLoc);
 
             this._chainCount = 10;
-            this._textureAsset = texLoc;
+            this._endTextureAsset = texLoc;
+            this._textureAsset = texLoc2;
         }
 
         public override void Load(ContentManager content, World world)
         {
-            endTexture = content.Load<Texture2D>("Assets/Images/Textures/Rope/ropeEnd");
+            endTexture = content.Load<Texture2D>(_endTextureAsset);
             _texture = content.Load<Texture2D>(_textureAsset);
 
 #if EDITOR
@@ -149,6 +152,7 @@ namespace GameLibrary.GameLogic.Objects
 #else
             _world = world;
             SetupPhysics(world);
+            this.RegisterObject();
 #endif
         }
 
@@ -183,7 +187,8 @@ namespace GameLibrary.GameLogic.Objects
 
                     _ropeJoint = new RopeJoint(_pathBodies[0], Player.Instance.Body, Vector2.Zero, Vector2.Zero);
                     _world.AddJoint(_ropeJoint);
-                    _ropePlayerJoint = new WeldJoint(_touchedRopeFixtures[index].Body, Player.Instance.Body, Vector2.Zero, Vector2.Zero);
+
+                    _ropePlayerJoint = new RevoluteJoint(_touchedRopeFixtures[index].Body, Player.Instance.Body, Vector2.Zero, Vector2.Zero);
                     _world.AddJoint(_ropePlayerJoint);
 
                     Player.Instance.GrabRope();
