@@ -124,9 +124,12 @@ namespace GameLibrary.Graphics
         /// <param name="delta">Elapsed time in seconds</param>
         public void Update(float delta)
         {
+#if EDITOR
+
+#else
             //  As sprites will be getting removed from the list, 
             //  we'll decrement our way through the spritelist.
-            for (int i = this._spriteList.Count - 1; i > 0; i--)
+            for (int i = this._spriteList.Count - 1; i >= 0; i--)
             {
                 //  Update the sprite
                 this._spriteList[i].Update(delta);
@@ -138,6 +141,7 @@ namespace GameLibrary.Graphics
                     this._spriteList.RemoveAt(i);
                 }
             }
+#endif
         }
         #endregion
 
