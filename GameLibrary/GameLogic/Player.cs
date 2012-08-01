@@ -46,6 +46,7 @@ using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Screens;
+using GameLibrary.Graphics.Drawing;
 
 #endregion
 
@@ -58,14 +59,15 @@ namespace GameLibrary.GameLogic
         private static readonly Player playerInstance = new Player();
         private const float _movementSpeed = 16.0f;
         private const float _jumpForce = 4.2f;      // 3.2f - Waist height. Pre 24/5
-        private const float _maxJumpTime = 0.54f;
+        private float _maxJumpTime;
         private const float _maxAirTime = 0.84f;
         private const float _midAirForce = 200.0f;
         private bool _canJump;
         private bool _canDoubleJump;
         private float _grabbingRotation;
         private float _airTime;
-        
+        private Sprite _steamSprite;
+
         #endregion
 
         #region Properties
@@ -90,7 +92,7 @@ namespace GameLibrary.GameLogic
         {
             get
             {
-                return GameSettings.DoubleJumpEnabled;
+                return GameSettings.Instance.DoubleJumpEnabled;
             }
         }
 
@@ -126,6 +128,7 @@ namespace GameLibrary.GameLogic
         public override void Load(Game game, World world, Vector2 position)
         {
             base.Load(game, world, position);
+#if !EDITOR
 
             SetupPlayerSettings();
 
@@ -133,11 +136,26 @@ namespace GameLibrary.GameLogic
             {
                 AddAnimations();
             }
+
+            _steamSprite = new Sprite();
+            _steamSprite.Init(Vector2.Zero, "Assets/Images/Effects/steam");
+            _steamSprite.Load(new ContentManager(game.Services, "Content"), world);
+            _steamSprite.CastShadows = true;
+            _steamSprite.AlphaDecay = 0.05f;
+            _steamSprite.RotationSpeed = 0.1f;
+            _steamSprite.Scale = 0.3f;
+            _steamSprite.ScaleFactor = 0.01f;
+#endif
         }
 
         public override void Update(float delta, World world)
         {
             base.Update(delta, world);
+
+            if (_maxJumpTime == 0 || _maxJumpTime == null)
+            {
+                _maxJumpTime = delta * 16;
+            }
 
             //Keeps the body rotation up, moving with the camera.
             if (Camera.Instance.IsLevelRotating || (this._mainBody.Rotation != (float)-Camera.Instance.Rotation && PlayerState != PlayerState.Swinging))
@@ -238,8 +256,13 @@ namespace GameLibrary.GameLogic
                 //  Player shouldn't be able to initiate a jump if not touching
                 //  the floor, only able to use double jump.
                 this._canJump = false;
-                this.PlayerState = PlayerState.Falling;
+                
                 this.WheelJoint.MotorSpeed = 0.0f;
+
+                if (_playerState != GameLogic.PlayerState.Jumping)
+                {
+                    this.PlayerState = PlayerState.Falling;
+                }
             }
         }
 
@@ -336,7 +359,7 @@ namespace GameLibrary.GameLogic
             this.Body.UserData = "Player";
             this.WheelBody.UserData = "Player";
 
-            if (GameSettings.DoubleJumpEnabled)
+            if (GameSettings.Instance.DoubleJumpEnabled)
             {
                 _canDoubleJump = true;
             }
@@ -398,7 +421,11 @@ namespace GameLibrary.GameLogic
 
                 WheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
                 _canDoubleJump = false;
+
+                CreateSteamPlume();
+
                 this.PlayerState = PlayerState.Jumping;
+                this.CurrentAnimation.ResetCurrentFrame();
             }
         }
 
@@ -604,6 +631,18 @@ namespace GameLibrary.GameLogic
             if (fixture == Body.FixtureList[0] || fixture == WheelBody.FixtureList[0])
                 return true;
             return false;
+        }
+
+        private void CreateSteamPlume()
+        {
+            float rotation = SpinAssist.GetRandom(0, (float)(Math.PI * 2));
+            float alphadecay = SpinAssist.GetRandom(0.01f, 0.1f);
+
+            _steamSprite.Rotation = rotation;
+            _steamSprite.Position = ConvertUnits.ToDisplayUnits(this.Body.Position);
+            _steamSprite.AlphaDecay = alphadecay;
+
+            SpriteManager.Instance.AddSprite((Sprite)_steamSprite.Clone());
         }
     }
 }
