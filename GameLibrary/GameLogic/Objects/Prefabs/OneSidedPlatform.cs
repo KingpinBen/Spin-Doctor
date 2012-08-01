@@ -50,6 +50,9 @@ namespace GameLibrary.GameLogic.Objects
     {
         #region Fields
 
+        [ContentSerializer(Optional = true)]
+        private bool _orientationDependant = false;
+
 #if EDITOR || Development
         protected Texture2D displayTexture;
 #else
@@ -61,6 +64,12 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
         public OneSidedPlatform() : base() { }
+
+        public override void Init(Vector2 position)
+        {
+            this._mass = 1000.0f;
+            base.Init(position);
+        }
 
         public override void Load(ContentManager content, World world)
         {
@@ -139,30 +148,72 @@ namespace GameLibrary.GameLogic.Objects
                     switch (_orientation)
                     {
                         case Orientation.Up:
-                            if (Player.Instance.WheelBody.Position.Y < top - radius * Settings.LinearSlop &&
-                                Camera.Instance.UpIs == UpIs.Up)
+                            if (Player.Instance.WheelBody.Position.Y < top - radius * Settings.LinearSlop)
                             {
-                                contact.Enabled = true;
+                                if (_orientationDependant)
+                                {
+                                    if (Camera.Instance.UpIs == UpIs.Up)
+                                    {
+                                        contact.Enabled = true;
+                                    }
+                                }
+                                else
+                                {
+                                    contact.Enabled = true;
+                                }
                             }
                             break;
                         case Orientation.Down:
-                            if (Player.Instance.WheelBody.Position.Y > top - radius * Settings.LinearSlop &&
-                                Camera.Instance.UpIs == UpIs.Down)
+                            if (Player.Instance.WheelBody.Position.Y > top - radius * Settings.LinearSlop)
                             {
+                                if (_orientationDependant)
+                                {
+                                    if (Camera.Instance.UpIs == UpIs.Down)
+                                    {
+                                        contact.Enabled = true;
+                                    }
+                                }
+                                else
+                                {
+                                    contact.Enabled = true;
+                                }
+
                                 contact.Enabled = true;
                             }
                             break;
                         case Orientation.Left:
-                            if (Player.Instance.WheelBody.Position.X > top - radius * Settings.LinearSlop &&
-                                Camera.Instance.UpIs == UpIs.Left)
+                            if (Player.Instance.WheelBody.Position.X > top - radius * Settings.LinearSlop)
                             {
+                                if (_orientationDependant)
+                                {
+                                    if (Camera.Instance.UpIs == UpIs.Left)
+                                    {
+                                        contact.Enabled = true;
+                                    }
+                                }
+                                else
+                                {
+                                    contact.Enabled = true;
+                                }
+
                                 contact.Enabled = true;
                             }
                             break;
                         case Orientation.Right:
-                            if (Player.Instance.WheelBody.Position.X < top + radius * Settings.LinearSlop &&
-                                Camera.Instance.UpIs == UpIs.Right)
+                            if (Player.Instance.WheelBody.Position.X < top + radius * Settings.LinearSlop)
                             {
+                                if (_orientationDependant)
+                                {
+                                    if (Camera.Instance.UpIs == UpIs.Right)
+                                    {
+                                        contact.Enabled = true;
+                                    }
+                                }
+                                else
+                                {
+                                    contact.Enabled = true;
+                                }
+
                                 contact.Enabled = true;
                             }
                             break;
