@@ -159,6 +159,8 @@ namespace GameLibrary.GameLogic.Screens
 
         #endregion
 
+        public virtual void Initialize() { }
+
         /// <summary>
         /// Activates the screen. Called when the screen is added to the screen manager or if the game resumes
         /// from being paused
@@ -239,7 +241,7 @@ namespace GameLibrary.GameLogic.Screens
             return true;
         }
 
-        public virtual void HandleInput(GameTime gameTime, InputState input) { }
+        public virtual void HandleInput(float delta, InputState input) { }
 
         public virtual void Draw(GameTime gameTime) { }
 

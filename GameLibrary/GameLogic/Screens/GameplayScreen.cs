@@ -130,10 +130,6 @@ namespace GameLibrary.GameLogic.Screens
                 new Buttons[] { Buttons.Start},
                 new Microsoft.Xna.Framework.Input.Keys[] { Microsoft.Xna.Framework.Input.Keys.Escape },
                 true);
-
-            
-
-            
         }
 
         public override void Activate()
@@ -158,8 +154,8 @@ namespace GameLibrary.GameLogic.Screens
             InputManager.Instance.Load();
 
             //  Setup use of shadows if they're enabled.
-            //if (GameSettings.DrawShadows)
-            //{
+            if (GameSettings.Instance.Shadows == SettingLevel.On)
+            {
                 PresentationParameters pp = this.ScreenManager.GraphicsDevice.PresentationParameters;
 
                 rtMask = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
@@ -168,7 +164,7 @@ namespace GameLibrary.GameLogic.Screens
 
                 _silhouetteEffect = _content.Load<Effect>("Assets/Other/Effects/MaskEffect");
                 _alphaEffect = _content.Load<Effect>("Assets/Other/Effects/AlphaTexture");
-            //}
+            }
 
 
             //  Simulate something large loading because why not..
@@ -213,12 +209,17 @@ namespace GameLibrary.GameLogic.Screens
                 Camera.Instance.Update(delta);
                 InputManager.Instance.Update(delta);
                 SpriteManager.Instance.Update(delta);
+
                 _level.Update(delta);
 
+                if (SessionSettings.DevelopmentMode)
+                {
+                    DevDisplay.Instance.Update(delta);
+                }
             }
         }
 
-        public override void HandleInput(GameTime gameTime, InputState input)
+        public override void HandleInput(float delta, InputState input)
         {
 #if EDITOR
 
@@ -250,11 +251,7 @@ namespace GameLibrary.GameLogic.Screens
 
                 if (InputManager.Instance.IsNewGpPress(Buttons.DPadDown) || InputManager.Instance.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F1))
                 {
-                    GameSettings.ToggleDoubleJump();
-                }
-                if (InputManager.Instance.IsNewGpPress(Buttons.DPadUp) || InputManager.Instance.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F8))
-                {
-                    GameSettings.ToggleShadows();
+                    GameSettings.Instance.ToggleDoubleJump();
                 }
             }
 #endif
@@ -270,7 +267,7 @@ namespace GameLibrary.GameLogic.Screens
 
             Matrix cameraTransform = Camera.Instance.TransformMatrix();
 
-            if (GameSettings.DrawShadows)
+            if (GameSettings.Instance.Shadows == SettingLevel.On)
             {
                 this.GraphicsDevice.SetRenderTarget(rtEffect);
 
@@ -320,7 +317,7 @@ namespace GameLibrary.GameLogic.Screens
 
             this.DrawObjects(spriteBatch, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
 
-            if (GameSettings.DrawShadows)
+            if (GameSettings.Instance.Shadows == SettingLevel.On)
             {
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
                 spriteBatch.Draw(_objectsTexture, Vector2.Zero, Color.White);
@@ -330,6 +327,11 @@ namespace GameLibrary.GameLogic.Screens
             spriteBatch.Begin();
             HUD.Instance.Draw(spriteBatch);
             spriteBatch.End();
+
+            if (SessionSettings.DevelopmentMode)
+            {
+                DevDisplay.Instance.Draw(this.ScreenManager.GraphicsDevice);
+            }
 #endif
         }
 
@@ -349,6 +351,7 @@ namespace GameLibrary.GameLogic.Screens
             this._world = new World(Vector2.Zero);
             Camera.Instance.SetUpIs(UpIs.Up);
             EventManager.Instance.Load(this);
+            SpriteManager.Instance.Clear();
             
             try
             {
