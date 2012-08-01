@@ -50,8 +50,8 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_texture, new Rectangle((int)_position.X, (int)_position.Y, (int)_width,(int)_height), new Rectangle(0, 0, (int)_width, (int)_height),
-                this._tint, this.TextureRotation, this._origin, SpriteEffects.None, this._zLayer);
+            sb.Draw(_texture, this._position, new Rectangle(0, 0, (int)_width, (int)_height),
+                this._tint, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
