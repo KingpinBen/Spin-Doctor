@@ -19,19 +19,26 @@ namespace GameLibrary.GameLogic.Events
         TRIGGER_DISABLE,
         TRIGGER_START,
         TRIGGER_STOP,
-        TRIGGER_CHANGESPEED,
+        TRIGGER_CHANGE_SPEED,
         TRIGGER_TOGGLE,
 
         /// <summary>
         /// Handled through EventManager rather than the object.
         /// </summary>
         TRIGGER_REMOVE,
-        ROTATE_CW90,
-        ROTATE_CCW90,
-        ROTATE_180,
+
+
+        WORLD_ROTATE_CW90,
+        WORLD_ROTATE_CCW90,
+        WORLD_ROTATE_180,
+        WORLD_ROTATE_DISABLE,
+        WORLD_ROTATE_ENABLE,
+        WORLD_ROTATE_TOGGLE,
 
         //  System
         CHANGE_LEVEL,
+        
+        //  Change camera.
         FIRE_POPUP
     }
 }

@@ -209,21 +209,50 @@ namespace GameLibrary.GameLogic.Events
 
                         break;
                     }
-                case EventType.ROTATE_CCW90:
+                case EventType.WORLD_ROTATE_CCW90:
                     {
                         Camera.Instance.ForceRotateLeft();
                     }
 
                     break;
-                case EventType.ROTATE_CW90:
+                case EventType.WORLD_ROTATE_CW90:
                     {
                         Camera.Instance.ForceRotateRight();
                     }
 
                     break;
-                case EventType.ROTATE_180:
+                case EventType.WORLD_ROTATE_180:
                     {
                         Camera.Instance.ForceRotateHalf();
+                    }
+
+                    break;
+                case EventType.TRIGGER_CHANGE_SPEED:
+                    {
+                        NodeObject output;
+
+                        if (this.objects.TryGetValue(objEvent.TargetName, out output))
+                        {
+                            output.Enable();
+                        }
+                    }
+
+                    break;
+                case EventType.WORLD_ROTATE_ENABLE:
+                    {
+                        Camera.Instance.ChangeLevelRotateAbility(true);
+                    }
+
+                    break;
+                case EventType.WORLD_ROTATE_TOGGLE:
+                    {
+                        Camera.Instance.ChangeLevelRotateAbility(!Camera.Instance.LevelRotates);
+                    }
+
+                    break;
+                case EventType.WORLD_ROTATE_DISABLE:
+                    {
+                        Camera.Instance.ChangeLevelRotateAbility(false);
                     }
 
                     break;
