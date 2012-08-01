@@ -60,7 +60,7 @@ namespace GameLibrary.Helpers
 
         private int frameCounter;
         private int frameRate;
-        private TimeSpan elapsedTime;
+        private float elapsedTime;
         private World _world;
 
         public float FPS
@@ -87,9 +87,9 @@ namespace GameLibrary.Helpers
         }
 
         #region Update
-        public void Update(GameTime gameTime)
+        public void Update(float delta)
         {
-            FPSCount(gameTime);
+            FPSCount(delta);
         }
         #endregion
 
@@ -137,15 +137,13 @@ namespace GameLibrary.Helpers
         /// <summary>
         /// Updates the FPS reset check.
         /// </summary>
-        /// <param name="gameTime"></param>
-        private void FPSCount(GameTime gameTime)
+        private void FPSCount(float delta)
         {
-            
-            elapsedTime += gameTime.ElapsedGameTime;
+            elapsedTime += delta;
 
-            if (elapsedTime > TimeSpan.FromSeconds(1))
+            if (elapsedTime >= 1.0f)
             {
-                elapsedTime -= TimeSpan.FromSeconds(1);
+                elapsedTime = 0;
                 frameRate = frameCounter;
                 frameCounter = 0;
             }
