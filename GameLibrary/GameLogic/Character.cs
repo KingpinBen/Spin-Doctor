@@ -244,20 +244,30 @@ namespace GameLibrary.GameLogic
 
             string spriteSheetLocation = "Assets/Images/Spritesheets/";
 
-            Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "Running-Sheet");
-            Texture2D idle = _content.Load<Texture2D>(spriteSheetLocation + "Idle1-Sheet");
-            Texture2D falling = _content.Load<Texture2D>(spriteSheetLocation + "Falling-Sheet");
-            Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "New-Jump-SHEET-");
-            Texture2D climbing = _content.Load<Texture2D>(spriteSheetLocation + "Ladder-Sheet");
+            //Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "Running-Sheet");
+            Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "HarlandRun");
+            Texture2D idle = _content.Load<Texture2D>(spriteSheetLocation + "HarlandIdle");
+            Texture2D falling = _content.Load<Texture2D>(spriteSheetLocation + "HarlandFall");
+            //  Jump1
+            //  Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "HarlandJump");
+            //  Jump2
+            Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "HarlandJump2");
+            Texture2D climbing = _content.Load<Texture2D>(spriteSheetLocation + "HarlandLadder");
             Texture2D death = _content.Load<Texture2D>(spriteSheetLocation + "DeathSpriteSheet");
+            Texture2D swinging = _content.Load<Texture2D>(spriteSheetLocation + "HarlandSwing");
 
             _currentAnimation = "Idle";
-            _animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));
-            _animations.Add("Idle", new FrameAnimation(idle, 20, new Point(242, 454), 10.0f, new Point(5, 4), false, 16));
-            _animations.Add("Falling", new FrameAnimation(falling, 20, new Point(275, 472), 17.0f, new Point(5, 4), false));
-            _animations.Add("Jumping", new FrameAnimation(jumping, 21, new Point(262, 473), 42.0f, new Point(4, 6), true));
-            _animations.Add("Climbing", new FrameAnimation(climbing, 20, new Point(207, 462), 10.0f, new Point(5, 4), false, 24));
+            //_animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));
+            _animations.Add("Run", new FrameAnimation(running, 24, new Point(446, 466), 0.0f, new Point(6, 4), false, 30));
+            _animations.Add("Idle", new FrameAnimation(idle, 21, new Point(268, 468), 0, new Point(6, 4), false, 16));
+            _animations.Add("Falling", new FrameAnimation(falling, 21, new Point(292, 477), 0, new Point(6, 4), false));
+            //  Jump1
+            //  _animations.Add("Jumping", new FrameAnimation(jumping, 16, new Point(471, 480), 0, new Point(6, 3), true));
+            //  Jump2
+            _animations.Add("Jumping", new FrameAnimation(jumping, 22, new Point(313, 464), 0, new Point(6, 3), true));
+            _animations.Add("Climbing", new FrameAnimation(climbing, 20, new Point(219, 468), 0, new Point(6, 4), false, 24));
             _animations.Add("Dead", new FrameAnimation(death, 21, new Point(550, 458), 20.0f, new Point(4, 5), true, 40));
+            _animations.Add("Swinging", new FrameAnimation(swinging, 1, new Point(640, 488), 0, new Point(1, 1), true, 1));
         }
 
 
@@ -295,6 +305,10 @@ namespace GameLibrary.GameLogic
             {
                 CurrentAnimationName = "Dead";
             }
+            else if (PlayerState == PlayerState.Swinging)
+            {
+                CurrentAnimationName = "Swinging";
+            }
             #endregion
 
             //  If the animation has changed, reset its current frame
@@ -309,7 +323,6 @@ namespace GameLibrary.GameLogic
                 CurrentAnimation.Update(delta);
             }
         }
-
 
         #endregion
 
