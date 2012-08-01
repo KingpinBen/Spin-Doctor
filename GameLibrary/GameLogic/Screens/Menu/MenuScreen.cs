@@ -27,6 +27,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         InputAction menuUp;
         InputAction menuDown;
+        InputAction menuLeft;
+        InputAction menuRight;
         InputAction menuSelect;
         InputAction menuCancel;
 
@@ -53,6 +55,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
         {
             this.menuTitle = menuTitle;
             this._titleFont = FontManager.Instance.GetFont(FontList.MenuTitle);
+            
 
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
@@ -65,6 +68,14 @@ namespace GameLibrary.GameLogic.Screens.Menu
                 new Buttons[] { Buttons.DPadDown, Buttons.LeftThumbstickDown },
                 new Keys[] { Keys.Down },
                 true);
+            menuLeft = new InputAction(
+                new Buttons[] { Buttons.DPadLeft, Buttons.LeftThumbstickLeft },
+                new Keys[] { Keys.Left },
+                true);
+            menuRight = new InputAction(
+                new Buttons[] { Buttons.DPadRight, Buttons.LeftThumbstickRight },
+                new Keys[] { Keys.Right },
+                true);
             menuSelect = new InputAction(
                 new Buttons[] { Buttons.A, Buttons.Start },
                 new Keys[] { Keys.Enter, Keys.Space },
@@ -73,6 +84,11 @@ namespace GameLibrary.GameLogic.Screens.Menu
                 new Buttons[] { Buttons.B, Buttons.Back },
                 new Keys[] { Keys.Escape },
                 true);
+        }
+
+        public override void Initialize()
+        {
+            this.ScreenManager.GraphicsDevice.DeviceReset += DeviceReset;
         }
 
         public override void Activate()
@@ -86,7 +102,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         #region Handle Input
 
-        public override void HandleInput(GameTime gameTime, InputState input)
+        public override void HandleInput(float delta, InputState input)
         {
             PlayerIndex playerIndex;
 
@@ -96,7 +112,14 @@ namespace GameLibrary.GameLogic.Screens.Menu
                 selectedEntry--;
 
                 if (selectedEntry < 0)
+                {
                     selectedEntry = menuEntries.Count - 1;
+                }
+
+                if (menuEntries[selectedEntry].Separator)
+                {
+                    selectedEntry--;
+                }
             }
 
             // Move to the next menu entry?
@@ -105,7 +128,14 @@ namespace GameLibrary.GameLogic.Screens.Menu
                 selectedEntry++;
 
                 if (selectedEntry >= menuEntries.Count)
+                {
                     selectedEntry = 0;
+                }
+
+                if (menuEntries[selectedEntry].Separator)
+                {
+                    selectedEntry++;
+                }
             }
 
             if (menuSelect.Evaluate(input, ControllingPlayer, out playerIndex))
@@ -182,7 +212,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
                 bool isSelected = IsActive && (i == selectedEntry);
 
-                menuEntry.Draw(this, isSelected, gameTime);
+                if (!menuEntry.Separator)
+                    menuEntry.Draw(this, isSelected, gameTime);
             }
 
             float transitionOffset = (float)Math.Pow(TransitionPosition, 2);
@@ -200,5 +231,10 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
 
         #endregion
+
+        protected void DeviceReset(object sender, EventArgs e)
+        {
+            this.Activate();
+        }
     }
 }
