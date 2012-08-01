@@ -225,7 +225,7 @@ namespace GameLibrary.GameLogic.Objects
             _devHeight = _devTexture.Height;
             _devWidth = _devTexture.Width;
 #else
-            this._texture = content.Load<Texture2D>("Assets/Images/Effects/droplet");
+            this._texture = content.Load<Texture2D>(_textureAsset);
             this._particles = new List<Particle>(_particleCount);
             this._queuedParticles = new Queue<Particle>(_particleCount);
             this.RegisterObject();
@@ -267,11 +267,15 @@ namespace GameLibrary.GameLogic.Objects
 
             if (_enabled)
             {
-                if (_elapsed >= _timeNewParticle)
+                while (_elapsed >= _timeNewParticle)
                 {
                     AddParticle();
-                    _elapsed = 0.0f;
+                    _elapsed -= _timeNewParticle;
                 }
+                //if (_elapsed >= _timeNewParticle)
+                //{
+                    
+                //}
             }
 #endif
         }
@@ -280,7 +284,8 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_devTexture, this._position, new Rectangle(0,0,_devWidth, _devHeight), Color.White * 0.7f, 0.0f, new Vector2(_devTexture.Width / 2, _devTexture.Height/ 2), 1.0f, SpriteEffects.None, _zLayer);
+            sb.Draw(_devTexture, this._position, new Rectangle(0, 0, (int)_devTexture.Width, (int)_devTexture.Height), Color.White * 0.7f, 0.0f,
+                new Vector2(_devTexture.Width, _devTexture.Height)* 0.5f, 1.0f, SpriteEffects.None, _zLayer);
 
             float max = MathHelper.ToRadians(_maxSpawnAngle);
             float min = MathHelper.ToRadians(_minSpawnAngle);
@@ -302,7 +307,7 @@ namespace GameLibrary.GameLogic.Objects
                     continue;
                 }
 
-                sb.Draw(_texture, _particles[i].Position, null, Color.CornflowerBlue, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.4f);
+                sb.Draw(_texture, _particles[i].Position, null, Color.CornflowerBlue, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, this._zLayer);
             }
         }
 #endif
@@ -361,6 +366,25 @@ namespace GameLibrary.GameLogic.Objects
             particle.Init(this._position, _velocity, acceleration, life);
 #endif
         }
+
+        #region Events
+#if !EDITOR
+
+        public override void Start()
+        {
+            this._enabled = true;
+            
+            base.Start();
+        }
+
+        public override void Stop()
+        {
+            this._enabled = false;
+            
+            base.Stop();
+        }
+#endif
+        #endregion
 
         #endregion
     }
