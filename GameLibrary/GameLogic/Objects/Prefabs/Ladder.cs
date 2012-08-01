@@ -337,6 +337,10 @@ namespace GameLibrary.GameLogic.Objects
             Vector2 Moveto = Vector2.Zero;
             Camera.Instance.AllowRotation = false;
 
+            //  To try and fix the player moving slightly when connecting.
+            Player.Instance.Body.ResetDynamics();
+            Player.Instance.WheelBody.ResetDynamics();
+
             if (!Grabbed)
             {
                 this.Grabbed = true;
