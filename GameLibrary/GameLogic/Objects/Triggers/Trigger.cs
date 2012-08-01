@@ -35,6 +35,7 @@ using FarseerPhysics.Dynamics.Contacts;
 using System.ComponentModel;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.UI;
+using GameLibrary.Graphics;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
@@ -249,19 +250,12 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 
             //  First check if it's been enabled.
-            if (_enabled && _triggered)
+            if (_enabled && (_triggered && !_fired))
             {
                 //  Fire off all the events.
                 this.FireEvent();
-                //  and turn off the trigger.
-                this._triggered = false;
 
-                //  If it's set to only fire once, change it so it can't
-                //  fire again.
-                if (_triggerOnce)
-                {
-                    _fired = true;
-                }
+                this._fired = true;
             }
 #endif
         }
@@ -272,7 +266,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         {
             sb.Draw(_devTexture, this._position,
                 new Rectangle(0, 0, (int)_width, (int)_height),
-                Color.White * 0.7f, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, 0.3f);
+                Color.White * 0.3f, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, 0.01f);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
@@ -280,7 +274,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #if Development
             sb.Draw(_devTexture, this._position,
                 new Rectangle(0, 0, (int)_width, (int)_height),
-                Color.White, this.Body.Rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, 0.2f);
+                Color.White * 0.3f, this.Body.Rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, 0.01f);
 #endif
         }
 #endif
@@ -343,6 +337,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 //  so turn it off.
                 this._triggered = false;
 
+                if (!this._triggerOnce)
+                {
+                    this._fired = false;
+                }
+                
                 if (_triggerType == TriggerType.PlayerInput && HUD.Instance.ShowPopup)
                 {
                     HUD.Instance.ShowOnScreenMessage(false);
