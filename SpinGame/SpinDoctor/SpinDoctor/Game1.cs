@@ -65,7 +65,7 @@ namespace SpinDoctor
             ConvertUnits.SetDisplayUnitToSimUnitRatio(24f);
 
             // Create the screen manager component.
-            screenManager = new ScreenManager(this);
+            screenManager = new ScreenManager(this, this._graphics);
             Components.Add(screenManager);
         }
 

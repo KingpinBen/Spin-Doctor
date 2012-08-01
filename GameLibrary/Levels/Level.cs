@@ -289,9 +289,9 @@ namespace GameLibrary.Levels
             Player.Instance.Update(delta, _gameScreen.World);
             EventManager.Instance.Update(delta);
 
-            for (int i = this._objectList.Count; i > 0; i--)
+            for (int i = this._objectList.Count - 1; i >= 0; i--)
             {
-                this._objectList[i - 1].Update(delta);
+                this._objectList[i].Update(delta);
             }
 
             if (_roomType != RoomType.NonRotating)

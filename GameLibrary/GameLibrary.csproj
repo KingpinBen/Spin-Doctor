@@ -123,6 +123,7 @@
     <Compile Include="GameLogic\Events\EventManager.cs" />
     <Compile Include="GameLogic\Events\EventType.cs" />
     <Compile Include="GameLogic\Objects\IGameObject.cs" />
+    <Compile Include="GameLogic\Objects\InteractType.cs" />
     <Compile Include="GameLogic\Objects\ObjectShape.cs" />
     <Compile Include="GameLogic\Objects\SpecialBodyFlags.cs" />
     <Compile Include="GameLogic\Objects\Triggers\TriggerType.cs" />
@@ -130,7 +131,9 @@
     <Compile Include="GameLogic\Screens\GameplayScreen.cs" />
     <Compile Include="GameLogic\Screens\GameScreen.cs" />
     <Compile Include="GameLogic\Screens\LoadingScreen.cs" />
+    <Compile Include="GameLogic\Screens\Menu\AudioOptionsScreen.cs" />
     <Compile Include="GameLogic\Screens\Menu\BackgroundScreen.cs" />
+    <Compile Include="GameLogic\Screens\Menu\GraphicsOptionsScreen.cs" />
     <Compile Include="GameLogic\Screens\Menu\MainMenuScreen.cs" />
     <Compile Include="GameLogic\Screens\Menu\MenuScreen.cs" />
     <Compile Include="GameLogic\Screens\Menu\MessageBoxScreen.cs" />
@@ -142,6 +145,7 @@
     <Compile Include="GameLogic\Screens\PlayerIndexEventArgs.cs" />
     <Compile Include="GameLogic\ScreenManager.cs" />
     <Compile Include="GameLogic\Screens\ScreenState.cs" />
+    <Compile Include="GameLogic\SettingLevel.cs" />
     <Compile Include="Graphics\UI\TextAlignment.cs" />
     <Compile Include="Graphics\UI\AnimatedTextType.cs" />
     <Compile Include="Graphics\UI\ButtonIcon.cs" />
@@ -150,7 +154,7 @@
     <Compile Include="Graphics\FontList.cs" />
     <Compile Include="Graphics\FontType.cs" />
     <Compile Include="GameLogic\Controls\Keybindings.cs" />
-    <Compile Include="GameLogic\Objects\Dynamics\NewPiston.cs" />
+    <Compile Include="GameLogic\Objects\Dynamics\Piston.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Helpers\ConvertUnits.cs" />
     <Compile Include="Helpers\DevDisplay.cs" />
@@ -189,7 +193,7 @@
     <Compile Include="GameLogic\Objects\Dynamics\MovingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Note.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\OneSidedPlatform.cs" />
-    <Compile Include="GameLogic\Objects\Dynamics\Piston.cs" />
+    <Compile Include="GameLogic\Objects\Dynamics\OldPiston.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\PullableObject.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\PushingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\RotateRoomButton.cs" />
