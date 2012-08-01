@@ -32,6 +32,7 @@ namespace GameLibrary.GameLogic
         bool isInitialized;
         bool traceEnabled = true;
         public int StartLevel = 0;
+        GraphicsDeviceManager _deviceManager;
 
         #endregion
 
@@ -78,14 +79,23 @@ namespace GameLibrary.GameLogic
             get { return blankTexture; }
         }
 
+        public new GraphicsDevice GraphicsDevice
+        {
+            get
+            {
+                return _deviceManager.GraphicsDevice;
+            }
+        }
+
 
         #endregion
 
         #region Initialization
 
-        public ScreenManager(Game game)
+        public ScreenManager(Game game, GraphicsDeviceManager device)
             : base(game)
         {
+            this._deviceManager = device;
         }
 
         public override void Initialize()
@@ -162,7 +172,7 @@ namespace GameLibrary.GameLogic
                     // give it a chance to handle input.
                     if (!otherScreenHasFocus)
                     {
-                        screen.HandleInput(gameTime, input);
+                        screen.HandleInput(delta, input);
 
                         otherScreenHasFocus = true;
                     }
@@ -215,7 +225,7 @@ namespace GameLibrary.GameLogic
             // If we have a graphics device, we can begin to properly init
             if (isInitialized)
             {
-                //  This is basically to run any initialization stuff.
+                screen.Initialize();
                 screen.Activate();
             }
 
@@ -256,6 +266,15 @@ namespace GameLibrary.GameLogic
         public void LoadLevel(GameplayScreen gameScreen)
         {
             LoadingScreen.Load(this, true, gameScreen.ControllingPlayer, gameScreen);
+        }
+
+        public void ChangeDevice(int x, int y, bool fullscreen)
+        {
+            this._deviceManager.PreferredBackBufferWidth = x;
+            this._deviceManager.PreferredBackBufferHeight = y;
+            this._deviceManager.IsFullScreen = fullscreen;
+
+            this._deviceManager.ApplyChanges();
         }
 
         #endregion
