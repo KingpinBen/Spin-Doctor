@@ -32,38 +32,57 @@ using Microsoft.Xna.Framework.Content;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
 using GameLibrary.Graphics.Drawing;
+using GameLibrary.Helpers;
+using System.ComponentModel;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
 {
-    public class Collectable : Trigger
+    public class Collectable : StaticObject
     {
         #region Fields
 
-        protected bool _beenCollected = false;
-        private Sprite LookAtMeSprite;
-        #endregion
-
-        #region Properties
-
+        
+        [ContentSerializer]
+        protected InteractType _interactType = InteractType.PickUp;
+        [ContentSerializer]
+        protected TriggerType _triggerType = TriggerType.Automatic;
+        
 #if EDITOR
 
 #else
-        [ContentSerializerIgnore]
-        public bool BeenCollected
+        protected string _message = String.Empty;
+        protected bool _beenCollected = false;
+        protected bool _triggered = false;
+        protected List<Fixture> _touchingFixtures = new List<Fixture>();
+#endif
+        #endregion
+
+        #region Properties
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public virtual InteractType InteractType
         {
             get
             {
-                return _beenCollected;
+                return _interactType;
             }
-            protected set
+            set
             {
-                _beenCollected = value;
+                _interactType = value;
             }
         }
-#endif
-
-
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public virtual TriggerType TriggerType
+        {
+            get
+            {
+                return _triggerType;
+            }
+            set
+            {
+                _triggerType = value;
+            }
+        }
 
         #endregion
 
@@ -77,25 +96,25 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public override void Init(Vector2 Position, string texLoc)
         {
             base.Init(Position, texLoc);
-
-            this._message = " to pick up.";
         }
         #endregion
 
         public override void Load(ContentManager content, World world)
         {
-            base.Load(content, world);
+            this._texture = content.Load<Texture2D>(_textureAsset);
 
 #if EDITOR
-            this.TriggerWidth = 25.0f;
-            this.TriggerHeight = 25.0f;
+            if (Width == 0 || Height == 0)
+            {
+                this.Width = this._texture.Width;
+                this.Height = this._texture.Height;
+            }
 #else
-            LookAtMeSprite = new Sprite();
-            LookAtMeSprite.Init(this._position, new Point(64, 64), new Point(8, 4), -1);
-            LookAtMeSprite.Load(content.Load<Texture2D>("Assets/Sprites/Effects/Explosions"));
-            LookAtMeSprite.Alpha = 0.7f;
-            LookAtMeSprite.Scale = 1.5f;
+            this.SetupTrigger(world);
+            this.RegisterObject();
 #endif
+
+            this._origin = new Vector2(this._width, this._height) * 0.5f;
         }
 
         public override void Update(float delta)
@@ -103,7 +122,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #if EDITOR
 
 #else
-            LookAtMeSprite.Update(delta);
+            
 #endif
         }
 
@@ -117,13 +136,10 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            if (!BeenCollected)
+            if (!_beenCollected)
             {
-                LookAtMeSprite.Draw(sb, graphics);
                 sb.Draw(this._texture, this._position, null, this._tint, 0f, this._origin, 1f, SpriteEffects.None, this.zLayer);
             }
-
-            base.Draw(sb, graphics);
         }
 #endif
         #endregion
@@ -131,10 +147,24 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Private Methods
 
 #if !EDITOR 
+
+        protected void SetupTrigger(World world)
+        {
+            float height = ConvertUnits.ToSimUnits(25);
+
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(25), height, _mass);
+            this.Body.Position = ConvertUnits.ToSimUnits(this._position);
+            this.Body.Position -= (Vector2.UnitY * (height * 0.5f));
+
+            this.Body.IsSensor = true;
+            this.Body.OnCollision += Body_OnCollision;
+            this.Body.OnSeparation += Body_OnSeparation;
+        }
+
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (BeenCollected)
+            if (_beenCollected)
             {
                 return true;
             }
@@ -142,6 +172,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             base.Body_OnCollision(fixtureA, fixtureB, contact);
 
             return true;
+        }
+
+        protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
+        {
+            base.Body_OnSeparation(fixtureA, fixtureB);
         }
         #endregion
 #endif

@@ -29,6 +29,9 @@ using GameLibrary.GameLogic.Controls;
 using GameLibrary.Graphics.UI;
 using GameLibrary.GameLogic.Screens;
 using FarseerPhysics.Dynamics;
+using Microsoft.Xna.Framework.Graphics;
+using FarseerPhysics.Factories;
+using GameLibrary.Helpers;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -40,22 +43,36 @@ namespace GameLibrary.GameLogic.Objects
 
         }
 
-        public override void Load(ContentManager content, World world)
-        {
-            base.Load(content, world);
-        }
-
         public override void Update(float delta)
         {
 #if EDITOR
 
 #else
-            if (InputManager.Instance.Interact() && Triggered)
+            if (InputManager.Instance.Interact() && _triggered)
             {
                 CreatePopUp();
             }
 #endif
         }
+
+        #region Draw
+#if EDITOR
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(_texture, this._position, new Rectangle(0, 0, (int)_width, (int)_height),
+                this._tint, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
+        }
+#else
+        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
+        {
+            spriteBatch.Draw(_texture, this._position, new Rectangle(0, 0, (int)_width, (int)_height), 
+                this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
+        }
+#endif
+        #endregion
+
+
+
         private void CreatePopUp()
         {
 #if EDITOR
@@ -66,8 +83,8 @@ namespace GameLibrary.GameLogic.Objects
             //ScreenManager.AddScreen(newOverlay);
 
             HUD.Instance.ShowOnScreenMessage(false);
-            this.Triggered = false;
-            this.BeenCollected = true;
+            this._triggered = false;
+            this._beenCollected = true;
 #endif
         }
     }

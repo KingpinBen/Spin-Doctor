@@ -19,6 +19,7 @@ using GameLibrary.GameLogic.Objects;
 using GameLibrary.GameLogic.Objects.Triggers;
 using GameLibrary.Levels;
 using GameLibrary.Helpers;
+using GameLibrary.Graphics.Drawing;
 #endregion
 
 namespace SpinEditor
@@ -223,14 +224,14 @@ namespace SpinEditor
                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(piston);
                     }
                     break;
-                //case "Pullable Object":
-                //    {
-                //        PullableObject pullObj = new PullableObject();
-                //        pullObj.Init(Position, tex.Width, tex.Height, texloc0);
-                //        pullObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
-                //        STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList.Add(pullObj);
-                //    }
-                //    break;
+                case "Physics Object":
+                    {
+                        PhysicsObject phyobj = new PhysicsObject();
+                        phyobj.Init(Position, texloc0);
+                        phyobj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(phyobj);
+                    }
+                    break;
                 case "Pushing Platform":
                     {
                         PushingPlatform pushPlat = new PushingPlatform();
@@ -277,6 +278,14 @@ namespace SpinEditor
                         spike.Init(Position, texloc0);
                         spike.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(spike);
+                    }
+                    break;
+                case "Sprite":
+                    {
+                        Sprite spriteObj = new Sprite();
+                        spriteObj.Init(Position, texloc0);
+                        spriteObj.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
+                        STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(spriteObj);
                     }
                     break;
                 case "Static Object":
@@ -2469,7 +2478,7 @@ namespace SpinEditor
                 case "Piston": 
                     amountOfTexturesNeeded = 2;
                     break;
-                case "Pullable Object":
+                case "Physics Object":
                     amountOfTexturesNeeded = 1;
                     break;
                 case "Pushing Platform":
@@ -2488,6 +2497,9 @@ namespace SpinEditor
                     amountOfTexturesNeeded = 2;
                     break;
                 case "Spikes":
+                    amountOfTexturesNeeded = 1;
+                    break;
+                case "Sprite":
                     amountOfTexturesNeeded = 1;
                     break;
                 case "Static Object":

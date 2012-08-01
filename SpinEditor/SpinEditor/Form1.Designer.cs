@@ -48,6 +48,7 @@ namespace SpinEditor
             this.ViewMenuHideCoordinates = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewMenuHideMovementPath = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewMenuHideSpawn = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideEvents = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -99,7 +100,6 @@ namespace SpinEditor
             this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.openAssetFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.ViewMenuHideEvents = new System.Windows.Forms.ToolStripMenuItem();
             this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -256,6 +256,13 @@ namespace SpinEditor
             this.ViewMenuHideSpawn.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideSpawn.Text = "Hide Player Spawn";
             this.ViewMenuHideSpawn.Click += new System.EventHandler(this.ViewMenuHideSpawn_Click);
+            // 
+            // ViewMenuHideEvents
+            // 
+            this.ViewMenuHideEvents.Name = "ViewMenuHideEvents";
+            this.ViewMenuHideEvents.Size = new System.Drawing.Size(204, 22);
+            this.ViewMenuHideEvents.Text = "Hide Event Objects Lines";
+            this.ViewMenuHideEvents.Click += new System.EventHandler(this.ViewMenuHideEvents_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -453,7 +460,6 @@ namespace SpinEditor
             "Particle Emitter",
             "Piston",
             "New Piston",
-            "Pullable Object",
             "Pushing Platform",
             "Physics Object",
             "Rope",
@@ -461,6 +467,7 @@ namespace SpinEditor
             "Rotating Platform",
             "Saw",
             "Spikes",
+            "Sprite",
             "Static Object",
             "Trigger"});
             this.listBox_Classes.Location = new System.Drawing.Point(12, 16);
@@ -772,13 +779,6 @@ namespace SpinEditor
             // openAssetFileDialog1
             // 
             this.openAssetFileDialog1.FileName = "Select Asset";
-            // 
-            // ViewMenuHideEvents
-            // 
-            this.ViewMenuHideEvents.Name = "ViewMenuHideEvents";
-            this.ViewMenuHideEvents.Size = new System.Drawing.Size(204, 22);
-            this.ViewMenuHideEvents.Text = "Hide Event Objects Lines";
-            this.ViewMenuHideEvents.Click += new System.EventHandler(this.ViewMenuHideEvents_Click);
             // 
             // xnA_RenderControl1
             // 
