@@ -247,6 +247,31 @@ namespace GameLibrary.GameLogic.Objects
         {
             this.revoluteJoint.MotorSpeed = 0.0f;
         }
+
+        public override void Change(object sent)
+        {
+            //  Along with changing the objects motor speed, if the object
+            //  is enabled, we'll also need to change it directly on the joint
+            //  as it's not referenced.
+
+            if (sent is int)
+            {
+                if (_motorSpeed < 0)
+                {
+                    this._motorSpeed = -(int)sent;
+                }
+                else
+                {
+                    this._motorSpeed = (int)sent;
+                }
+
+                if (_enabled)
+                {
+                    this.revoluteJoint.MotorSpeed = _motorSpeed;
+                }
+            }
+        }
+
 #endif
         #endregion
 

@@ -20,6 +20,7 @@ namespace GameLibrary.GameLogic.Objects
         void Enable();
         void Disable();
         void Toggle();
+        void Change(object sent);
 #endif
     }
 }

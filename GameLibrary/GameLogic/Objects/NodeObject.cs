@@ -44,6 +44,10 @@ namespace GameLibrary.GameLogic.Objects
             set
             {
                 _name = value;
+                for(int i = 0; i < _objectEvents.Count; i++)
+                {
+                    _objectEvents[i].ObjectName = this._name;
+                }
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
@@ -125,6 +129,10 @@ namespace GameLibrary.GameLogic.Objects
             set
             {
                 _objectEvents = value;
+                for(int i = 0; i < _objectEvents.Count; i++)
+                {
+                    _objectEvents[i].ObjectName = this._name;
+                }
             }
         }
 
@@ -135,6 +143,10 @@ namespace GameLibrary.GameLogic.Objects
             get
             {
                 return _position;
+            }
+            set
+            {
+                _position = value;
             }
         }
         [ContentSerializerIgnore]
@@ -167,6 +179,10 @@ namespace GameLibrary.GameLogic.Objects
             get
             {
                 return _castShadows;
+            }
+            set
+            {
+                _castShadows = value;
             }
         }
 #endif
@@ -258,6 +274,7 @@ namespace GameLibrary.GameLogic.Objects
 
         public virtual void Start() { }
         public virtual void Stop() { }
+        public virtual void Change(object sent) { }
         public virtual Body GetBody()
         {
             return null;
