@@ -21,6 +21,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         string message;
         Texture2D _gradientTexture;
+        Texture2D _yesTexture;
+        Texture2D _noTexture;
         SpriteFont _font;
         InputAction menuSelect;
         InputAction menuCancel;
@@ -37,18 +39,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
         #region Initialization
 
         public MessageBoxScreen(string message)
-            : this(message, true)
-        { }
-
-        public MessageBoxScreen(string message, bool includeUsageText)
         {
-            const string usageText = "\nA button, Space, Enter = ok" +
-                                     "\nB button, Esc = cancel";
-
-            if (includeUsageText)
-                this.message = message + usageText;
-            else
-                this.message = message;
+            this.message = message + "\n";
 
             IsPopup = true;
 
@@ -69,6 +61,20 @@ namespace GameLibrary.GameLogic.Screens.Menu
         {
             ContentManager content = ScreenManager.Game.Content;
             _gradientTexture = content.Load<Texture2D>("Assets/Images/Basics/gradient");
+
+            if (InputManager.Instance.isGamePad)
+            {
+                _yesTexture = content.Load<Texture2D>("Assets/Other/Controls/A");
+                _noTexture = content.Load<Texture2D>("Assets/Other/Controls/B");
+            }
+            else
+            {
+                //  CHANGE TO KEYBOARD KEYS
+
+                _yesTexture = content.Load<Texture2D>("Assets/Other/Controls/A");
+                _noTexture = content.Load<Texture2D>("Assets/Other/Controls/B");
+            }
+
             _font = FontManager.Instance.GetFont(FontList.GUI);
         }
 
@@ -77,7 +83,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         #region Handle Input
 
-        public override void HandleInput(GameTime gameTime, InputState input)
+        public override void HandleInput(float delta, InputState input)
         {
             PlayerIndex playerIndex;
 
@@ -134,7 +140,12 @@ namespace GameLibrary.GameLogic.Screens.Menu
                                                           (int)textSize.Y + vPad * 2);
 
             // Fade the popup alpha during transitions.
-            Color color = Color.Blue * TransitionAlpha;
+            Color color = Color.DarkGoldenrod * TransitionAlpha;
+
+            string yesno = "Yes             No";
+            Vector2 bgCentre = new Vector2(backgroundRectangle.Center.X, backgroundRectangle.Center.Y);
+            Vector2 yesnoTextOrigin = new Vector2(_font.MeasureString(yesno).X, _font.MeasureString(yesno).Y) * 0.5f;
+
 
             spriteBatch.Begin();
 
@@ -143,6 +154,10 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
             // Draw the message box text.
             spriteBatch.DrawString(_font, message, textPosition, color);
+            spriteBatch.DrawString(_font, yesno, bgCentre, color, 0.0f, yesnoTextOrigin - new Vector2(0, yesnoTextOrigin.Y), 1.0f, SpriteEffects.None, 1.0f);
+
+            spriteBatch.Draw(_yesTexture, bgCentre - new Vector2(yesnoTextOrigin.X + _yesTexture.Width, 0), Color.White);
+            spriteBatch.Draw(_noTexture, bgCentre + new Vector2(yesnoTextOrigin.X + _noTexture.Width, 0), Color.White);
 
             spriteBatch.End();
         }

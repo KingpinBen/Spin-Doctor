@@ -25,6 +25,7 @@ namespace GameLibrary.GameLogic.Screens.Menu.Options
         Vector2 _origin;
         SpriteFont _font;
         TextAlignment _alignment;
+        bool _separator;
 
         #endregion
 
@@ -55,6 +56,18 @@ namespace GameLibrary.GameLogic.Screens.Menu.Options
             }
         }
 
+
+        public bool Separator
+        {
+            get
+            {
+                return _separator;
+            }
+            set
+            {
+                _separator = value;
+            }
+        }
 
         #endregion
 
@@ -110,7 +123,7 @@ namespace GameLibrary.GameLogic.Screens.Menu.Options
         public virtual void Draw(MenuScreen screen, bool isSelected, GameTime gameTime)
         {
             // Draw the selected entry in yellow, otherwise white.
-            Color color = isSelected ? Color.Yellow : Color.White;
+            Color color = isSelected ? Color.Goldenrod : Color.White;
 
             //// Pulsate the size of the selected menu entry.
             //double time = gameTime.TotalGameTime.TotalMilliseconds * 0.001f

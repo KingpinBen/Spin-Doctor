@@ -16,19 +16,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
     {
         #region Fields
 
-        MenuEntry ungulateMenuEntry;
-        MenuEntry languageMenuEntry;
-        MenuEntry fullscreenMenuEntry;
-        MenuEntry elfMenuEntry;
-
-        Resolutions graphics_Resolution= Resolutions.C;
-
-        string[] languages = { "C#", "French", "Deoxyribonucleic acid" };
-        int currentLanguage = 0;
-
-        bool graphics_fullscreen = false;
-
-        int elf = 23;
+        MenuEntry graphicsEntry;
+        MenuEntry audioEntry;
 
         #endregion
 
@@ -42,32 +31,26 @@ namespace GameLibrary.GameLogic.Screens.Menu
             : base("Options")
         {
             // Create our menu entries.
-            ungulateMenuEntry = new MenuEntry("Preferred ungulate: ");
-            languageMenuEntry = new MenuEntry("Language: ");
-            fullscreenMenuEntry = new MenuEntry("Fullscreen: ");
-            elfMenuEntry = new MenuEntry("elf: ");
+            graphicsEntry = new MenuEntry("Display");
+            audioEntry = new MenuEntry("Audio");
+            MenuEntry sep = new MenuEntry("Sep");
             MenuEntry back = new MenuEntry("Back");
 
-            ungulateMenuEntry.Origin = Graphics.UI.TextAlignment.Right;
-            languageMenuEntry.Origin = Graphics.UI.TextAlignment.Right;
-            fullscreenMenuEntry.Origin = Graphics.UI.TextAlignment.Right;
-            elfMenuEntry.Origin = Graphics.UI.TextAlignment.Right;
+            graphicsEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            audioEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            sep.Separator = true;
             back.Origin = Graphics.UI.TextAlignment.Centre;
 
-            SetMenuEntryText();
-
             // Hook up menu event handlers.
-            ungulateMenuEntry.Selected += UngulateMenuEntrySelected;
-            languageMenuEntry.Selected += LanguageMenuEntrySelected;
-            fullscreenMenuEntry.Selected += FullScreenMenuEntrySelected;
-            elfMenuEntry.Selected += ElfMenuEntrySelected;
+            graphicsEntry.Selected += GraphicsEntrySelected;
+            audioEntry.Selected += AudioEntrySelected;
+
             back.Selected += OnCancel;
 
             // Add entries to the menu.
-            MenuEntries.Add(ungulateMenuEntry);
-            MenuEntries.Add(languageMenuEntry);
-            MenuEntries.Add(fullscreenMenuEntry);
-            MenuEntries.Add(elfMenuEntry);
+            MenuEntries.Add(graphicsEntry);
+            MenuEntries.Add(audioEntry);
+            menuEntries.Add(sep);
             MenuEntries.Add(back);
         }
 
@@ -92,95 +75,18 @@ namespace GameLibrary.GameLogic.Screens.Menu
             }
         }
 
-
-        /// <summary>
-        /// Fills in the latest values for the options screen menu text.
-        /// </summary>
-        void SetMenuEntryText()
-        {
-            ungulateMenuEntry.Text = "Preferred ungulate: " + GetResolution(false);
-            languageMenuEntry.Text = "Language: " + languages[currentLanguage];
-            fullscreenMenuEntry.Text = "Fullscreen: " + (graphics_fullscreen ? "Yes" : "No");
-            elfMenuEntry.Text = "elf: " + elf;
-        }
-
-
         #endregion
-
-        string GetResolution(bool applyChange)
-        {
-            switch (graphics_Resolution)
-            {
-                case Resolutions.A:
-                    return "800x600";
-                case Resolutions.B:
-                    return "1024x768";
-                case Resolutions.C:
-                    return "1280x720";
-                case Resolutions.D:
-                    return "1280x800";
-                case Resolutions.E:
-                    return "1366x768";
-                case Resolutions.F:
-                    return "1440x900";
-                case Resolutions.G:
-                    return "1680x1050";
-                case Resolutions.H:
-                    return "1920x1080";
-                case Resolutions.I:
-                    return "1920x1200";
-            }
-
-            return "";
-        }
 
         #region Handle Input
 
-
-        /// <summary>
-        /// Event handler for when the Ungulate menu entry is selected.
-        /// </summary>
-        void UngulateMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void GraphicsEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            graphics_Resolution++;
-
-            if (graphics_Resolution > Resolutions.I)
-                graphics_Resolution = (Resolutions)1;
-
-            SetMenuEntryText();
+            ScreenManager.AddScreen(new GraphicsOptionsScreen(), e.PlayerIndex);
         }
 
-
-        /// <summary>
-        /// Event handler for when the Language menu entry is selected.
-        /// </summary>
-        void LanguageMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void AudioEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            currentLanguage = (currentLanguage + 1) % languages.Length;
-
-            SetMenuEntryText();
-        }
-
-
-        /// <summary>
-        /// Event handler for when the Frobnicate menu entry is selected.
-        /// </summary>
-        void FullScreenMenuEntrySelected(object sender, PlayerIndexEventArgs e)
-        {
-            graphics_fullscreen = !graphics_fullscreen;
-
-            SetMenuEntryText();
-        }
-
-
-        /// <summary>
-        /// Event handler for when the Elf menu entry is selected.
-        /// </summary>
-        void ElfMenuEntrySelected(object sender, PlayerIndexEventArgs e)
-        {
-            elf++;
-
-            SetMenuEntryText();
+            ScreenManager.AddScreen(new AudioOptionsScreen(), e.PlayerIndex);
         }
 
 
