@@ -541,5 +541,14 @@ namespace GameLibrary.Graphics.Camera
         }
 
         #endregion
+
+        #region Events
+
+        public void ChangeLevelRotateAbility(bool rotate)
+        {
+            this._levelRotates = rotate;
+        }
+
+        #endregion
     }
 }
