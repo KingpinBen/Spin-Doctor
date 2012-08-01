@@ -6,23 +6,27 @@ using Microsoft.Xna.Framework;
 
 namespace GameLibrary.GameLogic
 {
-    public static class GameSettings
+    internal class GameSettings
     {
-        private static bool _drawShadows = false;
-        public static bool DrawShadows
+        private static GameSettings _singleton = new GameSettings();
+        public static GameSettings Instance
         {
             get
             {
-                return _drawShadows;
+                return _singleton;
             }
         }
-        public static void ToggleShadows()
+
+        private GameSettings()
         {
-            _drawShadows = !_drawShadows;
+            this._shadows = SettingLevel.Off;
         }
 
-        private static bool _allowDoubleJump = false;
-        public static bool DoubleJumpEnabled
+
+        private SettingLevel _shadows;
+        private bool _allowDoubleJump = false;
+
+        public bool DoubleJumpEnabled
         {
             get
             {
@@ -33,9 +37,24 @@ namespace GameLibrary.GameLogic
                 _allowDoubleJump = value;
             }
         }
-        public static void ToggleDoubleJump()
+        public void ToggleDoubleJump()
         {
             _allowDoubleJump = !_allowDoubleJump;
+        }
+
+        public SettingLevel Shadows
+        {
+            get
+            {
+                return _shadows;
+            }
+            set
+            {
+                if (value == SettingLevel.Off || value == SettingLevel.On)
+                {
+                    _shadows = value;
+                }
+            }
         }
     }
 
@@ -53,7 +72,7 @@ namespace GameLibrary.GameLogic
 
         public static void SetDevelopment(object sender, bool state)
         {
-                _developmentMode = state;
+            _developmentMode = state;
         }
     }
 }
