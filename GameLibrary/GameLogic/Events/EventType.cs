@@ -21,12 +21,13 @@ namespace GameLibrary.GameLogic.Events
         TRIGGER_STOP,
         TRIGGER_CHANGE_SPEED,
         TRIGGER_TOGGLE,
+        
 
         /// <summary>
         /// Handled through EventManager rather than the object.
         /// </summary>
         TRIGGER_REMOVE,
-
+        TRIGGER_DEATH,
 
         WORLD_ROTATE_CW90,
         WORLD_ROTATE_CCW90,
