@@ -44,7 +44,7 @@ using GameLibrary.Helpers;
 using GameLibrary.Graphics.Animation;
 #endregion
 
-namespace GameLibrary.GameLogic
+namespace GameLibrary.GameLogic.Characters
 {
     public class Character
     {
@@ -64,11 +64,12 @@ namespace GameLibrary.GameLogic
         protected Dictionary<string, FrameAnimation> _animations;
         private string _currentAnimation = null;
         protected SpriteEffects _lookingDirection;
+        protected float _airTime;
         #endregion
 
         #region Properties
 
-        public PlayerState PlayerState
+        public virtual PlayerState PlayerState
         {
             get
             {
@@ -77,26 +78,6 @@ namespace GameLibrary.GameLogic
             protected set
             {
                 _playerState = value;
-            }
-        }
-
-        protected RevoluteJoint WheelJoint
-        {
-            get
-            {
-                return _wheelJoint;
-            }
-            set
-            {
-                _wheelJoint = value;
-            }
-        }
-
-        public Body WheelBody
-        {
-            get 
-            { 
-                return _wheelBody; 
             }
         }
 
@@ -167,7 +148,6 @@ namespace GameLibrary.GameLogic
         /// 
         /// Used for objects like ladders to shift the player correctly
         /// into place. 
-        /// *Will probably have to change to use y too eventually.
         /// </summary>
         public Vector2 SetPosition
         {
@@ -176,12 +156,12 @@ namespace GameLibrary.GameLogic
                 if (value.X == 0)
                 {
                     this._wheelBody.Position = new Vector2(this._wheelBody.Position.X, value.Y);
-                    Body.Position = new Vector2(this._wheelBody.Position.X, value.Y);
+                    this._mainBody.Position = new Vector2(this._mainBody.Position.X, value.Y);
                 }
                 else if (value.Y == 0)
                 {
-                    WheelBody.Position = new Vector2(value.X, this._wheelBody.Position.Y);
-                    Body.Position = new Vector2(value.X, this.Body.Position.Y);
+                    this._wheelBody.Position = new Vector2(value.X, _wheelBody.Position.Y);
+                    this._mainBody.Position = new Vector2(value.X, _mainBody.Position.Y);
                 }
 
                 
@@ -209,20 +189,18 @@ namespace GameLibrary.GameLogic
             //  **Instantiate on load to get rid of any old fixtures.
             this._touchingFixtures = new List<Fixture>();
 
-            SetUpPhysics(_world);
+            this.SetUpPhysics(_world);
         }
 
         public virtual void Update(float delta, World world)
         {
-            if (this._mainBody.Enabled == false)
-            {
-                return;
-            }
-
             Vector2 tempPosition = ConvertUnits.ToDisplayUnits(this.Body.Position - this._wheelBody.Position);
-            this._texturePosition = ConvertUnits.ToDisplayUnits(this.WheelBody.Position) + (tempPosition);
+            this._texturePosition = ConvertUnits.ToDisplayUnits(this._wheelBody.Position) + (tempPosition);
 
-            HandleAnimation(delta);
+            if (this._wheelBody.Enabled)
+            {
+                HandleAnimation(delta);
+            }
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)
@@ -241,33 +219,7 @@ namespace GameLibrary.GameLogic
         protected virtual void AddAnimations()
         {
             _content.Unload();
-
-            string spriteSheetLocation = "Assets/Images/Spritesheets/";
-
-            //Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "Running-Sheet");
-            Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "HarlandRun");
-            Texture2D idle = _content.Load<Texture2D>(spriteSheetLocation + "HarlandIdle");
-            Texture2D falling = _content.Load<Texture2D>(spriteSheetLocation + "HarlandFall");
-            //  Jump1
-            //  Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "HarlandJump");
-            //  Jump2
-            Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "HarlandJump2");
-            Texture2D climbing = _content.Load<Texture2D>(spriteSheetLocation + "HarlandLadder");
-            Texture2D death = _content.Load<Texture2D>(spriteSheetLocation + "DeathSpriteSheet");
-            Texture2D swinging = _content.Load<Texture2D>(spriteSheetLocation + "HarlandSwing");
-
             _currentAnimation = "Idle";
-            //_animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));
-            _animations.Add("Run", new FrameAnimation(running, 24, new Point(446, 466), 0.0f, new Point(6, 4), false, 30));
-            _animations.Add("Idle", new FrameAnimation(idle, 21, new Point(268, 468), 0, new Point(6, 4), false, 16));
-            _animations.Add("Falling", new FrameAnimation(falling, 21, new Point(292, 477), 0, new Point(6, 4), false));
-            //  Jump1
-            //  _animations.Add("Jumping", new FrameAnimation(jumping, 16, new Point(471, 480), 0, new Point(6, 3), true));
-            //  Jump2
-            _animations.Add("Jumping", new FrameAnimation(jumping, 22, new Point(313, 464), 0, new Point(6, 3), true));
-            _animations.Add("Climbing", new FrameAnimation(climbing, 20, new Point(219, 468), 0, new Point(6, 4), false, 24));
-            _animations.Add("Dead", new FrameAnimation(death, 21, new Point(550, 458), 20.0f, new Point(4, 5), true, 40));
-            _animations.Add("Swinging", new FrameAnimation(swinging, 1, new Point(640, 488), 0, new Point(1, 1), true, 1));
         }
 
 
@@ -281,31 +233,31 @@ namespace GameLibrary.GameLogic
             #region Handle Animation States
             //  Change the animation depending on the player
             //  state.
-            if (PlayerState == PlayerState.Grounded)
+            if (_playerState == PlayerState.Grounded)
             {
                 CurrentAnimationName = "Idle";
             }
-            else if (PlayerState == PlayerState.Running)
+            else if (_playerState == PlayerState.Running)
             {
                 CurrentAnimationName = "Run";
             }
-            else if (PlayerState == PlayerState.Falling)
+            else if (_playerState == PlayerState.Falling)
             {
                 CurrentAnimationName = "Falling";
             }
-            else if (PlayerState == PlayerState.Jumping)
+            else if (_playerState == PlayerState.Jumping)
             {
                 CurrentAnimationName = "Jumping";
             }
-            else if (PlayerState == PlayerState.Climbing)
+            else if (_playerState == PlayerState.Climbing)
             {
                 CurrentAnimationName = "Climbing";
             }
-            else if (PlayerState == PlayerState.Dead)
+            else if (_playerState == PlayerState.Dead)
             {
                 CurrentAnimationName = "Dead";
             }
-            else if (PlayerState == PlayerState.Swinging)
+            else if (_playerState == PlayerState.Swinging)
             {
                 CurrentAnimationName = "Swinging";
             }
@@ -350,15 +302,15 @@ namespace GameLibrary.GameLogic
             this._wheelBody.Friction = 3.0f;
 
             //  Motor
-            this._wheelJoint = new RevoluteJoint(Body, WheelBody, ConvertUnits.ToSimUnits(Vector2.UnitY * MotorPivot), Vector2.Zero);
+            this._wheelJoint = new RevoluteJoint(_mainBody, _wheelBody, ConvertUnits.ToSimUnits(Vector2.UnitY * MotorPivot), Vector2.Zero);
             this._wheelJoint.MotorEnabled = true;
             this._wheelJoint.MotorSpeed = 0f;
             this._wheelJoint.MaxMotorTorque = 10000f;
             world.AddJoint(_wheelJoint);
 
             //  Settings
-            this._wheelBody.IgnoreCollisionWith(Body);
-            this._mainBody.IgnoreCollisionWith(WheelBody);
+            this._wheelBody.IgnoreCollisionWith(_mainBody);
+            this._mainBody.IgnoreCollisionWith(_wheelBody);
 
             this._wheelBody.SleepingAllowed = false;
             this._mainBody.SleepingAllowed = false;

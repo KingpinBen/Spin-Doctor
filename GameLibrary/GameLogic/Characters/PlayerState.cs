@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace GameLibrary.GameLogic
+namespace GameLibrary.GameLogic.Characters
 {
     public enum PlayerState
     {
@@ -13,7 +13,6 @@ namespace GameLibrary.GameLogic
         Climbing,
         Swinging,
         Falling,
-        Pulling,
         Dead
     }
 }
