@@ -32,25 +32,65 @@ using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework.Graphics;
 using FarseerPhysics.Factories;
 using GameLibrary.Helpers;
+using GameLibrary.Graphics.Camera;
+using GameLibrary.GameLogic.Characters;
 
 namespace GameLibrary.GameLogic.Objects
 {
     public class Note : Collectable
     {
-        public Note()
-            : base()
-        {
+        #region Fields
+        [ContentSerializer]
+        private int _noteID;
 
+        #endregion
+
+        #region Properties
+#if EDITOR
+        [ContentSerializerIgnore]
+        public int NoteID
+        {
+            get
+            {
+                return _noteID;
+            }
+            set
+            {
+                _noteID = value;
+            }
+        }
+#else
+
+#endif
+        #endregion
+
+        public Note() : base() { }
+
+        public override void Load(ContentManager content, World world)
+        {
+            if (GameSettings.Instance.FoundEntries[_noteID])
+            {
+                Camera.Instance.GetGameScreen().Level.ObjectsList.Remove(this);
+            }
+            
+            base.Load(content, world);
         }
 
         public override void Update(float delta)
         {
-#if EDITOR
-
-#else
-            if (InputManager.Instance.Interact() && _triggered)
+#if !EDITOR
+            if (_triggered)
             {
-                CreatePopUp();
+                if (Player.Instance.PlayerState == PlayerState.Dead)
+                {
+                    _triggered = false;
+                    return;
+                }
+
+                if (InputManager.Instance.Interact(true))
+                {
+                    CreatePopUp();
+                }
             }
 #endif
         }
@@ -71,17 +111,12 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
-
-
         private void CreatePopUp()
         {
 #if EDITOR
 #else
-            //MessageOverlay newOverlay = new MessageOverlay(MessageType.FullScreen, 1, ScreenManager.GraphicsDevice);
-            //newOverlay.Load();
-
-            //ScreenManager.AddScreen(newOverlay);
-
+            Camera.Instance.GetGameScreen().ScreenManager.AddScreen(new MessageOverlay(Defines.NOTE_DIRECTORY + _noteID), null);
+                    
             HUD.Instance.ShowOnScreenMessage(false);
             this._triggered = false;
             this._beenCollected = true;
