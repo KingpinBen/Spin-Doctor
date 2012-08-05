@@ -97,6 +97,7 @@ namespace GameLibrary.Graphics.UI
         {
             this._screenManager = screenManager;
             _content = new ContentManager(screenManager.Game.Services, "Content");
+
             _overlayText = new AnimatedText("", ButtonIcon.Interact, 0.5f, TextAlignment.Left);
             _overlayText.SetPosition(ScreenAnchorLocation.BottomLeft, screenManager.GraphicsDevice);
             _overlayText.TextType = AnimatedTextType.Flash;

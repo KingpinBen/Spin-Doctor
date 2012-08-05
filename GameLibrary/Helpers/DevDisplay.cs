@@ -100,36 +100,6 @@ namespace GameLibrary.Helpers
             Draw_DebugData(graphics);
 
             frameCounter++;
-            Console.Clear();
-
-            Console.WriteLine("---------------------[ RENDER ]---------------------");
-
-            Console.Write("FPS: " + frameRate.ToString() + ".  SpriteCount: " + SpriteManager.Instance.ListCount());
-            
-            Console.WriteLine("---------------[ CAMERA & ROTATION ]----------------");
-            Console.WriteLine("World Rotation: " + Camera.Instance.Rotation / Math.PI + ". Up is: " + Camera.Instance.UpIs.ToString());
-            Console.WriteLine("Rotating?: " + Camera.Instance.IsLevelRotating + ". CanRotate? " + Camera.Instance.LevelRotates);
-            Console.WriteLine("Zoom: " + Camera.Instance.Zoom.ToString());
-
-            Console.WriteLine("--------------------[ CONTROLS ]--------------------"); 
-            Console.Write("Gamepad Input?: " + InputManager.Instance.isGamePad.ToString());
-            if (InputManager.Instance.isGamePad)
-            {
-                Console.WriteLine(". LeftThumbstick : " + new Vector2((float)Math.Round(InputManager.Instance.GP_LeftThumbstick.X, 2), (float)Math.Round(InputManager.Instance.GP_LeftThumbstick.Y, 2)).ToString());
-                Console.WriteLine("ButtonsPushed  : " + InputManager.Instance.CurrentGpState.Buttons.ToString());
-            }
-            else
-            {
-                Console.WriteLine(".  Buttons pushed: " + InputManager.Instance.CurrentKbState.GetPressedKeys().ToString());
-            }
-
-            Console.WriteLine("---------------------[ PLAYER ]---------------------");
-            Console.WriteLine("Position: " + Player.Instance.Body.Position.ToString());
-            Console.Write("State: " + Player.Instance.PlayerState.ToString());
-            Console.WriteLine("Jump: " + Player.Instance.CanJump.ToString() + ". DoubJump: " + Player.Instance.CanDoubleJump.ToString());
-            Console.WriteLine("---------------------[ Events ]---------------------");
-            Console.WriteLine("Registered: " + EventManager.Instance.GetEventCount() + ". Timed: " + EventManager.Instance.GetTimedEventCount());
-            Console.WriteLine("Object count: " + EventManager.Instance.GetObjectsCount());
         }
         #endregion
 

@@ -7,7 +7,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Windows.Forms;
 using GameLibrary.GameLogic;
-using GameLibrary.GameLogic.Events;
+using GameLibrary.Graphics.Camera;
 
 namespace GameLibrary.Helpers
 {
@@ -55,7 +55,7 @@ namespace GameLibrary.Helpers
             }
 
             //  ...don't judge me. I'm desperate.
-            EventManager.Instance.GameScreen.ScreenManager.Game.Exit();
+            Camera.Instance.GetGameScreen().ScreenManager.Game.Exit();
         }
     }
 }

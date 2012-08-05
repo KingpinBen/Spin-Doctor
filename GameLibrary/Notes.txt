@@ -13,9 +13,7 @@
 [ Random Notes ]
 	It may be a bit of a weird thing to do but because some features use percentage modifers on the X,Y of thumbsticks, we may have to use them also on the FPS for sprite animation for players.
 
-	Use pythagoras to find the max size of the level. AB^2 + BC^2 = CA^2. 1500~ large, 1000 medium, 700~ small 
-
-[ Body Userdata Flags ] - Make them ints.
+[ Body Userdata Flags ] - Make them uints.
 
 0 - None.
 1 - Dont kill from fall damage.
@@ -24,7 +22,5 @@
 [ To do ]
 
 	Save states (things that need saving: unlocked rooms, current unlocked gear, collectables >> HUB state(?)),
-
-	graphics/sound menus,
 
 	implement sound cues (probably one of the last things to do),

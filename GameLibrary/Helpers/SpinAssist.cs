@@ -97,6 +97,8 @@ namespace GameLibrary.Helpers
                 body.LocalCenter = centroid;
             }
 
+               // body.LocalCenter = centroid;
+
             output.Body = body;
             output.Origin = ConvertUnits.ToDisplayUnits(centroid);
 
