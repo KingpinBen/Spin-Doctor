@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
 using GameLibrary.Helpers;
+using GameLibrary.GameLogic.Characters;
 
 namespace GameLibrary.GameLogic.Objects.Triggers
 {

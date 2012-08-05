@@ -35,15 +35,16 @@ using FarseerPhysics.Dynamics.Joints;
 using FarseerPhysics.Dynamics.Contacts;
 using System.ComponentModel;
 using GameLibrary.Helpers;
+using GameLibrary.GameLogic.Characters;
 
 namespace GameLibrary.GameLogic.Objects
 {
     public class Saw : DynamicObject
     {
         #region Fields
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private string _bloodiedTextureAsset;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         float _scale;
 
 #if EDITOR

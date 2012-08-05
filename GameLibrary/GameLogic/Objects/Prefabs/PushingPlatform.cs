@@ -40,6 +40,7 @@ using GameLibrary.GameLogic.Objects.Triggers;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.Drawing;
 using GameLibrary.Graphics;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -56,13 +57,13 @@ namespace GameLibrary.GameLogic.Objects
         private Sprite _exhaustSprite;
 #endif
 
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private float _timeBetweenPulses;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private string _exhaustTextureAsset;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private float _timePulsing;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private Vector2 _triggerOffset = Vector2.Zero;
 
         #endregion
@@ -204,7 +205,7 @@ namespace GameLibrary.GameLogic.Objects
             this.GetRotationFromOrientation();
 
 #if EDITOR
-            _devTexture = content.Load<Texture2D>(FileLoc.DevTexture());
+            _devTexture = content.Load<Texture2D>(Defines.DEVELOPMENT_TEXTURE);
 
             if (Width == 0 || Height == 0)
             {
@@ -374,8 +375,7 @@ namespace GameLibrary.GameLogic.Objects
             {
 
                 //  We have a special way to push the player, so check if 'i' is a player fixture.
-                if (TouchingFixtures[i] == Player.Instance.WheelBody.FixtureList[0] || 
-                    TouchingFixtures[i] == Player.Instance.Body.FixtureList[1])
+                if (TouchingFixtures[i] == Player.Instance.PlayerHitBox)
                 {
 
                     //  It is the player, so apply the force

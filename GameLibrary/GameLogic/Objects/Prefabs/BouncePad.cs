@@ -30,13 +30,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using FarseerPhysics.Dynamics;
 using GameLibrary.Graphics;
+using GameLibrary.GameLogic.Characters;
+using FarseerPhysics.Dynamics.Contacts;
 
 namespace GameLibrary.GameLogic.Objects
 {
     public class BouncePad : OneSidedPlatform
     {
         #region Fields
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private float _restitution;
 
 #if EDITOR
@@ -52,7 +54,7 @@ namespace GameLibrary.GameLogic.Objects
 
 #if EDITOR
         [ContentSerializerIgnore]
-        public float Restitution
+        public float Bounciness
         {
             get
             {
@@ -150,10 +152,10 @@ namespace GameLibrary.GameLogic.Objects
 
         #region Collisions
 #if !EDITOR
-        protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
 
-            if (fixtureB != Player.Instance.WheelBody.FixtureList[0])
+            if (fixtureB != Player.Instance.WheelFixture)
             {
                 return false;
             }

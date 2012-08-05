@@ -35,15 +35,15 @@ namespace GameLibrary.GameLogic.Objects
     public abstract class DynamicObject : PhysicsObject
     {
         #region Fields
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected Vector2 _endPosition;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected float _motorSpeed;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected Direction _movementDirection;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected bool _startsMoving;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected float _timeToReverse;
         [ContentSerializer(Optional = true)]
         protected float _startTranslation;

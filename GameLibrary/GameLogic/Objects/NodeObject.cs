@@ -20,15 +20,15 @@ namespace GameLibrary.GameLogic.Objects
         protected string _name = String.Empty;
         [ContentSerializer(Optional = true)]
         protected bool _enabled = true;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected Vector2 _position = Vector2.Zero;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected float _zLayer = 0.6f;
         [ContentSerializer(Optional = true)]
         protected List<Event> _objectEvents = new List<Event>();
         [ContentSerializer(Optional = true)]
         protected bool _castShadows;
-
+        
         #endregion
 
         #region Properties
@@ -63,7 +63,7 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
-        public bool Enabled
+        public virtual bool Enabled
         {
             get
             {
@@ -196,7 +196,8 @@ namespace GameLibrary.GameLogic.Objects
 
         public virtual void Init(Vector2 position) 
         {
-            this._position = position;
+            this._position.X = position.X;
+            this._position.Y = position.Y;
         }
 
         public virtual void Load(ContentManager content, World world) 
