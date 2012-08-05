@@ -44,9 +44,9 @@ namespace GameLibrary.GameLogic.Objects
         private FixedRevoluteJoint revoluteJoint;
         private float _targetRotation;
 #endif
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private bool _rotatesWithLevel;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private float _motorSpeed;
         [ContentSerializer(Optional = true)]
         private bool _motorEnabled;
@@ -108,7 +108,7 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
-        public bool Enabled
+        public override bool Enabled
         {
             get
             {
@@ -124,7 +124,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             get
             {
-                return -(float)Camera.Instance.Rotation;
+                return (float)Camera.Instance.Rotation;
             }
         }
 #endif
@@ -179,6 +179,26 @@ namespace GameLibrary.GameLogic.Objects
 #else
             if (_rotatesWithLevel && _motorEnabled)
             {
+                if (Camera.Instance.IsLevelRotating)
+                {
+                    this.revoluteJoint.LimitEnabled = false;
+
+                    float rot = Camera.Instance.Rotation;
+
+                    this.revoluteJoint.UpperLimit = rot;
+                    this.revoluteJoint.LowerLimit = rot;
+                }
+                else
+                {
+                    if (!revoluteJoint.LimitEnabled)
+                    {
+                        this.revoluteJoint.LimitEnabled = true;
+                    }
+                }
+            }
+
+            if (_rotatesWithLevel && _motorEnabled)
+            {
                 if (this.Body.Rotation != TargetRotation)
                 {
                     float amountToTurn = TargetRotation - this.Body.Rotation;
@@ -209,13 +229,13 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_texture, _position, null, _tint, 0.0f, _origin, 1.0f, SpriteEffects.None, this._zLayer);
-            sb.Draw(_texture, _position, null, _tint * 0.4f, MathHelper.PiOver2, _origin, 1.0f, SpriteEffects.None, this._zLayer + 0.01f);
+            sb.Draw(_texture, _position, null, _tint, _rotation + 0.0f, _origin, 1.0f, SpriteEffects.None, this._zLayer);
+            sb.Draw(_texture, _position, null, _tint * 0.4f, _rotation + MathHelper.Pi, _origin, 1.0f, SpriteEffects.None, this._zLayer + 0.01f);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(this._texture, this._position, null, this._tint, this.Body.Rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
         }
 #endif
         #endregion
@@ -328,24 +348,25 @@ namespace GameLibrary.GameLogic.Objects
                     useCentroid = true;
                 }
 
-                TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass), useCentroid);
+                TexVertOutput input = SpinAssist.TexToVert(world, this._texture, ConvertUnits.ToSimUnits(this._mass), false);
+                this.Body = input.Body;
+                this.Body.Rotation = _rotation;
 
                 if (_rotatesWithLevel)
                 {
-                    this._origin = input.Origin;
+                    //this._origin = input.Origin;
+                    this._origin = Vector2.Zero;
+                    this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
                 }
                 else
                 {
-                    this.Origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
+                    this._origin = Vector2.Zero;// new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
+                    this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
                 }
-
-                this.Body = input.Body;
-                //this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, Vector2.Zero, simPosition);
-                this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
             }
 
             this.Body.Position = simPosition;
-
+            
             this.revoluteJoint.MaxMotorTorque = float.MaxValue;
             this.revoluteJoint.MotorEnabled = true;
 
@@ -356,18 +377,20 @@ namespace GameLibrary.GameLogic.Objects
             else
             {
                 this.Body.BodyType = BodyType.Dynamic;
-                this.Body.Rotation = this._rotation;
+                //this.Body.Rotation = this._rotation;
                 float newSpeed = 1 / _motorSpeed;
                 this._motorSpeed = newSpeed;
             }
-
-            if (this._motorEnabled)
+            if (!this._rotatesWithLevel)
             {
-                this.revoluteJoint.MotorSpeed = _motorSpeed;
-            }
-            else
-            {
-                this.revoluteJoint.MotorSpeed = 0.0f;
+                if (this._motorEnabled)
+                {
+                    this.revoluteJoint.MotorSpeed = _motorSpeed;
+                }
+                else
+                {
+                    this.revoluteJoint.MotorSpeed = 0.0f;
+                }
             }
 
             this.Body.CollidesWith = Category.All & ~Category.Cat20;

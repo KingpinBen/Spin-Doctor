@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using FarseerPhysics.Factories;
 using GameLibrary.Graphics;
 using GameLibrary.Helpers;
+using System.ComponentModel;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -24,14 +25,12 @@ namespace GameLibrary.GameLogic.Objects
         private List<Body> _bodies = new List<Body>();
 #endif
 
-        
-        
         private Texture2D _endTexture;
         private Vector2 _endOrigin;
 
-        [ContentSerializer(Optional=true)]
+        [ContentSerializer(Optional=true), CategoryAttribute("Object Specific")]
         private uint _shaftPieces = 0;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private string _endTextureAsset = String.Empty;
 
         #endregion
@@ -100,13 +99,15 @@ namespace GameLibrary.GameLogic.Objects
             {
                 this._prismaticJoint.MotorSpeed = MotorSpeed;
             }
+            this.RegisterObject();
 #endif
         }
 
+        #region Update and Draw
+
         public override void Update(float delta)
         {
-#if EDITOR
-#else
+#if !EDITOR
             base.Update(delta);
 
             for (int i = 0; i < _joints.Count; i++)
@@ -143,13 +144,13 @@ namespace GameLibrary.GameLogic.Objects
         }
 #endif
         #endregion
+        #endregion
 
         #region Private Methods
 
         protected override void SetupPhysics(World world)
         {
-#if EDITOR
-#else
+#if !EDITOR
             float textureWidth = ConvertUnits.ToSimUnits(this._texture.Width);
             float textureHeight = ConvertUnits.ToSimUnits(this._texture.Height);
             Vector2 axis = SpinAssist.ModifyVectorByOrientation(new Vector2(0, -1), _orientation);
@@ -189,7 +190,7 @@ namespace GameLibrary.GameLogic.Objects
 
             TexVertOutput input = SpinAssist.TexToVert(world, _endTexture, ConvertUnits.ToSimUnits(10), true);
 
-            _endOrigin = ConvertUnits.ToSimUnits(input.Origin);
+            _endOrigin = -ConvertUnits.ToSimUnits(input.Origin);
             this.Body = input.Body;
             //  TODO: Add proper position.
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);
@@ -213,9 +214,7 @@ namespace GameLibrary.GameLogic.Objects
 
         void HandleJoint(float delta, FixedPrismaticJoint joint)
         {
-#if EDITOR
-
-#else
+#if !EDITOR
             if ((joint.JointTranslation >= joint.UpperLimit && !this.MovingToStart) ||
                 (joint.JointTranslation <= joint.LowerLimit && this.MovingToStart))
             {

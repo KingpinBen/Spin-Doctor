@@ -103,7 +103,7 @@ namespace GameLibrary.GameLogic.Objects
             //  Doesn't strech image. Tiles instead
             spriteBatch.Draw(_texture, this._position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, new Vector2(this._texture.Width, this._texture.Height) * 0.5f, 1f, SpriteEffects.None, _zLayer);
+                this._tint, this._rotation, new Vector2(this._texture.Width, this._texture.Height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
 
             
         }

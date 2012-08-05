@@ -39,6 +39,7 @@ using System.ComponentModel;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Events;
 using GameLibrary.GameLogic.Controls;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -236,11 +237,11 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(this._texture, _position, null,
-                this._tint, this.TextureRotation, new Vector2(this._texture.Width / 2, this._texture.Height / 2), 1.0f,
+                this._tint, this._rotation, new Vector2(this._texture.Width, this._texture.Height) * 0.5f, 1.0f,
                 SpriteEffects.None, this._zLayer);
 
             sb.Draw(this.endBodyTexture, _endPosition, null, this._tint * 0.5f,
-                this._rotation, new Vector2(this.endBodyTexture.Width / 2, this.endBodyTexture.Height / 2), 1.0f, SpriteEffects.None, this._zLayer);
+                this._rotation, new Vector2(this.endBodyTexture.Width, this.endBodyTexture.Height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)

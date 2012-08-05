@@ -157,7 +157,7 @@ namespace GameLibrary.Graphics.Drawing
         {
             get
             {
-                return _tint * _alpha;
+                return _tint;
             }
             set
             {
@@ -417,8 +417,8 @@ namespace GameLibrary.Graphics.Drawing
             else
             {
                 sb.Draw(this._spriteTexture, this._position,
-                    null, this.Tint, this._rotation, 
-                    new Vector2(this._spriteTexture.Width * 0.5f, this._spriteTexture.Height * 0.5f), 
+                    null, this._tint * _alpha, this._rotation,
+                    new Vector2(this._spriteTexture.Width, this._spriteTexture.Height) * 0.5f, 
                     _scale, SpriteEffects.None, this._zLayer);
             }
 

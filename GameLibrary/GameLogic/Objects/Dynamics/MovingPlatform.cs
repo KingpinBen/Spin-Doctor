@@ -129,11 +129,11 @@ namespace GameLibrary.GameLogic.Objects
         {
             spriteBatch.Draw(_texture, this._position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
+                this._tint, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
 
             spriteBatch.Draw(_texture, this._endPosition,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint * 0.4f, TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
+                this._tint * 0.4f, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
         }
 #else
         public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
