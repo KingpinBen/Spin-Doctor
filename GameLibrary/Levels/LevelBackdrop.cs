@@ -27,6 +27,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using GameLibrary.Graphics.Camera;
 
 namespace GameLibrary.Levels
 {
@@ -36,6 +37,7 @@ namespace GameLibrary.Levels
         private Texture2D _levelBackground;
         private Point roomDimensions;
         private Color backgroundTint;
+        private float _shellScale;
 
         public Color Tint
         {
@@ -63,7 +65,7 @@ namespace GameLibrary.Levels
 
         public void Draw(SpriteBatch sb)
         {
-            sb.Draw(_roomShell, Vector2.Zero, null, Color.White, 0.0f, new Vector2(_roomShell.Width, _roomShell.Height) * 0.5f, 6.75f, SpriteEffects.None, 1f);
+            sb.Draw(_roomShell, Vector2.Zero, null, Color.White, 0.0f, new Vector2(_roomShell.Width, _roomShell.Height) * 0.5f, _shellScale, SpriteEffects.None, 1f);
 
             sb.Draw(_levelBackground, new Rectangle(-(int)(this.roomDimensions.X * 0.5f), -(int)(this.roomDimensions.Y * 0.5f), this.roomDimensions.X, this.roomDimensions.Y),
                 new Rectangle(0, 0, this.roomDimensions.X, this.roomDimensions.Y), backgroundTint, 0.0f, Vector2.Zero, SpriteEffects.None, 1f);
@@ -96,6 +98,10 @@ namespace GameLibrary.Levels
                     this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
                     break;
             }
+
+            //  The width of the ring multiplied by 2 (one per side)
+            float shellWidth = 30 * 2;
+            this._shellScale = Camera.Instance.LevelDiameter / (_roomShell.Width - shellWidth);
         }
     }
 }
