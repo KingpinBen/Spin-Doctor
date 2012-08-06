@@ -34,6 +34,7 @@ using FarseerPhysics.Collision.Shapes;
 using Microsoft.Xna.Framework.Graphics;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.Camera;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -77,8 +78,8 @@ namespace GameLibrary.GameLogic.Objects
             displayTexture = content.Load<Texture2D>(FileLoc.DevTexture());
 #endif
 #if EDITOR
-            
-            displayTexture = content.Load<Texture2D>(FileLoc.DevTexture());
+
+            displayTexture = content.Load<Texture2D>(Defines.DEVELOPMENT_TEXTURE);
 
             if (Width == 0 || Height == 0)
             {
@@ -97,7 +98,7 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height), 
-                Color.White * 0.5f, this.TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, 0.2f);
+                Color.White * 0.5f, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, 0.2f);
         }
 
 #else
@@ -139,16 +140,20 @@ namespace GameLibrary.GameLogic.Objects
                 //  As it's not the player, disable the contact
                 contact.Enabled = false;
 
-                if (fixtureB == Player.Instance.WheelBody.FixtureList[0])
+                if (Player.Instance.PlayerState == PlayerState.Climbing)
+                {
+                    return;
+                }
+
+                if (fixtureB == Player.Instance.WheelFixture)
                 {
                     //  If the centre of the player wheel is above (depending on the orientation 
                     //  and the world rotation) to the top point (1/2 w/h depending on ^) and the
                     //  radius of the wheel + a small bounding number.
-
                     switch (_orientation)
                     {
                         case Orientation.Up:
-                            if (Player.Instance.WheelBody.Position.Y < top - radius * Settings.LinearSlop)
+                            if (Player.Instance.WheelFixture.Body.Position.Y < top - radius * Settings.LinearSlop)
                             {
                                 if (_orientationDependant)
                                 {
@@ -164,7 +169,7 @@ namespace GameLibrary.GameLogic.Objects
                             }
                             break;
                         case Orientation.Down:
-                            if (Player.Instance.WheelBody.Position.Y > top - radius * Settings.LinearSlop)
+                            if (Player.Instance.WheelFixture.Body.Position.Y > top - radius * Settings.LinearSlop)
                             {
                                 if (_orientationDependant)
                                 {
@@ -182,7 +187,7 @@ namespace GameLibrary.GameLogic.Objects
                             }
                             break;
                         case Orientation.Left:
-                            if (Player.Instance.WheelBody.Position.X > top - radius * Settings.LinearSlop)
+                            if (Player.Instance.WheelFixture.Body.Position.X > top - radius * Settings.LinearSlop)
                             {
                                 if (_orientationDependant)
                                 {
@@ -200,7 +205,7 @@ namespace GameLibrary.GameLogic.Objects
                             }
                             break;
                         case Orientation.Right:
-                            if (Player.Instance.WheelBody.Position.X < top + radius * Settings.LinearSlop)
+                            if (Player.Instance.WheelFixture.Body.Position.X < top + radius * Settings.LinearSlop)
                             {
                                 if (_orientationDependant)
                                 {
@@ -227,39 +232,51 @@ namespace GameLibrary.GameLogic.Objects
         {
 #if EDITOR
 #else
+            //  Try and only convert everything once.
+            Vector2 simPosition = ConvertUnits.ToSimUnits(this._position);
+            float simHeight = ConvertUnits.ToSimUnits(_height);
+            float simWidth = ConvertUnits.ToSimUnits(_width);
+
+            //  Assign the world so we can easily access/replace the presolver.
             this._world = world;
+            this._world.ContactManager.PreSolve += this.PreSolve;
+
+            //  Set up the objects body.
             this.Body = BodyFactory.CreateBody(world);
-            this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
+            this.Body.Position = simPosition;
             this.Body.CollidesWith = Category.Cat10;
             
-            Fixture fixture = FixtureFactory.AttachRectangle(ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), 1.0f, Vector2.Zero, this.Body);
+            Fixture fixture = FixtureFactory.AttachRectangle(simWidth, simHeight, 1.0f, Vector2.Zero, this.Body);
             this.Body.Mass = ConvertUnits.ToSimUnits(10000);
             this.Body.Rotation = _rotation;
+            this.Body.Friction = 3.0f;
 
             
             //  The Player wheel radius.
             radius = ConvertUnits.ToSimUnits(28);
+
+            //  Find the 'top'(side) based on the orientation.
             switch (_orientation)
             {
                 case Orientation.Up:
-                    top = ConvertUnits.ToSimUnits(this._position.Y - (_height * 0.5f));
+                    top = simPosition.Y - (simHeight * 0.5f);
+                    //top = ConvertUnits.ToSimUnits(this._position.Y - (_height * 0.5f))
                     break;
                 case Orientation.Down:
-                    top = ConvertUnits.ToSimUnits(this._position.Y + (_height * 0.5f));
+                    top = simPosition.Y + (simHeight * 0.5f);
+                    //top = ConvertUnits.ToSimUnits(this._position.Y + (_height * 0.5f))
                     break;
                 case Orientation.Left:
-                    top = ConvertUnits.ToSimUnits(this._position.X - (_width * 0.5f));
+                    top = simPosition.X - (simWidth * 0.5f);
+                    //top = ConvertUnits.ToSimUnits(this._position.X - (_width * 0.5f))
                     break;
                 case Orientation.Right:
-                    top = ConvertUnits.ToSimUnits(this._position.X + (_width * 0.5f));
+                    top = simPosition.X + (simWidth * 0.5f);
+                    //top = ConvertUnits.ToSimUnits(this._position.X + (_width * 0.5f))
                     break;
             }
 
-            _world.ContactManager.PreSolve += this.PreSolve;
-
-            //  Apply it after attaching the fixture so it applies to all fixtures
-            //  without having to redo it to newer ones later.
-            this.Body.Friction = 2.0f;
+            
 #endif
         }
 
