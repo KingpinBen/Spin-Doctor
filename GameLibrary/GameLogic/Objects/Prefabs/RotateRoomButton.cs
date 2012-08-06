@@ -45,9 +45,9 @@ namespace GameLibrary.GameLogic.Objects
     {
         #region Fields
 
-        [ContentSerializer]
+        [ContentSerializer(Optional=true)]
         private RotateDirection enumDirection = RotateDirection.Clockwise;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private float _delayBeforeRotate = 1.0f;
 #if EDITOR
 
@@ -160,34 +160,43 @@ namespace GameLibrary.GameLogic.Objects
                 this._height = this._texture.Height;
             }
 #else
+            //  This object has a unique message to display which way it'll rotate
+            //  the level.
             this._message = " to rotate " + RDirection;
-            this._triggerWidth = this._triggerHeight = this._texture.Width * 0.5f;
 
-            SetupTrigger(world);
+            this._triggerWidth = this._triggerHeight = this._texture.Width * 0.5f;
+            this.SetupTrigger(world);
             this.RegisterObject();
 #endif
         }
 
         public override void Update(float delta)
         {
-#if EDITOR
-
-#else
-            if (!_triggered && !_aboutToRotate)
+#if !EDITOR
+            if (_triggered && !_aboutToRotate)
             {
-                return;
+                //  If the player is touching the trigger and it's not
+                //  about to rotate, check for an interation input.
+                if (InputManager.Instance.Interact(true))
+                {
+                    //  If it's been pushed, push it over to aboutToRotate
+                    //  to countdown for room rotation.
+                    this._aboutToRotate = true;
+                }
             }
 
-            if (!_aboutToRotate && InputManager.Instance.Interact())
+            if (_aboutToRotate)
             {
-                _aboutToRotate = true;
-            }
-            else
-            {
+                //  If the room has been triggered for a rotate, do a 
+                //  countdown.
+
                 _elapsed += delta;
 
+                //  Check if the elapsed since trigger has passed the delay
+                //  timer
                 if (_elapsed >= _delayBeforeRotate)
                 {
+                    //  Check which way the room is supposed to spin.
                     if (enumDirection == RotateDirection.Clockwise)
                     {
                         Camera.Instance.ForceRotateRight();
@@ -197,6 +206,7 @@ namespace GameLibrary.GameLogic.Objects
                         Camera.Instance.ForceRotateLeft();
                     }
 
+                    //  Reset the object.
                     _elapsed = 0.0f;
                     _aboutToRotate = false;
                 }
@@ -208,13 +218,13 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._texture, this._position, null, this._tint, this.TextureRotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
         }
 
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(this.Texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this.Tint, this._rotation, this.Origin, 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, this._position, null, this.Tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
         }
 #endif
         #endregion

@@ -28,7 +28,7 @@ namespace GameLibrary.GameLogic.Objects
         protected List<Event> _objectEvents = new List<Event>();
         [ContentSerializer(Optional = true)]
         protected bool _castShadows;
-        
+
         #endregion
 
         #region Properties

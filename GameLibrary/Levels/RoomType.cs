@@ -7,6 +7,6 @@ namespace GameLibrary.Levels
 {
     public enum RoomType
     {
-        Rotating, NonRotating, Hub
+        Rotating, NonRotating
     }
 }

@@ -35,14 +35,14 @@ using System.Text;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System.Threading;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.GameLogic.Controls
 {
     internal class InputManager
     {
-        #region Fields
-
+        #region Singleton
         private static InputManager _singleton = null;
         private static object _singletonLock = new object();
         public static InputManager Instance
@@ -66,46 +66,45 @@ namespace GameLibrary.GameLogic.Controls
             }
         }
 
+        private InputManager()
+        {
+        }
+        #endregion
+
+        #region Fields
+
         private KeyboardState _currentKeyboardState, _lastKeyboardState;
         private MouseState _currentMouseState, _lastMouseState;
         private GamePadState _currentGamepadState, _lastGamepadState;
 
-        public GamePadState CurrentGpState
-        {
-            get { return _currentGamepadState; }
-        }
-
-        public MouseState CurrentMouseState
-        {
-            get { return _currentMouseState; }
-        }
-
-        public KeyboardState CurrentKbState
-        {
-            get { return _currentKeyboardState; }
-        }
-
-        public Vector2 Cursor { get; internal set; }
+        private bool _isGamePad;
 
         public float VibrationTime { get; internal set; }
         public float VibrationIntensity { get; internal set;}
-
-        public bool isGamePad { get; set; }
         #endregion
 
-        private InputManager()
+        #region Properties
+
+        public bool IsGamepad
         {
+            get
+            {
+                return _isGamePad;
+            }
         }
+
+        #endregion
 
         public void Load()
         {
             if (GamePad.GetState(PlayerIndex.One).IsConnected)
-                isGamePad = true;
+                _isGamePad = true;
             else 
-                isGamePad = false;
+                _isGamePad = false;
         }
 
         #region Key Down Properties
+
         #region PC
 
         #region Function Keys
@@ -752,6 +751,7 @@ namespace GameLibrary.GameLogic.Controls
         #endregion
 
         #endregion
+
         #endregion
 
         #region Input Functions
@@ -773,7 +773,7 @@ namespace GameLibrary.GameLogic.Controls
             return (_lastMouseState.RightButton == ButtonState.Released) && (_currentMouseState.RightButton == ButtonState.Pressed);
         }
 
-        public bool IsNewKeyPress(Keys keys) //triggers when the key was NOT depressed during the last statecheck
+        public bool IsNewKeyPress(Keys keys)
         {
             return (_lastKeyboardState.IsKeyUp(keys)) && (_currentKeyboardState.IsKeyDown(keys));
         }
@@ -781,28 +781,21 @@ namespace GameLibrary.GameLogic.Controls
         #endregion
 
         #region Gamepad
-        public bool LeftThumbstick()
+
+        public Vector2 LeftThumbstick
         {
-            if (_currentGamepadState.ThumbSticks.Left != Vector2.Zero)
-                return true;
-            return false;
+            get
+            {
+                return _currentGamepadState.ThumbSticks.Left;
+            }
         }
 
-        public bool RightThumbstick()
+        public Vector2 RightThumbstick
         {
-            if (_currentGamepadState.ThumbSticks.Right != Vector2.Zero)
-                return true;
-            return false;
-        }
-
-        public Vector2 GP_LeftThumbstick
-        {
-            get { return _currentGamepadState.ThumbSticks.Left; }
-        }
-
-        public Vector2 GP_RightThumbstick
-        {
-            get { return _currentGamepadState.ThumbSticks.Right; }
+            get
+            {
+                return _currentGamepadState.ThumbSticks.Right;
+            }
         }
 
         public bool IsNewGpPress(Buttons btn)
@@ -821,7 +814,7 @@ namespace GameLibrary.GameLogic.Controls
         #region Update
         public void Update(float delta)
         {
-            if (isGamePad)
+            if (_isGamePad)
             {
                 _lastGamepadState = _currentGamepadState;
                 _currentGamepadState = GamePad.GetState(PlayerIndex.One);
@@ -844,96 +837,107 @@ namespace GameLibrary.GameLogic.Controls
 
                 _lastMouseState = _currentMouseState;
                 _currentMouseState = Mouse.GetState();
-
-                Cursor = new Vector2(_currentMouseState.X, _currentMouseState.Y);
             }
         }
         #endregion
 
         #region Gameplay
 
-        public bool Interact()
+        public bool Interact(bool newPress)
         {
-            if (isGamePad)
+            if (Player.Instance.PlayerState == PlayerState.Dead)
             {
-                return GP_Y;
-            }
-            else
-            {
-                return E;
-            }
-        }
-
-        public bool Jump()
-        {
-            if (isGamePad)
-            {
-                return GP_A;
-            }
-            else
-            {
-                return Space;
-            }
-        }
-
-        public bool Menu()
-        {
-            if (isGamePad)
-            {
-                return GP_Start;
-            }
-            else
-            {
-                return Escape;
-            }
-        }
-
-        public bool Return()
-        {
-            if (isGamePad)
-            {
-                return GP_B;
-            }
-            else
-            {
-                return Escape;
-            }
-        }
-
-        public bool MenuSelect()
-        {
-            if (isGamePad)
-            {
-                return GP_A;
-            }
-            else
-            {
-                return Enter;
-            }
-        }
-
-        public bool Grab()
-        {
-            if (isGamePad)
-            {
-                return GP_X;
-            }
-            else
-            {
-                return E;
-            }
-        }
-
-        public bool LeftCheck()
-        {
-            if (isGamePad)
-            {
-                if (_currentGamepadState.ThumbSticks.Left.X < -0.5f)
-                {
-                    return true;
-                }
-
                 return false;
+            }
+
+            if (_isGamePad)
+            {
+                if (newPress)
+                {
+                    return IsNewGpPress(Buttons.Y);
+                }
+                else
+                {
+                    return IsGpPressed(Buttons.Y);
+                }
+            }
+            else
+            {
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.E);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.E);
+                }
+            }
+        }
+
+        public bool Jump(bool newPress)
+        {
+            if (_isGamePad)
+            {
+                if (newPress)
+                {
+                    return IsNewGpPress(Buttons.A);
+                }
+                else
+                {
+                    return IsGpPressed(Buttons.A);
+                }
+            }
+            else
+            {
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.Space);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.Space);
+                }
+            }
+        }
+
+        public bool Grab(bool newPress)
+        {
+            if (_isGamePad)
+            {
+                if (newPress)
+                {
+                    return IsNewGpPress(Buttons.X);
+                }
+                else
+                {
+                    return IsGpPressed(Buttons.X);
+                }
+            }
+            else
+            {
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.E);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.E);
+                }
+            }
+        }
+
+        public bool MoveLeft(bool newPress)
+        {
+            if (_isGamePad)
+            {
+                if (newPress)
+                {
+                    return IsNewGpPress(Buttons.LeftThumbstickLeft);
+                }
+                else
+                {
+                    return IsGpPressed(Buttons.LeftThumbstickLeft);
+                }
             }
             else
             {
@@ -942,19 +946,29 @@ namespace GameLibrary.GameLogic.Controls
                     return false;
                 }
 
-                return A;
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.A);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.A);
+                }
             }
         }
 
-        public bool RightCheck()
+        public bool MoveRight(bool newPress)
         {
-            if (isGamePad)
+            if (_isGamePad)
             {
-                if (_currentGamepadState.ThumbSticks.Left.X > 0.5f)
+                if (newPress)
                 {
-                    return true;
+                    return IsNewGpPress(Buttons.LeftThumbstickRight);
                 }
-                return false;
+                else
+                {
+                    return IsGpPressed(Buttons.LeftThumbstickRight);
+                }
             }
             else
             {
@@ -962,54 +976,140 @@ namespace GameLibrary.GameLogic.Controls
                 {
                     return false;
                 }
-                return D;
+
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.D);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.D);
+                }
             }
         }
 
-        public bool UpCheck()
+        public bool MoveUp(bool newPress)
         {
-            if (isGamePad)
+            if (_isGamePad)
             {
-                if (_currentGamepadState.ThumbSticks.Left.Y > 0.5f)
-                    return true;
-                return false;
+                if (newPress)
+                {
+                    return IsNewGpPress(Buttons.LeftThumbstickUp);
+                }
+                else
+                {
+                    return (this.LeftThumbstick.Y >= 0.35f);
+                }
             }
             else
             {
-                if (S) return false;
-                return W;
+                if (this.S)
+                {
+                    return false;
+                }
+
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.W);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.W);
+                }
             }
         }
 
-        public bool DownCheck()
+        public bool MoveDown(bool newPress)
         {
-            if (isGamePad)
+            if (_isGamePad)
             {
-                if (_currentGamepadState.ThumbSticks.Left.Y < -0.5f)
-                    return true;
-                return false;
+                if (newPress)
+                {
+                    return IsNewGpPress(Buttons.LeftThumbstickDown);
+                }
+                else
+                {
+                    return (this.LeftThumbstick.Y <= -0.35f);
+                }
             }
             else
             {
-                if (W) return false;
-                return S;
+                if (this.W)
+                {
+                    return false;
+                }
+
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.S);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.S);
+                }
             }
         }
 
-        public bool RotateLeft()
+        public bool RotateLeft(bool newPress)
         {
-            if (isGamePad)
-                return GP_LT;
+            if (_isGamePad)
+            {
+                if (newPress)
+                {
+                    return IsNewGpPress(Buttons.LeftTrigger);
+                }
+                else
+                {
+                    return IsGpPressed(Buttons.LeftTrigger);
+                }
+            }
             else
-                return Left;
+            {
+                if (this.Right)
+                {
+                    return false;
+                }
+
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.Left);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.Left);
+                }
+            }
         }
 
-        public bool RotateRight()
+        public bool RotateRight(bool newPress)
         {
-            if (isGamePad)
-                return GP_RT;
+            if (_isGamePad)
+            {
+                if (newPress)
+                {
+                    return IsNewGpPress(Buttons.RightTrigger);
+                }
+                else
+                {
+                    return IsGpPressed(Buttons.RightTrigger);
+                }
+            }
             else
-                return Right;
+            {
+                if (IsKeyPress(Keys.Left))
+                {
+                    return false;
+                }
+
+                if (newPress)
+                {
+                    return IsNewKeyPress(Keys.Right);
+                }
+                else
+                {
+                    return IsKeyPress(Keys.Right);
+                }
+            }
         }
 
         #endregion
@@ -1028,7 +1128,7 @@ namespace GameLibrary.GameLogic.Controls
                 throw new Exception("Vibration intensity is too high. Needs to be between 0.0f and 1.0f");
             else
             {
-                if (isGamePad)
+                if (_isGamePad)
                 {
                     VibrationTime = time;
                     VibrationIntensity = intensity;
@@ -1036,13 +1136,6 @@ namespace GameLibrary.GameLogic.Controls
             }
         }
         #endregion
-
-        public string GetInputName()
-        {
-            if (isGamePad)
-                return "Game Pad";
-            return "Keyboard and Mouse";
-        }
     }
 }
 

@@ -33,6 +33,7 @@ using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework.Graphics;
 using GameLibrary.Graphics;
 using GameLibrary.Helpers;
+using GameLibrary.GameLogic.Characters;
 
 namespace GameLibrary.GameLogic.Objects
 {

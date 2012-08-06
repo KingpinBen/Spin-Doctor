@@ -46,20 +46,22 @@ namespace GameLibrary.GameLogic.Objects
     public class StaticObject : NodeObject
     {
         #region Fields
-        [ContentSerializer]
-        protected float _width = 0.0f;
-        [ContentSerializer]
-        protected float _height = 0.0f;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
+        protected float _width;
+        [ContentSerializer(Optional = true)]
+        protected float _height;
+        [ContentSerializer(Optional = true)]
         protected float _mass = 0.0f;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected string _textureAsset = String.Empty;
 
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected Color _tint = Color.White;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
+        protected bool _useBodyRotation;
+        [ContentSerializer(Optional = true)]
         protected float _rotation = 0;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected Orientation _orientation = Orientation.Up;
 
         // Can't serialize Texture2D files. Texture is init'd in Load() anyway.
@@ -143,11 +145,11 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
-        public virtual float TextureRotation
+        public virtual float Rotation
         {
             get
             {
-                return _rotation;
+                return MathHelper.ToDegrees(_rotation);
             }
             set
             {
@@ -375,7 +377,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             spriteBatch.Draw(_texture, this._position,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
+                this._tint, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
