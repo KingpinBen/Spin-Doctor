@@ -20,7 +20,6 @@
 //--    ==============
 //--    Fix the jump thing that happens when the player goes higher than the
 //--    ladder (when disconnected).
-//--    Make it climb in sections.
 //--
 //--------------------------------------------------------------------------
 
@@ -43,6 +42,8 @@ using System.ComponentModel;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.Helpers;
+using GameLibrary.Graphics;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -51,9 +52,9 @@ namespace GameLibrary.GameLogic.Objects
     {
         #region Fields
 
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private new Direction _orientation;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private int _climbableSections;
 
 #if EDITOR
@@ -61,7 +62,8 @@ namespace GameLibrary.GameLogic.Objects
 #else
         private bool _inGrabbingRange;
         private bool _grabbed;
-        List<Fixture> TouchingBodies = new List<Fixture>();
+        List<Fixture> _touchingBodies = new List<Fixture>();
+        Fixture[] targetFixtures;
 #endif
 
         #endregion
@@ -117,7 +119,7 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
-        public override float TextureRotation
+        public override float Rotation
         {
             get
             {
@@ -190,7 +192,7 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
-        #region Constructor
+        #region Constructor and Load
         public Ladder()
             : base()
         {
@@ -204,7 +206,7 @@ namespace GameLibrary.GameLogic.Objects
             this._orientation = Direction.Vertical;
             this._climbableSections = 1;
         }
-        #endregion
+        
 
         public override void Load(ContentManager content, World world)
         {
@@ -225,14 +227,17 @@ namespace GameLibrary.GameLogic.Objects
             editorTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
             this.SetupPhysics(world);
+            this.targetFixtures = new Fixture[1] { Player.Instance.GrabFixture };
 #endif
         }
 
+        #endregion
+
+        #region Update and Draw
+
         public override void Update(float delta)
         {
-#if EDITOR
-            
-#else
+#if !EDITOR
             if (_orientation == Direction.Vertical && (Camera.Instance.UpIs == UpIs.Left || Camera.Instance.UpIs == UpIs.Right))
             {
                 return;
@@ -245,15 +250,18 @@ namespace GameLibrary.GameLogic.Objects
 
             if (_inGrabbingRange)
             {
-                if (InputManager.Instance.Grab())
+                if (!_grabbed)
                 {
-                    if (Grabbed)
-                    {
-                        DisconnectPlayer();
-                    }
-                    else
+                    if (InputManager.Instance.Grab(true) || InputManager.Instance.MoveUp(false) || InputManager.Instance.MoveDown(false))
                     {
                         ConnectPlayer();
+                    }
+                }
+                else
+                {
+                    if (InputManager.Instance.Grab(true))// || InputManager.Instance.MoveLeft(true) || InputManager.Instance.MoveRight(true)
+                    {
+                        DisconnectPlayer();
                     }
                 }
             }
@@ -270,30 +278,19 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            //sb.Draw(this.editorTexture, Position - new Vector2(this.Width / 4, this.Height / 2),
-            //    new Rectangle(0, 0, (int)this.Width / 2, (int)Height),
-            //    Color.White * 0.3f, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
-
-            //sb.Draw(this.Texture, Position,
-            //    new Rectangle(0, 0, (int)Width, (int)Height),
-            //    this.Tint, this.TextureRotation, Vector2.Zero, 1.0f, SpriteEffects.None, zLayer);
-
             sb.Draw(this._texture, Position,
                 new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
-                this.Tint, this.TextureRotation, new Vector2(this._texture.Width / 2, (this._texture.Height * _climbableSections) / 2), 1.0f, SpriteEffects.None, this._zLayer);
-
+                this._tint, this._rotation, new Vector2(this._texture.Width, (this._texture.Height * _climbableSections)) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
         }
 #else
 
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-        #region Development
 #if Development
-            sb.DrawString(Fonts.DebugFont, "Grabbed: " + Grabbed.ToString(), Position + new Vector2(20, 0), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-            sb.DrawString(Fonts.DebugFont, "InRange: " + PlayerInRange.ToString(), Position + new Vector2(20, 15), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-            sb.DrawString(Fonts.DebugFont, "Orientation: " + _orientation, Position + new Vector2(20, 45), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "Grabbed: " + Grabbed.ToString(), Position + new Vector2(20, 0), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "InRange: " + PlayerInRange.ToString(), Position + new Vector2(20, 15), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "Orientation: " + _orientation, Position + new Vector2(20, 45), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
 #endif
-            #endregion
 
             sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
                 new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
@@ -302,25 +299,34 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
+        #endregion
+
         #region Private Methods
 
+
+
+        #region Player Connections
+
+
+        #region Disconnect
         /// <summary>
         /// Break the player off the ladder.
         /// </summary>
         private void DisconnectPlayer()
         {
-#if EDITOR
-
-#else
-            if (Grabbed)
+#if !EDITOR
+            if (_grabbed)
             {
+                this._grabbed = false;
                 Camera.Instance.AllowRotation = true;
                 Player.Instance.ForceFall();
-                this.Grabbed = false;
             }
 #endif
         }
+        #endregion
 
+
+        #region Connect
         /// <summary>
         /// Connect the player to the ladder allowing climbing
         /// </summary>
@@ -329,37 +335,37 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-            if (Camera.Instance.IsLevelRotating)
+            if (!Camera.Instance.IsLevelRotating)
             {
-                return;
+                Vector2 Moveto = Vector2.Zero;
+                Camera.Instance.AllowRotation = false;
+
+                if (!Grabbed)
+                {
+                    this.Grabbed = true;
+                }
+
+                if (Orientation == Direction.Vertical)
+                {
+                    Moveto = new Vector2(this.Position.X, 0);
+                }
+                else if (Orientation == Direction.Horizontal)
+                {
+                    Moveto = new Vector2(0, this.Position.Y);
+                }
+
+                Player.Instance.JoinLadder(ConvertUnits.ToSimUnits(Moveto));
             }
-
-            Vector2 Moveto = Vector2.Zero;
-            Camera.Instance.AllowRotation = false;
-
-            //  To try and fix the player moving slightly when connecting.
-            Player.Instance.Body.ResetDynamics();
-            Player.Instance.WheelBody.ResetDynamics();
-
-            if (!Grabbed)
-            {
-                this.Grabbed = true;
-            }
-
-            if (Orientation == Direction.Vertical)
-            {
-                Moveto = new Vector2(this.Position.X, 0);
-            }
-            else if (Orientation == Direction.Horizontal)
-            {
-                Moveto = new Vector2(0, this.Position.Y);
-            }
-
-            Player.Instance.JoinLadder(ConvertUnits.ToSimUnits(Moveto));
 #endif
         }
+        #endregion
 
-        #region Setup Body
+
+
+        #endregion
+
+
+
         protected override void SetupPhysics(World world)
         {
 #if EDITOR
@@ -371,7 +377,7 @@ namespace GameLibrary.GameLogic.Objects
                 newWidth *= -1;
 
             if (Orientation == Direction.Vertical)
-                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), ConvertUnits.ToSimUnits(_mass));
+                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth * 0.25f), ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), ConvertUnits.ToSimUnits(_mass));
             else
                 this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(_mass));
 
@@ -383,7 +389,7 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        #endregion
+
 
         protected override void GetRotationFromOrientation()
         {
@@ -393,10 +399,13 @@ namespace GameLibrary.GameLogic.Objects
                 _rotation = -MathHelper.PiOver2;
         }
 
+
+
         #region Collisions
 
-        #if EDITOR
-#else
+#if !EDITOR
+
+        #region OnSeparation
         /// <summary>
         /// When the player separates from the body we'll need to set the player as 
         /// out of range of the body and disconnect the player from it. We'll need to disconnect
@@ -404,44 +413,42 @@ namespace GameLibrary.GameLogic.Objects
         /// </summary>
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-
-            //  Whichever body just separated, remove it form the list.
-            TouchingBodies.Remove(fixtureB);
-
-            //  If the list isn't empty, go no further.
-            if (TouchingBodies.Count > 0)
+            if (fixtureB == targetFixtures[0])
             {
-                return;
+                if (_touchingBodies.Contains(fixtureB))
+                {
+                    _touchingBodies.Remove(fixtureB);
+
+                    //  Initiate disconnecting the player.
+                    _inGrabbingRange = false;
+                    DisconnectPlayer();
+
+                }
             }
-
-            //  Initiate disconnecting the player.
-            _inGrabbingRange = false;
-            DisconnectPlayer();
-
         }
+#endregion
+
+        #region OnCollision
         /// <summary>
         /// Set the player in range to enable climbing
         /// </summary>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            //  If the list doesn't already have this fixture as touching the Body, add it.
-            if (!TouchingBodies.Contains(fixtureB))
+            if (fixtureB == targetFixtures[0])
             {
-                TouchingBodies.Add(fixtureB);
+                if (!_touchingBodies.Contains(fixtureB))
+                {
+                    _touchingBodies.Add(fixtureB);
+                    _inGrabbingRange = true;
+                }
             }
 
-            //  If they can already grab the rope, no need to continue.
-            if (_inGrabbingRange)
-            {
-                return true;
-            }
-            else
-            {
-                _inGrabbingRange = true;
-            }
             return true;
         }
+        #endregion
+
 #endif
+
         #endregion
 
         #endregion
