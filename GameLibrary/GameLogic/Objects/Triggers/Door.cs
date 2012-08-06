@@ -40,28 +40,30 @@ using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.Graphics.UI;
 using GameLibrary.GameLogic.Events;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
 {
-    public class Door : Trigger
+    public class Door : StaticObject
     {
         #region Fields
-        [ContentSerializer]
+
+#if EDITOR
+
+#else
+        private bool _triggered = false;
+        private List<Fixture> _touchingFixtures = new List<Fixture>();
+        private TriggerType _triggerType;
+#endif
+        
+        [ContentSerializer(Optional = true)]
         protected int _nextLevel;
+
         #endregion
 
         #region Properties
 #if EDITOR
-        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
-        public override TriggerType TriggerType
-        {
-            get
-            {
-                return _triggerType;
-            }
-            set { }
-        }
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public int NextLevel
         {
@@ -87,25 +89,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 _rotation = SpinAssist.RotationByOrientation(_orientation);
             }
         }
-        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
-        public override float TriggerWidth
-        {
-            get
-            {
-                return base.TriggerWidth;
-            }
-            set { }
-        }
-        [ContentSerializerIgnore, CategoryAttribute("Hidden")]
-        public override float TriggerHeight
-        {
-            get
-            {
-                return base.TriggerHeight;
-            }
-            set { }
-        }
-
 #else
 
 #endif
@@ -121,10 +104,13 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public override void Init(Vector2 position, string texLoc)
         {
             base.Init(position);
+
             this._nextLevel = 0;
             this._textureAsset = texLoc;
-            this._triggerHeight = this._triggerWidth = 30;
+            this._name = "ExitDoor";
+            this._castShadows = false;
         }
+
         #endregion
 
         #region Load
@@ -140,14 +126,16 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 this.Height = this._texture.Height;
             }
 #else
-            this.TriggerWidth = 30;
-            this.TriggerHeight = 30;
+            this._triggerType = Triggers.TriggerType.PlayerInput;
+
             this.SetupTrigger(world);
 
-            if (this.Name != null || this.Name != "")
+            if (this.Name == null || this.Name == "")
             {
-                this._objectEvents.Add(new Event(this.Name, null, EventType.CHANGE_LEVEL, 0.0f, _nextLevel));
+                throw new Exception("Doors must be given a name to properly change level.");
             }
+
+            this._objectEvents.Add(new Event(this.Name, null, EventType.CHANGE_LEVEL, 0.0f, _nextLevel));
 
             RegisterObject();
 #endif
@@ -159,9 +147,16 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #if EDITOR
 
 #else
-            if (InputManager.Instance.Interact() && Triggered)
+            if (Player.Instance.PlayerState != PlayerState.Dead)
             {
-                FireEvent();
+                if (InputManager.Instance.Interact(true) && _triggered)
+                {
+                    FireEvent();
+                }
+            }
+            else
+            {
+                _triggered = false;
             }
 #endif
         }
@@ -194,76 +189,88 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Private Methods
 
 #if !EDITOR
+
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+            //  We only care for fixtureB if it's part of the player.
+            if (Player.Instance.CheckBodyBox(fixtureB))
+            {
+                //  Check if the touching list contains B.
+                if (!_touchingFixtures.Contains(fixtureB))
+                {
+                    _touchingFixtures.Add(fixtureB);
 
-            if (fixtureB != Player.Instance.WheelBody.FixtureList[0])
-            {
-                return false;
+                    #region World-Door Orientation Check
+
+                    if (!_triggered)
+                    {
+                        if (Camera.Instance.UpIs == UpIs.Up &&
+                            _orientation == Orientation.Up)
+                        {
+                            this._triggered = true;
+                        }
+                        else if (Camera.Instance.UpIs == UpIs.Down &&
+                          _orientation == Orientation.Down)
+                        {
+                            this._triggered = true;
+                        }
+                        else if (Camera.Instance.UpIs == UpIs.Left &&
+                          _orientation == Orientation.Right)
+                        {
+                            this._triggered = true;
+                        }
+                        else if (Camera.Instance.UpIs == UpIs.Right &&
+                          _orientation == Orientation.Left)
+                        {
+                            this._triggered = true;
+                        }
+                    }
+                    #endregion
+
+                    if (_triggered)
+                    {
+                        if (!HUD.Instance.ShowPopup)
+                        {
+                            HUD.Instance.ShowOnScreenMessage(true, " to use.");
+                        }
+                    }
+                }
+                
+                //  FixtureB was the player and it's been acted on.
+                return true;
             }
 
-            if (!TouchingFixtures.Contains(fixtureB))
-            {
-                TouchingFixtures.Add(fixtureB);
-            }
-
-            if (Camera.Instance.UpIs == UpIs.Up &&
-                _orientation == Orientation.Up)
-            {
-                this.Triggered = true;
-            }
-            else if (Camera.Instance.UpIs == UpIs.Down &&
-              _orientation == Orientation.Down)
-            {
-                this.Triggered = true;
-            }
-            else if (Camera.Instance.UpIs == UpIs.Left &&
-              _orientation == Orientation.Right)
-            {
-                this.Triggered = true;
-            }
-            else if (Camera.Instance.UpIs == UpIs.Right &&
-              _orientation == Orientation.Left)
-            {
-                this.Triggered = true;
-            }
-
-            if (_triggerType == TriggerType.PlayerInput && !HUD.Instance.ShowPopup) 
-            {
-                HUD.Instance.ShowOnScreenMessage(true, " to use.");
-            }
-
-            return true;
-
+            //  It wasn't the player, so ignore it.
+            return false;
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            if (TouchingFixtures.Contains(fixtureB))
+            if (_touchingFixtures.Contains(fixtureB) && Player.Instance.CheckBodyBox(fixtureB))
             {
-                TouchingFixtures.Remove(fixtureB);
-            }
+                _touchingFixtures.Remove(fixtureB);
 
-            if (fixtureB == Player.Instance.WheelBody.FixtureList[0])
-            {
-                this.Triggered = false;
-                HUD.Instance.ShowOnScreenMessage(false);
-            } 
+                if (_touchingFixtures.Count == 0)
+                {
+                    this._triggered = false;
+                    HUD.Instance.ShowOnScreenMessage(false);
+                }
+            }
         }
         #endregion
 
-        protected override void SetupTrigger(World world)
+        protected void SetupTrigger(World world)
         {
             this.Body = BodyFactory.CreateRectangle(world, 
-                ConvertUnits.ToSimUnits(TriggerWidth), 
-                ConvertUnits.ToSimUnits(TriggerHeight), 
+                ConvertUnits.ToSimUnits(30), 
+                ConvertUnits.ToSimUnits(30), 
                 1.0f);
 
             //  Change the position to it's above the lowest point of the doors
             //  texture
             this.Body.Position = ConvertUnits.ToSimUnits(_position + SpinAssist.ModifyVectorByOrientation(
-                new Vector2(0,(this._height * 0.5f) - (TriggerHeight * 0.5f)), 
+                new Vector2(0,(this._height * 0.5f) - (30 * 0.5f)), 
                 this._orientation));
 
             this.Body.OnSeparation += Body_OnSeparation;
@@ -274,7 +281,24 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             //this.Body.CollisionCategories = Category.Cat10;
         }
 
-        
+        public override void Enable()
+        {
+            this._triggered = false;
+            base.Enable();
+        }
+
+        public override void Disable()
+        {
+            this._triggered = false;
+            base.Disable();
+        }
+
+        public override void Toggle()
+        {
+            this._triggered = false;
+            base.Toggle();
+        }
+
 #endif
         #endregion
     }

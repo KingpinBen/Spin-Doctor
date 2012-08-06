@@ -36,6 +36,8 @@ using System.ComponentModel;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.UI;
 using GameLibrary.Graphics;
+using GameLibrary.GameLogic.Events;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
@@ -44,16 +46,19 @@ namespace GameLibrary.GameLogic.Objects.Triggers
     {
         #region Fields
 
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
+        protected bool _showHelp;
+        [ContentSerializer(Optional = true)]
         protected TriggerType _triggerType;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected float _triggerWidth;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected float _triggerHeight;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected string _message = " to use.";
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private bool _triggerOnce = true;
+        [ContentSerializer(Optional = true)]
 
 #if EDITOR || Development
         private Texture2D _devTexture;
@@ -63,6 +68,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         protected List<Fixture> TouchingFixtures = new List<Fixture>();
         protected bool _triggered = false;
         private bool _fired = false;
+        protected InteractType _interactType;
 #endif
 
 
@@ -218,12 +224,12 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         {
 #if Development && !EDITOR
             _devTexture = content.Load
-                <Texture2D>(FileLoc.DevTexture());
+                <Texture2D>(Defines.DEVELOPMENT_TEXTURE);
 #endif
 
 #if EDITOR
             _devTexture = content.Load
-                <Texture2D>(FileLoc.DevTexture());
+                <Texture2D>(Defines.DEVELOPMENT_TEXTURE);
 
             if (this.Width == 0.0f || this.Height == 0.0f)
             {
@@ -232,6 +238,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 #else
             this.Triggered = false;
+            this.ChooseMessage();
             this.RegisterObject();
             this.SetupTrigger(world);
 #endif
@@ -252,10 +259,21 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             //  First check if it's been enabled.
             if (_enabled && (_triggered && !_fired))
             {
-                //  Fire off all the events.
-                this.FireEvent();
+                if (Player.Instance.PlayerState != PlayerState.Dead)
+                {
+                    //  Fire off all the events.
+                    this.FireEvent();
 
-                this._fired = true;
+                    this._fired = true;
+                    if (_triggerOnce)
+                    {
+                        EventManager.Instance.DeregisterObject(this);
+                    }
+                }
+                else
+                {
+                    _triggered = false;
+                }
             }
 #endif
         }
@@ -389,6 +407,37 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         {
             base.Disable();
             this._triggered = false;
+        }
+
+        protected void ChooseMessage()
+        {
+#if !EDITOR
+            if (_triggerType == TriggerType.Automatic)
+            {
+                _message = null;
+            }
+            else
+            {
+                switch (_interactType)
+                {
+                    case InteractType.Continue:
+                        _message = " to continue";
+                        break;
+                    case InteractType.Grab:
+                        _message = " to grab";
+                        break;
+                    case InteractType.Open:
+                        _message = " to open";
+                        break;
+                    case InteractType.PickUp:
+                        _message = " to pick up";
+                        break;
+                    case InteractType.Use:
+                        _message = " to use";
+                        break;
+                }
+            }
+#endif
         }
 
 #endif

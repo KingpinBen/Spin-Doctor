@@ -34,6 +34,10 @@ using FarseerPhysics.Factories;
 using GameLibrary.Graphics.Drawing;
 using GameLibrary.Helpers;
 using System.ComponentModel;
+using GameLibrary.GameLogic.Characters;
+using GameLibrary.Graphics.UI;
+using GameLibrary.GameLogic.Controls;
+using GameLibrary.GameLogic.Events;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
@@ -42,10 +46,10 @@ namespace GameLibrary.GameLogic.Objects.Triggers
     {
         #region Fields
 
-        
-        [ContentSerializer]
+
+        [ContentSerializer(Optional = true)]
         protected InteractType _interactType = InteractType.PickUp;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         protected TriggerType _triggerType = TriggerType.Automatic;
         
 #if EDITOR
@@ -110,6 +114,10 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 this.Height = this._texture.Height;
             }
 #else
+            //  All collectables should be able to be removed at some point,
+            //  so set up an event to remove it on collision.
+            this._objectEvents.Add(new Event(this._name, this._name, EventType.TRIGGER_REMOVE, 0.0f, null));
+
             this.SetupTrigger(world);
             this.RegisterObject();
 #endif
@@ -119,10 +127,18 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         public override void Update(float delta)
         {
-#if EDITOR
-
-#else
-            
+#if !EDITOR
+            if (_triggered)
+            {
+                if (Player.Instance.PlayerState == PlayerState.Dead)
+                {
+                    this._triggered = false;
+                }
+                else
+                {
+                    this.FireEvent();
+                }
+            }
 #endif
         }
 
@@ -156,29 +172,70 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);
             this.Body.Position -= (Vector2.UnitY * (height * 0.5f));
 
+            //  Give it it's own category but make it only collide with 10 (Player) and nothing else.
+            this.Body.CollisionCategories = Category.Cat3;
+            this.Body.CollidesWith = Category.Cat10 & ~Category.All;
+
+            //  Set up the sensor
             this.Body.IsSensor = true;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
         }
 
         #region Collisions
+
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (_beenCollected)
+            if (Player.Instance.CheckBodyBox(fixtureB))
             {
+                if (!_touchingFixtures.Contains(fixtureB))
+                {
+                    _touchingFixtures.Add(fixtureB);
+
+                    this.PlayerOnTouch();
+                }
+
+                //  It was the player, acknowledge the collision
                 return true;
             }
 
-            base.Body_OnCollision(fixtureA, fixtureB, contact);
-
-            return true;
+            //  It's not the player, so ignore it.
+            return false;
         }
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            base.Body_OnSeparation(fixtureA, fixtureB);
+            if (Player.Instance.CheckBodyBox(fixtureB))
+            {
+                if (_touchingFixtures.Contains(fixtureB))
+                {
+                    _touchingFixtures.Remove(fixtureB);
+                    
+                }
+
+                //  We'll want to make sure to turn it all off should the player
+                //  be detected leaving, but for some reason, not be in the list.
+                this.PlayerOnLeave();
+            }
+        }
+
+        protected virtual void PlayerOnTouch()
+        {
+            _triggered = true;
+
+            if (!HUD.Instance.ShowPopup)
+            {
+                HUD.Instance.ShowOnScreenMessage(true, " to pick up.");
+            }
+        }
+
+        protected virtual void PlayerOnLeave()
+        {
+            _triggered = false;
+            HUD.Instance.ShowOnScreenMessage(false);
         }
         #endregion
+
 #endif
         #endregion
     }
