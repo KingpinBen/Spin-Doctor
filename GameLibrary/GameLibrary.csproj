@@ -214,7 +214,7 @@
     <Compile Include="GameLogic\Objects\Dynamics\RotatingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\StaticObject.cs" />
     <Compile Include="GameLogic\GameSettings.cs" />
-    <Compile Include="System\PlayerData.cs" />
+    <Compile Include="System\GameData.cs" />
     <Compile Include="System\ResolutionData.cs" />
     <Compile Include="System\SaveManager.cs" />
   </ItemGroup>

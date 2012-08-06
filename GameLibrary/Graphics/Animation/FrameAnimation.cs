@@ -35,61 +35,72 @@ namespace GameLibrary.Graphics.Animation
     public class FrameAnimation
     {
         #region Fields
-        Rectangle[] frames; //Animation Frames
-        int currentFrame = 0;
-        private Vector2 frameOrigin;
+
+        private Rectangle[] _frames; //Animation Frames
+        private int _currentFrame = 0;
+        private Vector2 _frameOrigin;
         private Texture2D _texture;
         private bool _reversePlayback = true;
+        private float _animationScale;
+        private bool _playOnce;
 
         /// <summary>
         /// Time between frames.
         /// Spritesheets were rendered at 30fps, halve the time for 60fps
         /// </summary>
-        float frameLength = 1 / 30; 
-        float timer = 0;
+        private float _frameLength = 1 / 30;
+        private float _timer = 0;
         #endregion
 
         #region Properties
 
-        public bool PlayOnce { get; set; }
+        public bool PlayOnce
+        {
+            get
+            {
+                return _playOnce;
+            }
+        }
 
         public int FrameCount
         {
             get
             {
-                return frames.Length;
+                return _frames.Length;
             }
         }
 
         public Vector2 FrameOrigin
         {
-            get { return frameOrigin; }
-            set { frameOrigin = value; }
+            get
+            {
+                return _frameOrigin;
+            }
+            set
+            {
+                _frameOrigin = value;
+            }
         }
 
         public float FrameLength
         {
-            get { return frameLength; }
-            set { frameLength = value; }
+            get
+            {
+                return _frameLength;
+            }
+
+            set
+            {
+                _frameLength = value;
+            }
         }
+
         /// <summary>
         /// SourceRect to be used in Draw.
         /// </summary>
         public Rectangle CurrentRect
         {
-            get { return frames[currentFrame]; }
-        }
-
-        /// <summary>
-        /// Frame to return.
-        /// </summary>
-        public int CurrentFrame
-        {
-            get { return currentFrame; }
-            set
-            {
-                currentFrame = (int)MathHelper.Clamp(value, 0, frames.Length - 1);
-            }
+            get { return _frames[_currentFrame]; }
         }
 
         public Texture2D CurrentAnimationTexture
@@ -108,6 +119,33 @@ namespace GameLibrary.Graphics.Animation
             }
         }
 
+        public bool Completed
+        {
+            get
+            {
+                if (PlayOnce)
+                {
+                    if ((_reversePlayback && _currentFrame == 0) || (!_reversePlayback && _currentFrame == _frames.Length))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        public float Scale
+        {
+            get
+            {
+                return _animationScale;
+            }
+            set
+            {
+                _animationScale = value;
+            }
+        }
+
         
         #endregion
 
@@ -115,13 +153,13 @@ namespace GameLibrary.Graphics.Animation
         public FrameAnimation(Texture2D asset, int numOfFrames, Point frameDims, float yOffset, Point frameCount, bool playOnce)
         {
             //Adds the frames
-            this.frames = new Rectangle[numOfFrames];
-            this.frameOrigin = new Vector2(frameDims.X * 0.5f, (frameDims.Y - yOffset) * 0.5f);
+            this._frames = new Rectangle[numOfFrames];
+            this._frameOrigin = new Vector2(frameDims.X * 0.5f, (frameDims.Y - yOffset) * 0.5f);
             this._texture = asset;
-            this.currentFrame = frames.Length - 1;
-            this.PlayOnce = playOnce;
+            this._currentFrame = _frames.Length - 1;
+            this._playOnce = playOnce;
 
-            for (int i = 0; i < frames.Length; i++)
+            for (int i = 0; i < _frames.Length; i++)
             {
                 Rectangle rect = new Rectangle();
                 rect.Width = frameDims.X;
@@ -129,49 +167,49 @@ namespace GameLibrary.Graphics.Animation
                 rect.X = (i * frameDims.X);
                 rect.Y = (i / frameCount.X) * frameDims.Y;
 
-                frames[i] = rect;
+                _frames[i] = rect;
             }
         }
 
         public FrameAnimation(Texture2D asset, int numOfFrames, Point frameDims, float yOffset, Point frameCount, bool playOnce, float framepersecond)
             : this(asset, numOfFrames, frameDims, yOffset, frameCount, playOnce)
         {
-            frameLength = 1 / framepersecond;
+            _frameLength = 1 / framepersecond;
         }
         #endregion
 
         public void Update(float delta)
         {
-            if (PlayOnce && currentFrame == 0)
+            if (PlayOnce && _currentFrame == 0)
             {
                 return;
             }
 
-            timer += delta;
+            _timer += delta;
 
-            if (timer >= frameLength)
+            if (_timer >= _frameLength)
             {
                 if (_reversePlayback)
                 {
-                    if (currentFrame - 1 < 0)
+                    if (_currentFrame - 1 < 0)
                     {
-                        currentFrame = frames.Length;
+                        _currentFrame = _frames.Length;
                     }
 
-                    currentFrame -= 1;
+                    _currentFrame -= 1;
                 }
                 else
                 {
-                    currentFrame = (currentFrame + 1) % frames.Length;
+                    _currentFrame = (_currentFrame + 1) % _frames.Length;
                 }
 
-                timer = 0;
+                _timer = 0;
             }
         }
 
         public void ResetCurrentFrame()
         {
-            currentFrame = frames.Length - 1;
+            _currentFrame = _frames.Length - 1;
         }
 
         public void SetPlayback(bool shouldReverse)
