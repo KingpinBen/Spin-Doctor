@@ -32,6 +32,7 @@ using GameLibrary.GameLogic;
 using GameLibrary.GameLogic.Screens;
 using System.Windows.Forms;
 using GameLibrary.GameLogic.Screens.Menu;
+using GameLibrary.System;
 
 #endregion
 
@@ -44,12 +45,7 @@ namespace SpinDoctor
 
         ScreenManager screenManager;
 
-        uint _startLevel = 0;
-        int _backbufferWidth = 1280;
-        int _backbufferHeight = 720;
-        bool _fullScreen = false;
-        //  TODO: Change for non-dev
-        bool _showStartup = false;
+        bool _skipStartup = false;
 
         #endregion
 
@@ -57,26 +53,43 @@ namespace SpinDoctor
         {
             this.IsMouseVisible = true;
             this.Content.RootDirectory = "Content";
-            this.IsFixedTimeStep = true;
+            this.IsFixedTimeStep = false;
             this.Window.Title = "Spin Doctor - Development";
 
+            //  Setup the graphics manager
             _graphics = new GraphicsDeviceManager(this);
+            
+            _graphics.SynchronizeWithVerticalRetrace = true;
+            _graphics.ApplyChanges();
             
             ConvertUnits.SetDisplayUnitToSimUnitRatio(24f);
 
             // Create the screen manager component.
             screenManager = new ScreenManager(this, this._graphics);
+            screenManager.SkipStartup = _skipStartup;
             Components.Add(screenManager);
         }
 
         protected override void Initialize()
         {
-            _graphics.PreferredBackBufferHeight = _backbufferHeight;
-            _graphics.PreferredBackBufferWidth = _backbufferWidth;
-            _graphics.PreferMultiSampling = true;
-            _graphics.IsFullScreen = _fullScreen;
-            _graphics.SynchronizeWithVerticalRetrace = true;
-            _graphics.ApplyChanges();
+            SaveManager.Instance.LoadSettings();
+
+            GameSettings instance = GameSettings.Instance;
+            ResolutionData resolution;
+            resolution.Width = _graphics.PreferredBackBufferWidth;
+            resolution.Height = _graphics.PreferredBackBufferHeight;
+            resolution.Fullscreen = _graphics.IsFullScreen;
+
+
+            if (!instance.Resolution.CompareTo(resolution))
+            {
+                this._graphics.PreferredBackBufferWidth = instance.Resolution.Width;
+                this._graphics.PreferredBackBufferHeight = instance.Resolution.Height;
+                this._graphics.IsFullScreen = instance.Resolution.Fullscreen;
+                this._graphics.PreferMultiSampling = instance.MultiSamplingEnabled;
+
+                this._graphics.ApplyChanges();
+            }
 
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += ChangeWindowSize;
@@ -116,34 +129,15 @@ namespace SpinDoctor
         {
             for (int i = 0; i < args.Length; i++)
             {
-                //args[i].ToUpperInvariant();
+                args[i].ToLowerInvariant();
 
                 if (args[i].Contains("-dev"))
                 {
-                    SessionSettings.SetDevelopment(this, true);
-                }
-                else if (args[i].Contains("-loadlevel"))
-                {
-                    screenManager.StartLevel = Convert.ToInt32(args[i + 1]);
-                    i++;
-                }
-                else if (args[i].Contains("+X"))
-                {
-                    _backbufferWidth = Convert.ToInt32(args[i + 1]);
-                    i++;
-                }
-                else if (args[i].Contains("+Y"))
-                {
-                    _backbufferHeight = Convert.ToInt32(args[i + 1]);
-                    i++;
-                }
-                else if (args[i].Contains("-FULLSCREEN"))
-                {
-                    _fullScreen = true;
+                    GameSettings.Instance.SetDevelopment(this, true);
                 }
                 else if (args[i].Contains("-SKIPSTARTUP"))
                 {
-                    _showStartup = false;
+                    _skipStartup = true;
                 }
             }
         }

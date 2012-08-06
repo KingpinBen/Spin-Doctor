@@ -22,6 +22,8 @@ using GameLibrary.Graphics.Camera;
 using GameLibrary.Graphics.UI;
 using GameLibrary.GameLogic.Events;
 using GameLibrary.GameLogic.Objects;
+using GameLibrary.GameLogic.Characters;
+using GameLibrary.System;
 
 namespace GameLibrary.GameLogic.Screens
 {
@@ -35,9 +37,8 @@ namespace GameLibrary.GameLogic.Screens
 
         private Level _level;
 
-        private int _currentLevelID;
-
         private float pauseAlpha;
+        private float _bgRotation;
 
         private InputAction pauseAction;
 
@@ -51,6 +52,8 @@ namespace GameLibrary.GameLogic.Screens
         private Texture2D _objectsTexture;
         private Texture2D _shadowTexture;
 
+        
+
         #endregion
 
         #region Properties
@@ -61,26 +64,15 @@ namespace GameLibrary.GameLogic.Screens
         {
             get
             {
-                return _currentLevelID;
+                return GameSettings.Instance.CurrentLevel;
             }
             set
             {
-                _currentLevelID = value;
+                GameSettings.Instance.CurrentLevel = value;
+                SaveManager.Instance.SaveGame();
                 ScreenManager.LoadLevel(this);
             }
         }
-
-        public int GetLevelID()
-        {
-            return _currentLevelID;
-        }
-
-        public void SetLevelID(int id)
-        {
-            this._currentLevelID = id;
-            this.ScreenManager.LoadLevel(this);
-        }
-
 
         #endregion
 
@@ -120,9 +112,8 @@ namespace GameLibrary.GameLogic.Screens
 
         #region Initialization
 
-        public GameplayScreen(int levelToLoad)
+        public GameplayScreen()
         {
-            this._currentLevelID = levelToLoad;
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
@@ -139,13 +130,13 @@ namespace GameLibrary.GameLogic.Screens
 #else
             _content = new ContentManager(this.ScreenManager.Game.Services, "Content");
 
+            //  Setup the Hud elements
+            HUD.Instance.Load(this.ScreenManager);
+
             //  Initiate and setup the level class.
             //  Load level in a moment
             Camera.Instance.SetGameplayScreen(this);
             LoadLevel();
-
-            //  Setup the Hud elements
-            HUD.Instance.Load(this.ScreenManager);
 
             //  Setup the SpriteManager.
             SpriteManager.Instance.Load(this.ScreenManager);
@@ -212,10 +203,12 @@ namespace GameLibrary.GameLogic.Screens
 
                 _level.Update(delta);
 
-                if (SessionSettings.DevelopmentMode)
+                if (GameSettings.Instance.DevelopmentMode)
                 {
                     DevDisplay.Instance.Update(delta);
                 }
+
+                _bgRotation = -Camera.Instance.Rotation;
             }
         }
 
@@ -244,11 +237,12 @@ namespace GameLibrary.GameLogic.Screens
             }
             else
             {
-                if (Player.Instance.PlayerState == PlayerState.Dead && InputManager.Instance.Jump())
+                if (Player.Instance.PlayerState == PlayerState.Dead && InputManager.Instance.Jump(true))
                 {
                     LoadLevel();
                 }
 
+                //  TODO: REMOVE FOR BETA HANDIN
                 if (InputManager.Instance.IsNewGpPress(Buttons.DPadDown) || InputManager.Instance.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F1))
                 {
                     GameSettings.Instance.ToggleDoubleJump();
@@ -301,19 +295,11 @@ namespace GameLibrary.GameLogic.Screens
             this.GraphicsDevice.SetRenderTarget(null);
             this.GraphicsDevice.Clear(Color.Black);
 
-            //spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null,
-            //        Matrix.CreateTranslation(new Vector3(-Camera.Instance.Position, 0)) *
-            //        Matrix.CreateRotationZ(bgRotation) *
-            //        Matrix.CreateScale(new Vector3(Camera.Instance.Zoom, Camera.Instance.Zoom, 1)) *
-            //        Matrix.CreateTranslation(new Vector3(ScreenManager.GraphicsDevice.Viewport.Width * 0.5f, ScreenManager.GraphicsDevice.Viewport.Height * 0.5f, 0f)));
-            //{
-            //    Level.DrawBackground(spriteBatch);
-            //}
-            //spriteBatch.End();
-
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, null, null, cameraTransform);
-            Level.DrawBackdrop(spriteBatch);
-            spriteBatch.End();
+            if (_level.RoomType == RoomType.Rotating)
+            {
+                Level.DrawBackground();
+                Level.DrawBackdrop(ref cameraTransform);
+            }
 
             this.DrawObjects(spriteBatch, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
 
@@ -328,7 +314,7 @@ namespace GameLibrary.GameLogic.Screens
             HUD.Instance.Draw(spriteBatch);
             spriteBatch.End();
 
-            if (SessionSettings.DevelopmentMode)
+            if (GameSettings.Instance.DevelopmentMode)
             {
                 DevDisplay.Instance.Draw(this.ScreenManager.GraphicsDevice);
             }
@@ -341,6 +327,7 @@ namespace GameLibrary.GameLogic.Screens
 #if !EDITOR
         private void LoadLevel()
         {
+            int LevelID = GameSettings.Instance.CurrentLevel;
 
             if (this._level != null)
             {
@@ -352,23 +339,24 @@ namespace GameLibrary.GameLogic.Screens
             Camera.Instance.SetUpIs(UpIs.Up);
             EventManager.Instance.Load(this);
             SpriteManager.Instance.Clear();
+            HUD.Instance.RefreshHUD();
             
             try
             {
-                using (XmlReader reader = XmlReader.Create(FileLoc.Level(this._currentLevelID)))
+                using (XmlReader reader = XmlReader.Create(Defines.Level(LevelID)))
                 {
                     this._level = IntermediateSerializer.Deserialize<Level>(reader, null);
                 }
             }
             catch (FileNotFoundException e)
             {
-                MessageBox.Show("Something went wrong when trying to load level: '" + this._currentLevelID + "'\nThe level wasn't found.");
-                ErrorReport.GenerateReport("The level " + this._currentLevelID + " could not be found.\n" + e.ToString(), null);
+                MessageBox.Show("Something went wrong when trying to load level: '" + LevelID + "'\nThe level wasn't found.");
+                ErrorReport.GenerateReport("The level " + LevelID + " could not be found.\n" + e.ToString(), null);
                 ScreenManager.Game.Exit();
             }
             catch (InvalidContentException e)
             {
-                MessageBox.Show("Something went wrong deserializing level: '" + this._currentLevelID + "'.\nInvalid Content");
+                MessageBox.Show("Something went wrong deserializing level: '" + LevelID + "'.\nInvalid Content");
                 string value = "Invalid Content declared.\n" + e.ToString();
                 ErrorReport.GenerateReport(value, null);
             }
@@ -381,13 +369,13 @@ namespace GameLibrary.GameLogic.Screens
             {
                 string error = e.InnerException.ToString();
 
-                MessageBox.Show("Something went wrong loading level " + this._currentLevelID + ".\n" + error);
+                MessageBox.Show("Something went wrong loading level " + LevelID + ".\n" + error);
                 ErrorReport.GenerateReport(error, null);
             }
 
             //  Now the level has been set up, if we have development
             //  mode on, turn on the display.
-            if (SessionSettings.DevelopmentMode)
+            if (GameSettings.Instance.DevelopmentMode)
             {
                 DevDisplay.Load(this.ScreenManager, World);
             }

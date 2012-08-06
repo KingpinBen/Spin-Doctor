@@ -82,7 +82,7 @@ namespace GameLibrary.GameLogic.Screens
             // off, it is time to actually perform the load.
             if (otherScreensAreGone)
             {
-                ScreenManager.RemoveScreen(this);
+                this.ExitScreen();
 
                 foreach (GameScreen screen in screensToLoad)
                 {

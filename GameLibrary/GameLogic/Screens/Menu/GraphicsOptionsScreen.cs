@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using GameLibrary.GameLogic.Screens.Menu.Options;
 using Microsoft.Xna.Framework;
+using GameLibrary.System;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
@@ -12,16 +13,14 @@ namespace GameLibrary.GameLogic.Screens.Menu
         MenuEntry resolutionsEntry;
         MenuEntry fullscreenEntry;
         MenuEntry shadowsEntry;
+        MenuEntry samplingAAEntry;
         MenuEntry particlesEntry;
         MenuEntry applyEntry;
 
         Resolutions resolution = Resolutions.C;
         bool fullscreen = false;
+        bool samplingAA = true;
         bool drawShadows = true;
-        /// <summary>
-        /// True = high,
-        /// False = low
-        /// </summary>
         bool particleDetail = true;
 
         public GraphicsOptionsScreen()
@@ -31,6 +30,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
             fullscreenEntry = new MenuEntry("Fullscreen: ");
             shadowsEntry = new MenuEntry("Draw Shadows: ");
             particlesEntry = new MenuEntry("Particles Count: ");
+            samplingAAEntry = new MenuEntry("Anti-Aliasing: ");
             applyEntry = new MenuEntry("Apply");
             MenuEntry sep = new MenuEntry("sep");
             MenuEntry backEntry = new MenuEntry("Back");
@@ -38,6 +38,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
             resolutionsEntry.Origin = Graphics.UI.TextAlignment.Right;
             fullscreenEntry.Origin = Graphics.UI.TextAlignment.Right;
             shadowsEntry.Origin = Graphics.UI.TextAlignment.Right;
+            samplingAAEntry.Origin = Graphics.UI.TextAlignment.Right;
             particlesEntry.Origin = Graphics.UI.TextAlignment.Right;
             applyEntry.Origin = Graphics.UI.TextAlignment.Centre;
             backEntry.Origin = Graphics.UI.TextAlignment.Centre;
@@ -47,15 +48,17 @@ namespace GameLibrary.GameLogic.Screens.Menu
             resolutionsEntry.Selected += ResolutionEntryChange;
             fullscreenEntry.Selected += FullscreenEntryChange;
             shadowsEntry.Selected += ShadowEntryChange;
+            samplingAAEntry.Selected += SamplingEntryChange;
             particlesEntry.Selected += ParticlesEntryChange;
             applyEntry.Selected += ApplyEntrySelected;
             backEntry.Selected += OnCancel;
 
-            sep.Separator = true;
+            sep.ItemType = MenuEntryType.Separator;
 
             menuEntries.Add(resolutionsEntry);
             menuEntries.Add(fullscreenEntry);
             menuEntries.Add(shadowsEntry);
+            menuEntries.Add(samplingAAEntry);
             menuEntries.Add(particlesEntry);
             menuEntries.Add(sep);
             menuEntries.Add(applyEntry);
@@ -89,6 +92,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
             fullscreenEntry.Text = "Fullscreen: " + (fullscreen ? "Yes" : "No");
             shadowsEntry.Text = "Draw Shadows: " + (drawShadows ? "Yes" : "No");
             particlesEntry.Text = "Particle Detail: " + (particleDetail ? "High" : "Low");
+            samplingAAEntry.Text = "Anti-Aliasing: " + (samplingAA ? "Yes" : "No");
         }
 
         string GetResolution()
@@ -140,6 +144,12 @@ namespace GameLibrary.GameLogic.Screens.Menu
             SetMenuEntryText();
         }
 
+        void SamplingEntryChange(object sender, PlayerIndexEventArgs e)
+        {
+            samplingAA = !samplingAA;
+            SetMenuEntryText();
+        }
+
         void ParticlesEntryChange(object sender, PlayerIndexEventArgs e)
         {
             particleDetail = !particleDetail;
@@ -148,45 +158,49 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         void ApplyEntrySelected(object sender, PlayerIndexEventArgs e)
         {
+            GameSettings instance = GameSettings.Instance;
+
             if (drawShadows == true)
             {
-                GameSettings.Instance.Shadows = SettingLevel.On;
+                instance.Shadows = SettingLevel.On;
             }
             else
             {
-                GameSettings.Instance.Shadows = SettingLevel.Off;
+                instance.Shadows = SettingLevel.Off;
             }
 
             switch (resolution)
             {
                 case Resolutions.A:
-                    this.ScreenManager.ChangeDevice(800, 600, fullscreen);
+                    this.ScreenManager.ChangeDevice(800, 600, fullscreen, samplingAA);
                     break;
                 case Resolutions.B:
-                    this.ScreenManager.ChangeDevice(1024, 768, fullscreen);
+                    this.ScreenManager.ChangeDevice(1024, 768, fullscreen, samplingAA);
                     break;
                 case Resolutions.C:
-                    this.ScreenManager.ChangeDevice(1280, 720, fullscreen);
+                    this.ScreenManager.ChangeDevice(1280, 720, fullscreen, samplingAA);
                     break;
                 case Resolutions.D:
-                    this.ScreenManager.ChangeDevice(1280, 800, fullscreen);
+                    this.ScreenManager.ChangeDevice(1280, 800, fullscreen, samplingAA);
                     break;
                 case Resolutions.E:
-                    this.ScreenManager.ChangeDevice(1366, 768, fullscreen);
+                    this.ScreenManager.ChangeDevice(1366, 768, fullscreen, samplingAA);
                     break;
                 case Resolutions.F:
-                    this.ScreenManager.ChangeDevice(1440, 900, fullscreen);
+                    this.ScreenManager.ChangeDevice(1440, 900, fullscreen, samplingAA);
                     break;
                 case Resolutions.G:
-                    this.ScreenManager.ChangeDevice(1680, 1050, fullscreen);
+                    this.ScreenManager.ChangeDevice(1680, 1050, fullscreen, samplingAA);
                     break;
                 case Resolutions.H:
-                    this.ScreenManager.ChangeDevice(1920, 1080, fullscreen);
+                    this.ScreenManager.ChangeDevice(1920, 1080, fullscreen, samplingAA);
                     break;
                 case Resolutions.I:
-                    this.ScreenManager.ChangeDevice(1920, 1200, fullscreen);
+                    this.ScreenManager.ChangeDevice(1920, 1200, fullscreen, samplingAA);
                     break;
             }
+
+            SaveManager.Instance.SaveSettings();
         }
     }
 }

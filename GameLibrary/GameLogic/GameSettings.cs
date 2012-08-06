@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using GameLibrary.System;
 
 namespace GameLibrary.GameLogic
 {
-    internal class GameSettings
+    public class GameSettings
     {
+        #region Singleton
         private static GameSettings _singleton = new GameSettings();
         public static GameSettings Instance
         {
@@ -19,13 +21,115 @@ namespace GameLibrary.GameLogic
 
         private GameSettings()
         {
-            this._shadows = SettingLevel.Off;
+            this._resolution.Width = 800;
+            this._resolution.Height = 600;
+            this._resolution.Fullscreen = false;
+        }
+        #endregion
+
+        #region Fields
+
+        #region Serializable
+
+
+        #region Player
+
+
+        private List<bool> _foundEntries = new List<bool>() { false, false, false, false, false, false };
+        private bool _allowDoubleJump = false;
+        private int _currentLevel = 0;
+        private bool _backbackFound = false;
+        private uint _deathCount = 0;
+
+        #endregion
+
+
+
+        #region Game
+
+
+        private ResolutionData _resolution;
+        private SettingLevel _shadows = SettingLevel.Off;
+        private SettingLevel _particleDetails = SettingLevel.Low;
+        private bool _enableMultiSampling = false;
+
+
+        #endregion
+
+        
+
+        #endregion
+
+
+        private bool _fartCheat = false;
+        
+        #endregion
+
+        #region Properties
+
+        public bool MultiSamplingEnabled
+        {
+            get
+            {
+                return _enableMultiSampling;
+            }
+            set
+            {
+                _enableMultiSampling = value;
+            }
+        }
+        public SettingLevel Shadows
+        {
+            get
+            {
+                return _shadows;
+            }
+            set
+            {
+                if (value == SettingLevel.Off || value == SettingLevel.On)
+                {
+                    _shadows = value;
+                }
+            }
+        }
+        public SettingLevel ParticleDetail
+        {
+            get
+            {
+                return _particleDetails;
+            }
+            set
+            {
+                if (value == SettingLevel.Low ||
+                    value == SettingLevel.High)
+                {
+                    _particleDetails = value;
+                }
+            }
+        }
+        public ResolutionData Resolution
+        {
+            get
+            {
+                return _resolution;
+            }
+            set
+            {
+                _resolution = value;
+            }
         }
 
-
-        private SettingLevel _shadows;
-        private bool _allowDoubleJump = false;
-
+        public List<bool> FoundEntries
+        {
+            get
+            {
+                return _foundEntries;
+            }
+            set
+            {
+                _foundEntries = value;
+            }
+        }
         public bool DoubleJumpEnabled
         {
             get
@@ -41,28 +145,52 @@ namespace GameLibrary.GameLogic
         {
             _allowDoubleJump = !_allowDoubleJump;
         }
-
-        public SettingLevel Shadows
+        public int CurrentLevel
         {
             get
             {
-                return _shadows;
+                return _currentLevel;
             }
             set
             {
-                if (value == SettingLevel.Off || value == SettingLevel.On)
-                {
-                    _shadows = value;
-                }
+                _currentLevel = value;
             }
         }
-    }
+        public bool BackpackEnabled
+        {
+            get
+            {
+                return _backbackFound;
+            }
+            set
+            {
+                _backbackFound = value;
+            }
+        }
 
-    public static class SessionSettings
-    {
-        private static bool _developmentMode = true;
+        
+        public bool FartCheat
+        {
+            get
+            {
+                return _fartCheat;
+            }
+            set
+            {
+                _fartCheat = value;
+            }
+        }
 
-        public static bool DevelopmentMode
+        #endregion
+
+        #region Development
+
+        /// <summary>
+        /// TODO : Delete this and all references before the beta hand-in
+        /// </summary>
+        private bool _developmentMode = true;
+
+        public bool DevelopmentMode
         {
             get
             {
@@ -70,9 +198,11 @@ namespace GameLibrary.GameLogic
             }
         }
 
-        public static void SetDevelopment(object sender, bool state)
+        public  void SetDevelopment(object sender, bool state)
         {
             _developmentMode = state;
         }
+
+        #endregion
     }
 }

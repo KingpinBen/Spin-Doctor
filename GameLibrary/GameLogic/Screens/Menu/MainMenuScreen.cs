@@ -4,27 +4,36 @@ using System.Linq;
 using System.Text;
 using GameLibrary.GameLogic.Screens.Menu.Options;
 using Microsoft.Xna.Framework;
+using GameLibrary.System;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
     public class MainMenuScreen : MenuScreen
     {
-        int _levelToLoad;
-
         #region Initialization
 
 
         /// <summary>
         /// Constructor fills in the menu contents.
         /// </summary>
-        public MainMenuScreen(int levelToLoad)
+        public MainMenuScreen()
             : base("Main Menu")
         {
-            this._levelToLoad = levelToLoad;
             //this._mainPosition = new Vector2(this.ScreenManager.GraphicsDevice.Viewport.Width * 0.5f, this.ScreenManager.GraphicsDevice.Viewport.Height * 0.33f);
 
             // Create our menu entries.
-            MenuEntry playGameMenuEntry = new MenuEntry("Play Game");
+
+            SaveManager.Instance.LoadGame();
+
+            if (SaveManager.Instance.Loaded)
+            {
+                MenuEntry continueMenuEntry = new MenuEntry("Continue");
+                continueMenuEntry.Origin = Graphics.UI.TextAlignment.Centre;
+                continueMenuEntry.Selected += StartGame;
+                menuEntries.Add(continueMenuEntry);
+            }
+
+            MenuEntry playGameMenuEntry = new MenuEntry("New Game");
             MenuEntry optionsMenuEntry = new MenuEntry("Options");
             MenuEntry exitMenuEntry = new MenuEntry("Exit");
 
@@ -33,8 +42,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
             exitMenuEntry.Origin = Graphics.UI.TextAlignment.Centre;
 
             // Hook up menu event handlers.
-            playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
-            optionsMenuEntry.Selected += OptionsMenuEntrySelected;
+            playGameMenuEntry.Selected += NewGameSelected;
+            optionsMenuEntry.Selected += OptionsSelected;
             exitMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
@@ -43,18 +52,27 @@ namespace GameLibrary.GameLogic.Screens.Menu
             MenuEntries.Add(exitMenuEntry);
         }
 
+        public override void Activate()
+        {
+            base.Activate();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
 
         #endregion
 
         #region Handle Input
 
-        void PlayGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void NewGameSelected(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex,
-                               new GameplayScreen(_levelToLoad));
+            SaveManager.Instance.NewGame();
+            StartGame(sender, e);
         }
 
-        void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        void OptionsSelected(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
         }
@@ -73,6 +91,12 @@ namespace GameLibrary.GameLogic.Screens.Menu
         void ConfirmExitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.Game.Exit();
+        }
+
+        void StartGame(object sender, PlayerIndexEventArgs e)
+        {
+            LoadingScreen.Load(ScreenManager, true, e.PlayerIndex,
+                               new GameplayScreen());
         }
 
 
