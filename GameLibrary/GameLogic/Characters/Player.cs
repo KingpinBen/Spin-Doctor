@@ -60,7 +60,7 @@ namespace GameLibrary.GameLogic.Characters
 
         private const float _movementSpeed = Defines.PLAYER_RUN_SPEED;
         private const float _jumpForce = Defines.PLAYER_JUMP_FORCE;      // 3.2f - Waist height. Pre 24/5
-        private const float _maxAirTime = 0.84f;
+        private const float _maxAirTime = 0.68f;
         private const float _midAirForce = Defines.PLAYER_MIDAIR_FORCE;
 
         private bool _canJump;
@@ -301,6 +301,8 @@ namespace GameLibrary.GameLogic.Characters
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
+
+            spriteBatch.DrawString(FontManager.Instance.GetFont(FontList.Game), "Time: " + _airTime, ConvertUnits.ToDisplayUnits(this._mainBody.Position), Color.Red); 
         }
 
         #endregion
@@ -474,13 +476,13 @@ namespace GameLibrary.GameLogic.Characters
 
                     if (InputManager.Instance.MoveLeft(false))
                     {
-                        Vector2 additionalForce = SpinAssist.ModifyVectorByUp(new Vector2(-150, 0));
-                        Vector2.Add(force, additionalForce);
+                        Vector2 additionalForce = SpinAssist.ModifyVectorByUp(new Vector2(-150, -force.Y * 0.5f));
+                        Vector2.Add(ref force, ref additionalForce, out force);
                     }
                     else if (InputManager.Instance.MoveRight(false))
                     {
-                        Vector2 additionalForce = SpinAssist.ModifyVectorByUp(new Vector2(150, 0));
-                        Vector2.Add(force, additionalForce);
+                        Vector2 additionalForce = SpinAssist.ModifyVectorByUp(new Vector2(150, -force.Y * 0.5f));
+                        Vector2.Add(ref force, ref additionalForce, out force);
                     }
 
                     this.ToggleBodies(true);
