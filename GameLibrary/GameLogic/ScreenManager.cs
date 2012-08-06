@@ -12,6 +12,8 @@ using GameLibrary.GameLogic.Controls;
 using GameLibrary.GameLogic.Screens;
 using GameLibrary.Graphics;
 using GameLibrary.GameLogic.Screens.Menu;
+using GameLibrary.GameLogic.Screens.Splash;
+using GameLibrary.System;
 #endregion
 
 namespace GameLibrary.GameLogic
@@ -30,29 +32,19 @@ namespace GameLibrary.GameLogic
         Texture2D blankTexture;
 
         bool isInitialized;
-        bool traceEnabled = true;
-        public int StartLevel = 0;
+        bool traceEnabled = false;
+        bool skipStartup = false;
         GraphicsDeviceManager _deviceManager;
 
         #endregion
 
         #region Properties
 
-
-        /// <summary>
-        /// A default SpriteBatch shared by all the screens. This saves
-        /// each screen having to bother creating their own local instance.
-        /// </summary>
         public SpriteBatch SpriteBatch
         {
             get { return spriteBatch; }
         }
 
-
-        /// <summary>
-        /// A default font shared by all the screens. This saves
-        /// each screen having to bother loading their own local copy.
-        /// </summary>
         public SpriteFont Font
         {
             get { return font; }
@@ -70,10 +62,6 @@ namespace GameLibrary.GameLogic
             set { traceEnabled = value; }
         }
 
-
-        /// <summary>
-        /// Gets a blank texture that can be used by the screens.
-        /// </summary>
         public Texture2D BlankTexture
         {
             get { return blankTexture; }
@@ -87,6 +75,17 @@ namespace GameLibrary.GameLogic
             }
         }
 
+        public bool SkipStartup
+        {
+            get
+            {
+                return skipStartup;
+            }
+            set
+            {
+                skipStartup = value;
+            }
+        }
 
         #endregion
 
@@ -113,7 +112,8 @@ namespace GameLibrary.GameLogic
             FontManager.Instance.Load(content);
 
             AddScreen(new BackgroundScreen(), null);
-            AddScreen(new MainMenuScreen(StartLevel), null);
+            AddScreen(new MainMenuScreen(), null);
+            AddScreen(new SplashScreen(), null);
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = FontManager.Instance.GetFont(FontList.MenuTitle);
@@ -268,11 +268,17 @@ namespace GameLibrary.GameLogic
             LoadingScreen.Load(this, true, gameScreen.ControllingPlayer, gameScreen);
         }
 
-        public void ChangeDevice(int x, int y, bool fullscreen)
+        public void ChangeDevice(int x, int y, bool fullscreen, bool sampling)
         {
+            GameSettings instance = GameSettings.Instance;
+
+            instance.Resolution = new ResolutionData(x, y, fullscreen);
+            instance.MultiSamplingEnabled = sampling;
+
             this._deviceManager.PreferredBackBufferWidth = x;
             this._deviceManager.PreferredBackBufferHeight = y;
             this._deviceManager.IsFullScreen = fullscreen;
+            this._deviceManager.PreferMultiSampling = sampling;
 
             this._deviceManager.ApplyChanges();
         }

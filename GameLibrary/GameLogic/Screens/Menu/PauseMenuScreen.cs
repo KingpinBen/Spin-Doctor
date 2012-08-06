@@ -23,25 +23,35 @@ namespace GameLibrary.GameLogic.Screens.Menu
             MenuEntry resumeGameMenuEntry = new MenuEntry("Resume Game");
             MenuEntry restartGameMenuEntry = new MenuEntry("Restart Level");
             MenuEntry HUBGameMenuEntry = new MenuEntry("Return to Hub");
+            MenuEntry journalMenuEntry = new MenuEntry("Open Journal");
+            MenuEntry sep = new MenuEntry("sep");
             MenuEntry quitGameMenuEntry = new MenuEntry("Quit Game");
 
             resumeGameMenuEntry.Origin = TextAlignment.Centre;
             restartGameMenuEntry.Origin = TextAlignment.Centre;
             HUBGameMenuEntry.Origin = TextAlignment.Centre;
+            journalMenuEntry.Origin = TextAlignment.Centre;
             quitGameMenuEntry.Origin = TextAlignment.Centre;
 
             // Hook up menu event handlers.
             resumeGameMenuEntry.Selected += OnCancel;
             restartGameMenuEntry.Selected += RestartLevelMenuEntrySelected;
             HUBGameMenuEntry.Selected += ReturnHUBMenuEntrySelected;
+            journalMenuEntry.Selected += JournalMenuEntrySelected;
             quitGameMenuEntry.Selected += QuitGameMenuEntrySelected;
+
+            sep.ItemType = MenuEntryType.Separator;
 
             // Add entries to the menu.
             MenuEntries.Add(resumeGameMenuEntry);
             MenuEntries.Add(restartGameMenuEntry);
             MenuEntries.Add(HUBGameMenuEntry);
+            MenuEntries.Add(journalMenuEntry);
+            MenuEntries.Add(sep);
             MenuEntries.Add(quitGameMenuEntry);
         }
+
+        
 
         #endregion
 
@@ -73,6 +83,11 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         }
 
+        void JournalMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            this.ScreenManager.AddScreen(new JournalScreen(), e.PlayerIndex);
+        }
+
         void ReturnHUBMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             const string message = "Return to Hub?";
@@ -97,16 +112,24 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         void ConfirmReturnMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, false, PlayerIndex.One, new GameplayScreen(0));
+            LoadingScreen.Load(ScreenManager, false, PlayerIndex.One, new GameplayScreen());
         }
 
         void ConfirmQuitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
             LoadingScreen.Load(ScreenManager, false, null, new BackgroundScreen(),
-                                                           new MainMenuScreen(this.ScreenManager.StartLevel));
+                                                           new MainMenuScreen());
         }
 
 
         #endregion
+
+        public override void Draw(GameTime gameTime)
+        {
+            // Darken down any other screens that were drawn beneath the popup.
+            ScreenManager.FadeBackBufferToBlack((TransitionAlpha * 2) * 0.33f);
+
+            base.Draw(gameTime);
+        }
     }
 }

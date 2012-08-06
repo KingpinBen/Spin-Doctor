@@ -62,7 +62,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
             ContentManager content = ScreenManager.Game.Content;
             _gradientTexture = content.Load<Texture2D>("Assets/Images/Basics/gradient");
 
-            if (InputManager.Instance.isGamePad)
+            if (InputManager.Instance.IsGamepad)
             {
                 _yesTexture = content.Load<Texture2D>("Assets/Other/Controls/A");
                 _noTexture = content.Load<Texture2D>("Assets/Other/Controls/B");

@@ -38,7 +38,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
             graphicsEntry.Origin = Graphics.UI.TextAlignment.Centre;
             audioEntry.Origin = Graphics.UI.TextAlignment.Centre;
-            sep.Separator = true;
+            sep.ItemType = MenuEntryType.Separator;
             back.Origin = Graphics.UI.TextAlignment.Centre;
 
             // Hook up menu event handlers.

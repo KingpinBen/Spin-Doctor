@@ -116,9 +116,14 @@ namespace GameLibrary.GameLogic.Screens.Menu
                     selectedEntry = menuEntries.Count - 1;
                 }
 
-                if (menuEntries[selectedEntry].Separator)
+                while (menuEntries[selectedEntry].ItemType == MenuEntryType.Separator || !menuEntries[selectedEntry].Enabled)
                 {
                     selectedEntry--;
+
+                    if (selectedEntry < 0)
+                    {
+                        selectedEntry = menuEntries.Count - 1;
+                    }
                 }
             }
 
@@ -132,9 +137,13 @@ namespace GameLibrary.GameLogic.Screens.Menu
                     selectedEntry = 0;
                 }
 
-                if (menuEntries[selectedEntry].Separator)
+                while(menuEntries[selectedEntry].ItemType == MenuEntryType.Separator || !menuEntries[selectedEntry].Enabled)
                 {
                     selectedEntry++;
+                    if (selectedEntry >= menuEntries.Count)
+                    {
+                        selectedEntry = 0;
+                    }
                 }
             }
 
@@ -203,7 +212,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
             GraphicsDevice graphics = ScreenManager.GraphicsDevice;
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             // Draw each menu entry in turn.
             for (int i = 0; i < menuEntries.Count; i++)
@@ -212,7 +221,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
                 bool isSelected = IsActive && (i == selectedEntry);
 
-                if (!menuEntry.Separator)
+                if (menuEntry.ItemType != MenuEntryType.Separator)
                     menuEntry.Draw(this, isSelected, gameTime);
             }
 
