@@ -44,12 +44,6 @@ namespace SpinEditor
                         roomType = RoomType.NonRotating;
                     }
                     break;
-                case 2:
-                    {
-                        roomSizeY.Enabled = true;
-                        roomType = RoomType.Hub;
-                    }
-                    break;
             }
         }
 

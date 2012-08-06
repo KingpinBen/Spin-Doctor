@@ -26,21 +26,22 @@ namespace SpinEditor
 {
     public partial class Form1 : Form
     {
+        #region Fields
+
+        static List<ObjectIndex> lst_ObjectsUnderCursor;
+        Vector2 mouseDown = Vector2.Zero;
+        Vector2 mouseUp = Vector2.Zero;
+        bool containsMouse = false;
+        bool dragReleased = true;
+        int amountOfTexturesNeeded;
+        
+        #endregion
+
         #region Properties
         public static List<ObjectIndex> ListThing
         {
             get { return lst_ObjectsUnderCursor; }
         }
-        #endregion
-
-        #region Fields
-
-        static List<ObjectIndex> lst_ObjectsUnderCursor;
-        Vector2 mouseDown = Vector2.Zero;
-        Vector2 mouseUp= Vector2.Zero;
-        bool containsMouse = false;
-        bool dragReleased = true;
-        int amountOfTexturesNeeded;
         #endregion
 
         #region Constructor and Load
@@ -69,12 +70,7 @@ namespace SpinEditor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //Refresh_XNB_Asset_List();
-
             listBox_Classes.SelectedIndex = -1;
-            listBox_Assets0.SelectedItem = "icon";
-            listBox_Assets1.SelectedItem = "icon";
-            listBox_Assets2.SelectedItem = "icon";
             Align_Relative.SelectedItem = "Last Selected";
 
             NewFile();
@@ -95,6 +91,10 @@ namespace SpinEditor
         }
 
         #region Create an Object
+
+
+
+
         private void CreateObject(string Type, Vector2 Position)
         {
             string texloc0 = "";
@@ -124,22 +124,6 @@ namespace SpinEditor
                     }
                 }
             }
-
-            //if ((listBox_Assets0.SelectedItem != null) || (listBox_Classes.SelectedItem != null || Type == "Bounce Pad" || Type == "One-Sided Platform"))
-            //{
-            //  All textures are loaded inside each object.
-
-
-            //if (listBox_Assets0.SelectedIndex >= 0)
-            //    texloc0 = STATIC_CONTBUILDER.textureLoc + listBox_Assets0.Items[listBox_Assets0.SelectedIndex].ToString();
-            //if (listBox_Assets1.SelectedIndex >= 0)
-            //    texloc1 = STATIC_CONTBUILDER.textureLoc + listBox_Assets1.Items[listBox_Assets1.SelectedIndex].ToString();
-            //if (listBox_Assets2.SelectedIndex >= 0)
-            //    texloc2 = STATIC_CONTBUILDER.textureLoc + listBox_Assets2.Items[listBox_Assets2.SelectedIndex].ToString();
-
-            //texloc0 = assetLocTextBox1.Text.ToString();
-            //texloc1 = assetLocTextBox2.Text.ToString();
-            //texloc2 = assetLocTextBox3.Text.ToString();
 
             #region Object Types
             switch (Type)
@@ -243,7 +227,7 @@ namespace SpinEditor
                 case "Rope":
                     {
                         Rope rope = new Rope();
-                        rope.Init(Position, texloc0);
+                        rope.Init(Position, texloc0, texloc1);
                         rope.Load(xnA_RenderControl1.contentMan, STATIC_EDITOR_MODE.world);
                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(rope);
                     }
@@ -538,7 +522,12 @@ namespace SpinEditor
 
         #region Private Methods
 
+
+
         #region File
+
+
+
         void NewFile()
         {
             if (CheckIfOpenLevel())
@@ -593,8 +582,12 @@ namespace SpinEditor
                                         xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
                                     }
 
+
+                                    //  If we're to be inserting initial walls, put them in.
                                     if (RoomForm.drawWallsCheckBox1.Checked)
                                     {
+                                        //  Intialize the 4 boundaries
+
                                         StaticObject topWall = new StaticObject();
                                         StaticObject bottomWall = new StaticObject(); 
                                         StaticObject leftWall = new StaticObject();
@@ -605,10 +598,14 @@ namespace SpinEditor
                                         leftWall.Init(Vector2.Zero, "Assets/Images/Textures/Environment/platform_4");
                                         rightWall.Init(Vector2.Zero, "Assets/Images/Textures/Environment/platform_4");
 
+                                        //  First we need to load them so we can use their Texture values.
+
                                         topWall.Load(xnA_RenderControl1.contentMan, new World(Vector2.Zero));
                                         bottomWall.Load(xnA_RenderControl1.contentMan, new World(Vector2.Zero));
                                         leftWall.Load(xnA_RenderControl1.contentMan, new World(Vector2.Zero));
                                         rightWall.Load(xnA_RenderControl1.contentMan, new World(Vector2.Zero));
+
+                                        //  Now we grab them for positioning
 
                                         float textureWidth = topWall.Texture.Width;
                                         float textureHeight = topWall.Texture.Height;
@@ -618,12 +615,24 @@ namespace SpinEditor
                                         leftWall.Position = new Vector2(-alteredRoomSize.X * 0.5f, 0) - new Vector2(textureHeight * 0.5f, 0);
                                         rightWall.Position = new Vector2(alteredRoomSize.X * 0.5f, 0) + new Vector2(textureHeight * 0.5f, 0);
 
+                                        //  Apply a high Zlayer so they make certain conditions make it look like
+                                        //  a cube like boundaries.
+
+                                        topWall.ZLayer = 0.2f;
+                                        bottomWall.ZLayer = 0.2f;
+                                        leftWall.ZLayer = 0.2f;
+                                        rightWall.ZLayer = 0.2f;
+
+                                        //  Set up the correct orientation for rotation.
+
                                         bottomWall.Orientation = GameLibrary.GameLogic.Objects.Orientation.Down;
                                         leftWall.Orientation = GameLibrary.GameLogic.Objects.Orientation.Left;
                                         rightWall.Orientation = GameLibrary.GameLogic.Objects.Orientation.Right;
 
                                         topWall.Width = bottomWall.Width = alteredRoomSize.X;
                                         leftWall.Height = rightWall.Height = alteredRoomSize.Y + (leftWall.Texture.Height * 2) - 8;
+
+                                        //  Put them immediately back into the object list
 
                                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(topWall);
                                         STATIC_EDITOR_MODE.levelInstance.ObjectsList.Add(bottomWall);
@@ -645,6 +654,9 @@ namespace SpinEditor
                 }
             }
         }
+
+
+
 
         bool OpenFile()
         {
@@ -668,7 +680,7 @@ namespace SpinEditor
                         }
                         else
                         {
-                            xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(FileLoc.BlankPixel());
+                            xnA_RenderControl1.levelBackground = xnA_RenderControl1.contentMan.Load<Texture2D>(Defines.BLANK_PIXEL);
                         }
 
                         
@@ -700,6 +712,9 @@ namespace SpinEditor
                 return false;
             }
         }
+
+
+
 
         #region Check if Open Level
         /// <summary>
@@ -747,6 +762,9 @@ namespace SpinEditor
         }
         #endregion
 
+
+
+
         bool SaveFile()
         {
             saveFileDialog1.Filter = "XML files|*.xml";
@@ -772,7 +790,14 @@ namespace SpinEditor
                 return false;
             }            
         }
+
+
+
+
         #endregion
+
+
+
 
         void CopyPaste()
         {
@@ -859,39 +884,6 @@ namespace SpinEditor
         }
 
         #region Align Methods
-        private void BUTTON_IMPORT_ASSET_Click(object sender, EventArgs e)
-        {
-#if NOTUSED
-            // Default to the directory which contains our content files
-            string assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string relativePath = Path.Combine(assemblyLocation, "../../../../Content", STATIC_CONTBUILDER.textureLoc);
-            string contentPath = Path.GetFullPath(relativePath);
-
-            openFileDialog1.InitialDirectory = contentPath;
-
-            openFileDialog1.Title = "Load Asset";
-
-            openFileDialog1.Filter = "PNG Files (*.png)|*.png|" +
-                                     "DDS Files (*.dds)|*.dds|" +
-                                     "BMP Files (*.bmp)|*.bmp|" +
-                                     "All Files (*.*)|*.*";
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                string outFileName = STATIC_CONTBUILDER.BuildXNBFromFile((openFileDialog1.FileName));
-
-                // copy the asset from the temporary build directory to our assets directory, for the purposes of this example, we will just use the root of the content folder
-                File.Copy(
-                    Path.Combine(STATIC_CONTBUILDER.contentBuilder.OutputDirectory, outFileName),
-                    Path.Combine(STATIC_CONTBUILDER.pathToContent(), outFileName),
-                    true);
-            }
-
-            Refresh_XNB_Asset_List();
-#endif
-        }
-
-        #region ALIGN/ROTATE
 
         #region Align Relative To
         private void Align_Relative_SelectedIndexChanged(object sender, EventArgs e)
@@ -917,1527 +909,1524 @@ namespace SpinEditor
         }
         #endregion
 
-        //#region Align Buttons
-        //// Horizontal Alignment Functions
-        //#region Align Right Side to Left of Anchor
-        //private void BUTTON_ALIGN_1_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjXPos = get_first_xpos();
-        //                float firstObjTexWidth = get_first_texwidth();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width * 0.5f)
-        //                                    - (firstObjTexWidth * 0.5f),
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width * 0.5f)
-        //                                    - (firstObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjXPos = get_last_xpos();
-        //                float lastObjTexWidth = get_last_texwidth();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2)
-        //                                    - (lastObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                                    - (lastObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float furthestPos = get_furthest_lpos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    furthestPos - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2,
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    furthestPos - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Align Left Sides
-        //private void BUTTON_ALIGN_2_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjXPos = get_first_xpos();
-        //                float firstObjTexWidth = get_first_texwidth();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2)
-        //                                    - (firstObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                                    - (firstObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjXPos = get_last_xpos();
-        //                float lastObjTexWidth = get_last_texwidth();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2)
-        //                                    - (lastObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                                    - (lastObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float furthestPos = get_furthest_lpos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    furthestPos + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2,
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    furthestPos + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Align Centers Horizontally
-        //private void BUTTON_ALIGN_3_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjXPos = get_first_xpos();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos,
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos,
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjXPos = get_last_xpos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos,
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos,
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float avgXPos = get_avg_xpos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    avgXPos, STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    avgXPos, STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Align Right Sides
-        //private void BUTTON_ALIGN_4_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjXPos = get_first_xpos();
-        //                float firstObjTexWidth = get_first_texwidth();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2)
-        //                                    + (firstObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                                    + (firstObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjXPos = get_last_xpos();
-        //                float lastObjTexWidth = get_last_texwidth();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2)
-        //                                    + (lastObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                                    + (lastObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float furthestPos = get_furthest_rpos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    furthestPos - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2,
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    furthestPos - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Align Left Sides to Right of Anchor
-        //private void BUTTON_ALIGN_5_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjXPos = get_first_xpos();
-        //                float firstObjTexWidth = get_first_texwidth();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2)
-        //                                    + (firstObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    firstObjXPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                                    + (firstObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjXPos = get_last_xpos();
-        //                float lastObjTexWidth = get_last_texwidth();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2)
-        //                                    + (lastObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    lastObjXPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                                    + (lastObjTexWidth / 2),
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float furthestPos = get_furthest_rpos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    furthestPos + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Width / 2,
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    furthestPos + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2,
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //// Vertical Alignment Functions
-        //#region Align Bottoms to Top of Anchor
-        //private void BUTTON_ALIGN_6_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjYPos = get_first_ypos();
-        //                float firstObjTexHeight = get_first_texheight();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2)
-        //                                    - (firstObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                                    - (firstObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjYPos = get_last_ypos();
-        //                float lastObjTexHeight = get_last_texheight();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2)
-        //                                    - (lastObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                                    - (lastObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float furthestPos = get_furthest_upos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    furthestPos - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    furthestPos - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Align Tops
-        //private void BUTTON_ALIGN_7_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjYPos = get_first_ypos();
-        //                float firstObjTexHeight = get_first_texheight();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2)
-        //                                    - (firstObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                                    - (firstObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjYPos = get_last_ypos();
-        //                float lastObjTexHeight = get_last_texheight();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2)
-        //                                    - (lastObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                                    - (lastObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float furthestPos = get_furthest_upos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    furthestPos + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    furthestPos + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Align Centers Vertically
-        //private void BUTTON_ALIGN_8_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjYPos = get_first_ypos();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjYPos = get_last_ypos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float avgYPos = get_avg_ypos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position =
-        //                                    new Vector2(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X, avgYPos);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position =
-        //                                    new Vector2(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X, avgYPos);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Align Bottoms
-        //private void BUTTON_ALIGN_9_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjYPos = get_first_ypos();
-        //                float firstObjTexHeight = get_first_texheight();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2)
-        //                                    + (firstObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                                    + (firstObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjYPos = get_last_ypos();
-        //                float lastObjTexHeight = get_last_texheight();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2)
-        //                                    + (lastObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos
-        //                                    - (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                                    + (lastObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float furthestPos = get_furthest_dpos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    furthestPos - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    furthestPos - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Align Tops to Bottom of Anchor
-        //private void BUTTON_ALIGN_10_Click(object sender, EventArgs e)
-        //{
-        //    switch (Align_Relative.SelectedItem.ToString())
-        //    {
-        //        case "First Selected":
-        //            {
-        //                float firstObjYPos = get_first_ypos();
-        //                float firstObjTexHeight = get_first_texheight();
-
-        //                for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2)
-        //                                    + (firstObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    firstObjYPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                                    + (firstObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Last Selected":
-        //            {
-        //                float lastObjYPos = get_last_ypos();
-        //                float lastObjTexHeight = get_last_texheight();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2)
-        //                                    + (lastObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    lastObjYPos
-        //                                    + (STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                                    + (lastObjTexHeight / 2));
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        case "Selection":
-        //            {
-        //                float furthestPos = get_furthest_dpos();
-
-        //                for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //                {
-        //                    switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                    {
-        //                        case (OBJECT_TYPE.Physics):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    furthestPos + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Texture.Height / 2);
-        //                            }
-        //                            break;
-        //                        case (OBJECT_TYPE.Decal):
-        //                            {
-        //                                STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position = new Vector2(
-        //                                    STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X,
-        //                                    furthestPos + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2);
-        //                            }
-        //                            break;
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
-
-        //#region Get Positions To Align By
-        //private float get_avg_xpos()
-        //{
-        //    float furthestLeftPos = 0;
-        //    float furthestRightPos = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                furthestLeftPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
-        //                furthestRightPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                furthestLeftPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
-        //                furthestRightPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
-        //            }
-        //            break;
-        //    }
-
-        //    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //    {
-        //        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //        {
-        //            case (OBJECT_TYPE.Physics):
-        //                {
-        //                    if (furthestLeftPos > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                        furthestLeftPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
-        //                    if (furthestRightPos < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                        furthestRightPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
-        //                }
-        //                break;
-        //            case (OBJECT_TYPE.Decal):
-        //                {
-        //                    if (furthestLeftPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                        furthestLeftPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
-        //                    if (furthestRightPos < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                        furthestRightPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
-        //                }
-        //                break;
-        //        }
-        //    }
-
-        //    return ((furthestLeftPos + furthestRightPos) / 2);
-        //}
-        //private float get_avg_ypos()
-        //{
-        //    float furthestUpPos = 0;
-        //    float furthestDownPos = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                furthestUpPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
-        //                furthestDownPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                furthestUpPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
-        //                furthestDownPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
-        //            }
-        //            break;
-        //    }
-
-        //    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //    {
-        //        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //        {
-        //            case (OBJECT_TYPE.Physics):
-        //                {
-        //                    if (furthestUpPos > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                        furthestUpPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
-        //                    if (furthestDownPos < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                        furthestDownPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
-        //                }
-        //                break;
-        //            case (OBJECT_TYPE.Decal):
-        //                {
-        //                    if (furthestUpPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                        furthestUpPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
-        //                    if (furthestDownPos < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                        furthestDownPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
-        //                }
-        //                break;
-        //        }
-        //    }
-
-        //    return ((furthestUpPos + furthestDownPos) / 2);
-        //}
-        //private float get_first_xpos()
-        //{
-        //    float firstObjXPos = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                firstObjXPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                firstObjXPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X;
-        //            }
-        //            break;
-        //    }
-
-        //    return firstObjXPos;
-        //}
-        //private float get_first_ypos()
-        //{
-        //    float firstObjYPos = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                firstObjYPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                firstObjYPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y;
-        //            }
-        //            break;
-        //    }
-
-        //    return firstObjYPos;
-        //}
-        //private float get_last_xpos()
-        //{
-        //    float lastObjXPos = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                lastObjXPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index].Position.X;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                lastObjXPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index].Position.X;
-        //            }
-        //            break;
-        //    }
-
-        //    return lastObjXPos;
-        //}
-        //private float get_last_ypos()
-        //{
-        //    float lastObjYPos = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                lastObjYPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index].Position.Y;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                lastObjYPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index].Position.Y;
-        //            }
-        //            break;
-        //    }
-
-        //    return lastObjYPos;
-        //}
-        //private float get_first_texwidth()
-        //{
-        //    float firstObjTexWidth = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                firstObjTexWidth = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Texture.Width;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                firstObjTexWidth = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width;
-        //            }
-        //            break;
-        //    }
-
-        //    return firstObjTexWidth;
-        //}
-        //private float get_first_texheight()
-        //{
-        //    float firstObjTexHeight = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                firstObjTexHeight = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Texture.Height;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                firstObjTexHeight = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height;
-        //            }
-        //            break;
-        //    }
-
-        //    return firstObjTexHeight;
-        //}
-        //private float get_last_texwidth()
-        //{
-        //    float lastObjTexWidth = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                lastObjTexWidth = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index].Texture.Width;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                lastObjTexWidth = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index].Width;
-        //            }
-        //            break;
-        //    }
-
-        //    return lastObjTexWidth;
-        //}
-        //private float get_last_texheight()
-        //{
-        //    float lastObjTexHeight = 0;
-
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                lastObjTexHeight = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index].Texture.Height;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                lastObjTexHeight = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index].Height;
-        //            }
-        //            break;
-        //    }
-
-        //    return lastObjTexHeight;
-        //}
-        //private float get_furthest_lpos()
-        //{
-        //    float furthestPos = 0;
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                furthestPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
-        //            }
-        //            break;
-        //    }
-
-        //    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //    {
-        //        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //        {
-        //            case (OBJECT_TYPE.Physics):
-        //                {
-        //                    if (furthestPos > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                        furthestPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
-        //                }
-        //                break;
-        //            case (OBJECT_TYPE.Decal):
-        //                {
-        //                    if (furthestPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                        furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
-        //                }
-        //                break;
-        //        }
-        //    }
-
-        //    return furthestPos;
-        //}
-        //private float get_furthest_rpos()
-        //{
-        //    float furthestPos = 0;
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                furthestPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
-        //            }
-        //            break;
-        //    }
-
-        //    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //    {
-        //        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //        {
-        //            case (OBJECT_TYPE.Physics):
-        //                {
-        //                    if (furthestPos < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                        furthestPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
-        //                }
-        //                break;
-        //            case (OBJECT_TYPE.Decal):
-        //                {
-        //                    if (furthestPos < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
-        //                        furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
-        //                }
-        //                break;
-        //        }
-        //    }
-
-        //    return furthestPos;
-        //}
-        //private float get_furthest_upos()
-        //{
-        //    float furthestPos = 0;
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                furthestPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
-        //            }
-        //            break;
-        //    }
-
-        //    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //    {
-        //        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //        {
-        //            case (OBJECT_TYPE.Physics):
-        //                {
-        //                    if (furthestPos > STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                        furthestPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
-        //                }
-        //                break;
-        //            case (OBJECT_TYPE.Decal):
-        //                {
-        //                    if (furthestPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                        furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
-        //                }
-        //                break;
-        //        }
-        //    }
-
-        //    return furthestPos;
-        //}
-        //private float get_furthest_dpos()
-        //{
-        //    float furthestPos = 0;
-        //    switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
-        //    {
-        //        case (OBJECT_TYPE.Physics):
-        //            {
-        //                furthestPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
-        //            }
-        //            break;
-        //        case (OBJECT_TYPE.Decal):
-        //            {
-        //                furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
-        //            }
-        //            break;
-        //    }
-
-        //    for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
-        //    {
-        //        switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //        {
-        //            case (OBJECT_TYPE.Physics):
-        //                {
-        //                    if (furthestPos < STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                        furthestPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
-        //                }
-        //                break;
-        //            case (OBJECT_TYPE.Decal):
-        //                {
-        //                    if (furthestPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
-        //                        furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
-        //                }
-        //                break;
-        //        }
-        //    }
-
-        //    return furthestPos;
-        //}
-
-        //#endregion
-        //#endregion
-
-        //#region Rotate Selection
-        //private void BUTTON_ROTATE_SELECTION_CLOCKWISE_Click(object sender, EventArgs e)
-        //{
-        //    switch (Rotate_Relative.SelectedItem.ToString())
-        //    {
-        //        case "As Group":
-        //            Vector2 avgPos = new Vector2(get_avg_xpos(), get_avg_ypos());
-
-        //            for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0; i--)
-        //            {
-        //                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                {
-        //                    case (OBJECT_TYPE.Physics):
-        //                        {
-        //                            Vector2 curPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position;
-        //                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position =
-        //                                new Vector2((float)(Math.Cos(MathHelper.ToRadians(90)) * (curPos.X - avgPos.X) - Math.Sin(MathHelper.ToRadians(90)) * (curPos.Y - avgPos.Y) + avgPos.X),
-        //                                            (float)(Math.Sin(MathHelper.ToRadians(90)) * (curPos.X - avgPos.X) + Math.Cos(MathHelper.ToRadians(90)) * (curPos.Y - avgPos.Y) + avgPos.Y));
-        //                            Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
-        //                            if (t.BaseType == typeof(DynamicObject))
-        //                            {
-        //                                DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
-        //                                Vector2 curEndPos = dyOb.EndPosition;
-        //                                dyOb.EndPosition =
-        //                                    new Vector2((float)(Math.Cos(MathHelper.ToRadians(90)) * (curEndPos.X - avgPos.X) - Math.Sin(MathHelper.ToRadians(90)) * (curEndPos.Y - avgPos.Y) + avgPos.X),
-        //                                                (float)(Math.Sin(MathHelper.ToRadians(90)) * (curEndPos.X - avgPos.X) + Math.Cos(MathHelper.ToRadians(90)) * (curEndPos.Y - avgPos.Y) + avgPos.Y));
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index] = dyOb;
-        //                            }
-        //                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].TextureRotation =
-        //                                MathHelper.ToDegrees(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].TextureRotation) + 90;
-        //                        }
-        //                        break;
-        //                    case (OBJECT_TYPE.Decal):
-        //                        {
-        //                            Vector2 curPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position;
-        //                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position =
-        //                                new Vector2((float)(Math.Cos(MathHelper.ToRadians(90)) * (curPos.X - avgPos.X) - Math.Sin(MathHelper.ToRadians(90)) * (curPos.Y - avgPos.Y) + avgPos.X),
-        //                                            (float)(Math.Sin(MathHelper.ToRadians(90)) * (curPos.X - avgPos.X) + Math.Cos(MathHelper.ToRadians(90)) * (curPos.Y - avgPos.Y) + avgPos.Y));
-        //                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Rotation =
-        //                                MathHelper.ToDegrees(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Rotation) + 90;
-        //                        }
-        //                        break;
-        //                }
-        //            }
-        //            break;
-        //        case "Per Object":
-        //            for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0; i--)
-        //            {
-        //                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                {
-        //                    case (OBJECT_TYPE.Physics):
-        //                        {
-        //                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].TextureRotation =
-        //                                MathHelper.ToDegrees(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].TextureRotation)
-        //                                + 90;
-        //                        }
-        //                        break;
-        //                    case (OBJECT_TYPE.Decal):
-        //                        {
-        //                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Rotation =
-        //                                MathHelper.ToDegrees(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Rotation)
-        //                                + 90;
-        //                        }
-        //                        break;
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-
-        //private void BUTTON_ROTATE_SELECTION_ANTICLOCKWISE_Click(object sender, EventArgs e)
-        //{
-        //    switch (Rotate_Relative.SelectedItem.ToString())
-        //    {
-        //        case "As Group":
-        //            Vector2 avgPos = new Vector2(get_avg_xpos(), get_avg_ypos());
-
-        //            for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0; i--)
-        //            {
-        //                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                {
-        //                    case (OBJECT_TYPE.Physics):
-        //                        {
-        //                            Vector2 curPos = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position;
-        //                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position =
-        //                                new Vector2((float)(Math.Cos(MathHelper.ToRadians(-90)) * (curPos.X - avgPos.X) - Math.Sin(MathHelper.ToRadians(-90)) * (curPos.Y - avgPos.Y) + avgPos.X),
-        //                                            (float)(Math.Sin(MathHelper.ToRadians(-90)) * (curPos.X - avgPos.X) + Math.Cos(MathHelper.ToRadians(-90)) * (curPos.Y - avgPos.Y) + avgPos.Y));
-        //                            Type t = STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].GetType();
-        //                            if (t.BaseType == typeof(DynamicObject))
-        //                            {
-        //                                DynamicObject dyOb = (DynamicObject)STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
-        //                                Vector2 curEndPos = dyOb.EndPosition;
-        //                                dyOb.EndPosition =
-        //                                    new Vector2((float)(Math.Cos(MathHelper.ToRadians(-90)) * (curEndPos.X - avgPos.X) - Math.Sin(MathHelper.ToRadians(-90)) * (curEndPos.Y - avgPos.Y) + avgPos.X),
-        //                                                (float)(Math.Sin(MathHelper.ToRadians(-90)) * (curEndPos.X - avgPos.X) + Math.Cos(MathHelper.ToRadians(-90)) * (curEndPos.Y - avgPos.Y) + avgPos.Y));
-        //                                STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index] = dyOb;
-        //                            }
-        //                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].TextureRotation =
-        //                                MathHelper.ToDegrees(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].TextureRotation) - 90;
-        //                        }
-        //                        break;
-        //                    case (OBJECT_TYPE.Decal):
-        //                        {
-        //                            Vector2 curPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position;
-        //                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position =
-        //                                new Vector2((float)(Math.Cos(MathHelper.ToRadians(-90)) * (curPos.X - avgPos.X) - Math.Sin(MathHelper.ToRadians(-90)) * (curPos.Y - avgPos.Y) + avgPos.X),
-        //                                            (float)(Math.Sin(MathHelper.ToRadians(-90)) * (curPos.X - avgPos.X) + Math.Cos(MathHelper.ToRadians(-90)) * (curPos.Y - avgPos.Y) + avgPos.Y));
-        //                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Rotation =
-        //                                MathHelper.ToDegrees(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Rotation) - 90;
-        //                        }
-        //                        break;
-        //                }
-        //            }
-        //            break;
-        //        case "Per Object":
-        //            for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i >= 0; i--)
-        //            {
-        //                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
-        //                {
-        //                    case (OBJECT_TYPE.Physics):
-        //                        {
-        //                            STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].TextureRotation =
-        //                                MathHelper.ToDegrees(STATIC_EDITOR_MODE.levelInstance.PhysicsObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].TextureRotation)
-        //                                - 90;
-        //                        }
-        //                        break;
-        //                    case (OBJECT_TYPE.Decal):
-        //                        {
-        //                            STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Rotation =
-        //                                MathHelper.ToDegrees(STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Rotation)
-        //                                - 90;
-        //                        }
-        //                        break;
-        //                }
-        //            }
-        //            break;
-        //    }
-        //    Handle_Property_Grid_Items();
-        //    Update_undoArray();
-        //}
-        //#endregion
+        #region Align Buttons
+
+        #region Align Right Side to Left of Anchor
+        private void RL_Horizontal_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjXPos = Get_First_Position().X;
+                        float firstObjTexWidth = Get_First_TextureDimensions().X;
+
+
+                        for (int i = 1; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        NodeObject obj = ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2((firstObjXPos - obj.Width * 0.5f) - (firstObjTexWidth * 0.5f), obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(firstObjXPos - (obj.Width * 0.5f) - (firstObjTexWidth * 0.5f), obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjXPos = Get_Last_Position().X;
+                        float lastObjTexWidth = Get_Last_TextureDimensions().X;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos - (obj.Texture.Width - lastObjTexWidth) * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos - (obj.Width - lastObjTexWidth) * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float furthestPos = get_furthest_lpos();
+
+                        for (int i = 0; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            furthestPos - obj.Width * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            furthestPos - obj.Width * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Left Sides Together
+        private void L_Horizontal_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjXPos = Get_First_Position().X;
+                        float firstObjTexWidth = Get_First_TextureDimensions().X;
+
+                        for (int i = 1; i < selectedObjects.Count; i++)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            firstObjXPos
+                                            + (obj.Texture.Width * 0.5f)
+                                            - (firstObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            firstObjXPos
+                                            + (obj.Width * 0.5f)
+                                            - (firstObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjXPos = Get_Last_Position().X;
+                        float lastObjTexWidth = Get_Last_TextureDimensions().X;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos
+                                            + (obj.Width * 0.5f)
+                                            - (lastObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos
+                                            + (obj.Width * 0.5f)
+                                            - (lastObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float furthestPos = get_furthest_lpos();
+
+                        for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            furthestPos + obj.Width * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            furthestPos + obj.Width * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Centers Horizontally
+        void C_Horizontal_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjXPos = Get_First_Position().X;
+
+                        for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            firstObjXPos,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            firstObjXPos,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjXPos = Get_Last_Position().X;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float avgXPos = get_avg_xpos();
+
+                        for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            avgXPos, obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(avgXPos, obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Right Sides Together
+        private void R_Horizontal_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjXPos = Get_First_Position().X;
+                        float firstObjTexWidth = Get_First_TextureDimensions().X;
+
+                        for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            firstObjXPos
+                                            - (obj.Width * 0.5f)
+                                            + (firstObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            firstObjXPos
+                                            - (obj.Width * 0.5f)
+                                            + (firstObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjXPos = Get_Last_Position().X;
+                        float lastObjTexWidth = Get_Last_TextureDimensions().X;
+
+                        for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i++)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos
+                                            - (obj.Width * 0.5f)
+                                            + (lastObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos
+                                            - (obj.Width * 0.5f)
+                                            + (lastObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float furthestPos = get_furthest_rpos();
+
+                        for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            furthestPos - obj.Width * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            furthestPos - obj.Width * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Left Sides to Right of Anchor
+        private void LR_Horizontal_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjXPos = Get_First_Position().X;
+                        float firstObjTexWidth = Get_First_TextureDimensions().X;
+
+                        for (int i = 1; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            firstObjXPos
+                                            + (obj.Texture.Width * 0.5f)
+                                            + (firstObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            firstObjXPos
+                                            + (obj.Width * 0.5f)
+                                            + (firstObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjXPos = Get_Last_Position().X;
+                        float lastObjTexWidth = Get_Last_TextureDimensions().X;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos
+                                            + (obj.Width * 0.5f)
+                                            + (lastObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            lastObjXPos
+                                            + (obj.Width * 0.5f)
+                                            + (lastObjTexWidth * 0.5f),
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float furthestPos = get_furthest_rpos();
+
+                        for (int i = 0; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            furthestPos + obj.Width * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            furthestPos + obj.Width * 0.5f,
+                                            obj.Position.Y);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Bottoms to Top of Anchor
+        private void BT_Vertical_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjYPos = Get_First_Position().Y;
+                        float firstObjTexHeight = Get_First_TextureDimensions().Y;
+
+                        for (int i = STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1; i > 0; i--)
+                        {
+                            switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos
+                                            - (obj.Height * 0.5f)
+                                            - (firstObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos
+                                            - (obj.Height * 0.5f)
+                                            - (firstObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjYPos = Get_Last_Position().Y;
+                        float lastObjTexHeight = Get_Last_TextureDimensions().Y;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos
+                                            - (obj.Height * 0.5f)
+                                            - (lastObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos
+                                            - (obj.Height * 0.5f)
+                                            - (lastObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float furthestPos = get_furthest_upos();
+
+                        for (int i = 0; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            furthestPos - obj.Height * 0.5f);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            furthestPos - obj.Height * 0.5f);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Tops
+        private void T_Vertical_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjYPos = Get_First_Position().Y;
+                        float firstObjTexHeight = Get_First_TextureDimensions().Y;
+
+                        for (int i = selectedObjects.Count - 1; i > 0; i--)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos
+                                            + (obj.Texture.Height * 0.5f)
+                                            - (firstObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos
+                                            + (obj.Height * 0.5f)
+                                            - (firstObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjYPos = Get_Last_Position().Y;
+                        float lastObjTexHeight = Get_Last_TextureDimensions().Y;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos
+                                            + (obj.Height * 0.5f)
+                                            - (lastObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos
+                                            + (obj.Height * 0.5f)
+                                            - (lastObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float furthestPos = get_furthest_upos();
+
+                        for (int i = 0; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            furthestPos + obj.Height * 0.5f);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            furthestPos + obj.Height * 0.5f);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Centers Vertically
+        private void C_Vertical_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjYPos = Get_First_Position().Y;
+
+                        for (int i = selectedObjects.Count - 1; i > 0; i--)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjYPos = Get_Last_Position().Y;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float avgYPos = get_avg_ypos();
+
+                        for (int i = 0; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X, avgYPos);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position =
+                                            new Vector2(obj.Position.X, avgYPos);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Bottoms
+        private void B_Vertical_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjYPos = Get_First_Position().Y;
+                        float firstObjTexHeight = Get_First_TextureDimensions().Y;
+
+                        for (int i = selectedObjects.Count - 1; i > 0; i--)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos
+                                            - (obj.Height * 0.5f)
+                                            + (firstObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos
+                                            - (obj.Height * 0.5f)
+                                            + (firstObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjYPos = Get_Last_Position().Y;
+                        float lastObjTexHeight = Get_Last_TextureDimensions().Y;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos
+                                            - (obj.Height * 0.5f)
+                                            + (lastObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos
+                                            - (obj.Height * 0.5f)
+                                            + (lastObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float furthestPos = get_furthest_dpos();
+
+                        for (int i = 0; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            furthestPos - obj.Height * 0.5f);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            furthestPos - obj.Height * 0.5f);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Align Tops to Bottom of Anchor
+        private void TB_Vertical_Align_Click(object sender, EventArgs e)
+        {
+            List<ObjectIndex> selectedObjects = STATIC_EDITOR_MODE.selectedObjectIndices;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (Align_Relative.SelectedItem.ToString())
+            {
+                case "First Selected":
+                    {
+                        float firstObjYPos = Get_First_Position().Y;
+                        float firstObjTexHeight = Get_First_TextureDimensions().Y;
+
+                        for (int i = selectedObjects.Count - 1; i > 0; i--)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+                                        
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos
+                                            + (obj.Height * 0.5f)
+                                            + (firstObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            firstObjYPos
+                                            + (obj.Height * 0.5f)
+                                            + (firstObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Last Selected":
+                    {
+                        float lastObjYPos = Get_Last_Position().Y;
+                        float lastObjTexHeight = Get_Last_TextureDimensions().Y;
+
+                        for (int i = 0; i < selectedObjects.Count - 1; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos
+                                            + (obj.Height * 0.5f)
+                                            + (lastObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            lastObjYPos
+                                            + (obj.Height * 0.5f)
+                                            + (lastObjTexHeight * 0.5f));
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case "Selection":
+                    {
+                        float furthestPos = get_furthest_dpos();
+
+                        for (int i = 0; i < selectedObjects.Count; i++)
+                        {
+                            switch (selectedObjects[i].Type)
+                            {
+                                case (OBJECT_TYPE.Physics):
+                                    {
+                                        StaticObject obj = (StaticObject)ObjectsList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            furthestPos + obj.Height * 0.5f);
+                                    }
+                                    break;
+                                case (OBJECT_TYPE.Decal):
+                                    {
+                                        Decal obj = DecalList[selectedObjects[i].Index];
+
+                                        obj.Position = new Vector2(
+                                            obj.Position.X,
+                                            furthestPos + obj.Height * 0.5f);
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            Handle_Property_Grid_Items();
+            Update_undoArray();
+        }
+        #endregion
+
+        #region Alignment Gets
+        private float get_avg_xpos()
+        {
+            float furthestLeftPos = 0;
+            float furthestRightPos = 0;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case (OBJECT_TYPE.Physics):
+                    {
+                        furthestLeftPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width * 0.5f;
+                        furthestRightPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width * 0.5f;
+                    }
+                    break;
+                case (OBJECT_TYPE.Decal):
+                    {
+                        furthestLeftPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
+                        furthestRightPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
+                    }
+                    break;
+            }
+
+            for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+            {
+                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                {
+                    case (OBJECT_TYPE.Physics):
+                        {
+                            if (furthestLeftPos > ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+                                furthestLeftPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
+                            if (furthestRightPos < ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+                                furthestRightPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
+                        }
+                        break;
+                    case (OBJECT_TYPE.Decal):
+                        {
+                            if (furthestLeftPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+                                furthestLeftPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
+                            if (furthestRightPos < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+                                furthestRightPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
+                        }
+                        break;
+                }
+            }
+
+            return ((furthestLeftPos + furthestRightPos) / 2);
+        }
+        private float get_avg_ypos()
+        {
+            float furthestUpPos = 0;
+            float furthestDownPos = 0;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case (OBJECT_TYPE.Physics):
+                    {
+                        furthestUpPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
+                        furthestDownPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
+                    }
+                    break;
+                case (OBJECT_TYPE.Decal):
+                    {
+                        furthestUpPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
+                        furthestDownPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
+                    }
+                    break;
+            }
+
+            for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+            {
+                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                {
+                    case (OBJECT_TYPE.Physics):
+                        {
+                            if (furthestUpPos > ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
+                                furthestUpPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
+                            if (furthestDownPos < ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
+                                furthestDownPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
+                        }
+                        break;
+                    case (OBJECT_TYPE.Decal):
+                        {
+                            if (furthestUpPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
+                                furthestUpPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
+                            if (furthestDownPos < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
+                                furthestDownPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
+                        }
+                        break;
+                }
+            }
+
+            return ((furthestUpPos + furthestDownPos) / 2);
+        }
+
+
+        #region Alignment Position Gets
+
+
+
+        /// <summary>
+        /// Returns theposition of the first object in the SelectedObjects list.
+        /// </summary>
+        Vector2 Get_First_Position()
+        {
+            Vector2 objPosition = Vector2.Zero;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+            ObjectIndex objIndex = STATIC_EDITOR_MODE.selectedObjectIndices[0];
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case OBJECT_TYPE.Physics:
+                    {
+                        StaticObject obj = (StaticObject)STATIC_EDITOR_MODE.levelInstance.ObjectsList[objIndex.Index];
+
+                        objPosition = obj.Position;
+                        break;
+                    }
+                case OBJECT_TYPE.Decal:
+                    {
+                        objPosition = DecalList[objIndex.Index].Position;
+                        break;
+                    }
+            }
+
+            return objPosition;
+        }
+
+        /// <summary>
+        /// Returns the position of the last object in the SelectedObjects list.
+        /// </summary>
+        Vector2 Get_Last_Position()
+        {
+            Vector2 objPosition = Vector2.Zero;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case OBJECT_TYPE.Physics:
+                    {
+                        StaticObject obj = (StaticObject)ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index];
+
+                        objPosition = obj.Position;
+                        break;
+                    }
+                case OBJECT_TYPE.Decal:
+                    {
+                        Decal obj = DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index];
+
+                        objPosition = obj.Position;
+                        break;
+                    }
+            }
+
+            return objPosition;
+        }
+
+
+
+        #endregion
+
+
+        #region Alignment Texture Dimension Gets
+
+
+
+        /// <summary>
+        /// Returns the texture dimensions of the first object in the SelectedObjects list.
+        /// </summary>
+        Vector2 Get_First_TextureDimensions()
+        {
+            Vector2 textureDimensions = Vector2.Zero;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case OBJECT_TYPE.Physics:
+                    {
+                        StaticObject obj = (StaticObject)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index];
+
+                        textureDimensions = new Vector2(obj.Width, obj.Height);
+                        break;
+                    }
+                case OBJECT_TYPE.Decal:
+                    {
+                        Decal obj = DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index];
+
+                        textureDimensions = new Vector2(obj.Width, obj.Height);
+                        break;
+                    }
+            }
+
+            return textureDimensions;
+        }
+
+        /// <summary>
+        /// Returns the texture dimensions of the last object in the SelectedObjects list.
+        /// </summary>
+        Vector2 Get_Last_TextureDimensions()
+        {
+            Vector2 textureDimensions = Vector2.Zero;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Type)
+            {
+                case OBJECT_TYPE.Physics:
+                    {
+                        StaticObject obj = (StaticObject)STATIC_EDITOR_MODE.levelInstance.ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index];
+
+                        textureDimensions =  new Vector2(obj.Width, obj.Height);
+                        break;
+                    }
+                case OBJECT_TYPE.Decal:
+                    {
+                        Decal obj = DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[STATIC_EDITOR_MODE.selectedObjectIndices.Count - 1].Index];
+
+                        textureDimensions =  new Vector2(obj.Width, obj.Height);
+                        break;
+                    }
+            }
+
+            return textureDimensions;
+        }
+
+
+
+        #endregion
+
+        private float get_furthest_lpos()
+        {
+            float furthestPos = 0;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case (OBJECT_TYPE.Physics):
+                    {
+                        furthestPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
+                    }
+                    break;
+                case (OBJECT_TYPE.Decal):
+                    {
+                        furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
+                    }
+                    break;
+            }
+
+            for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+            {
+                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                {
+                    case (OBJECT_TYPE.Physics):
+                        {
+                            if (furthestPos > ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+                                furthestPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
+                        }
+                        break;
+                    case (OBJECT_TYPE.Decal):
+                        {
+                            if (furthestPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+                                furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
+                        }
+                        break;
+                }
+            }
+
+            return furthestPos;
+        }
+        private float get_furthest_rpos()
+        {
+            float furthestPos = 0;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case (OBJECT_TYPE.Physics):
+                    {
+                        furthestPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
+                    }
+                    break;
+                case (OBJECT_TYPE.Decal):
+                    {
+                        furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Width / 2;
+                    }
+                    break;
+            }
+
+            for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+            {
+                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                {
+                    case (OBJECT_TYPE.Physics):
+                        {
+                            if (furthestPos < ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+                                furthestPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
+                        }
+                        break;
+                    case (OBJECT_TYPE.Decal):
+                        {
+                            if (furthestPos < STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2)
+                                furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.X + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Width / 2;
+                        }
+                        break;
+                }
+            }
+
+            return furthestPos;
+        }
+        private float get_furthest_upos()
+        {
+            float furthestPos = 0; 
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case (OBJECT_TYPE.Physics):
+                    {
+                        furthestPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
+                    }
+                    break;
+                case (OBJECT_TYPE.Decal):
+                    {
+                        furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
+                    }
+                    break;
+            }
+
+            for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+            {
+                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                {
+                    case (OBJECT_TYPE.Physics):
+                        {
+                            if (furthestPos > ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
+                                furthestPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
+                        }
+                        break;
+                    case (OBJECT_TYPE.Decal):
+                        {
+                            if (furthestPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
+                                furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y - STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
+                        }
+                        break;
+                }
+            }
+
+            return furthestPos;
+        }
+        private float get_furthest_dpos()
+        {
+            float furthestPos = 0;
+            List<NodeObject> ObjectsList = STATIC_EDITOR_MODE.levelInstance.ObjectsList;
+            List<Decal> DecalList = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList;
+
+            switch (STATIC_EDITOR_MODE.selectedObjectIndices[0].Type)
+            {
+                case (OBJECT_TYPE.Physics):
+                    {
+                        furthestPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
+                    }
+                    break;
+                case (OBJECT_TYPE.Decal):
+                    {
+                        furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[0].Index].Height / 2;
+                    }
+                    break;
+            }
+
+            for (int i = 0; i < STATIC_EDITOR_MODE.selectedObjectIndices.Count; i++)
+            {
+                switch (STATIC_EDITOR_MODE.selectedObjectIndices[i].Type)
+                {
+                    case (OBJECT_TYPE.Physics):
+                        {
+                            if (furthestPos < ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
+                                furthestPos = ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + ObjectsList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
+                        }
+                        break;
+                    case (OBJECT_TYPE.Decal):
+                        {
+                            if (furthestPos > STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2)
+                                furthestPos = STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Position.Y + STATIC_EDITOR_MODE.levelInstance.DecalManager.DecalList[STATIC_EDITOR_MODE.selectedObjectIndices[i].Index].Height / 2;
+                        }
+                        break;
+                }
+            }
+
+            return furthestPos;
+        }
+
+        #endregion
+
         #endregion
 
         #endregion
@@ -2473,7 +2462,8 @@ namespace SpinEditor
                     break;
                 case "One-Sided Platform": 
                     break;
-                case "Particle Emitter": 
+                case "Particle Emitter":
+                    amountOfTexturesNeeded = 1;
                     break;
                 case "Piston": 
                     amountOfTexturesNeeded = 2;
@@ -3134,33 +3124,6 @@ namespace SpinEditor
             }
         }
         #endregion
-
         
-
-        #region Unused
-#if NOTUSED
-        private void Refresh_XNB_Asset_List()
-        {
-            listBox_Assets0.Items.Clear();
-            listBox_Assets1.Items.Clear();
-            listBox_Assets2.Items.Clear();
-
-            string[] lst_Files = Directory.GetFiles(STATIC_CONTBUILDER.pathToContent(), "*.xnb", SearchOption.TopDirectoryOnly);
-
-            for (int i = 0; i < lst_Files.Length; i++)
-            {
-                //  If the file name contains "i_" anywhere,
-                //  it will be ignored as a choice. For use
-                //  with system only files.
-                if (lst_Files[i].Contains("i_"))
-                    continue;
-
-                listBox_Assets0.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
-                listBox_Assets1.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
-                listBox_Assets2.Items.Add(Path.GetFileNameWithoutExtension(lst_Files[i]));
-            }
-        }
-#endif
-        #endregion
     }
 }
