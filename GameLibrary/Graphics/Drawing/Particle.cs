@@ -12,21 +12,16 @@ namespace GameLibrary.Graphics
         public Vector2 Position;
         public Vector2 Acceleration;
         public Vector2 Velocity;
+        public bool IsAlive;
 
         private float _timeLeft;
-        private bool _isAlive;
-        public bool Alive
-        {
-            get
-            {
-                return _isAlive;
-            }
-        }
+        public float Rotation;
+        
         #endregion
 
         public Particle()
         {
-            this._isAlive = false;
+            this.IsAlive = false;
         }
 
         public void Init(Vector2 position, Vector2 velocity, Vector2 acceleration, float life)
@@ -34,7 +29,7 @@ namespace GameLibrary.Graphics
             this.Position = position;
             this.Velocity = velocity;
             this.Acceleration = acceleration;
-            this._isAlive = true;
+            this.IsAlive = true;
             this._timeLeft = life;
         }
 
@@ -43,11 +38,13 @@ namespace GameLibrary.Graphics
             Velocity += Acceleration * delta;
             Position += Velocity * delta;
 
+            Rotation = (float)Math.Atan2(Velocity.Y, Velocity.X) + 1.5705f;//3.141f;
+
             _timeLeft -= delta;
 
             if (_timeLeft <= 0)
             {
-                this._isAlive = false;
+                this.IsAlive = false;
             }
         }
 
