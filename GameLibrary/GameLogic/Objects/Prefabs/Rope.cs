@@ -42,6 +42,7 @@ using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Screens;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -50,10 +51,10 @@ namespace GameLibrary.GameLogic.Objects
     {
         #region Fields
 
-        private Texture2D endTexture;
-        [ContentSerializer]
+        private Texture2D _endTexture;
+        [ContentSerializer(Optional = true)]
         private Vector2 _endPosition;
-        [ContentSerializer]
+        [ContentSerializer(Optional = true)]
         private int _chainCount;
         [ContentSerializer(Optional = true)]
         private string _endTextureAsset;
@@ -139,16 +140,19 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            endTexture = content.Load<Texture2D>(_endTextureAsset);
+            _endTexture = content.Load<Texture2D>(_endTextureAsset);
             _texture = content.Load<Texture2D>(_textureAsset);
 
 #if EDITOR
             if (this.Width == 0 || this.Height == 0)
             {
-                this._width = endTexture.Width;
-                this._height = endTexture.Height;
-                this._endPosition = this._position + new Vector2(0, _texture.Height * ChainCount);
+                this._width = _endTexture.Width;
+                this._height = _endTexture.Height;
+                
             }
+
+            if (_endPosition == Vector2.Zero)
+                this._endPosition = this._position + new Vector2(0, _texture.Height * ChainCount);
 #else
             _world = world;
             SetupPhysics(world);
@@ -164,12 +168,14 @@ namespace GameLibrary.GameLogic.Objects
             if (Camera.Instance.IsLevelRotating)
             {
                 if (_pathBodies[_pathBodies.Count - 1].Awake == false)
-                    _pathBodies[_pathBodies.Count - 1].Awake = true;       
+                {
+                    _pathBodies[_pathBodies.Count - 1].Awake = true;
+                }  
             }
 
             if (!_world.JointList.Contains(_ropeJoint))
             {
-                if (InputManager.Instance.Grab() && _inRange)
+                if (InputManager.Instance.Grab(false) && _inRange)
                 {
                     int index = 0;
                     float smallestDistance = (float)(Math.Pow(Player.Instance.Body.Position.X - _touchedRopeFixtures[0].Body.Position.X, 2.0) + Math.Pow(Player.Instance.Body.Position.Y - _touchedRopeFixtures[0].Body.Position.Y, 2.0));
@@ -196,9 +202,27 @@ namespace GameLibrary.GameLogic.Objects
             }
             else
             {
-                Player.Instance.GrabRotation = _pathBodies[_grabbedIndex].Rotation;
+                float rotation = 0.0f;
+                if (_grabbedIndex < _pathBodies.Count - 1 && _grabbedIndex > 1)
+                {
+                    rotation = (_pathBodies[_grabbedIndex].Rotation + _pathBodies[_grabbedIndex - 1].Rotation + _pathBodies[_grabbedIndex + 1].Rotation) * 0.3333f;
+                }
+                else
+                {
+                    if (_grabbedIndex == _pathBodies.Count - 1)
+                    {
+                        rotation = (_pathBodies[_grabbedIndex].Rotation + _pathBodies[_grabbedIndex - 1].Rotation + _pathBodies[_grabbedIndex - 2].Rotation) * 0.3333f;
+                    }
+                    else
+                    {
+                        rotation = (_pathBodies[_grabbedIndex].Rotation + _pathBodies[_grabbedIndex + 1].Rotation + _pathBodies[_grabbedIndex + 2].Rotation) * 0.3333f;
+                    }
+                    
+                }
 
-                if (InputManager.Instance.Jump() || InputManager.Instance.Grab() || Player.Instance.PlayerState == PlayerState.Dead)
+                Player.Instance.GrabRotation = rotation;
+
+                if (InputManager.Instance.Jump(true) || InputManager.Instance.Grab(true) || Player.Instance.PlayerState == PlayerState.Dead)
                 {
                     _world.RemoveJoint(_ropeJoint);
                     _world.RemoveJoint(_ropePlayerJoint);
@@ -216,14 +240,14 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(endTexture, this._position, null, Color.Tomato, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 1.0f, SpriteEffects.None, this._zLayer);
-            sb.Draw(endTexture, this._endPosition, null, Color.White, 0.0f, new Vector2(endTexture.Width / 2, endTexture.Height / 2), 0.6f, SpriteEffects.None, this._zLayer);
+            sb.Draw(_endTexture, this._position, null, Color.Tomato, 0.0f, new Vector2(_endTexture.Width, _endTexture.Height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
+            sb.Draw(_endTexture, this._endPosition, null, Color.White, 0.0f, new Vector2(_endTexture.Width, _endTexture.Height) * 0.5f, 0.6f, SpriteEffects.None, this._zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(endTexture, ConvertUnits.ToDisplayUnits(_pathBodies[0].Position), null,
-                    Tint, _pathBodies[0].Rotation, new Vector2(endTexture.Width, endTexture.Height) * 0.5f, 1f,
+            sb.Draw(_endTexture, ConvertUnits.ToDisplayUnits(_pathBodies[0].Position), null,
+                    Tint, _pathBodies[0].Rotation, new Vector2(_endTexture.Width, _endTexture.Height) * 0.5f, 1f,
                     SpriteEffects.None, zLayer);
 
             for (int i = 1; i < _pathBodies.Count; i++)
