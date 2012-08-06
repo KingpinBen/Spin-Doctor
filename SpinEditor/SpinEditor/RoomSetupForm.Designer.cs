@@ -190,8 +190,7 @@
             this.typeComboBox.FormattingEnabled = true;
             this.typeComboBox.Items.AddRange(new object[] {
             "Rotating",
-            "Non Rotating",
-            "Hub"});
+            "Non Rotating"});
             this.typeComboBox.Location = new System.Drawing.Point(71, 23);
             this.typeComboBox.Name = "typeComboBox";
             this.typeComboBox.Size = new System.Drawing.Size(101, 21);
