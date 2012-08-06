@@ -42,6 +42,7 @@ using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic;
 using GameLibrary.GameLogic.Screens;
 using GameLibrary.GameLogic.Events;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.Levels
@@ -61,7 +62,7 @@ namespace GameLibrary.Levels
 #endif
 
         [ContentSerializer]
-        private List<NodeObject> _objectList;
+        private List<NodeObject> _objectList = new List<NodeObject>();
         [ContentSerializer]
         private Vector2 _spawnLocation = Vector2.Zero;
         [ContentSerializer]
@@ -69,7 +70,7 @@ namespace GameLibrary.Levels
         [ContentSerializer]
         private RoomTheme _roomTheme = RoomTheme.General;
         [ContentSerializer]
-        private DecalManager _decalManager;
+        private DecalManager _decalManager = new DecalManager();
         [ContentSerializer]
         private Vector2 _roomDimensions = Vector2.Zero;
         [ContentSerializer]
@@ -179,6 +180,14 @@ namespace GameLibrary.Levels
                 return _decalManager;
             }
         }
+        [ContentSerializerIgnore]
+        public RoomType RoomType
+        {
+            get
+            {
+                return _roomType;
+            }
+        }
 #endif
 
         [ContentSerializerIgnore]
@@ -255,7 +264,7 @@ namespace GameLibrary.Levels
             }
 
             //  Create all the objects for the level world.
-            for (int i = 0; i < this._objectList.Count; i++)
+            for (int i = this._objectList.Count - 1; i >= 0; i--)
             {
                 this._objectList[i].Load(_content, _gameScreen.World);
             }
@@ -281,18 +290,21 @@ namespace GameLibrary.Levels
 
         #endregion
 
+        #region Update and Draw
+
         public void Update(float delta)
         {
 #if EDITOR
 
 #else
-            Player.Instance.Update(delta, _gameScreen.World);
-            EventManager.Instance.Update(delta);
-
             for (int i = this._objectList.Count - 1; i >= 0; i--)
             {
                 this._objectList[i].Update(delta);
             }
+
+            EventManager.Instance.Update(delta);
+
+            Player.Instance.Update(delta, _gameScreen.World);
 
             if (_roomType != RoomType.NonRotating)
             {
@@ -302,22 +314,26 @@ namespace GameLibrary.Levels
         }
 
         #region Draw Calls
-#if EDITOR
+#if !EDITOR
 
-#else
         #region Draw NonRotating
 
         /// <summary>
         /// Draw the non-rotating background elements.
         /// </summary>
-        /// <param name="SpriteBatch">The non-transformed Spritebatch</param>
-        public void DrawBackground(SpriteBatch sb)
+        public void DrawBackground()
         {
-            //  Gears can only be drawn if the level is rotating
-            if (_roomType == RoomType.Rotating)
-            {
-                _gears.Draw(sb);
-            }
+            SpriteBatch spriteBatch = this._gameScreen.ScreenManager.SpriteBatch;
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null,
+                    Matrix.CreateTranslation(new Vector3(-Camera.Instance.Position, 0)) *
+                    Matrix.CreateRotationZ(0) *
+                    Matrix.CreateScale(new Vector3(Camera.Instance.Zoom, Camera.Instance.Zoom, 1)) *
+                    Matrix.CreateTranslation(new Vector3(this._gameScreen.ScreenManager.GraphicsDevice.Viewport.Width * 0.5f, this._gameScreen.ScreenManager.GraphicsDevice.Viewport.Height * 0.5f, 0f)));
+
+            this._gears.Draw(spriteBatch);
+
+            spriteBatch.End();
         }
 
 
@@ -325,15 +341,18 @@ namespace GameLibrary.Levels
 
         #region Draw Gameplay
 
-        public void DrawBackdrop(SpriteBatch sb)
+        public void DrawBackdrop(ref Matrix cameraTransform)
         {
-            if (_roomType == RoomType.Rotating)
-            {
-                this._levelBackdrop.Draw(sb);
-            }
+            SpriteBatch spriteBatch = this._gameScreen.ScreenManager.SpriteBatch;
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.AnisotropicWrap, null, null, null, cameraTransform);
+            this._levelBackdrop.Draw(spriteBatch);
+            spriteBatch.End();
         }
         #endregion
 #endif
+        #endregion
+
         #endregion
 
         #region Private Methods
@@ -346,12 +365,24 @@ namespace GameLibrary.Levels
             float largestLevelDimension = 0;
             bool canRotate = false;
 
-            largestLevelDimension = (float)Math.Sqrt((int)(_roomDimensions.X * _roomDimensions.X) + (int)(_roomDimensions.Y * _roomDimensions.Y));
-
-            if (this._roomType == RoomType.Rotating)
+            if (_roomType == RoomType.Rotating)
+            {
                 canRotate = true;
+                largestLevelDimension = (float)Math.Sqrt((int)(_roomDimensions.X * _roomDimensions.X) + (int)(_roomDimensions.Y * _roomDimensions.Y));
+            }
+            else
+            {
+                if (_roomDimensions.X > _roomDimensions.Y)
+                {
+                    largestLevelDimension = _roomDimensions.X;
+                }
+                else
+                {
+                    largestLevelDimension = _roomDimensions.Y;
+                }
+            }
 
-            Camera.Instance.Load(_gameScreen, canRotate, largestLevelDimension * 0.5f);
+            Camera.Instance.Load(_gameScreen, canRotate, largestLevelDimension);
 #endif
         }
 
