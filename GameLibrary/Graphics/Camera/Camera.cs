@@ -20,11 +20,6 @@
 //--           object use and player control.
 //--    
 //--    
-//--    TBD
-//--    ==============
-//--    (?)Move rotation out into Gameplay for gameglobal accessibility.
-//--    Make it so objects are able to rotate the level.
-//--    
 //--    
 //--------------------------------------------------------------------------
 
@@ -39,28 +34,32 @@ using GameLibrary.GameLogic.Controls;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic;
 using GameLibrary.GameLogic.Screens;
+using GameLibrary.GameLogic.Characters;
 #endregion
 
 namespace GameLibrary.Graphics.Camera
 {
     public class Camera
     {
-        private static Camera _singleton = null;
+        #region Singleton
+
+
+        private static Camera _singleton = new Camera();
+
         public static Camera Instance
         {
             get
             {
-                if (_singleton == null)
-                {
-                    _singleton = new Camera();
-                }
-
                 return _singleton;
             }
         }
 
+        private Camera() { }
+
+
+        #endregion
+
         #region Fields
-        ScreenManager screenManager;
         GameplayScreen _gameScreen;
         private const float _rotationSpeed = 0.08f;
         //  90% of largest dimension
@@ -210,10 +209,6 @@ namespace GameLibrary.Graphics.Camera
 
         #endregion
 
-        private Camera()
-        {
-        }
-
         public void Load(GameplayScreen gameScreen, bool levelCanRotate, float LargestLevelDimension)
         {
             this._gameScreen = gameScreen;
@@ -251,10 +246,10 @@ namespace GameLibrary.Graphics.Camera
 #if Development
             else if (_cameraType == CameraType.Free)
             {
-                if (InputManager.Instance.GP_RightThumbstick.X != 0)
-                    _cameraPosition += SpinAssist.ModifyVectorByUp(new Vector2(InputManager.Instance.GP_RightThumbstick.X * 10, 0));
-                if (InputManager.Instance.GP_RightThumbstick.Y != 0)
-                    _cameraPosition -= SpinAssist.ModifyVectorByUp(new Vector2(0, InputManager.Instance.GP_RightThumbstick.Y * 10));
+                if (InputManager.Instance.RightThumbstick.X != 0)
+                    _cameraPosition += SpinAssist.ModifyVectorByUp(new Vector2(InputManager.Instance.RightThumbstick.X * 10, 0));
+                if (InputManager.Instance.RightThumbstick.Y != 0)
+                    _cameraPosition -= SpinAssist.ModifyVectorByUp(new Vector2(0, InputManager.Instance.RightThumbstick.Y * 10));
             }
 
             ZoomModifierInput();
@@ -262,6 +257,7 @@ namespace GameLibrary.Graphics.Camera
             //  Debug camera control
             if (InputManager.Instance.GP_Back)
             {
+                //  Cycle through
                 switch (_cameraType)
                 {
                     case CameraType.Free:
@@ -269,6 +265,9 @@ namespace GameLibrary.Graphics.Camera
                         break;
                     case CameraType.Level:
                         _cameraType = CameraType.Focus;
+                        break;
+                    case CameraType.Focus:
+                        _cameraType = CameraType.Free;
                         break;
                 }
             }
@@ -279,14 +278,11 @@ namespace GameLibrary.Graphics.Camera
 
         #region Private Methods
 
-        private void ZoomModifierInput()
-        {
-            if (InputManager.Instance.GP_RB || InputManager.Instance.IsKeyPress(Keys.Home))
-                Zoom -= 0.005f;
-            else if (InputManager.Instance.GP_LB || InputManager.Instance.IsKeyPress(Keys.Insert))
-                Zoom += 0.005f;
-        }
 
+
+        /// <summary>
+        /// Changes the world gravity when the UpIs property has been changed.
+        /// </summary>
         private void ChangeGravity()
         {
 #if !EDITOR
@@ -322,40 +318,40 @@ namespace GameLibrary.Graphics.Camera
             if (_rotateDelayTimer > 0)
             {
                 _rotateDelayTimer -= delta;
-            }
-            else if (_rotateDelayTimer < 0)
-            {
-                _rotateDelayTimer = 0;
+
+                if (_rotateDelayTimer < 0)
+                {
+                    _rotateDelayTimer = 0.0f;
+                }
             }
 
             //  Nothing else needs to happen if theres 
             //  nothing to add.
-            if (_rotationToAdd == 0)
+            if (_rotationToAdd != 0)
             {
-                _levelRotating = false;
-                return;
-            }
-
-            if (_rotationToAdd > 0)   //  Left
-            {
-                _worldRotation += _rotationSpeed;
-                _rotationToAdd -= _rotationSpeed;
-
-                if (_rotationToAdd < _rotationSpeed)
+                if (_rotationToAdd > 0)   //  Left
                 {
-                    _worldRotation += _rotationToAdd;
-                    _rotationToAdd = 0f;
+                    _worldRotation += _rotationSpeed;
+                    _rotationToAdd -= _rotationSpeed;
+
+                    if (_rotationToAdd < _rotationSpeed)
+                    {
+                        _worldRotation += _rotationToAdd;
+                        _rotationToAdd = 0f;
+                        _levelRotating = false;
+                    }
                 }
-            }
-            else if (_rotationToAdd < 0)  //  Right
-            {
-                _worldRotation -= _rotationSpeed;
-                _rotationToAdd += _rotationSpeed;
-
-                if (_rotationToAdd > -_rotationSpeed)
+                else  //  Right
                 {
-                    _worldRotation += _rotationToAdd;
-                    _rotationToAdd = 0f;
+                    _worldRotation -= _rotationSpeed;
+                    _rotationToAdd += _rotationSpeed;
+
+                    if (_rotationToAdd > -_rotationSpeed)
+                    {
+                        _worldRotation += _rotationToAdd;
+                        _rotationToAdd = 0f;
+                        _levelRotating = false;
+                    }
                 }
             }
         }
@@ -367,21 +363,19 @@ namespace GameLibrary.Graphics.Camera
                 return;
             }
 
-            if (!AllowRotation || !_levelRotates)
+            if (_allowLevelRotation && _levelRotates)
             {
-                return;
-            }
+                if (_rotateDelayTimer == 0.0f)
+                {
+                    if (InputManager.Instance.RotateLeft(true))
+                    {
+                        ForceRotateLeft();
 
-            if (InputManager.Instance.RotateLeft() != InputManager.Instance.RotateRight())
-            {
-                if (InputManager.Instance.RotateLeft())
-                {
-                    ForceRotateLeft();
-                    
-                }
-                else if (InputManager.Instance.RotateRight())
-                {
-                    ForceRotateRight();
+                    }
+                    else if (InputManager.Instance.RotateRight(true))
+                    {
+                        ForceRotateRight();
+                    }
                 }
             }
         }
@@ -399,11 +393,6 @@ namespace GameLibrary.Graphics.Camera
 
         public void ForceRotateLeft()
         {
-            if (_rotateDelayTimer > 0.0f)
-            {
-                return;
-            }
-
             _rotationToAdd -= MathHelper.PiOver2;
             _levelRotating = true;
             _rotateDelayTimer = 2.0f;
@@ -435,18 +424,11 @@ namespace GameLibrary.Graphics.Camera
                     }
             }
 
-            ChangeGravity();
             Player.Instance.Body.ResetDynamics();
         }
 
         public void ForceRotateRight()
         {
-            if (_rotateDelayTimer > 0.0f)
-            {
-                return;
-            }
-            
-
             _rotationToAdd += MathHelper.PiOver2;
             _levelRotating = true;
             _rotateDelayTimer = 2.0f;
@@ -478,17 +460,11 @@ namespace GameLibrary.Graphics.Camera
                     }
             }
 
-            ChangeGravity();
             Player.Instance.Body.ResetDynamics();
         }
 
         public void ForceRotateHalf()
         {
-            if (_rotateDelayTimer > 0.0f)
-            {
-                return;
-            }
-
             _rotationToAdd += MathHelper.Pi;
             _levelRotating = true;
             _rotateDelayTimer = 2.0f;
@@ -520,7 +496,6 @@ namespace GameLibrary.Graphics.Camera
                     }
             }
 
-            ChangeGravity();
             Player.Instance.Body.ResetDynamics();
         }
 
@@ -528,7 +503,7 @@ namespace GameLibrary.Graphics.Camera
 
         public void CalculateZoom()
         {
-            _currentCameraZoom = (_gameScreen.ScreenManager.GraphicsDevice.Viewport.Height * 0.5f) / (_largestLevelDimension * largestDimensionModifier);
+            _currentCameraZoom = (_gameScreen.ScreenManager.GraphicsDevice.Viewport.Height * 0.5f) / ((_largestLevelDimension * 0.5f )* largestDimensionModifier);
         }
 
         public Matrix TransformMatrix()
@@ -540,8 +515,6 @@ namespace GameLibrary.Graphics.Camera
             return _transform;
         }
 
-        #endregion
-
         #region Events
 
         public void ChangeLevelRotateAbility(bool rotate)
@@ -549,6 +522,20 @@ namespace GameLibrary.Graphics.Camera
             this._levelRotates = rotate;
         }
 
+        #endregion
+
+        #endregion
+
+        #region Development Only
+#if Development
+        private void ZoomModifierInput()
+        {
+            if (InputManager.Instance.GP_RB || InputManager.Instance.IsKeyPress(Keys.Home))
+                Zoom -= 0.005f;
+            else if (InputManager.Instance.GP_LB || InputManager.Instance.IsKeyPress(Keys.Insert))
+                Zoom += 0.005f;
+        }
+#endif
         #endregion
     }
 }
