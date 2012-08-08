@@ -35,7 +35,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\x86\Release</OutputPath>
-    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <DefineConstants>TRACE;EDITOR</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -158,7 +158,7 @@
     <Compile Include="Graphics\FontType.cs" />
     <Compile Include="GameLogic\Controls\Keybindings.cs" />
     <Compile Include="GameLogic\Objects\Dynamics\Piston.cs" />
-    <Compile Include="Audio\Audio.cs" />
+    <Compile Include="Audio\AudioManager.cs" />
     <Compile Include="Helpers\ConvertUnits.cs" />
     <Compile Include="Helpers\Defines.cs" />
     <Compile Include="Helpers\DevDisplay.cs" />

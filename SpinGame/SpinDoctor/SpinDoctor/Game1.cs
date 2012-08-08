@@ -91,10 +91,6 @@ namespace SpinDoctor
                 this._graphics.ApplyChanges();
             }
 
-            Window.AllowUserResizing = true;
-            Window.ClientSizeChanged += ChangeWindowSize;
-
-
             base.Initialize();
         }
 
@@ -112,17 +108,6 @@ namespace SpinDoctor
             this.GraphicsDevice.Clear(Color.Black);
 
             base.Draw(gameTime);
-        }
-
-        void ChangeWindowSize(object sender, EventArgs e)
-        {
-            if (Window.ClientBounds.Width > 0 && Window.ClientBounds.Height > 0)
-            {
-                _graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-                _graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
-            }
-
-            _graphics.ApplyChanges();
         }
 
         public void SetArgs(string[] args)

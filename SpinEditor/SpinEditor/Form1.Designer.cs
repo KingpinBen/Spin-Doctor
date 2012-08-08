@@ -70,34 +70,34 @@ namespace SpinEditor
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.listBox_Classes = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.AlignmentBox = new System.Windows.Forms.GroupBox();
+            this.BUTTON_ALIGN_10 = new System.Windows.Forms.Button();
+            this.Align_Relative = new System.Windows.Forms.ComboBox();
+            this.BUTTON_ALIGN_9 = new System.Windows.Forms.Button();
+            this.BUTTON_ALIGN_8 = new System.Windows.Forms.Button();
+            this.BUTTON_ALIGN_7 = new System.Windows.Forms.Button();
+            this.BUTTON_ALIGN_6 = new System.Windows.Forms.Button();
+            this.Horizontal_Align_Button = new System.Windows.Forms.Button();
+            this.BUTTON_ALIGN_2 = new System.Windows.Forms.Button();
+            this.BUTTON_ALIGN_3 = new System.Windows.Forms.Button();
+            this.BUTTON_ALIGN_4 = new System.Windows.Forms.Button();
+            this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.NewObjectBox = new System.Windows.Forms.GroupBox();
             this.assetLocTextBox1 = new System.Windows.Forms.TextBox();
             this.assetSelectDialog3 = new System.Windows.Forms.Button();
             this.assetSelectDialog1 = new System.Windows.Forms.Button();
             this.assetLocTextBox3 = new System.Windows.Forms.TextBox();
             this.assetSelectDialog2 = new System.Windows.Forms.Button();
             this.assetLocTextBox2 = new System.Windows.Forms.TextBox();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.Align_Relative = new System.Windows.Forms.ComboBox();
-            this.BUTTON_ALIGN_10 = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.Horizontal_Align_Button = new System.Windows.Forms.Button();
-            this.BUTTON_ALIGN_6 = new System.Windows.Forms.Button();
-            this.BUTTON_ALIGN_2 = new System.Windows.Forms.Button();
-            this.BUTTON_ALIGN_7 = new System.Windows.Forms.Button();
-            this.BUTTON_ALIGN_3 = new System.Windows.Forms.Button();
-            this.BUTTON_ALIGN_8 = new System.Windows.Forms.Button();
-            this.BUTTON_ALIGN_4 = new System.Windows.Forms.Button();
-            this.BUTTON_ALIGN_9 = new System.Windows.Forms.Button();
-            this.BUTTON_ALIGN_5 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.openAssetFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.xnA_RenderControl1 = new SpinEditor.XNA_RenderControl();
+            this.openAssetFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.panel3.SuspendLayout();
+            this.AlignmentBox.SuspendLayout();
+            this.NewObjectBox.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -416,9 +416,10 @@ namespace SpinEditor
             // 
             // propertyGrid1
             // 
-            this.propertyGrid1.Location = new System.Drawing.Point(6, 58);
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(352, 349);
+            this.propertyGrid1.Size = new System.Drawing.Size(367, 349);
             this.propertyGrid1.TabIndex = 6;
             // 
             // listBox_Classes
@@ -447,7 +448,7 @@ namespace SpinEditor
             "Sprite",
             "Static Object",
             "Trigger"});
-            this.listBox_Classes.Location = new System.Drawing.Point(6, 16);
+            this.listBox_Classes.Location = new System.Drawing.Point(21, 16);
             this.listBox_Classes.Name = "listBox_Classes";
             this.listBox_Classes.Size = new System.Drawing.Size(338, 95);
             this.listBox_Classes.TabIndex = 9;
@@ -456,8 +457,8 @@ namespace SpinEditor
             // panel1
             // 
             this.panel1.AutoScroll = true;
-            this.panel1.Controls.Add(this.groupBox1);
-            this.panel1.Controls.Add(this.panel3);
+            this.panel1.Controls.Add(this.AlignmentBox);
+            this.panel1.Controls.Add(this.NewObjectBox);
             this.panel1.Controls.Add(this.propertyGrid1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel1.Location = new System.Drawing.Point(966, 49);
@@ -465,21 +466,166 @@ namespace SpinEditor
             this.panel1.Size = new System.Drawing.Size(384, 651);
             this.panel1.TabIndex = 12;
             // 
-            // groupBox1
+            // AlignmentBox
             // 
-            this.groupBox1.Controls.Add(this.assetLocTextBox1);
-            this.groupBox1.Controls.Add(this.assetSelectDialog3);
-            this.groupBox1.Controls.Add(this.assetSelectDialog1);
-            this.groupBox1.Controls.Add(this.assetLocTextBox3);
-            this.groupBox1.Controls.Add(this.listBox_Classes);
-            this.groupBox1.Controls.Add(this.assetSelectDialog2);
-            this.groupBox1.Controls.Add(this.assetLocTextBox2);
-            this.groupBox1.Location = new System.Drawing.Point(6, 412);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(352, 203);
-            this.groupBox1.TabIndex = 35;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "New Object";
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_10);
+            this.AlignmentBox.Controls.Add(this.Align_Relative);
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_9);
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_8);
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_7);
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_6);
+            this.AlignmentBox.Controls.Add(this.Horizontal_Align_Button);
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_2);
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_3);
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_4);
+            this.AlignmentBox.Controls.Add(this.BUTTON_ALIGN_5);
+            this.AlignmentBox.Controls.Add(this.label5);
+            this.AlignmentBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.AlignmentBox.Location = new System.Drawing.Point(0, 349);
+            this.AlignmentBox.Name = "AlignmentBox";
+            this.AlignmentBox.Size = new System.Drawing.Size(367, 140);
+            this.AlignmentBox.TabIndex = 36;
+            this.AlignmentBox.TabStop = false;
+            this.AlignmentBox.Text = "Alignment";
+            // 
+            // BUTTON_ALIGN_10
+            // 
+            this.BUTTON_ALIGN_10.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_10.Image")));
+            this.BUTTON_ALIGN_10.Location = new System.Drawing.Point(265, 85);
+            this.BUTTON_ALIGN_10.Name = "BUTTON_ALIGN_10";
+            this.BUTTON_ALIGN_10.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_10.TabIndex = 18;
+            this.BUTTON_ALIGN_10.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_10.Click += new System.EventHandler(this.TB_Vertical_Align_Click);
+            // 
+            // Align_Relative
+            // 
+            this.Align_Relative.FormattingEnabled = true;
+            this.Align_Relative.Items.AddRange(new object[] {
+            "Last Selected",
+            "First Selected",
+            "Selection"});
+            this.Align_Relative.Location = new System.Drawing.Point(103, 18);
+            this.Align_Relative.Name = "Align_Relative";
+            this.Align_Relative.Size = new System.Drawing.Size(196, 21);
+            this.Align_Relative.TabIndex = 26;
+            this.Align_Relative.SelectedIndexChanged += new System.EventHandler(this.Align_Relative_SelectedIndexChanged);
+            // 
+            // BUTTON_ALIGN_9
+            // 
+            this.BUTTON_ALIGN_9.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_9.Image")));
+            this.BUTTON_ALIGN_9.Location = new System.Drawing.Point(225, 85);
+            this.BUTTON_ALIGN_9.Name = "BUTTON_ALIGN_9";
+            this.BUTTON_ALIGN_9.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_9.TabIndex = 19;
+            this.BUTTON_ALIGN_9.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_9.Click += new System.EventHandler(this.B_Vertical_Align_Click);
+            // 
+            // BUTTON_ALIGN_8
+            // 
+            this.BUTTON_ALIGN_8.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_8.Image")));
+            this.BUTTON_ALIGN_8.Location = new System.Drawing.Point(185, 85);
+            this.BUTTON_ALIGN_8.Name = "BUTTON_ALIGN_8";
+            this.BUTTON_ALIGN_8.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_8.TabIndex = 20;
+            this.BUTTON_ALIGN_8.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_8.Click += new System.EventHandler(this.C_Vertical_Align_Click);
+            // 
+            // BUTTON_ALIGN_7
+            // 
+            this.BUTTON_ALIGN_7.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_7.Image")));
+            this.BUTTON_ALIGN_7.Location = new System.Drawing.Point(145, 85);
+            this.BUTTON_ALIGN_7.Name = "BUTTON_ALIGN_7";
+            this.BUTTON_ALIGN_7.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_7.TabIndex = 21;
+            this.BUTTON_ALIGN_7.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_7.Click += new System.EventHandler(this.T_Vertical_Align_Click);
+            // 
+            // BUTTON_ALIGN_6
+            // 
+            this.BUTTON_ALIGN_6.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_6.Image")));
+            this.BUTTON_ALIGN_6.Location = new System.Drawing.Point(103, 85);
+            this.BUTTON_ALIGN_6.Name = "BUTTON_ALIGN_6";
+            this.BUTTON_ALIGN_6.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_6.TabIndex = 22;
+            this.BUTTON_ALIGN_6.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_6.Click += new System.EventHandler(this.BT_Vertical_Align_Click);
+            // 
+            // Horizontal_Align_Button
+            // 
+            this.Horizontal_Align_Button.Image = ((System.Drawing.Image)(resources.GetObject("Horizontal_Align_Button.Image")));
+            this.Horizontal_Align_Button.Location = new System.Drawing.Point(105, 45);
+            this.Horizontal_Align_Button.Name = "Horizontal_Align_Button";
+            this.Horizontal_Align_Button.Size = new System.Drawing.Size(34, 34);
+            this.Horizontal_Align_Button.TabIndex = 13;
+            this.Horizontal_Align_Button.UseVisualStyleBackColor = true;
+            this.Horizontal_Align_Button.Click += new System.EventHandler(this.RL_Horizontal_Align_Click);
+            // 
+            // BUTTON_ALIGN_2
+            // 
+            this.BUTTON_ALIGN_2.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_2.Image")));
+            this.BUTTON_ALIGN_2.Location = new System.Drawing.Point(145, 45);
+            this.BUTTON_ALIGN_2.Name = "BUTTON_ALIGN_2";
+            this.BUTTON_ALIGN_2.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_2.TabIndex = 14;
+            this.BUTTON_ALIGN_2.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_2.Click += new System.EventHandler(this.L_Horizontal_Align_Click);
+            // 
+            // BUTTON_ALIGN_3
+            // 
+            this.BUTTON_ALIGN_3.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_3.Image")));
+            this.BUTTON_ALIGN_3.Location = new System.Drawing.Point(185, 45);
+            this.BUTTON_ALIGN_3.Name = "BUTTON_ALIGN_3";
+            this.BUTTON_ALIGN_3.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_3.TabIndex = 15;
+            this.BUTTON_ALIGN_3.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_3.Click += new System.EventHandler(this.C_Horizontal_Align_Click);
+            // 
+            // BUTTON_ALIGN_4
+            // 
+            this.BUTTON_ALIGN_4.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_4.Image")));
+            this.BUTTON_ALIGN_4.Location = new System.Drawing.Point(225, 45);
+            this.BUTTON_ALIGN_4.Name = "BUTTON_ALIGN_4";
+            this.BUTTON_ALIGN_4.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_4.TabIndex = 16;
+            this.BUTTON_ALIGN_4.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_4.Click += new System.EventHandler(this.R_Horizontal_Align_Click);
+            // 
+            // BUTTON_ALIGN_5
+            // 
+            this.BUTTON_ALIGN_5.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_5.Image")));
+            this.BUTTON_ALIGN_5.Location = new System.Drawing.Point(265, 45);
+            this.BUTTON_ALIGN_5.Name = "BUTTON_ALIGN_5";
+            this.BUTTON_ALIGN_5.Size = new System.Drawing.Size(34, 34);
+            this.BUTTON_ALIGN_5.TabIndex = 17;
+            this.BUTTON_ALIGN_5.UseVisualStyleBackColor = true;
+            this.BUTTON_ALIGN_5.Click += new System.EventHandler(this.LR_Horizontal_Align_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 21);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(91, 13);
+            this.label5.TabIndex = 25;
+            this.label5.Text = "Align Relative To:";
+            // 
+            // NewObjectBox
+            // 
+            this.NewObjectBox.Controls.Add(this.assetLocTextBox1);
+            this.NewObjectBox.Controls.Add(this.assetSelectDialog3);
+            this.NewObjectBox.Controls.Add(this.assetSelectDialog1);
+            this.NewObjectBox.Controls.Add(this.assetLocTextBox3);
+            this.NewObjectBox.Controls.Add(this.listBox_Classes);
+            this.NewObjectBox.Controls.Add(this.assetSelectDialog2);
+            this.NewObjectBox.Controls.Add(this.assetLocTextBox2);
+            this.NewObjectBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.NewObjectBox.Location = new System.Drawing.Point(0, 489);
+            this.NewObjectBox.Name = "NewObjectBox";
+            this.NewObjectBox.Size = new System.Drawing.Size(367, 207);
+            this.NewObjectBox.TabIndex = 35;
+            this.NewObjectBox.TabStop = false;
+            this.NewObjectBox.Text = "New Object";
             // 
             // assetLocTextBox1
             // 
@@ -537,148 +683,6 @@ namespace SpinEditor
             this.assetLocTextBox2.Size = new System.Drawing.Size(236, 20);
             this.assetLocTextBox2.TabIndex = 31;
             // 
-            // panel3
-            // 
-            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel3.Controls.Add(this.Align_Relative);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_10);
-            this.panel3.Controls.Add(this.label5);
-            this.panel3.Controls.Add(this.Horizontal_Align_Button);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_6);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_2);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_7);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_3);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_8);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_4);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_9);
-            this.panel3.Controls.Add(this.BUTTON_ALIGN_5);
-            this.panel3.Location = new System.Drawing.Point(17, 621);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(248, 140);
-            this.panel3.TabIndex = 27;
-            // 
-            // Align_Relative
-            // 
-            this.Align_Relative.FormattingEnabled = true;
-            this.Align_Relative.Items.AddRange(new object[] {
-            "Last Selected",
-            "First Selected",
-            "Selection"});
-            this.Align_Relative.Location = new System.Drawing.Point(10, 22);
-            this.Align_Relative.Name = "Align_Relative";
-            this.Align_Relative.Size = new System.Drawing.Size(196, 21);
-            this.Align_Relative.TabIndex = 26;
-            this.Align_Relative.SelectedIndexChanged += new System.EventHandler(this.Align_Relative_SelectedIndexChanged);
-            // 
-            // BUTTON_ALIGN_10
-            // 
-            this.BUTTON_ALIGN_10.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_10.Image")));
-            this.BUTTON_ALIGN_10.Location = new System.Drawing.Point(172, 89);
-            this.BUTTON_ALIGN_10.Name = "BUTTON_ALIGN_10";
-            this.BUTTON_ALIGN_10.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_10.TabIndex = 18;
-            this.BUTTON_ALIGN_10.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_10.Click += new System.EventHandler(this.TB_Vertical_Align_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 6);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(91, 13);
-            this.label5.TabIndex = 25;
-            this.label5.Text = "Align Relative To:";
-            // 
-            // Horizontal_Align_Button
-            // 
-            this.Horizontal_Align_Button.Image = ((System.Drawing.Image)(resources.GetObject("Horizontal_Align_Button.Image")));
-            this.Horizontal_Align_Button.Location = new System.Drawing.Point(10, 49);
-            this.Horizontal_Align_Button.Name = "Horizontal_Align_Button";
-            this.Horizontal_Align_Button.Size = new System.Drawing.Size(34, 34);
-            this.Horizontal_Align_Button.TabIndex = 13;
-            this.Horizontal_Align_Button.UseVisualStyleBackColor = true;
-            this.Horizontal_Align_Button.Click += new System.EventHandler(this.RL_Horizontal_Align_Click);
-            // 
-            // BUTTON_ALIGN_6
-            // 
-            this.BUTTON_ALIGN_6.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_6.Image")));
-            this.BUTTON_ALIGN_6.Location = new System.Drawing.Point(10, 89);
-            this.BUTTON_ALIGN_6.Name = "BUTTON_ALIGN_6";
-            this.BUTTON_ALIGN_6.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_6.TabIndex = 22;
-            this.BUTTON_ALIGN_6.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_6.Click += new System.EventHandler(this.BT_Vertical_Align_Click);
-            // 
-            // BUTTON_ALIGN_2
-            // 
-            this.BUTTON_ALIGN_2.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_2.Image")));
-            this.BUTTON_ALIGN_2.Location = new System.Drawing.Point(50, 49);
-            this.BUTTON_ALIGN_2.Name = "BUTTON_ALIGN_2";
-            this.BUTTON_ALIGN_2.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_2.TabIndex = 14;
-            this.BUTTON_ALIGN_2.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_2.Click += new System.EventHandler(this.L_Horizontal_Align_Click);
-            // 
-            // BUTTON_ALIGN_7
-            // 
-            this.BUTTON_ALIGN_7.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_7.Image")));
-            this.BUTTON_ALIGN_7.Location = new System.Drawing.Point(50, 89);
-            this.BUTTON_ALIGN_7.Name = "BUTTON_ALIGN_7";
-            this.BUTTON_ALIGN_7.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_7.TabIndex = 21;
-            this.BUTTON_ALIGN_7.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_7.Click += new System.EventHandler(this.T_Vertical_Align_Click);
-            // 
-            // BUTTON_ALIGN_3
-            // 
-            this.BUTTON_ALIGN_3.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_3.Image")));
-            this.BUTTON_ALIGN_3.Location = new System.Drawing.Point(90, 49);
-            this.BUTTON_ALIGN_3.Name = "BUTTON_ALIGN_3";
-            this.BUTTON_ALIGN_3.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_3.TabIndex = 15;
-            this.BUTTON_ALIGN_3.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_3.Click += new System.EventHandler(this.C_Horizontal_Align_Click);
-            // 
-            // BUTTON_ALIGN_8
-            // 
-            this.BUTTON_ALIGN_8.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_8.Image")));
-            this.BUTTON_ALIGN_8.Location = new System.Drawing.Point(90, 89);
-            this.BUTTON_ALIGN_8.Name = "BUTTON_ALIGN_8";
-            this.BUTTON_ALIGN_8.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_8.TabIndex = 20;
-            this.BUTTON_ALIGN_8.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_8.Click += new System.EventHandler(this.C_Vertical_Align_Click);
-            // 
-            // BUTTON_ALIGN_4
-            // 
-            this.BUTTON_ALIGN_4.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_4.Image")));
-            this.BUTTON_ALIGN_4.Location = new System.Drawing.Point(132, 49);
-            this.BUTTON_ALIGN_4.Name = "BUTTON_ALIGN_4";
-            this.BUTTON_ALIGN_4.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_4.TabIndex = 16;
-            this.BUTTON_ALIGN_4.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_4.Click += new System.EventHandler(this.R_Horizontal_Align_Click);
-            // 
-            // BUTTON_ALIGN_9
-            // 
-            this.BUTTON_ALIGN_9.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_9.Image")));
-            this.BUTTON_ALIGN_9.Location = new System.Drawing.Point(132, 89);
-            this.BUTTON_ALIGN_9.Name = "BUTTON_ALIGN_9";
-            this.BUTTON_ALIGN_9.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_9.TabIndex = 19;
-            this.BUTTON_ALIGN_9.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_9.Click += new System.EventHandler(this.B_Vertical_Align_Click);
-            // 
-            // BUTTON_ALIGN_5
-            // 
-            this.BUTTON_ALIGN_5.Image = ((System.Drawing.Image)(resources.GetObject("BUTTON_ALIGN_5.Image")));
-            this.BUTTON_ALIGN_5.Location = new System.Drawing.Point(172, 49);
-            this.BUTTON_ALIGN_5.Name = "BUTTON_ALIGN_5";
-            this.BUTTON_ALIGN_5.Size = new System.Drawing.Size(34, 34);
-            this.BUTTON_ALIGN_5.TabIndex = 17;
-            this.BUTTON_ALIGN_5.UseVisualStyleBackColor = true;
-            this.BUTTON_ALIGN_5.Click += new System.EventHandler(this.LR_Horizontal_Align_Click);
-            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.hScrollBar1);
@@ -689,10 +693,6 @@ namespace SpinEditor
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(966, 651);
             this.panel2.TabIndex = 13;
-            // 
-            // openAssetFileDialog1
-            // 
-            this.openAssetFileDialog1.FileName = "Select Asset";
             // 
             // xnA_RenderControl1
             // 
@@ -717,6 +717,10 @@ namespace SpinEditor
             this.xnA_RenderControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseDown);
             this.xnA_RenderControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.xnA_RenderControl1_MouseMove);
             // 
+            // openAssetFileDialog1
+            // 
+            this.openAssetFileDialog1.FileName = "Select Asset";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -735,10 +739,10 @@ namespace SpinEditor
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
+            this.AlignmentBox.ResumeLayout(false);
+            this.AlignmentBox.PerformLayout();
+            this.NewObjectBox.ResumeLayout(false);
+            this.NewObjectBox.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -772,7 +776,6 @@ namespace SpinEditor
         private ToolStripButton BUTTON_EDIT_ROOM;
         private Panel panel1;
         private Panel panel2;
-        private Panel panel3;
         private ComboBox Align_Relative;
         private Label label5;
         private Button BUTTON_ALIGN_10;
@@ -808,8 +811,9 @@ namespace SpinEditor
         private TextBox assetLocTextBox2;
         private Button assetSelectDialog3;
         private Button assetSelectDialog2;
-        private GroupBox groupBox1;
+        private GroupBox NewObjectBox;
         private ToolStripMenuItem ViewMenuHideEvents;
+        private GroupBox AlignmentBox;
 
 
     }

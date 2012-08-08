@@ -58,7 +58,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         protected string _message = " to use.";
         [ContentSerializer(Optional = true)]
         private bool _triggerOnce = true;
-        [ContentSerializer(Optional = true)]
 
 #if EDITOR || Development
         private Texture2D _devTexture;

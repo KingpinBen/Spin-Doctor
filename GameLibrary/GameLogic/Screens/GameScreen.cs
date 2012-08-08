@@ -162,8 +162,7 @@ namespace GameLibrary.GameLogic.Screens
         public virtual void Initialize() { }
 
         /// <summary>
-        /// Activates the screen. Called when the screen is added to the screen manager or if the game resumes
-        /// from being paused
+        /// Activates the screen. Called when the screen is added to the screen manager.
         /// </summary>
         public virtual void Activate() { }
 
@@ -224,7 +223,7 @@ namespace GameLibrary.GameLogic.Screens
             if (time == TimeSpan.Zero)
                 transitionDelta = 1;
             else
-                transitionDelta = (float)((delta * 1000f) / time.TotalMilliseconds);
+                transitionDelta = (float)delta * 1.5f;
 
             // Update the transition position.
             transitionPosition += transitionDelta * direction;

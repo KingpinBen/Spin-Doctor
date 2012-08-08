@@ -245,7 +245,7 @@ namespace GameLibrary.Levels
             this.SetupCamera();
 
             //  Setup the player to start on the spawn position.
-            Player.Instance.Load(screen.ScreenManager.Game, screen.World, 
+            Player.Instance.Load(_content.ServiceProvider, screen.World, 
                 _spawnLocation);
 
             //  Refresh the decal manager

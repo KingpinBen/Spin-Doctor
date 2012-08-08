@@ -192,9 +192,9 @@ namespace GameLibrary.GameLogic.Characters
 
         #endregion
 
-        public override void Load(Game game, World world, Vector2 position)
+        public override void Load(IServiceProvider provider, World world, Vector2 position)
         {
-            base.Load(game, world, position);
+            base.Load(provider, world, position);
 #if !EDITOR
 
             SetupPlayerSettings();
@@ -209,7 +209,7 @@ namespace GameLibrary.GameLogic.Characters
             {
                 _steamSprite = new Sprite();
                 _steamSprite.Init(Vector2.Zero, "Assets/Images/Effects/steam");
-                _steamSprite.Load(new ContentManager(game.Services, "Content"), world);
+                _steamSprite.Load(_content, world);
                 _steamSprite.CastShadows = true;
                 _steamSprite.AlphaDecay = 0.05f;
                 _steamSprite.RotationSpeed = 0.1f;
@@ -301,8 +301,6 @@ namespace GameLibrary.GameLogic.Characters
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-
-            spriteBatch.DrawString(FontManager.Instance.GetFont(FontList.Game), "Time: " + _airTime, ConvertUnits.ToDisplayUnits(this._mainBody.Position), Color.Red); 
         }
 
         #endregion

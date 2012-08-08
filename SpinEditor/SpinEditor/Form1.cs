@@ -448,6 +448,18 @@ namespace SpinEditor
             Application.Exit();
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (CheckIfOpenLevel())
+            {
+                base.OnFormClosing(e);
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
+
         #endregion
 
         #region Edit
@@ -739,15 +751,15 @@ namespace SpinEditor
                         return false;
                     }
                 }
-                else if (result == System.Windows.Forms.DialogResult.No)
+                else if (result == DialogResult.No)
                 {
-                    if (MessageBox.Show("Are you sure?", "Are you sure", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Cancel)
+                    if (MessageBox.Show("Are you sure you want to continue without saving?", "Are you sure", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                     {
-                        return false;
+                        return true;
                     }
                     else
                     {
-                        return true;
+                        return false;
                     }
                 }
                 else
@@ -778,9 +790,31 @@ namespace SpinEditor
                 settings.NewLineHandling = NewLineHandling.Entitize;
                 settings.NewLineOnAttributes = true;
 
-                using (XmlWriter writer = XmlWriter.Create(saveFileDialog1.FileName, settings))
+                string tempLocation = saveFileDialog1.FileName;
+                bool saveSuccessfull = true;
+
+                try
                 {
-                    IntermediateSerializer.Serialize(writer, STATIC_EDITOR_MODE.levelInstance, null);
+                    using (XmlWriter writer = XmlWriter.Create(tempLocation + ".tmp", settings))
+                    {
+                        IntermediateSerializer.Serialize(writer, STATIC_EDITOR_MODE.levelInstance, null);
+                    }
+                }
+                catch
+                {
+                    saveSuccessfull = false;
+                    MessageBox.Show("There was an error saving the file");
+                    return false;
+                }
+
+                if (saveSuccessfull)
+                {
+                    if (File.Exists(tempLocation))
+                    {
+                        File.Delete(tempLocation);
+                    }
+
+                    File.Move(tempLocation + ".tmp", tempLocation);
                 }
 
                 return true;

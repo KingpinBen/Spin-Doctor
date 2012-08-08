@@ -123,6 +123,7 @@ namespace GameLibrary.Graphics.UI
                 return _tint;
             }
         }
+
         public ButtonIcon ButtonType
         {
             get
@@ -130,6 +131,7 @@ namespace GameLibrary.Graphics.UI
                 return _buttonType;
             }
         }
+
         public Texture2D ButtonTexture
         {
             get
@@ -137,6 +139,7 @@ namespace GameLibrary.Graphics.UI
                 return _texture;
             }
         }
+
         public TextAlignment TextAlignment
         {
             get
@@ -144,6 +147,7 @@ namespace GameLibrary.Graphics.UI
                 return _textAlignment;
             }
         }
+
         public ScreenAnchorLocation AnchorPoint
         {
             get

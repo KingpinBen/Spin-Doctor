@@ -36,25 +36,6 @@ namespace GameLibrary.GameLogic.Events
         private List<Event> timedEvents;
         #endregion
 
-        #region Properties and Gets/Sets
-
-        public int GetEventCount()
-        {
-            return this.eventObjects.Count;
-        }
-
-        public int GetTimedEventCount()
-        {
-            return this.timedEvents.Count;
-        }
-
-        public int GetObjectsCount()
-        {
-            return this.objects.Count;
-        }
-
-        #endregion
-
         public void Load(GameplayScreen gameScreen)
         {
             this.eventObjects = new Dictionary<string, List<Event>>();
@@ -66,16 +47,19 @@ namespace GameLibrary.GameLogic.Events
         public void Update(float delta)
         {
 #if !EDITOR
-            for (int i = 0; i < timedEvents.Count; i++)
+            if (timedEvents.Count > 0)
             {
-                timedEvents[i].EventDelay -= delta;
-            }
-
-            for (int i = timedEvents.Count - 1; i >= 0; i--)
-            {
-                if (timedEvents[i].EventDelay <= 0)
+                for (int i = 0; i < timedEvents.Count; i++)
                 {
-                    FireEvent(timedEvents[i]);
+                    timedEvents[i].EventDelay -= delta;
+                }
+
+                for (int i = timedEvents.Count - 1; i >= 0; i--)
+                {
+                    if (timedEvents[i].EventDelay <= 0)
+                    {
+                        FireEvent(timedEvents[i]);
+                    }
                 }
             }
 #endif
@@ -346,6 +330,7 @@ namespace GameLibrary.GameLogic.Events
         public void ClearObjects()
         {
             this.eventObjects.Clear();
+            this.objects.Clear();
             this.timedEvents.Clear();
         }
 

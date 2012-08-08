@@ -175,7 +175,7 @@ namespace GameLibrary.GameLogic.Objects
 
             if (!_world.JointList.Contains(_ropeJoint))
             {
-                if (InputManager.Instance.Grab(false) && _inRange)
+                if (InputManager.Instance.Grab(true) && _inRange)
                 {
                     int index = 0;
                     float smallestDistance = (float)(Math.Pow(Player.Instance.Body.Position.X - _touchedRopeFixtures[0].Body.Position.X, 2.0) + Math.Pow(Player.Instance.Body.Position.Y - _touchedRopeFixtures[0].Body.Position.Y, 2.0));
@@ -256,13 +256,6 @@ namespace GameLibrary.GameLogic.Objects
                     Tint, _pathBodies[i].Rotation, new Vector2(Texture.Width, Texture.Height) * 0.5f, 1f,
                     SpriteEffects.None, zLayer);
             }
-
-#if Development
-            if (_touchedRopeFixtures.Count > 0)
-            {
-                sb.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font, "Touching: " + _touchedRopeFixtures.Count, this._position, Color.Red);
-            }
-#endif
         }
 #endif
         #endregion
@@ -325,7 +318,11 @@ namespace GameLibrary.GameLogic.Objects
         }
 
         #region Collisions
+
+
+
 #if !EDITOR
+
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
             if (_touchedRopeFixtures.Contains(fixtureA) && fixtureB == Player.Instance.Body.FixtureList[0])
@@ -358,7 +355,12 @@ namespace GameLibrary.GameLogic.Objects
             }
             return true;
         }
+
+
 #endif
+
+
+
         #endregion
 
         #endregion

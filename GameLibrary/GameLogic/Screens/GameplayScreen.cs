@@ -261,6 +261,8 @@ namespace GameLibrary.GameLogic.Screens
 
             Matrix cameraTransform = Camera.Instance.TransformMatrix();
 
+            #region Get the mask for the shadows
+
             if (GameSettings.Instance.Shadows == SettingLevel.On)
             {
                 this.GraphicsDevice.SetRenderTarget(rtEffect);
@@ -292,6 +294,8 @@ namespace GameLibrary.GameLogic.Screens
                 _objectsTexture = rtBlur;
             }
 
+#endregion
+
             this.GraphicsDevice.SetRenderTarget(null);
             this.GraphicsDevice.Clear(Color.Black);
 
@@ -303,12 +307,16 @@ namespace GameLibrary.GameLogic.Screens
 
             this.DrawObjects(spriteBatch, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
 
+            #region Draw the shadows
+
             if (GameSettings.Instance.Shadows == SettingLevel.On)
             {
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
                 spriteBatch.Draw(_objectsTexture, Vector2.Zero, Color.White);
                 spriteBatch.End();
             }
+
+            #endregion
 
             spriteBatch.Begin();
             HUD.Instance.Draw(spriteBatch);
@@ -317,6 +325,14 @@ namespace GameLibrary.GameLogic.Screens
             if (GameSettings.Instance.DevelopmentMode)
             {
                 DevDisplay.Instance.Draw(this.ScreenManager.GraphicsDevice);
+            }
+
+            // If the game is transitioning on or off, fade it out to black.
+            if (TransitionPosition > 0 || pauseAlpha > 0)
+            {
+                float alpha = MathHelper.Lerp(1f - TransitionAlpha, 1f, pauseAlpha / 2);
+
+                ScreenManager.FadeBackBufferToBlack(alpha);
             }
 #endif
         }

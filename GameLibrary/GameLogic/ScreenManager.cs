@@ -50,18 +50,6 @@ namespace GameLibrary.GameLogic
             get { return font; }
         }
 
-
-        /// <summary>
-        /// If true, the manager prints out a list of all the screens
-        /// each time it is updated. This can be useful for making sure
-        /// everything is being added and removed at the right times.
-        /// </summary>
-        public bool TraceEnabled
-        {
-            get { return traceEnabled; }
-            set { traceEnabled = value; }
-        }
-
         public Texture2D BlankTexture
         {
             get { return blankTexture; }
@@ -183,22 +171,7 @@ namespace GameLibrary.GameLogic
                         coveredByOtherScreen = true;
                 }
             }
-
-            // Print debug trace?
-            if (traceEnabled)
-                TraceScreens();
         }
-
-        void TraceScreens()
-        {
-            List<string> screenNames = new List<string>();
-
-            foreach (GameScreen screen in screens)
-                screenNames.Add(screen.GetType().Name);
-
-            Debug.WriteLine(string.Join(", ", screenNames.ToArray()));
-        }
-
 
         public override void Draw(GameTime gameTime)
         {

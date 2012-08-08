@@ -188,7 +188,7 @@ namespace GameLibrary.GameLogic
         /// <summary>
         /// TODO : Delete this and all references before the beta hand-in
         /// </summary>
-        private bool _developmentMode = true;
+        private bool _developmentMode = false;
 
         public bool DevelopmentMode
         {

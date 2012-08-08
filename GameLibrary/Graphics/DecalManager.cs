@@ -29,8 +29,6 @@ using Microsoft.Xna.Framework;
 using GameLibrary.GameLogic;
 using GameLibrary.GameLogic.Screens;
 
-//NOTE: Anything in a comment in this is going to be a plan on a better way of drawing everything.
-
 namespace GameLibrary.Graphics
 {
     public class DecalManager
@@ -38,8 +36,6 @@ namespace GameLibrary.Graphics
         #region Fields
         [ContentSerializer]
         private List<Decal> _decalList;
-        private ContentManager _content;
-        GameplayScreen _gameScreen;
         #endregion
 
         #region Properties
@@ -74,20 +70,16 @@ namespace GameLibrary.Graphics
             _decalList = new List<Decal>();
         }
 
-        #region Load
         public void Load(GameplayScreen screen)
         {
-            _gameScreen = screen;
-            _content = new ContentManager(screen.ScreenManager.Game.Services, "Content");
+            ContentManager _content = new ContentManager(screen.ScreenManager.Game.Services, "Content");
 
             for (int i = _decalList.Count - 1; i >= 0; i--)
             {
                 _decalList[i].Load(_content);
             }
         }
-        #endregion
 
-        #region Draw
         public void Draw(SpriteBatch sb)
         {
             for (int i = 0; i < _decalList.Count; i++)
@@ -95,6 +87,5 @@ namespace GameLibrary.Graphics
                 _decalList[i].Draw(sb);
             }
         }
-        #endregion
     }
 }

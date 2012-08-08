@@ -42,6 +42,8 @@ namespace GameLibrary.GameLogic.Objects
 
 #else
         private FixedRevoluteJoint revoluteJoint;
+        private FixedAngleJoint _angleJoint;
+
         private float _targetRotation;
 #endif
         [ContentSerializer(Optional = true)]
@@ -208,7 +210,7 @@ namespace GameLibrary.GameLogic.Objects
                     {
                         _motorSpeed *= -1;
                     }
-                    
+
                     this.Body.Rotation += _motorSpeed;
                     amountToTurn -= _motorSpeed;
 
@@ -220,7 +222,8 @@ namespace GameLibrary.GameLogic.Objects
             }
 
             //  Limit it so it can only be at 1 angle, the level rotation
-            //this.Body.Rotation = -(float)Camera.Rotation;
+            //if (_rotatesWithLevel)
+            //    this.Body.Rotation = _rotation - TargetRotation;
 #endif
         }
         #endregion
@@ -356,7 +359,8 @@ namespace GameLibrary.GameLogic.Objects
                 {
                     //this._origin = input.Origin;
                     this._origin = Vector2.Zero;
-                    this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
+                    this.Body.LocalCenter = Vector2.Zero;// ConvertUnits.ToSimUnits(new Vector2(this._texture.Width, this._texture.Height) * 0.5f);
+                    this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, ConvertUnits.ToSimUnits(new Vector2(this._texture.Width, this._texture.Height) * 0.5f), simPosition);
                 }
                 else
                 {
@@ -366,9 +370,13 @@ namespace GameLibrary.GameLogic.Objects
             }
 
             this.Body.Position = simPosition;
-            
-            this.revoluteJoint.MaxMotorTorque = float.MaxValue;
-            this.revoluteJoint.MotorEnabled = true;
+            this.Body.SleepingAllowed = false;
+
+            if (this.revoluteJoint != null)
+            {
+                this.revoluteJoint.MaxMotorTorque = float.MaxValue;
+                this.revoluteJoint.MotorEnabled = true;
+            }
 
             if (!_rotatesWithLevel)
             {
@@ -381,6 +389,7 @@ namespace GameLibrary.GameLogic.Objects
                 float newSpeed = 1 / _motorSpeed;
                 this._motorSpeed = newSpeed;
             }
+
             if (!this._rotatesWithLevel)
             {
                 if (this._motorEnabled)
@@ -396,7 +405,6 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.CollidesWith = Category.All & ~Category.Cat20;
             this.Body.CollisionCategories = Category.Cat20;
             
-            this.Body.IgnoreCCD = true;
             this.Body.Restitution = 0.0f;
             this.Body.Friction = 3.0f;
 #endif

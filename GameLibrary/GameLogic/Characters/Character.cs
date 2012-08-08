@@ -50,21 +50,47 @@ namespace GameLibrary.GameLogic.Characters
     {
         #region Fields
 
+        protected ContentManager _content;
+
+        #region Settings and States
+
         protected float _charMass;
         protected float _charWidth;
         protected float _charHeight;
+        protected float _airTime;
+
+        protected PlayerState _playerState;
+
+        #endregion
+
+        #region Animation
+
+
+        private string _currentAnimation = null;
+        protected Dictionary<string, FrameAnimation> _animations;
+        protected List<Fixture> _touchingFixtures;
+
+
+        #endregion
+
+        #region Physics Elements
+
+
         protected Body _wheelBody;
         protected Body _mainBody;
         protected RevoluteJoint _wheelJoint;
+
+
+        #endregion
+
+        #region Draw Fields
+
         protected Texture2D _charTexture;
-        protected PlayerState _playerState;
-        protected ContentManager _content;
-        protected List<Fixture> _touchingFixtures;
         private Vector2 _texturePosition;
-        protected Dictionary<string, FrameAnimation> _animations;
-        private string _currentAnimation = null;
         protected SpriteEffects _lookingDirection;
-        protected float _airTime;
+
+        #endregion
+
         #endregion
 
         #region Properties
@@ -171,14 +197,16 @@ namespace GameLibrary.GameLogic.Characters
 
         #endregion
 
+        #region Initialization
+
         public Character()
         {
             _animations = new Dictionary<string, FrameAnimation>();
         }
 
-        public virtual void Load(Game game, World _world, Vector2 position)
+        public virtual void Load(IServiceProvider provider, World _world, Vector2 position)
         {
-            _content = new ContentManager(game.Services, "Content");
+            _content = new ContentManager(provider, "Content");
 
             this._charHeight = 128f;
             this._charWidth = _charHeight;
@@ -191,6 +219,9 @@ namespace GameLibrary.GameLogic.Characters
 
             this.SetUpPhysics(_world);
         }
+        #endregion
+
+        #region Update and Draw
 
         public virtual void Update(float delta, World world)
         {
@@ -208,7 +239,11 @@ namespace GameLibrary.GameLogic.Characters
             spriteBatch.Draw(CurrentAnimation.CurrentAnimationTexture,
             this._texturePosition, CurrentAnimation.CurrentRect, Color.White,
             this._mainBody.Rotation, CurrentAnimation.FrameOrigin, 0.43f, _lookingDirection, 0.3f);
-        } 
+        }
+
+        #endregion
+
+        #region Private Methods
 
         #region Animations
 
@@ -315,5 +350,7 @@ namespace GameLibrary.GameLogic.Characters
             this._wheelBody.SleepingAllowed = false;
             this._mainBody.SleepingAllowed = false;
         }
+
+        #endregion
     }
 }

@@ -132,7 +132,7 @@ namespace GameLibrary.GameLogic.Objects
                 spriteBatch.Draw(_texture, ConvertUnits.ToDisplayUnits(_bodies[i].Position), null, this._tint, this._bodies[i].Rotation, this._origin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * i)));
             }
 
-            spriteBatch.Draw(_endTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._endOrigin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * _shaftPieces)));
+            spriteBatch.Draw(_endTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._endOrigin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * (_shaftPieces + 1))));
 
             //spriteBatch.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font,
             //            "Speed: " + this._prismaticJoint.MotorSpeed +

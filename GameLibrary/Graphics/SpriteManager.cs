@@ -33,8 +33,6 @@ namespace GameLibrary.Graphics
 {
     public class SpriteManager
     {
-        #region Fields and Properties
-
         #region Singleton and Getter
 
 
@@ -57,32 +55,20 @@ namespace GameLibrary.Graphics
 
         #endregion
 
-        #region Master SpriteList
+        #region Fields
 
+        private GraphicsDevice _graphicsDevice;
 
         /// <summary>
         /// The main list to hold all the sprites
         /// </summary>
         private List<Sprite> _spriteList;
 
-
-        #endregion
-
-        #region SpriteList to Draw
-
         /// <summary>
         /// We want to draw all the sprites in the list when the draw is called.
         /// If a sprite is removed after, it can throw.
         /// </summary>
         private List<Sprite> _spritesToDraw;
-
-        #endregion
-
-        #region ScreenManager
-
-        private ScreenManager _screenManager;
-
-        #endregion
 
         #endregion
 
@@ -112,7 +98,7 @@ namespace GameLibrary.Graphics
 
             //  We'll pass in the ScreenManager mainly for the Game and 
             //  graphicsdevice references.
-            this._screenManager = screenManager;
+            _graphicsDevice = screenManager.GraphicsDevice;
         }
 
         #endregion
@@ -164,7 +150,7 @@ namespace GameLibrary.Graphics
             //  Go through the list and draw them all
             for (int i = 0; i < _spritesToDraw.Count; i++)
             {
-                _spritesToDraw[i].Draw(spriteBatch, this._screenManager.GraphicsDevice);
+                _spritesToDraw[i].Draw(spriteBatch, _graphicsDevice);
             }
 #endif
         }
@@ -189,20 +175,6 @@ namespace GameLibrary.Graphics
         }
 
         #endregion
-
-
-        #region SpriteList Count
-        /// <summary>
-        /// Returns the amount of sprites that are in the list.
-        /// </summary>
-        /// <returns>How many sprites are in the SpriteList</returns>
-        public int ListCount()
-        {
-            return _spriteList.Count();
-        }
-
-        #endregion
-
 
         #region AddSprites
 
