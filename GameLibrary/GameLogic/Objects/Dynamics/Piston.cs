@@ -155,15 +155,11 @@ namespace GameLibrary.GameLogic.Objects
             {
                 shaftOrigin = new Vector2(_texture.Width - ((this._texture.Width * 0.1f) * i), _texture.Height) * 0.5f;
 
-<<<<<<< HEAD
-            spriteBatch.Draw(_endTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._endOrigin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * (_shaftPieces + 1))));
-=======
                 spriteBatch.Draw(_texture, ConvertUnits.ToDisplayUnits(_shaftBodies[i].Position),
                     new Rectangle(0, 0, (int)(this._texture.Width - ((this._texture.Width * 0.1f) * i)), 
                         (int)_texture.Height), this._tint, this._shaftBodies[i].Rotation, shaftOrigin, 
                         1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * i)));
             }
->>>>>>> Tech Doc revisions
 
             spriteBatch.Draw(_crusherTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._crusherTextureOrigin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * (_shaftPieces + 1))));
         }

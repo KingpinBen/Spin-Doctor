@@ -202,8 +202,6 @@ namespace GameLibrary.GameLogic.Objects
             this._texture = content.Load<Texture2D>(this._textureAsset);
             this._origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
 
-            this.GetRotationFromOrientation();
-
 #if EDITOR
             _devTexture = content.Load<Texture2D>(Defines.DEVELOPMENT_TEXTURE);
 
@@ -255,7 +253,7 @@ namespace GameLibrary.GameLogic.Objects
                         AddSprite();
                     }
 
-                    if (TouchingFixtures.Count > 0)
+                    if (_touchingFixtures.Count > 0)
                     {
                         ApplyForces();
                     }
@@ -332,15 +330,15 @@ namespace GameLibrary.GameLogic.Objects
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            TouchingFixtures.Remove(fixtureB);
+            _touchingFixtures.Remove(fixtureB);
         }
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
             //  We want to add all the bodies that come into contact with it.
-            if (!TouchingFixtures.Contains(fixtureB))
+            if (!_touchingFixtures.Contains(fixtureB))
             {
-                TouchingFixtures.Add(fixtureB);
+                _touchingFixtures.Add(fixtureB);
             }
 
             return true;
@@ -371,11 +369,11 @@ namespace GameLibrary.GameLogic.Objects
             dir *= 15;
 
             //  Check all the fixtures that are touching the trigger and apply a force to them.
-            for (int i = TouchingFixtures.Count - 1; i >= 0; i--)
+            for (int i = _touchingFixtures.Count - 1; i >= 0; i--)
             {
 
                 //  We have a special way to push the player, so check if 'i' is a player fixture.
-                if (TouchingFixtures[i] == Player.Instance.PlayerHitBox)
+                if (_touchingFixtures[i] == Player.Instance.PlayerHitBox)
                 {
 
                     //  It is the player, so apply the force
@@ -384,7 +382,7 @@ namespace GameLibrary.GameLogic.Objects
                 }
 
                 //  It's a random object, so apply a force to it too.
-                TouchingFixtures[i].Body.ApplyForce(dir);
+                _touchingFixtures[i].Body.ApplyForce(dir);
             }
         }
 #endregion

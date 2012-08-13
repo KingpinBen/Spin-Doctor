@@ -323,6 +323,8 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
+        #region Update and Draw
+
         public override void Update(float delta)
         {
 #if !EDITOR
@@ -402,6 +404,8 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
+        #endregion
+
         #region Private Methods
 
         void AddParticle()
@@ -463,16 +467,12 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Start()
         {
-            this._enabled = true;
-            
-            base.Start();
+            base.Enable();
         }
 
         public override void Stop()
         {
-            this._enabled = false;
-            
-            base.Stop();
+            base.Disable();
         }
 #endif
         #endregion

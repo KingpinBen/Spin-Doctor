@@ -43,7 +43,6 @@ namespace GameLibrary.GameLogic.Screens
         private InputAction pauseAction;
 
         private Effect _silhouetteEffect;
-        private Effect _alphaEffect;
 
         private RenderTarget2D rtMask;
         private RenderTarget2D rtBlur;
@@ -129,7 +128,6 @@ namespace GameLibrary.GameLogic.Screens
                 rtEffect = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
 
                 _silhouetteEffect = _content.Load<Effect>("Assets/Other/Effects/MaskEffect");
-                _alphaEffect = _content.Load<Effect>("Assets/Other/Effects/AlphaTexture");
             }
 
 
@@ -276,13 +274,7 @@ namespace GameLibrary.GameLogic.Screens
 
 #endregion
 
-<<<<<<< HEAD
-            this.GraphicsDevice.SetRenderTarget(null);
-            this.GraphicsDevice.Clear(Color.Black);
-=======
-
             graphics.Clear(Color.Black);
->>>>>>> Tech Doc revisions
 
             if (_level.RoomType == RoomType.Rotating)
             {

@@ -23,8 +23,6 @@
 //--
 //--------------------------------------------------------------------------
 
-//#define Development
-
 #region Using Statements
 using System;
 using System.Collections.Generic;
@@ -53,9 +51,9 @@ namespace GameLibrary.GameLogic.Objects
         #region Fields
 
         [ContentSerializer(Optional = true)]
-        private new Direction _orientation;
+        private new Direction _orientation = Direction.Vertical;
         [ContentSerializer(Optional = true)]
-        private int _climbableSections;
+        private int _climbableSections = 1;
 
 #if EDITOR
         private Texture2D editorTexture;
@@ -159,20 +157,8 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
         #region Constructor and Load
-        public Ladder()
-            : base()
-        {
+        public Ladder() : base() { }
 
-        }
-
-        public override void Init(Vector2 position, string texLoc)
-        {
-            base.Init(position, texLoc);
-
-            this._orientation = Direction.Vertical;
-            this._climbableSections = 1;
-        }
-        
 
         public override void Load(ContentManager content, World world)
         {
@@ -192,6 +178,7 @@ namespace GameLibrary.GameLogic.Objects
             editorTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
             this.SetupPhysics(world);
+            this.RegisterObject();
 #endif
         }
 

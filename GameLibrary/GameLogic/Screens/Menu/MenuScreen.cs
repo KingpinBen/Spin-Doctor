@@ -21,9 +21,9 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         protected List<MenuEntry> menuEntries = new List<MenuEntry>();
         protected int selectedEntry = 0;
-        string menuTitle;
-        SpriteFont _titleFont;
         protected Vector2 _itemsPosition;
+        private string menuTitle;
+        private SpriteFont _titleFont;
 
         protected InputAction menuUp;
         protected InputAction menuDown;

@@ -59,10 +59,7 @@ namespace GameLibrary.GameLogic.Events
                     if (timedEvents[i].EventDelay <= 0)
                     {
                         FireEvent(timedEvents[i]);
-<<<<<<< HEAD
-=======
                         timedEvents.RemoveAt(i);
->>>>>>> Tech Doc revisions
                     }
                 }
             }

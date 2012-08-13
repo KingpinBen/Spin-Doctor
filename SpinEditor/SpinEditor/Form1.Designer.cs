@@ -826,12 +826,7 @@ namespace SpinEditor
         private GroupBox NewObjectBox;
         private ToolStripMenuItem ViewMenuHideEvents;
         private GroupBox AlignmentBox;
-<<<<<<< HEAD
-=======
         private ToolStripMenuItem ViewMenuHideNames;
->>>>>>> Tech Doc revisions
-
-
     }
 }
 

@@ -28,10 +28,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using GameLibrary.GameLogic;
 using GameLibrary.GameLogic.Screens;
-<<<<<<< HEAD
-=======
 using GameLibrary.Graphics.Drawing;
->>>>>>> Tech Doc revisions
 
 namespace GameLibrary.Graphics
 {

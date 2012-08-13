@@ -103,24 +103,11 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            this._texture = content.Load<Texture2D>(_textureAsset);
+            base.Load(content, world);
 
-#if EDITOR
-            if (Width == 0 || Height == 0)
-            {
-                this.Width = this._texture.Width;
-                this.Height = this._texture.Height;
-            }
-#else
-            //  All collectables should be able to be removed at some point,
-            //  so set up an event to remove it on collision.
+#if !EDITOR
             this._objectEvents.Add(new Event(this._name, this._name, EventType.TRIGGER_REMOVE, 0.0f, 0));
-
-            this.SetupTrigger(world);
-            this.RegisterObject();
 #endif
-
-            this._origin = new Vector2(this._width, this._height) * 0.5f;
         }
 
         public override void Update(float delta)
@@ -163,17 +150,16 @@ namespace GameLibrary.GameLogic.Objects
 
 #if !EDITOR 
 
-        protected void SetupTrigger(World world)
+        protected override void SetupPhysics(World world)
         {
             float height = ConvertUnits.ToSimUnits(25);
 
             this.Body = BodyFactory.CreateRectangle(world, height, height, _mass);
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);
-            //this.Body.Position -= (Vector2.UnitY * (height * 0.5f));
 
             //  Give it it's own category but make it only collide with 10 (Player) and nothing else.
             this.Body.CollisionCategories = Category.Cat3;
-            this.Body.CollidesWith = Category.Cat10;// &~Category.All & ~Category.Cat3;
+            this.Body.CollidesWith = Category.Cat10;
 
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;

@@ -43,13 +43,9 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-<<<<<<< HEAD
         private FixedRevoluteJoint revoluteJoint;
         private FixedAngleJoint _angleJoint;
-
-=======
         private FixedRevoluteJoint _revoluteJoint;
->>>>>>> Tech Doc revisions
         private float _targetRotation;
 #endif
 
@@ -162,7 +158,6 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-<<<<<<< HEAD
             if (_rotatesWithLevel && _motorEnabled)
             {
                 if (Camera.Instance.IsLevelRotating)
@@ -204,7 +199,6 @@ namespace GameLibrary.GameLogic.Objects
                     }
                 }
             }
-=======
             //if (_rotatesWithLevel && _motorEnabled)
             //{
             //    if (Camera.Instance.IsLevelRotating)
@@ -246,8 +240,6 @@ namespace GameLibrary.GameLogic.Objects
             //        }
             //    }
             //}
->>>>>>> Tech Doc revisions
-
             //  Limit it so it can only be at 1 angle, the level rotation
             //if (_rotatesWithLevel)
             //    this.Body.Rotation = _rotation - TargetRotation;
@@ -327,7 +319,6 @@ namespace GameLibrary.GameLogic.Objects
 
         #region Private Methods
 
-        #region SetUpPhysics
         protected override void SetupPhysics(World world)
         {
             /*  Okay, this created some issues (there are still issues I know) but lemme tell you whats going down.
@@ -342,8 +333,7 @@ namespace GameLibrary.GameLogic.Objects
              * unfortunately may need redoing again.
              */
 
-#if EDITOR
-#else
+#if !EDITOR
             Vector2 simPosition = ConvertUnits.ToSimUnits(this._position);
 
             if (_useShape)
@@ -387,11 +377,9 @@ namespace GameLibrary.GameLogic.Objects
                     //this._origin = input.Origin;
                     this._origin = Vector2.Zero;
                     this.Body.LocalCenter = Vector2.Zero;// ConvertUnits.ToSimUnits(new Vector2(this._texture.Width, this._texture.Height) * 0.5f);
-<<<<<<< HEAD
+
                     this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, ConvertUnits.ToSimUnits(new Vector2(this._texture.Width, this._texture.Height) * 0.5f), simPosition);
-=======
                     this._revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, ConvertUnits.ToSimUnits(new Vector2(this._texture.Width, this._texture.Height) * 0.5f), simPosition);
->>>>>>> Tech Doc revisions
                 }
                 else
                 {
@@ -403,52 +391,48 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.Position = simPosition;
             this.Body.SleepingAllowed = false;
 
-<<<<<<< HEAD
             if (this.revoluteJoint != null)
             {
                 this.revoluteJoint.MaxMotorTorque = float.MaxValue;
                 this.revoluteJoint.MotorEnabled = true;
-=======
-            if (this._revoluteJoint != null)
-            {
-                this._revoluteJoint.MaxMotorTorque = float.MaxValue;
-                this._revoluteJoint.MotorEnabled = true;
->>>>>>> Tech Doc revisions
-            }
-
-            if (!_rotatesWithLevel)
-            {
-                this.Body.BodyType = BodyType.Dynamic;
-            }
-            else
-            {
-                this.Body.BodyType = BodyType.Dynamic;
-                //this.Body.Rotation = this._rotation;
-                float newSpeed = 1 / _motorSpeed;
-                this._motorSpeed = newSpeed;
-            }
-
-            if (!this._rotatesWithLevel)
-            {
-                if (this._motorEnabled)
+                if (this._revoluteJoint != null)
                 {
-                    this._revoluteJoint.MotorSpeed = _motorSpeed;
+                    this._revoluteJoint.MaxMotorTorque = float.MaxValue;
+                    this._revoluteJoint.MotorEnabled = true;
+                }
+
+                if (!_rotatesWithLevel)
+                {
+                    this.Body.BodyType = BodyType.Dynamic;
                 }
                 else
                 {
-                    this._revoluteJoint.MotorSpeed = 0.0f;
+                    this.Body.BodyType = BodyType.Dynamic;
+                    //this.Body.Rotation = this._rotation;
+                    float newSpeed = 1 / _motorSpeed;
+                    this._motorSpeed = newSpeed;
                 }
-            }
 
-            this.Body.CollidesWith = Category.All & ~Category.Cat20;
-            this.Body.CollisionCategories = Category.Cat20;
-            
-            this.Body.Restitution = 0.0f;
-            this.Body.Friction = 3.0f;
+                if (!this._rotatesWithLevel)
+                {
+                    if (this._motorEnabled)
+                    {
+                        this._revoluteJoint.MotorSpeed = _motorSpeed;
+                    }
+                    else
+                    {
+                        this._revoluteJoint.MotorSpeed = 0.0f;
+                    }
+                }
+
+                this.Body.CollidesWith = Category.All & ~Category.Cat20;
+                this.Body.CollisionCategories = Category.Cat20;
+
+                this.Body.Restitution = 0.0f;
+                this.Body.Friction = 3.0f;
+            }
 #endif
         }
-        #endregion
-
         #endregion
     }
 }

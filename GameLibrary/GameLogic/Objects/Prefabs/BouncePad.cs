@@ -19,8 +19,6 @@
 //--    
 //-------------------------------------------------------------------------------
 
-//#define Development
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,12 +37,12 @@ namespace GameLibrary.GameLogic.Objects
     {
         #region Fields
         [ContentSerializer(Optional = true)]
-        private float _restitution;
+        private float _restitution = 1.0f;
 
 #if EDITOR
 
 #else
-        private float lastTouched;
+        private float lastTouched = -1.0f;
         private const float _bounceCooldown = 2f;
 #endif
 
@@ -77,29 +75,14 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
-        #region Constructor
-        public BouncePad()
-            : base()
-        {
-        }
+        #region Constructor and Load
+        public BouncePad() : base() { }
 
-        public override void Init(Vector2 position)
-        {
-            base.Init(position);
-
-            this._restitution = 1.0f;
-        }
-        #endregion
-
-        #region Load
         public override void  Load(ContentManager content, World world)
         {
  	        base.Load(content, world);
 
-#if EDITOR
-
-#else
-            this.lastTouched = -1.0f;
+#if !EDITOR
             this.Body.Restitution = _restitution;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
@@ -110,9 +93,8 @@ namespace GameLibrary.GameLogic.Objects
         #region Update
         public override void Update(float delta)
         {
-#if EDITOR
+#if !EDITOR
 
-#else
             /*  This sort of gets the right effect but depending on how the 
              * designers want it to work, it'll need redoing.
              * 
@@ -138,19 +120,12 @@ namespace GameLibrary.GameLogic.Objects
                     this.Body.Restitution = _restitution;
                 }
             }
-            
 #endif
         }
         #endregion
 
-#if !EDITOR
-        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
-        {
-            base.Draw(spriteBatch, graphics);
-        }
-#endif
-
         #region Collisions
+
 #if !EDITOR
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
@@ -168,6 +143,7 @@ namespace GameLibrary.GameLogic.Objects
             return true;
         }
 #endif
+
         #endregion
     }
 }

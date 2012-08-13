@@ -398,7 +398,7 @@ namespace GameLibrary.GameLogic.Objects
             //  is enabled, we'll also need to change it directly on the joint
             //  as it's not referenced.
 
-            if (sent is int)
+            if (sent is float)
             {
                 if (_motorSpeed < 0)
                 {
