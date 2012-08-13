@@ -11,17 +11,17 @@ using System.ComponentModel;
 using FarseerPhysics.Common;
 #endregion
 
-namespace GameLibrary.Graphics
+namespace GameLibrary.Graphics.Drawing
 {
     public class Decal : ICloneable
     {
         #region Fields
         [ContentSerializer]
-        private float _width;
+        private float _width = 0;
         [ContentSerializer]
-        private float _height;
+        private float _height = 0;
         [ContentSerializer]
-        private Vector2 _position;
+        private Vector2 _position = Vector2.Zero;
         [ContentSerializer]
         private Vector2 _origin;
         [ContentSerializer]
@@ -123,7 +123,6 @@ namespace GameLibrary.Graphics
             set
             {
                 _rotation = MathHelper.ToRadians(value);
-                UpdateCorners();
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
@@ -208,10 +207,5 @@ namespace GameLibrary.Graphics
         }
 
         #endregion
-
-        private void UpdateCorners()
-        {
-            
-        }
     }
 }

@@ -53,7 +53,7 @@ namespace GameLibrary.GameLogic.Objects
 
         private Texture2D _endTexture;
         [ContentSerializer(Optional = true)]
-        private Vector2 _endPosition;
+        private Vector2 _endPosition = Vector2.Zero;
         [ContentSerializer(Optional = true)]
         private int _chainCount;
         [ContentSerializer(Optional = true)]
@@ -64,11 +64,11 @@ namespace GameLibrary.GameLogic.Objects
         private List<Body> _pathBodies;
         private List<Fixture> _touchedRopeFixtures = new List<Fixture>();
         private RevoluteJoint _ropePlayerJoint;
-        private bool _inRange;
         private RopeJoint _ropeJoint;
-        private int _grabbedIndex;
         private World _world;
 
+        private bool _inRange;
+        private int _grabbedIndex;
 #endif
 
         #endregion

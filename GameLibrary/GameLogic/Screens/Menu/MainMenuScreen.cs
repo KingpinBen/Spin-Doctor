@@ -57,11 +57,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
             base.Activate();
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-
         #endregion
 
         #region Handle Input

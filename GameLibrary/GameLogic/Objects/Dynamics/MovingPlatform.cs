@@ -92,20 +92,9 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
-        #region Constructor and Initialization
+        #region Constructor and Load
 
-        public MovingPlatform()
-            : base()
-        {
-
-        }
-
-        public override void Init(Vector2 position, string tex)
-        {
-            base.Init(position, tex);
-        }
-
-        #endregion
+        public MovingPlatform() : base() { }
 
         public override void Load(ContentManager content, World world)
         {
@@ -118,10 +107,8 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        public override void Update(float delta)
-        {
-            base.Update(delta);
-        }
+
+        #endregion
 
         #region Draw
 #if EDITOR
@@ -134,11 +121,6 @@ namespace GameLibrary.GameLogic.Objects
             spriteBatch.Draw(_texture, this._endPosition,
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
                 this._tint * 0.4f, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
-        }
-#else
-        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
-        {
-            base.Draw(spriteBatch, graphics);
         }
 #endif
         #endregion

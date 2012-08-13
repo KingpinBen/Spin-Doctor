@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace GameLibrary.Graphics
+namespace GameLibrary.Graphics.Drawing
 {
     public class Particle : ICloneable
     {
@@ -16,6 +16,8 @@ namespace GameLibrary.Graphics
 
         private float _timeLeft;
         public float Rotation;
+        public float Alpha;
+        public float Scale;
         
         #endregion
 

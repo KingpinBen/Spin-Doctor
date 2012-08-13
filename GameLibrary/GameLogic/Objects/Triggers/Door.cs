@@ -16,14 +16,7 @@
 //--    BenG - Updated the message popup to work with the HUD
 //--    
 //--    
-//--    TBD
-//--    ==============
-//--    Make it work properly with other objects
-//--    Make it work with orientation
-//--    
 //-------------------------------------------------------------------------------
-
-//#define Development
 
 #region Using Statements
 using System;
@@ -53,8 +46,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
 #else
         private bool _triggered = false;
-        private List<Fixture> _touchingFixtures = new List<Fixture>();
-        private TriggerType _triggerType;
+        private TriggerType _triggerType = TriggerType.Automatic;
 #endif
         
         [ContentSerializer(Optional = true)]
@@ -208,33 +200,25 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                         if (Camera.Instance.UpIs == UpIs.Up &&
                             _orientation == Orientation.Up)
                         {
-                            this._triggered = true;
+                            ChangeTriggered(true);
                         }
                         else if (Camera.Instance.UpIs == UpIs.Down &&
                           _orientation == Orientation.Down)
                         {
-                            this._triggered = true;
+                            ChangeTriggered(true);
                         }
                         else if (Camera.Instance.UpIs == UpIs.Left &&
                           _orientation == Orientation.Right)
                         {
-                            this._triggered = true;
+                            ChangeTriggered(true);
                         }
                         else if (Camera.Instance.UpIs == UpIs.Right &&
                           _orientation == Orientation.Left)
                         {
-                            this._triggered = true;
+                            ChangeTriggered(true);
                         }
                     }
                     #endregion
-
-                    if (_triggered)
-                    {
-                        if (!HUD.Instance.ShowPopup)
-                        {
-                            HUD.Instance.ShowOnScreenMessage(true, " to use.");
-                        }
-                    }
                 }
                 
                 //  FixtureB was the player and it's been acted on.
@@ -253,10 +237,26 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
                 if (_touchingFixtures.Count == 0)
                 {
-                    this._triggered = false;
-                    HUD.Instance.ShowOnScreenMessage(false);
+                    ChangeTriggered(false);
                 }
             }
+        }
+
+        void ChangeTriggered(bool state)
+        {
+            if (state)
+            {
+                if (_triggerType == TriggerType.PlayerInput)
+                {
+                    HUD.Instance.ShowOnScreenMessage(true, " to use.");
+                }
+            }
+            else
+            {
+                HUD.Instance.ShowOnScreenMessage(false, "");
+            }
+
+            this._triggered = state;
         }
         #endregion
 

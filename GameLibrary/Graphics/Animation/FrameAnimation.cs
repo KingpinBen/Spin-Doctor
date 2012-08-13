@@ -41,7 +41,7 @@ namespace GameLibrary.Graphics.Animation
         private Vector2 _frameOrigin;
         private Texture2D _texture;
         private bool _reversePlayback = true;
-        private float _animationScale;
+        private float _animationScale = 0.43f;
         private bool _playOnce;
 
         /// <summary>

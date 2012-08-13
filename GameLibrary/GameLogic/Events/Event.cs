@@ -10,6 +10,8 @@ namespace GameLibrary.GameLogic.Events
 {
     public class Event
     {
+        #region Fields 
+
         [ContentSerializer]
         private string _objectName;
         [ContentSerializer]
@@ -19,8 +21,16 @@ namespace GameLibrary.GameLogic.Events
         [ContentSerializer]
         private float _eventDelay;
         [ContentSerializer]
-        private object _argument;
+        private float? _argument = 0.0f;
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The name of the object to which the event
+        /// belongs to.
+        /// </summary>
         [ContentSerializerIgnore]
         public string ObjectName
         {
@@ -33,6 +43,10 @@ namespace GameLibrary.GameLogic.Events
                 _objectName = value;
             }
         }
+
+        /// <summary>
+        /// The name of the object to target.
+        /// </summary>
         [ContentSerializerIgnore]
         public string TargetName
         {
@@ -45,6 +59,10 @@ namespace GameLibrary.GameLogic.Events
                 _targetName = value;
             }
         }
+
+        /// <summary>
+        /// The type of event that will fire on the target object.
+        /// </summary>
         [ContentSerializerIgnore]
         public EventType EventType
         {
@@ -57,6 +75,11 @@ namespace GameLibrary.GameLogic.Events
                 _eventType = value;
             }
         }
+
+        /// <summary>
+        /// The delay time between when it's been triggered to
+        /// fire and when it fires.
+        /// </summary>
         [ContentSerializerIgnore]
         public float EventDelay
         {
@@ -69,8 +92,13 @@ namespace GameLibrary.GameLogic.Events
                 _eventDelay = value;
             }
         }
+
+        /// <summary>
+        /// Certain event types will use an argument, such as changing
+        /// and setting the rotational speed of something.
+        /// </summary>
         [ContentSerializerIgnore]
-        public object Argument
+        public float? Argument
         {
             get
             {
@@ -82,15 +110,17 @@ namespace GameLibrary.GameLogic.Events
             }
         }
 
+        #endregion
+
         public Event()
         {
-            this._objectName = "Enter THIS objects name here";
-            this._targetName = "Enter the TARGETS name here";
+            this._objectName = "This";
+            this._targetName = "Target";
             this._eventType = Events.EventType.NONE;
             this._eventDelay = 0.0f;
         }
 
-        public Event(string name, string target, EventType type, float delay, object arg)
+        public Event(string name, string target, EventType type, float delay, int arg)
         {
             this.ObjectName = name;
             this.TargetName = target;

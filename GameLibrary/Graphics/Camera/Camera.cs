@@ -76,8 +76,8 @@ namespace GameLibrary.Graphics.Camera
         private float _rotationToAdd;
         private float _rotateDelayTimer;
         private float _largestLevelDimension;
-        private UpIs _upIs;
-        private CameraType _cameraType;
+        private UpIs _upIs = UpIs.Up;
+        private CameraType _cameraType = CameraType.Level;
         #endregion
 
         #region Properties
@@ -219,12 +219,10 @@ namespace GameLibrary.Graphics.Camera
             this.CalculateZoom();
             this._fullLevelZoom = Zoom;
 
-            this._cameraType = CameraType.Level;
             this._worldRotation = 0.0f;
             this._cameraPosition = Vector2.Zero;
             this._rotateDelayTimer = 0;
             this._rotationToAdd = 0.0f;
-            
         }
 
         public void Update(float delta)

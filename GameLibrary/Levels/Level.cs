@@ -52,13 +52,14 @@ namespace GameLibrary.Levels
         #region Fields
 
         ContentManager _content;
-        Gears _gears;
-        LevelBackdrop _levelBackdrop;
+        
 
 #if EDITOR
 #else
-        GameplayScreen _gameScreen;
-        
+        private GameplayScreen _gameScreen;
+        private Gears _gears;
+        private LevelBackdrop _levelBackdrop;
+        private List<NodeObject> _objectsToRemove = new List<NodeObject>();
 #endif
 
         [ContentSerializer]
@@ -253,7 +254,7 @@ namespace GameLibrary.Levels
 
             //  Setup the backgrounds of the level so it looks the way it should.
             this._levelBackdrop.Tint = this._backgroundTint;
-            this._levelBackdrop.Load(_content, _roomDimensions, _roomTheme,
+            this._levelBackdrop.Load(ref _content, _roomDimensions, _roomTheme,
                 _roomType, _backgroundFile);
 
             //  We only need the gears for a rotating room, so don't bother
@@ -294,9 +295,14 @@ namespace GameLibrary.Levels
 
         public void Update(float delta)
         {
-#if EDITOR
+#if !EDITOR
+            for (int i = 0; i < _objectsToRemove.Count; i++)
+            {
+                _objectList.Remove(_objectsToRemove[i]);
+            }
 
-#else
+            _objectsToRemove.Clear();
+
             for (int i = this._objectList.Count - 1; i >= 0; i--)
             {
                 this._objectList[i].Update(delta);
@@ -359,9 +365,7 @@ namespace GameLibrary.Levels
 
         void SetupCamera()
         {
-#if EDITOR
-
-#else
+#if !EDITOR
             float largestLevelDimension = 0;
             bool canRotate = false;
 
@@ -369,6 +373,7 @@ namespace GameLibrary.Levels
             {
                 canRotate = true;
                 largestLevelDimension = (float)Math.Sqrt((int)(_roomDimensions.X * _roomDimensions.X) + (int)(_roomDimensions.Y * _roomDimensions.Y));
+                Camera.Instance.ChangeCamera(CameraType.Level);
             }
             else
             {
@@ -380,13 +385,23 @@ namespace GameLibrary.Levels
                 {
                     largestLevelDimension = _roomDimensions.Y;
                 }
-            }
 
+                Camera.Instance.ChangeCamera(CameraType.Focus);
+            }
+            
             Camera.Instance.Load(_gameScreen, canRotate, largestLevelDimension);
 #endif
         }
 
         #endregion
+        #region Public Methods
+#if !EDITOR
+
+        public List<NodeObject> GetObjectsToRemove()
+        {
+            return _objectsToRemove;
+        }
+#endif
 
         public void Dispose()
         {
@@ -398,6 +413,8 @@ namespace GameLibrary.Levels
             this._levelBackdrop = null;
 #endif
         }
+        #endregion
+
 
 
     }

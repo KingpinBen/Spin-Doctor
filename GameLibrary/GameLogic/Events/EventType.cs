@@ -20,7 +20,9 @@ namespace GameLibrary.GameLogic.Events
         TRIGGER_START,
         TRIGGER_STOP,
         TRIGGER_CHANGE_SPEED,
+        TRIGGER_CHANGE,
         TRIGGER_TOGGLE,
+        TRIGGER_TOGGLE_SHADOW,
         
 
         /// <summary>

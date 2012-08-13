@@ -20,8 +20,6 @@
 //--    
 //-------------------------------------------------------------------------------
 
-//#define Development
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,8 +49,6 @@ namespace GameLibrary.GameLogic.Objects
 
 #else
         private Texture2D _bloodiedTexture;
-        private List<Fixture> TouchingFixtures = new List<Fixture>();
-        //private Vector2 
         private bool _touched = false;     
 #endif
         #endregion
@@ -171,9 +167,7 @@ namespace GameLibrary.GameLogic.Objects
         public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
-#if EDITOR
-
-#else
+#if !EDITOR
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
             this.SetupPhysics(world);
 #endif
@@ -210,21 +204,6 @@ namespace GameLibrary.GameLogic.Objects
         {
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, 
                 this._rotation, new Vector2(this.TextureToUse.Width, this.TextureToUse.Height) * 0.5f, _scale, SpriteEffects.None, this._zLayer); 
-
-#if Development
-            sb.DrawString(Fonts.DebugFont, "ToStart: " + this.MovingToStart + ". Speed: " + this.PrismaticJoint.MotorSpeed + ". IsMoving: " + this._isMoving, 
-                ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(400, -60), Color.Red);
-
-            sb.DrawString(Fonts.DebugFont, "UpL: " + this.PrismaticJoint.UpperLimit + ". LoL: " + this.PrismaticJoint.LowerLimit,
-                ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(400, -45), Color.Red);
-
-            sb.DrawString(Fonts.DebugFont, "Translation: " + this.PrismaticJoint.JointTranslation.ToString(), 
-                ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(400, -30), Color.Red);
-
-            sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit) + (!this.MovingToStart).ToString(), this.Position - new Vector2(0, 500), Color.Red);
-            sb.DrawString(Fonts.DebugFont, (this.PrismaticJoint.JointTranslation <= 0) + this.MovingToStart.ToString(), this.Position - new Vector2(0, 485), Color.Red);
-            sb.DrawString(Fonts.DebugFont, this._elapsedTimer.ToString(), this.Position - new Vector2(0, 460), Color.Red);
-#endif
         }
 #endif
         #endregion
@@ -255,9 +234,9 @@ namespace GameLibrary.GameLogic.Objects
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (!TouchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
+            if (!_touchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
             {
-                TouchingFixtures.Add(fixtureB);
+                _touchingFixtures.Add(fixtureB);
                 Player.Instance.Kill();
                 _touched = true;
             }
@@ -271,7 +250,7 @@ namespace GameLibrary.GameLogic.Objects
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            TouchingFixtures.Remove(fixtureB);
+            _touchingFixtures.Remove(fixtureB);
         }
 #endif
 

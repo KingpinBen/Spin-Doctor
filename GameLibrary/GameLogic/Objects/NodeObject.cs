@@ -12,7 +12,7 @@ using GameLibrary.GameLogic.Events;
 
 namespace GameLibrary.GameLogic.Objects
 {
-    public class NodeObject : ICloneable, IGameObject
+    public class NodeObject : ICloneable, IEventObject
     {
         #region Fields
 
@@ -120,7 +120,7 @@ namespace GameLibrary.GameLogic.Objects
             set { }
         }
         [ContentSerializerIgnore, CategoryAttribute("Events")]
-        public List<Event> EventList
+        public virtual List<Event> EventList
         {
             get
             {
@@ -129,10 +129,6 @@ namespace GameLibrary.GameLogic.Objects
             set
             {
                 _objectEvents = value;
-                for(int i = 0; i < _objectEvents.Count; i++)
-                {
-                    _objectEvents[i].ObjectName = this._name;
-                }
             }
         }
 
@@ -202,8 +198,7 @@ namespace GameLibrary.GameLogic.Objects
 
         public virtual void Load(ContentManager content, World world) 
         {
-#if EDITOR
-#else
+#if !EDITOR
             this.RegisterObject();
 #endif
         }
@@ -237,9 +232,7 @@ namespace GameLibrary.GameLogic.Objects
 
         #region Event Stuff
 
-#if EDITOR
-        
-#else
+#if !EDITOR
         /// <summary>
         /// Register this objects and all of its events with the 
         /// EventManager. If the object has no events but has a name,
@@ -253,7 +246,7 @@ namespace GameLibrary.GameLogic.Objects
         /// <summary>
         /// Fire all of the objects events. Timed events will have delays.
         /// </summary>
-        protected void FireEvent() 
+        protected virtual void FireEvent() 
         {
             EventManager.Instance.FireEvent(this._name);
         }
@@ -279,6 +272,10 @@ namespace GameLibrary.GameLogic.Objects
         public virtual Body GetBody()
         {
             return null;
+        }
+        public virtual void ToggleShadows()
+        {
+            this._castShadows = !_castShadows;
         }
 
 #endif

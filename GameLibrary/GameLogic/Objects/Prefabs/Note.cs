@@ -34,6 +34,7 @@ using FarseerPhysics.Factories;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Characters;
+using System.ComponentModel;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -41,13 +42,13 @@ namespace GameLibrary.GameLogic.Objects
     {
         #region Fields
         [ContentSerializer]
-        private int _noteID;
+        private int _noteID = 0;
 
         #endregion
 
         #region Properties
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public int NoteID
         {
             get
@@ -59,19 +60,49 @@ namespace GameLibrary.GameLogic.Objects
                 _noteID = value;
             }
         }
-#else
-
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public override TriggerType TriggerType
+        {
+            get
+            {
+                return _triggerType;
+            }
+            set { }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public override InteractType InteractType
+        {
+        get{
+        return _interactType;
+        }
+        set { }
+        }
 #endif
         #endregion
 
         public Note() : base() { }
 
+        public override void Init(Vector2 Position, string texLoc)
+        {
+            base.Init(Position, texLoc);
+
+            this._triggerType = TriggerType.PlayerInput;
+            this._interactType = Objects.InteractType.PickUp;
+            
+        }
+
         public override void Load(ContentManager content, World world)
         {
+#if !EDITOR
             if (GameSettings.Instance.FoundEntries[_noteID])
             {
-                Camera.Instance.GetGameScreen().Level.ObjectsList.Remove(this);
+                RemoveNote();
+                return;
             }
+
+            this._triggerType = TriggerType.PlayerInput;
+            this._message = " to pick up.";
+#endif
             
             base.Load(content, world);
         }
@@ -83,13 +114,14 @@ namespace GameLibrary.GameLogic.Objects
             {
                 if (Player.Instance.PlayerState == PlayerState.Dead)
                 {
-                    _triggered = false;
+                    ChangeTriggered(false);
                     return;
                 }
 
                 if (InputManager.Instance.Interact(true))
                 {
                     CreatePopUp();
+                    RemoveNote();
                 }
             }
 #endif
@@ -111,16 +143,22 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
+#if !EDITOR
         private void CreatePopUp()
         {
-#if EDITOR
-#else
+            //  We call this before making the note screen incase we end up having text on there too.
+            ChangeTriggered(false);
+
             Camera.Instance.GetGameScreen().ScreenManager.AddScreen(new MessageOverlay(Defines.NOTE_DIRECTORY + _noteID), null);
-                    
-            HUD.Instance.ShowOnScreenMessage(false);
-            this._triggered = false;
-            this._beenCollected = true;
-#endif
+            //  We want to set the settings to display as though they've got it.
+            //  It'll only stick though when they complete the level with it.
+            GameSettings.Instance.FoundEntries[_noteID] = true;
         }
+
+        private void RemoveNote()
+        {
+            Camera.Instance.GetGameScreen().RemoveObject(this);
+        }
+#endif
     }
 }

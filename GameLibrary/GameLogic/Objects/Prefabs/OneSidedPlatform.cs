@@ -59,7 +59,6 @@ namespace GameLibrary.GameLogic.Objects
 #else
         private float top;
         private float radius;
-        private Fixture _platform;
         private World _world;
 #endif
         #endregion
@@ -112,7 +111,6 @@ namespace GameLibrary.GameLogic.Objects
             spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height),
                 Color.White * 0.7f, this.TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, 0.0f);
 #endif
-            //base.Draw(spriteBatch);
         }
 #endif
         #endregion

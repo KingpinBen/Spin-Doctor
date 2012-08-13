@@ -57,10 +57,8 @@ namespace GameLibrary.Audio
         private AudioEngine _engine;
         private SoundBank[] _soundBanks;
         private WaveBank[] _waveBanks;
-        private uint _soundVolume;
-        private uint _musicVolume;
-        private bool _isMusicEnabled;
-        private bool _isSoundEnabled;
+        private int _soundVolume;
+        private int _musicVolume;
 
         /// <summary>
         /// Temporary banks for testing.
@@ -79,7 +77,7 @@ namespace GameLibrary.Audio
         /// <summary>
         /// Sound level get/set
         /// </summary>
-        public uint SoundVolume
+        public int SoundVolume
         {
             get
             {
@@ -91,35 +89,18 @@ namespace GameLibrary.Audio
             }
         }
 
-        /// <summary>
-        /// Is sound currently enabled?
-        /// </summary>
-        /// <returns>Is the sound enabled?</returns>
-        public bool GetEnabledSound()
-        {
-            return _isSoundEnabled;
-        }
 
         /// <summary>
         /// Set the current volume level between 0 and 10
         /// </summary>
         /// <param name="Volume Level">What should the volume level be?</param>
-        public void SetSoundVolume(uint volumeLevel)
+        public void SetSoundVolume(int volumeLevel)
         {
-            _soundVolume = (uint)MathHelper.Clamp(_soundVolume, 0, 10);
+            _soundVolume = volumeLevel;
 
             if (this._engine != null)
             {
                 this._engine.GetCategory("Sound").SetVolume(this._soundVolume * 0.1f);
-
-                if (_soundVolume == 0)
-                {
-                    this._isSoundEnabled = false;
-                }
-                else
-                {
-                    this._isSoundEnabled = true;
-                }
             }
         }
 
@@ -134,7 +115,7 @@ namespace GameLibrary.Audio
         /// <summary>
         /// Music Volume GetSet
         /// </summary>
-        public uint MusicVolume
+        public int MusicVolume
         {
             get
             {
@@ -146,37 +127,20 @@ namespace GameLibrary.Audio
             }
         }
 
-        /// <summary>
-        /// Is music enabled?
-        /// </summary>
-        /// <returns>Is music enabled</returns>
-        public bool GetEnabledMusic()
-        {
-            return _isMusicEnabled;
-        }
 
         /// <summary>
         /// Set the music volume
         /// </summary>
         /// <param name="volumeLevel">Desired volume level. 0-10</param>
-        public void SetMusicVolume(uint volumeLevel)
+        public void SetMusicVolume(int volumeLevel)
         {
             //  Cap the volume level between 0 and 10
-            _musicVolume = (uint)MathHelper.Clamp(volumeLevel, 0, 10);
+            _musicVolume = volumeLevel;
 
             //  If we can use the 
             if (this._engine != null)
             {
                 this._engine.GetCategory("Music").SetVolume(this._musicVolume * 0.1f);
-
-                if (_musicVolume == 0)
-                {
-                    this._isMusicEnabled = false;
-                }
-                else
-                {
-                    this._isMusicEnabled = true;
-                }
             }
         }
 

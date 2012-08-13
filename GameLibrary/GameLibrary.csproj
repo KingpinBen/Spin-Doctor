@@ -122,7 +122,7 @@
     <Compile Include="GameLogic\Events\Event.cs" />
     <Compile Include="GameLogic\Events\EventManager.cs" />
     <Compile Include="GameLogic\Events\EventType.cs" />
-    <Compile Include="GameLogic\Objects\IGameObject.cs" />
+    <Compile Include="GameLogic\Objects\IEventObject.cs" />
     <Compile Include="GameLogic\Objects\InteractType.cs" />
     <Compile Include="GameLogic\Objects\ObjectShape.cs" />
     <Compile Include="GameLogic\Objects\SpecialBodyFlags.cs" />

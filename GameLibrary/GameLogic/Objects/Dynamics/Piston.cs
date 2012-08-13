@@ -11,6 +11,8 @@ using FarseerPhysics.Factories;
 using GameLibrary.Graphics;
 using GameLibrary.Helpers;
 using System.ComponentModel;
+using FarseerPhysics.Dynamics.Contacts;
+using GameLibrary.GameLogic.Characters;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -22,23 +24,25 @@ namespace GameLibrary.GameLogic.Objects
 
 #else
         private List<FixedPrismaticJoint> _joints = new List<FixedPrismaticJoint>();
-        private List<Body> _bodies = new List<Body>();
+        private List<Body> _shaftBodies = new List<Body>();
 #endif
 
-        private Texture2D _endTexture;
-        private Vector2 _endOrigin;
+        private Texture2D _crusherTexture;
+        private Vector2 _crusherTextureOrigin;
 
-        [ContentSerializer(Optional=true), CategoryAttribute("Object Specific")]
+        [ContentSerializer(Optional = true)]
         private uint _shaftPieces = 0;
         [ContentSerializer(Optional = true)]
         private string _endTextureAsset = String.Empty;
+        [ContentSerializer(Optional = true)]
+        private bool _isLethal = false;
 
         #endregion
 
         #region Properties
 
 #if EDITOR
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public uint ShaftPieces
         {
             get
@@ -50,7 +54,7 @@ namespace GameLibrary.GameLogic.Objects
                 _shaftPieces = value;
             }
         }
-        [ContentSerializerIgnore]
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public override Vector2 EndPosition
         {
             get
@@ -58,6 +62,18 @@ namespace GameLibrary.GameLogic.Objects
                 return _position - SpinAssist.ModifyVectorByOrientation(new Vector2(0, _texture.Height * _shaftPieces), this._orientation);
             }
             set { }
+        }
+        [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
+        public bool IsLethal
+        {
+            get
+            {
+                return _isLethal;
+            }
+            set
+            {
+                _isLethal = value;
+            }
         }
 #else
 #endif
@@ -71,15 +87,13 @@ namespace GameLibrary.GameLogic.Objects
             base.Init(position, tex);
             this._endTextureAsset = texEnd;
             this._shaftPieces = 1;
+            this._isLethal = false;
         }
 
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(this._textureAsset);
-            this._endTexture = content.Load<Texture2D>(this._endTextureAsset);
-
-            this._origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
-            this._endOrigin = new Vector2(this._endTexture.Width, this._endTexture.Height) * 0.5f;
+            this._crusherTexture = content.Load<Texture2D>(this._endTextureAsset);
 
 #if EDITOR
             if (Width == 0 || Height == 0)
@@ -101,6 +115,9 @@ namespace GameLibrary.GameLogic.Objects
             }
             this.RegisterObject();
 #endif
+
+            this._crusherTextureOrigin = new Vector2(
+                this._crusherTexture.Width, this._crusherTexture.Height) * 0.5f;
         }
 
         #region Update and Draw
@@ -110,40 +127,51 @@ namespace GameLibrary.GameLogic.Objects
 #if !EDITOR
             base.Update(delta);
 
-            for (int i = 0; i < _joints.Count; i++)
+            if (_isMoving)
             {
-                this.HandleJoint(delta, _joints[i]);
+                for (int i = 0; i < _joints.Count; i++)
+                {
+                    this.HandleJoint(delta, _joints[i]);
+                }
             }
 #endif
         }
 
         #region Draw
+
 #if EDITOR
+
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, this._position, null, this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
-            spriteBatch.Draw(_endTexture, this.EndPosition, null, this._tint, this._rotation, this._endOrigin, 1.0f, SpriteEffects.None, this._zLayer);
+            spriteBatch.Draw(_texture, this._position, null, this._tint, this._rotation, new Vector2(this._texture.Width, this._texture.Height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
+            spriteBatch.Draw(_crusherTexture, this.EndPosition, null, this._tint * 0.5f, this._rotation, this._crusherTextureOrigin, 1.0f, SpriteEffects.None, this._zLayer);
         }
+
 #else
         public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            for (int i = 0; i < _bodies.Count; i++)
+            Vector2 shaftOrigin;
+            for (int i = 0; i < _shaftBodies.Count; i++)
             {
-                spriteBatch.Draw(_texture, ConvertUnits.ToDisplayUnits(_bodies[i].Position), null, this._tint, this._bodies[i].Rotation, this._origin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * i)));
-            }
+                shaftOrigin = new Vector2(_texture.Width - ((this._texture.Width * 0.1f) * i), _texture.Height) * 0.5f;
 
+<<<<<<< HEAD
             spriteBatch.Draw(_endTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._endOrigin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * (_shaftPieces + 1))));
+=======
+                spriteBatch.Draw(_texture, ConvertUnits.ToDisplayUnits(_shaftBodies[i].Position),
+                    new Rectangle(0, 0, (int)(this._texture.Width - ((this._texture.Width * 0.1f) * i)), 
+                        (int)_texture.Height), this._tint, this._shaftBodies[i].Rotation, shaftOrigin, 
+                        1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * i)));
+            }
+>>>>>>> Tech Doc revisions
 
-            //spriteBatch.DrawString(FontManager.Instance.GetFont(Graphics.FontList.Debug).Font,
-            //            "Speed: " + this._prismaticJoint.MotorSpeed +
-            //            ".\nUL: " + this._prismaticJoint.UpperLimit.ToString() +
-            //            ". LL: " + this._prismaticJoint.LowerLimit.ToString() +
-            //            ".\nTransl: " + this._prismaticJoint.JointTranslation.ToString() +
-            //            ". Elapsed: " + _elapsedTimer.ToString() +
-            //        ".\nMovingToStart: " + this.MovingToStart, ConvertUnits.ToDisplayUnits(this.Body.Position), Color.Red)
+            spriteBatch.Draw(_crusherTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._crusherTextureOrigin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * (_shaftPieces + 1))));
         }
 #endif
         #endregion
+
+
+
         #endregion
 
         #region Private Methods
@@ -155,7 +183,8 @@ namespace GameLibrary.GameLogic.Objects
             float textureHeight = ConvertUnits.ToSimUnits(this._texture.Height);
             Vector2 axis = SpinAssist.ModifyVectorByOrientation(new Vector2(0, -1), _orientation);
             Body body;
-            float textureWidthOffset = ConvertUnits.ToSimUnits(2.0f);
+            
+            #region Shaft
             for (int i = 0; i < _shaftPieces; i++)
             {
                 body = new Body(world);
@@ -169,7 +198,7 @@ namespace GameLibrary.GameLogic.Objects
                 }
                 else
                 {
-                    Fixture fixture = FixtureFactory.AttachRectangle(textureWidth - (textureWidthOffset * i), textureHeight, 1.0f, Vector2.Zero, body);
+                    Fixture fixture = FixtureFactory.AttachRectangle(textureWidth - ((textureWidth * 0.1f) * i), textureHeight, 1.0f, Vector2.Zero, body);
                     body.BodyType = BodyType.Dynamic;
 
                     FixedPrismaticJoint _joint = JointFactory.CreateFixedPrismaticJoint(world, body, ConvertUnits.ToSimUnits(this._position), axis);
@@ -185,12 +214,16 @@ namespace GameLibrary.GameLogic.Objects
                 //  Ignore collision with Statics and other pistons.
                 body.CollidesWith = Category.All & ~Category.Cat2 & ~Category.Cat20;
 
-                _bodies.Add(body);
+                _shaftBodies.Add(body);
             }
+#endregion
 
-            TexVertOutput input = SpinAssist.TexToVert(world, _endTexture, ConvertUnits.ToSimUnits(10), true);
+            #region Endpiece
 
-            _endOrigin = -ConvertUnits.ToSimUnits(input.Origin);
+            TexVertOutput input = SpinAssist.TexToVert(world, _crusherTexture, ConvertUnits.ToSimUnits(10), true);
+
+            _crusherTextureOrigin = -ConvertUnits.ToSimUnits(input.Origin);
+
             this.Body = input.Body;
             //  TODO: Add proper position.
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);
@@ -209,8 +242,54 @@ namespace GameLibrary.GameLogic.Objects
             this._prismaticJoint.LimitEnabled = true;
             this._prismaticJoint.MotorEnabled = true;
             this._prismaticJoint.MaxMotorForce = float.MaxValue;
+
+#endregion
+
+            if (_isLethal)
+            {
+                float endHeight = ConvertUnits.ToSimUnits(_crusherTexture.Height);
+
+                Fixture fix = FixtureFactory.AttachRectangle(
+                    ConvertUnits.ToSimUnits(_crusherTexture.Width - 20),
+                    endHeight * 0.38f,
+                    1.0f, new Vector2(0, -endHeight * 0.4f),
+                    Body);
+                fix.IsSensor = true;
+                fix.IgnoreCollisionWith(this.Body.FixtureList[0]);
+
+                fix.Body.OnCollision += TouchedLethal;
+                fix.Body.OnSeparation += LeftLethal;
+            }
 #endif
         }
+#if !EDITOR
+        bool TouchedLethal(Fixture fixA, Fixture fixB, Contact contact)
+        {
+            if (fixA == Body.FixtureList[0])
+            {
+                return false;
+            }
+
+            if (Player.Instance.CheckBodyBox(fixB))
+            {
+                if (!_touchingFixtures.Contains(fixB))
+                {
+                    _touchingFixtures.Add(fixB);
+                    Player.Instance.Kill();
+                }
+            }
+
+            return true;
+        }
+
+        void LeftLethal(Fixture fixA, Fixture fixB)
+        {
+            if (_touchingFixtures.Contains(fixB))
+            {
+                _touchingFixtures.Remove(fixB);
+            }
+        }
+#endif
 
         void HandleJoint(float delta, FixedPrismaticJoint joint)
         {

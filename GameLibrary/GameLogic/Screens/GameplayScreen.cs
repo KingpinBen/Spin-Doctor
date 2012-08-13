@@ -50,9 +50,6 @@ namespace GameLibrary.GameLogic.Screens
         private RenderTarget2D rtEffect;
 
         private Texture2D _objectsTexture;
-        private Texture2D _shadowTexture;
-
-        
 
         #endregion
 
@@ -76,20 +73,6 @@ namespace GameLibrary.GameLogic.Screens
 
         #endregion
 
-        #region Level
-        public Level Level
-        {
-            get
-            {
-                return _level;
-            }
-            set
-            {
-                _level = value;
-            }
-        }
-        #endregion
-
         #region World
         public World World
         {
@@ -99,14 +82,6 @@ namespace GameLibrary.GameLogic.Screens
             }
         }
         #endregion
-
-        public GraphicsDevice GraphicsDevice
-        {
-            get
-            {
-                return this.ScreenManager.GraphicsDevice;
-            }
-        }
 
         #endregion
 
@@ -195,13 +170,15 @@ namespace GameLibrary.GameLogic.Screens
 
             if (IsActive)
             {
-                _world.Step(delta);
+                
                 HUD.Instance.Update(delta);
-                Camera.Instance.Update(delta);
                 InputManager.Instance.Update(delta);
-                SpriteManager.Instance.Update(delta);
+                Camera.Instance.Update(delta);
 
+                _world.Step(delta);
                 _level.Update(delta);
+                
+                SpriteManager.Instance.Update(delta);
 
                 if (GameSettings.Instance.DevelopmentMode)
                 {
@@ -256,6 +233,7 @@ namespace GameLibrary.GameLogic.Screens
 #if EDITOR
 
 #else
+            GraphicsDevice graphics = ScreenManager.GraphicsDevice;
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Black, 0, 0);
 
@@ -265,16 +243,16 @@ namespace GameLibrary.GameLogic.Screens
 
             if (GameSettings.Instance.Shadows == SettingLevel.On)
             {
-                this.GraphicsDevice.SetRenderTarget(rtEffect);
+                graphics.SetRenderTarget(rtEffect);
 
 
-                this.GraphicsDevice.Clear(Color.Transparent);
+                graphics.Clear(Color.Transparent);
 
                 this.DrawObjects(spriteBatch, SpriteSortMode.Immediate, BlendState.NonPremultiplied, false, true);
                 this._objectsTexture = rtEffect;
 
-                this.GraphicsDevice.SetRenderTarget(rtMask);
-                this.GraphicsDevice.Clear(Color.Transparent);
+                graphics.SetRenderTarget(rtMask);
+                graphics.Clear(Color.Transparent);
 
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
                 _silhouetteEffect.CurrentTechnique.Passes[0].Apply();
@@ -283,8 +261,8 @@ namespace GameLibrary.GameLogic.Screens
 
                 _objectsTexture = rtMask;
 
-                this.GraphicsDevice.SetRenderTarget(rtBlur);
-                this.GraphicsDevice.Clear(Color.Transparent);
+                graphics.SetRenderTarget(rtBlur);
+                graphics.Clear(Color.Transparent);
 
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
                 _silhouetteEffect.CurrentTechnique.Passes[1].Apply();
@@ -292,17 +270,24 @@ namespace GameLibrary.GameLogic.Screens
                 spriteBatch.End();
 
                 _objectsTexture = rtBlur;
+
+                graphics.SetRenderTarget(null);
             }
 
 #endregion
 
+<<<<<<< HEAD
             this.GraphicsDevice.SetRenderTarget(null);
             this.GraphicsDevice.Clear(Color.Black);
+=======
+
+            graphics.Clear(Color.Black);
+>>>>>>> Tech Doc revisions
 
             if (_level.RoomType == RoomType.Rotating)
             {
-                Level.DrawBackground();
-                Level.DrawBackdrop(ref cameraTransform);
+                _level.DrawBackground();
+                _level.DrawBackdrop(ref cameraTransform);
             }
 
             this.DrawObjects(spriteBatch, SpriteSortMode.BackToFront, BlendState.AlphaBlend, true, false);
@@ -312,7 +297,7 @@ namespace GameLibrary.GameLogic.Screens
             if (GameSettings.Instance.Shadows == SettingLevel.On)
             {
                 spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied);
-                spriteBatch.Draw(_objectsTexture, Vector2.Zero, Color.White);
+                spriteBatch.Draw(_objectsTexture, Vector2.Zero, null, Color.White, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.98f);
                 spriteBatch.End();
             }
 
@@ -402,14 +387,10 @@ namespace GameLibrary.GameLogic.Screens
         {
             Matrix cameraTransform = Camera.Instance.TransformMatrix();
             NodeObject obj = new NodeObject();
+            GraphicsDevice graphics = this.ScreenManager.GraphicsDevice;
 
             spriteBatch.Begin(sortMode, blendState, SamplerState.AnisotropicWrap, null, null, null, cameraTransform);
             
-            if (shadowPass)
-            {
-                //_alphaEffect.CurrentTechnique.Passes[0].Apply();
-            }
-
             if (drawDecals)
             {
                 this._level.DecalManager.Draw(spriteBatch);
@@ -418,9 +399,9 @@ namespace GameLibrary.GameLogic.Screens
 
             Player.Instance.Draw(spriteBatch);
 
-            for (int i = 0; i < Level.ObjectsList.Count; i++)
+            for (int i = 0; i < _level.ObjectsList.Count; i++)
             {
-                obj = Level.ObjectsList[i];
+                obj = _level.ObjectsList[i];
 
                 //  If it is the shadow pass and the object doesn't cast 
                 //  shadows, move on.
@@ -429,10 +410,20 @@ namespace GameLibrary.GameLogic.Screens
                     continue;
                 }
 
-                obj.Draw(spriteBatch, GraphicsDevice);
+                obj.Draw(spriteBatch, graphics);
             }
 
             spriteBatch.End();
+        }
+
+        public void RemoveObject(NodeObject obj)
+        {
+            if (obj.GetBody() != null)
+            {
+                this._world.RemoveBody(obj.GetBody());
+            }
+
+            this._level.GetObjectsToRemove().Add(obj);
         }
 #endif
     }

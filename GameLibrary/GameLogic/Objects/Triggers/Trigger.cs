@@ -19,7 +19,7 @@
 //--    
 //-------------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 #region Using Statements
 using System;
@@ -38,6 +38,7 @@ using GameLibrary.Graphics.UI;
 using GameLibrary.Graphics;
 using GameLibrary.GameLogic.Events;
 using GameLibrary.GameLogic.Characters;
+using GameLibrary.GameLogic.Controls;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
@@ -64,7 +65,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #endif
 
 #if !EDITOR
-        protected List<Fixture> TouchingFixtures = new List<Fixture>();
         protected bool _triggered = false;
         private bool _fired = false;
         protected InteractType _interactType;
@@ -245,6 +245,8 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         }
 
+        #region Update and Draw
+
         public override void Update(float delta)
         {
 #if !EDITOR
@@ -256,23 +258,26 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
 
             //  First check if it's been enabled.
-            if (_enabled && (_triggered && !_fired))
+            if (_triggered && !_fired)
             {
-                if (Player.Instance.PlayerState != PlayerState.Dead)
+                if (Player.Instance.PlayerState == PlayerState.Dead)
                 {
-                    //  Fire off all the events.
-                    this.FireEvent();
+                    ChangeTriggered(false);
+                }
 
-                    this._fired = true;
-                    if (_triggerOnce)
+                if (_triggerType == TriggerType.PlayerInput)
+                {
+                    if (InputManager.Instance.Interact(true))
                     {
-                        EventManager.Instance.DeregisterObject(this);
+                        this.FireEvent();
                     }
                 }
                 else
                 {
-                    _triggered = false;
+                    this.FireEvent();
                 }
+
+                
             }
 #endif
         }
@@ -297,9 +302,25 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #endif
         #endregion
 
+        #endregion
+
         #region Private Methods
 
 #if !EDITOR
+
+        protected override void FireEvent()
+        {
+            base.FireEvent();
+
+            this._fired = true;
+            ChangeTriggered(false);
+
+            if (_triggerOnce)
+            {
+                EventManager.Instance.DeregisterObject(this);
+                this.Body.Enabled = false;
+            }
+        }
 
         #region Collisions
         /// <summary>
@@ -317,9 +338,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         /// <returns></returns>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (!TouchingFixtures.Contains(fixtureB) && Player.Instance.CheckBodyBox(fixtureB))
+            if (!_touchingFixtures.Contains(fixtureB) && Player.Instance.CheckBodyBox(fixtureB))
             {
-                TouchingFixtures.Add(fixtureB);
+                _touchingFixtures.Add(fixtureB);
             }
             else
             {
@@ -329,12 +350,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
             if (!Triggered)
             {
-                this.Triggered = true;
-
-                if (_triggerType == TriggerType.PlayerInput)
-                {
-                    HUD.Instance.ShowOnScreenMessage(true, _message);
-                }
+                ChangeTriggered(true);
             }
 
             return true;
@@ -343,27 +359,39 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
             //  Only the players body boxes are added to the touchingfixtures list.
-            if (TouchingFixtures.Contains(fixtureB))
+            if (_touchingFixtures.Contains(fixtureB))
             {
-                TouchingFixtures.Remove(fixtureB);
+                _touchingFixtures.Remove(fixtureB);
             }
 
             //  So if it's empty, the player has fully left the trigger.
-            if (TouchingFixtures.Count == 0)
+            if (_touchingFixtures.Count == 0)
             {
                 //  so turn it off.
-                this._triggered = false;
+                ChangeTriggered(false);
+            }
+        }
+
+        void ChangeTriggered(bool state)
+        {
+            if (state)
+            {
+                if (_triggerType == TriggerType.PlayerInput)
+                {
+                    HUD.Instance.ShowOnScreenMessage(true, _message);
+                }
+            }
+            else
+            {
+                HUD.Instance.ShowOnScreenMessage(false, "");
 
                 if (!this._triggerOnce)
                 {
                     this._fired = false;
                 }
-                
-                if (_triggerType == TriggerType.PlayerInput && HUD.Instance.ShowPopup)
-                {
-                    HUD.Instance.ShowOnScreenMessage(false);
-                }
             }
+
+            this._triggered = state;
         }
 
         #endregion

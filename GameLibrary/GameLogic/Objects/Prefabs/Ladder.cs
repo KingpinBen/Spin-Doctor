@@ -60,10 +60,8 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
         private Texture2D editorTexture;
 #else
-        private bool _inGrabbingRange;
+        private bool _inRange;
         private bool _grabbed;
-        List<Fixture> _touchingBodies = new List<Fixture>();
-        Fixture[] targetFixtures;
 #endif
 
         #endregion
@@ -81,7 +79,15 @@ namespace GameLibrary.GameLogic.Objects
             set
             {
                 _orientation = value;
-                GetRotationFromOrientation();
+
+                if (value == Direction.Vertical)
+                {
+                    _rotation = 0;
+                }
+                else
+                { 
+                    _rotation = -MathHelper.PiOver2;
+                }
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Hidden")]
@@ -129,29 +135,11 @@ namespace GameLibrary.GameLogic.Objects
         }
 #else
         [ContentSerializerIgnore]
-        public bool PlayerInRange
-        {
-            get
-            {
-                return _inGrabbingRange;
-            }
-        }
-
-        [ContentSerializerIgnore]
-        public new Direction Orientation
-        {
-            get
-            {
-                return _orientation;
-            }
-        }
-
-        [ContentSerializerIgnore]
         public override float Height
         {
             get
             {
-                if (Orientation == Direction.Horizontal)
+                if (_orientation == Direction.Horizontal)
                     return -_width;
                 return _height * _climbableSections;
             }
@@ -162,31 +150,9 @@ namespace GameLibrary.GameLogic.Objects
         {
             get
             {
-                if (Orientation == Direction.Horizontal)
+                if (_orientation == Direction.Horizontal)
                     return -_height * _climbableSections;
                 return _width;
-            }
-        }
-
-        [ContentSerializerIgnore]
-        public bool Grabbed
-        {
-            get
-            {
-                return _grabbed;
-            }
-            internal set
-            {
-                _grabbed = value;
-            }
-        }
-
-        [ContentSerializerIgnore]
-        public int Bars
-        {
-            get
-            {
-                return _climbableSections;
             }
         }
 #endif
@@ -210,7 +176,6 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            //base.Load(content, world);
             this._texture = content.Load<Texture2D>(_textureAsset);
 
 #if EDITOR
@@ -227,7 +192,6 @@ namespace GameLibrary.GameLogic.Objects
             editorTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
 #else
             this.SetupPhysics(world);
-            this.targetFixtures = new Fixture[1] { Player.Instance.GrabFixture };
 #endif
         }
 
@@ -248,7 +212,7 @@ namespace GameLibrary.GameLogic.Objects
                 return;
             }
 
-            if (_inGrabbingRange)
+            if (_inRange)
             {
                 if (!_grabbed)
                 {
@@ -267,7 +231,7 @@ namespace GameLibrary.GameLogic.Objects
             }
 
             //  Just a quick error grab.
-            if (Grabbed && Player.Instance.PlayerState != PlayerState.Climbing)
+            if (_grabbed && Player.Instance.PlayerState != PlayerState.Climbing)
             {
                 DisconnectPlayer();
             }
@@ -340,16 +304,16 @@ namespace GameLibrary.GameLogic.Objects
                 Vector2 Moveto = Vector2.Zero;
                 Camera.Instance.AllowRotation = false;
 
-                if (!Grabbed)
+                if (!_grabbed)
                 {
-                    this.Grabbed = true;
+                    this._grabbed = true;
                 }
 
-                if (Orientation == Direction.Vertical)
+                if (_orientation == Direction.Vertical)
                 {
                     Moveto = new Vector2(this.Position.X, 0);
                 }
-                else if (Orientation == Direction.Horizontal)
+                else if (_orientation == Direction.Horizontal)
                 {
                     Moveto = new Vector2(0, this.Position.Y);
                 }
@@ -372,14 +336,21 @@ namespace GameLibrary.GameLogic.Objects
 
 #else
             float newWidth = _width;
+
             //  If the width is negative, make it positive.
             if (newWidth < 0)
+            {
                 newWidth *= -1;
+            }
 
-            if (Orientation == Direction.Vertical)
-                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth * 0.25f), ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), ConvertUnits.ToSimUnits(_mass));
+            if (_orientation == Direction.Vertical)
+            {
+                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(newWidth * 0.25f), ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), 1);
+            }
             else
-                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), ConvertUnits.ToSimUnits(newWidth / 4), ConvertUnits.ToSimUnits(_mass));
+            {
+                this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits((_height * _climbableSections) - 18), ConvertUnits.ToSimUnits(newWidth * 0.25f), 1);
+            }
 
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.IsSensor = true;
@@ -388,17 +359,6 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.OnSeparation += Body_OnSeparation;
 #endif
         }
-
-
-
-        protected override void GetRotationFromOrientation()
-        {
-            if (Orientation == Direction.Vertical)
-                _rotation = 0;
-            else
-                _rotation = -MathHelper.PiOver2;
-        }
-
 
 
         #region Collisions
@@ -413,14 +373,14 @@ namespace GameLibrary.GameLogic.Objects
         /// </summary>
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            if (fixtureB == targetFixtures[0])
+            if (fixtureB == Player.Instance.GrabFixture)
             {
-                if (_touchingBodies.Contains(fixtureB))
+                if (_touchingFixtures.Contains(fixtureB))
                 {
-                    _touchingBodies.Remove(fixtureB);
+                    _touchingFixtures.Remove(fixtureB);
 
                     //  Initiate disconnecting the player.
-                    _inGrabbingRange = false;
+                    _inRange = false;
                     DisconnectPlayer();
 
                 }
@@ -434,12 +394,12 @@ namespace GameLibrary.GameLogic.Objects
         /// </summary>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (fixtureB == targetFixtures[0])
+            if (fixtureB == Player.Instance.GrabFixture)
             {
-                if (!_touchingBodies.Contains(fixtureB))
+                if (!_touchingFixtures.Contains(fixtureB))
                 {
-                    _touchingBodies.Add(fixtureB);
-                    _inGrabbingRange = true;
+                    _touchingFixtures.Add(fixtureB);
+                    _inRange = true;
                 }
             }
 

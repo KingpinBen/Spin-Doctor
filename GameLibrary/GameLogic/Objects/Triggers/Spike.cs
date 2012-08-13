@@ -15,56 +15,16 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 {
     public class Spike : StaticObject
     {
-        [ContentSerializerIgnore]
-        private List<Fixture> TouchingFixtures = new List<Fixture>();
-
         public Spike()
             : base()
         {
 
         }
 
-        public override void Init(Vector2 position,  string tex)
-        {
-            base.Init(position, tex);
-        }
-
-        public override void Load(ContentManager content, World world)
-        {
-            this._texture = content.Load<Texture2D>(_textureAsset);
-            
-
-#if EDITOR
-            if (_width == 0 || _height == 0)
-            {
-                this.Width = this._texture.Width;
-                this.Height = this._texture.Height;
-            }
-#else
-            this.SetupPhysics(world);
-#endif
-
-            this._origin = new Vector2(_width, _height) * 0.5f;
-        }
-
-        #region Draw
-#if EDITOR
-        public override void Draw(SpriteBatch sb)
-        {
-            sb.Draw(_texture, this._position, new Rectangle(0, 0, (int)_width, (int)_height),
-                this._tint, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
-        }
-#else
-        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
-        {
-            sb.Draw(this._texture, new Rectangle((int)(Position.X), (int)(Position.Y), (int)_width, (int)_height),
-                new Rectangle(0, 0, (int)_width, (int)_height), this._tint, this.Body.Rotation, this._origin, SpriteEffects.None, this._zLayer);
-        }
-#endif
-        #endregion
-
         #region Private Methods
+
 #if !EDITOR
+
         protected override void SetupPhysics(World world)
         {
 
@@ -84,9 +44,9 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (!TouchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
+            if (!_touchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
             {
-                TouchingFixtures.Add(fixtureB);
+                _touchingFixtures.Add(fixtureB);
                 Player.Instance.Kill();
             }
 
@@ -95,13 +55,15 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            if (TouchingFixtures.Contains(fixtureB))
+            if (_touchingFixtures.Contains(fixtureB))
             {
-                TouchingFixtures.Remove(fixtureB);
+                _touchingFixtures.Remove(fixtureB);
             }
         }
         #endregion
+
 #endif
+
         #endregion
     }
 }

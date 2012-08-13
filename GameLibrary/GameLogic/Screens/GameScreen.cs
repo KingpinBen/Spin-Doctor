@@ -159,8 +159,6 @@ namespace GameLibrary.GameLogic.Screens
 
         #endregion
 
-        public virtual void Initialize() { }
-
         /// <summary>
         /// Activates the screen. Called when the screen is added to the screen manager.
         /// </summary>

@@ -62,7 +62,7 @@ namespace GameLibrary.Graphics.Drawing
         [ContentSerializer(Optional = true)]
         private int _timesToPlay = 1;
 
-        private Texture2D _spriteTexture;
+        private Texture2D _texture;
 
         //  Animated object fields
         [ContentSerializer(Optional = true)]
@@ -310,39 +310,33 @@ namespace GameLibrary.Graphics.Drawing
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            _spriteTexture = content.Load<Texture2D>(_textureAsset);
+            _texture = content.Load<Texture2D>(_textureAsset);
 
+#if EDITOR
             if (this.Width <= 0 || this.Height <= 0)
             {
-                this.Width = _spriteTexture.Width;
-                this.Height = _spriteTexture.Height;
+                this.Width = _texture.Width;
+                this.Height = _texture.Height;
             }
-
-            this.Load();
+#else
+            this.RegisterObject();
+#endif
         }
 
-        void Load()
-        {
-            if (!_isAnimated)
-            {
-                if (_spriteTexture == null)
-                {
-                    throw new Exception("Tried loading a sprite, but it reached the end without loading the texture");
-                }
-
-                _singleFrameDimensions = new Point((int)_spriteTexture.Width, (int)_spriteTexture.Height);
-                this._isAnimating = true;
-            }
-        }
         #endregion
 
         public override void Update(float delta)
         {
 #if !EDITOR
+            
             this._position += this._velocity;
-            this._scale += this._scaleFactor;
-            this._alpha -= this._alphaDecay;
-            this._rotation += _rotationSpeed;
+
+            if (_isAnimating)
+            {
+                this._scale += this._scaleFactor;
+                this._alpha -= this._alphaDecay;
+                this._rotation += _rotationSpeed;
+            }
 
             if (this._alpha <= 0.0f)
             {
@@ -350,7 +344,7 @@ namespace GameLibrary.Graphics.Drawing
                 return;
             }
 
-            if (_isAnimated)
+            if (_isAnimated && _isAnimating)
             {
                 this._elapsed += delta;
 
@@ -391,38 +385,45 @@ namespace GameLibrary.Graphics.Drawing
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_spriteTexture, new Rectangle(
-                (int)(this._position.X - this._singleFrameDimensions.X * 0.5f),
-                (int)(this._position.Y - this._singleFrameDimensions.Y * 0.5f),
-                (int)(this._singleFrameDimensions.X),
-                (int)(this._singleFrameDimensions.Y)), this._tint);
+            sb.Draw(_texture, new Rectangle(
+                (int)(_position.X - _singleFrameDimensions.X * 0.5f),
+                (int)(_position.Y - _singleFrameDimensions.Y * 0.5f),
+                (int)(_singleFrameDimensions.X),
+                (int)(_singleFrameDimensions.Y)), 
+                null, _tint, _rotation, new Vector2(_singleFrameDimensions.X * 0.5f,
+                                _singleFrameDimensions.Y * 0.5f), SpriteEffects.None, _zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            BlendState bstate = graphics.BlendState;
-            graphics.BlendState = BlendState.Additive;
-
-            if (this._isAnimated)
+            if (_enabled)
             {
-                sb.Draw(_spriteTexture, _position,
-                    new Rectangle(
-                        _currentFrame.X * _singleFrameDimensions.X,
-                        _currentFrame.Y * _singleFrameDimensions.Y,
-                        _singleFrameDimensions.X,
-                        _singleFrameDimensions.Y), Tint, _rotation,
-                        new Vector2(_singleFrameDimensions.X * 0.5f,
-                            _singleFrameDimensions.Y * 0.5f), _scale, SpriteEffects.None, _zLayer);
-            }
-            else
-            {
-                sb.Draw(this._spriteTexture, this._position,
-                    null, this._tint * _alpha, this._rotation,
-                    new Vector2(this._spriteTexture.Width, this._spriteTexture.Height) * 0.5f, 
-                    _scale, SpriteEffects.None, this._zLayer);
-            }
+                BlendState bstate = graphics.BlendState;
+                graphics.BlendState = BlendState.Additive;
 
-            graphics.BlendState = bstate;
+
+                if (this._isAnimated)
+                {
+                    sb.Draw(_texture, _position,
+                        new Rectangle(
+                            _currentFrame.X * _singleFrameDimensions.X,
+                            _currentFrame.Y * _singleFrameDimensions.Y,
+                            _singleFrameDimensions.X,
+                            _singleFrameDimensions.Y), Tint, _rotation,
+                            new Vector2(_singleFrameDimensions.X * 0.5f,
+                                _singleFrameDimensions.Y * 0.5f), _scale, SpriteEffects.None, _zLayer);
+                }
+                else
+                {
+                    sb.Draw(this._texture, this._position,
+                        null, this._tint * _alpha, this._rotation,
+                        new Vector2(this._texture.Width, this._texture.Height) * 0.5f,
+                        _scale, SpriteEffects.None, this._zLayer);
+                }
+
+
+                graphics.BlendState = bstate;
+            }
         }
 #endif
         #endregion
@@ -433,26 +434,17 @@ namespace GameLibrary.Graphics.Drawing
 
         public override void Toggle()
         {
-            if (this._isAnimated)
-            {
-                this._isAnimating = !this._isAnimating;
-            }
+            this._isAnimating = !this._isAnimating;
         }
 
         public override void Start()
         {
-            if (_isAnimated)
-            {
-                this._isAnimating = true;
-            }
+            this._isAnimating = true;
         }
 
         public override void Stop()
         {
-            if (_isAnimated)
-            {
-                this._isAnimating = false;
-            }
+            this._isAnimating = false;
         }
 
         public override void Change(object sent)
@@ -460,11 +452,6 @@ namespace GameLibrary.Graphics.Drawing
             if (sent is float)
             {
                 this._rotationSpeed = (float)sent;
-            }
-
-            if (sent is Vector2)
-            {
-                this._velocity = (Vector2)sent;
             }
         }
 #endif
@@ -478,7 +465,7 @@ namespace GameLibrary.Graphics.Drawing
 
         public void SetTexture(Texture2D texture)
         {
-            this._spriteTexture = texture;
+            this._texture = texture;
         }
     }
 }

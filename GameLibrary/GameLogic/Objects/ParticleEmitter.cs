@@ -10,6 +10,7 @@ using GameLibrary.GameLogic.Objects;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Screens;
 using GameLibrary.Graphics;
+using GameLibrary.Graphics.Drawing;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -68,6 +69,8 @@ namespace GameLibrary.GameLogic.Objects
         float _alphaDelta = 0.0f;
         [ContentSerializer(Optional = true)]
         Color _tint = Color.White;
+        [ContentSerializer(Optional = true)]
+        bool _useRandomRotation = false;
 
         #endregion
 
@@ -75,14 +78,28 @@ namespace GameLibrary.GameLogic.Objects
 
 #if EDITOR
         [ContentSerializerIgnore]
+        public bool UseRandomParticleRotation
+        {
+            get
+            {
+                return _useRandomRotation;
+            }
+            set
+            {
+                _useRandomRotation = value;
+            }
+        }
+        [ContentSerializerIgnore]
         public Color Tint
         {
-        get{
-        return _tint;
-        }
-        set{
-        _tint = value;
-        }
+            get
+            {
+                return _tint;
+            }
+            set
+            {
+                _tint = value;
+            }
         }
         [ContentSerializerIgnore]
         public float SpeedMin
@@ -267,8 +284,6 @@ namespace GameLibrary.GameLogic.Objects
                 _scaleDelta = value;
             }
         }
-#else
-
 #endif
 
         #endregion
@@ -327,7 +342,11 @@ namespace GameLibrary.GameLogic.Objects
                         particle.Acceleration.Y += acceleration.Y;
                     }
 
+                    particle.Alpha -= _alphaDelta;
+                    particle.Scale += _scaleDelta;
+
                     particle.Update(delta);
+                    
 
                     if (!particle.IsAlive)
                     {
@@ -377,7 +396,7 @@ namespace GameLibrary.GameLogic.Objects
                     continue;
                 }
 
-                sb.Draw(_texture, particle.Position, null, _tint, particle.Rotation, new Vector2(_texture.Width, _texture.Height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
+                sb.Draw(_texture, particle.Position, null, _tint * particle.Alpha, particle.Rotation, new Vector2(_texture.Width, _texture.Height) * 0.5f, particle.Scale, SpriteEffects.None, this._zLayer);
             }
         }
 #endif
@@ -427,13 +446,15 @@ namespace GameLibrary.GameLogic.Objects
 
             Vector2 acceleration = Vector2.Zero;
 
-            if (_useGravity)
-            {
-                //acceleration = _world.Gravity * _gravityModifier;
-            }
+            //if (_useGravity)
+            //{
+            //    acceleration = _world.Gravity * _gravityModifier;
+            //}
 
             
             particle.Init(this._position, _velocity, acceleration, life);
+            particle.Alpha = _alpha;
+            particle.Scale = _scale;
 #endif
         }
 

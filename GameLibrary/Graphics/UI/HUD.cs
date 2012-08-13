@@ -159,23 +159,21 @@ namespace GameLibrary.Graphics.UI
         #endregion
 
         #region Message toggle
-        public void ShowOnScreenMessage(bool set)
-        {
-            ShowOnScreenMessage(set, "");
-        }
 
         public void ShowOnScreenMessage(bool set, string message)
         {
-            if (_showPopup == set) return;
-
-            _showPopup = set;
-
             _overlayText.Reset();
 
-            if (_overlayText.Text != message || message != "")
+            if (set)
             {
+                _showPopup = true;
+
                 _overlayText.Text = message;
                 _overlayText.UpdateOrigin();
+            }
+            else
+            {
+                _showPopup = false;
             }
         }
         #endregion

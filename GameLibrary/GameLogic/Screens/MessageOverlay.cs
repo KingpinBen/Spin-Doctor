@@ -18,13 +18,13 @@ namespace GameLibrary.GameLogic.Screens
 
     public class MessageOverlay : GameScreen
     {
-        string _textureAsset;
-        Texture2D _texture;
-        Vector2 _position;
+        private string _textureAsset;
+        private Texture2D _texture;
+        private Vector2 _position = Vector2.Zero;
 
-        InputAction moveUp;
-        InputAction moveDown;
-        InputAction inputContinue;
+        private InputAction moveUp;
+        private InputAction moveDown;
+        private InputAction inputContinue;
 
         public MessageOverlay(string textureAsset)
             : base()

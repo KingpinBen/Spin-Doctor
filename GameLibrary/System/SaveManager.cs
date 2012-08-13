@@ -120,6 +120,9 @@ namespace GameLibrary.System
                 instance.Shadows = (SettingLevel)reader.ReadInt32();
                 instance.ParticleDetail = (SettingLevel)reader.ReadInt32();
                 instance.MultiSamplingEnabled = reader.ReadBoolean();
+
+                instance.SoundVolume = reader.ReadInt32();
+                instance.MusicVolume = reader.ReadInt32();
             }
             catch
             {
@@ -147,6 +150,8 @@ namespace GameLibrary.System
             writer.Write((int)instance.Shadows);
             writer.Write((int)instance.ParticleDetail);
             writer.Write(instance.MultiSamplingEnabled);
+            writer.Write(instance.SoundVolume);
+            writer.Write(instance.MusicVolume);
 
             writer.Flush();
             writer.Close();

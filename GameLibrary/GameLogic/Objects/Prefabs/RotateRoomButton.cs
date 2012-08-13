@@ -109,14 +109,6 @@ namespace GameLibrary.GameLogic.Objects
         }
 #else
         [ContentSerializerIgnore]
-        public bool AboutToRotate
-        {
-            get
-            {
-                return _aboutToRotate;
-            }
-        }
-        [ContentSerializerIgnore]
         public string RDirection
         {
             get 
@@ -141,8 +133,8 @@ namespace GameLibrary.GameLogic.Objects
         {
             this._textureAsset = tex;
             this._message = "AUTO CHOSEN";
-
-            base.Init(position);
+            this._position = position;
+            this._zLayer = 0.5f;
             this._triggerHeight = this._triggerWidth = 30;
         }
         #endregion
@@ -224,7 +216,7 @@ namespace GameLibrary.GameLogic.Objects
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(this._texture, this._position, null, this.Tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, this._position, null, this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
         }
 #endif
         #endregion

@@ -38,9 +38,10 @@ using GameLibrary.GameLogic.Characters;
 using GameLibrary.Graphics.UI;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.GameLogic.Events;
+using GameLibrary.GameLogic.Objects.Triggers;
 #endregion
 
-namespace GameLibrary.GameLogic.Objects.Triggers
+namespace GameLibrary.GameLogic.Objects
 {
     public class Collectable : StaticObject
     {
@@ -58,11 +59,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         protected string _message = String.Empty;
         protected bool _beenCollected = false;
         protected bool _triggered = false;
-        protected List<Fixture> _touchingFixtures = new List<Fixture>();
 #endif
         #endregion
 
         #region Properties
+
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public virtual InteractType InteractType
         {
@@ -75,6 +76,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 _interactType = value;
             }
         }
+
         [ContentSerializerIgnore, CategoryAttribute("Object Specific")]
         public virtual TriggerType TriggerType
         {
@@ -97,10 +99,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         }
 
-        public override void Init(Vector2 Position, string texLoc)
-        {
-            base.Init(Position, texLoc);
-        }
         #endregion
 
         public override void Load(ContentManager content, World world)
@@ -116,7 +114,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #else
             //  All collectables should be able to be removed at some point,
             //  so set up an event to remove it on collision.
-            this._objectEvents.Add(new Event(this._name, this._name, EventType.TRIGGER_REMOVE, 0.0f, null));
+            this._objectEvents.Add(new Event(this._name, this._name, EventType.TRIGGER_REMOVE, 0.0f, 0));
 
             this.SetupTrigger(world);
             this.RegisterObject();
@@ -132,7 +130,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 if (Player.Instance.PlayerState == PlayerState.Dead)
                 {
-                    this._triggered = false;
+                    ChangeTriggered(false);
                 }
                 else
                 {
@@ -154,7 +152,8 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         {
             if (!_beenCollected)
             {
-                sb.Draw(this._texture, this._position, null, this._tint, 0f, this._origin, 1f, SpriteEffects.None, this.zLayer);
+                sb.Draw(this._texture, this._position, null, 
+                    this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
             }
         }
 #endif
@@ -168,18 +167,19 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         {
             float height = ConvertUnits.ToSimUnits(25);
 
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(25), height, _mass);
+            this.Body = BodyFactory.CreateRectangle(world, height, height, _mass);
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);
-            this.Body.Position -= (Vector2.UnitY * (height * 0.5f));
+            //this.Body.Position -= (Vector2.UnitY * (height * 0.5f));
 
             //  Give it it's own category but make it only collide with 10 (Player) and nothing else.
             this.Body.CollisionCategories = Category.Cat3;
-            this.Body.CollidesWith = Category.Cat10 & ~Category.All;
+            this.Body.CollidesWith = Category.Cat10;// &~Category.All & ~Category.Cat3;
 
-            //  Set up the sensor
-            this.Body.IsSensor = true;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+            this.Body.Enabled = _enabled;
+            this.Body.IsSensor = true;
+            
         }
 
         #region Collisions
@@ -192,7 +192,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 {
                     _touchingFixtures.Add(fixtureB);
 
-                    this.PlayerOnTouch();
+                    ChangeTriggered(true);
                 }
 
                 //  It was the player, acknowledge the collision
@@ -210,29 +210,29 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 if (_touchingFixtures.Contains(fixtureB))
                 {
                     _touchingFixtures.Remove(fixtureB);
-                    
                 }
 
                 //  We'll want to make sure to turn it all off should the player
                 //  be detected leaving, but for some reason, not be in the list.
-                this.PlayerOnLeave();
+                ChangeTriggered(false);
             }
         }
 
-        protected virtual void PlayerOnTouch()
+        protected void ChangeTriggered(bool state)
         {
-            _triggered = true;
-
-            if (!HUD.Instance.ShowPopup)
+            if (state)
             {
-                HUD.Instance.ShowOnScreenMessage(true, " to pick up.");
+                if (_triggerType == TriggerType.PlayerInput)
+                {
+                    HUD.Instance.ShowOnScreenMessage(true, _message);
+                }
             }
-        }
+            else
+            {
+                HUD.Instance.ShowOnScreenMessage(false, "");
+            }
 
-        protected virtual void PlayerOnLeave()
-        {
-            _triggered = false;
-            HUD.Instance.ShowOnScreenMessage(false);
+            this._triggered = state;
         }
         #endregion
 

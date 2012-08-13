@@ -199,10 +199,8 @@ namespace GameLibrary.GameLogic.Characters
 
             SetupPlayerSettings();
 
-            if (_animations.Count == 0)
-            {
-                AddAnimations();
-            }
+            _animations.Clear();
+            AddAnimations();
 
             //  TODO: When we remove doublejump cheat, add DJEnabled to the if
             if (_steamSprite == null)
@@ -241,9 +239,13 @@ namespace GameLibrary.GameLogic.Characters
             Texture2D swinging = _content.Load<Texture2D>(spriteSheetLocation + "HarlandSwing");
 
             //_animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));
-            _animations.Add("Run", new FrameAnimation(running, 24, new Point(446, 466), 0.0f, new Point(6, 4), false, 30));
-            _animations.Add("Idle", new FrameAnimation(idle, 21, new Point(268, 468), 0, new Point(6, 4), false, 16));
-            _animations.Add("Falling", new FrameAnimation(falling, 20, new Point(288, 477), 0, new Point(6, 4), false));
+            _animations.Add("Run", new FrameAnimation(running, 24, new Point(446, 466), 90.0f, new Point(6, 4), false, 30));
+            _animations["Run"].Scale = 0.35f;
+
+            _animations.Add("Idle", new FrameAnimation(idle, 21, new Point(268, 468), 90.0f, new Point(6, 4), false, 16));
+            _animations["Idle"].Scale = 0.35f;
+
+            _animations.Add("Falling", new FrameAnimation(falling, 21, new Point(291, 462), 0, new Point(6, 4), false));
             //  Jump1
             //  _animations.Add("Jumping", new FrameAnimation(jumping, 16, new Point(471, 480), 0, new Point(6, 3), true));
             //  Jump2

@@ -64,10 +64,14 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer(Optional = true)]
         protected Orientation _orientation = Orientation.Up;
 
-        // Can't serialize Texture2D files. Texture is init'd in Load() anyway.
         protected Texture2D _texture;
         protected Vector2 _origin;
-        //protected World _world;
+
+#if EDITOR
+        
+#else
+        protected List<Fixture> _touchingFixtures = new List<Fixture>();
+#endif
 
         #endregion
 
@@ -166,7 +170,14 @@ namespace GameLibrary.GameLogic.Objects
             set
             {
                 _orientation = value;
-                GetRotationFromOrientation();
+                if (value == Orientation.Up)
+                    _rotation = 0.0f;
+                else if (value == Orientation.Down)
+                    _rotation = MathHelper.Pi;
+                else if (value == Orientation.Left)
+                    _rotation = MathHelper.PiOver2;
+                else if (value == Orientation.Right)
+                    _rotation = -MathHelper.PiOver2;
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("Hidden")]
@@ -321,7 +332,6 @@ namespace GameLibrary.GameLogic.Objects
             protected set
             {
                 _orientation = value;
-                GetRotationFromOrientation();
             }
         }       
 #endif
@@ -350,14 +360,8 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            if (_textureAsset == "")
-            {
-                throw new Exception("A TEXTURE location in the level doesn't exist.");
-            }
-
-            _texture = content.Load<Texture2D>(_textureAsset);
-            _origin = new Vector2(_texture.Width, _texture.Height) * 0.5f;
-
+            this._texture = content.Load<Texture2D>(_textureAsset);
+            
 #if EDITOR
             if (this.Width == 0.0f || this.Height == 0.0f)
             {
@@ -366,9 +370,11 @@ namespace GameLibrary.GameLogic.Objects
             }
 #else
 
-            SetupPhysics(world);
+            this.SetupPhysics(world);
             base.Load(content, world);
 #endif
+
+            this._origin = new Vector2(_width, _height) * 0.5f;
         }
 
         #region Draw
@@ -383,8 +389,8 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(_texture, _position,
-                new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, this.Body.Rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
+                new Rectangle(0, 0, (int)_width, (int)_height), _tint, Body.Rotation, 
+                _origin, 1.0f, SpriteEffects.None, _zLayer);
         }
 #endif
         #endregion
@@ -393,13 +399,12 @@ namespace GameLibrary.GameLogic.Objects
 
         protected virtual void SetupPhysics(World world)
         {
-#if EDITOR
-
-#else
+#if !EDITOR
             //  This function will have to be changed if we have things that aren't going to be square/rectangles.
             //  Fortunately, Farseer will allow us to use the Texture to find the outline. Haven't tried it with 
             //  full coloured images, only outlines. Will have to research! More demos!
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(this._mass), ConvertUnits.ToSimUnits(this.Position));
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(this._mass));
+            this.Body.Position = ConvertUnits.ToSimUnits(_position);
             //  Give it a 0 for no flags.
             this.Body.FixtureList[0].UserData = (int)0;
             this.Body.Rotation = _rotation;
@@ -412,11 +417,12 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.Enabled = _enabled;
 #endif
         }
-#if EDITOR
 
-#else
-        
+#if !EDITOR
+
         #region Collisions
+
+
         protected virtual bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
             return true;
@@ -458,18 +464,6 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
 #endif
-
-        protected virtual void GetRotationFromOrientation()
-        {
-            if (_orientation == Orientation.Up)
-                _rotation = 0.0f;
-            else if (_orientation == Orientation.Down)
-                _rotation = MathHelper.Pi;
-            else if (_orientation == Orientation.Left)
-                _rotation = MathHelper.PiOver2;
-            else if (_orientation == Orientation.Right)
-                _rotation = -MathHelper.PiOver2;
-        }
 
         #endregion
     }

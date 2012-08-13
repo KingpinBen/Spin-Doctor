@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using GameLibrary.Levels;
 using GameLibrary.GameLogic.Objects;
 using GameLibrary.Graphics;
+using GameLibrary.Graphics.Drawing;
 
 namespace SpinEditor
 {

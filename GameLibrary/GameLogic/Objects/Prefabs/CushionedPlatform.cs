@@ -15,8 +15,7 @@ namespace GameLibrary.GameLogic.Objects
 
         protected override void SetupPhysics(World world)
         {
-#if EDITOR
-#else
+#if !EDITOR
             base.SetupPhysics(world);
 
             this.Body.FixtureList[0].UserData = (int)1;

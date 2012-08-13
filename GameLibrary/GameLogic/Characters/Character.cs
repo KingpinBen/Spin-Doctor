@@ -15,9 +15,6 @@
 //--    BenG - Fixed a bug with the touchingfixtures were the fixtures were being carried to the next level.
 //--    
 //--    
-//--    TBD
-//--    ==============
-//--    
 //--    
 //--------------------------------------------------------------------------
 
@@ -238,7 +235,11 @@ namespace GameLibrary.GameLogic.Characters
         {
             spriteBatch.Draw(CurrentAnimation.CurrentAnimationTexture,
             this._texturePosition, CurrentAnimation.CurrentRect, Color.White,
+<<<<<<< HEAD
             this._mainBody.Rotation, CurrentAnimation.FrameOrigin, 0.43f, _lookingDirection, 0.3f);
+=======
+            this._mainBody.Rotation, CurrentAnimation.FrameOrigin, CurrentAnimation.Scale, _lookingDirection, 0.3f);
+>>>>>>> Tech Doc revisions
         }
 
         #endregion

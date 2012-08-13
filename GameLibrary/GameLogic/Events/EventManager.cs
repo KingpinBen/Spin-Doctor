@@ -59,6 +59,10 @@ namespace GameLibrary.GameLogic.Events
                     if (timedEvents[i].EventDelay <= 0)
                     {
                         FireEvent(timedEvents[i]);
+<<<<<<< HEAD
+=======
+                        timedEvents.RemoveAt(i);
+>>>>>>> Tech Doc revisions
                     }
                 }
             }
@@ -169,7 +173,20 @@ namespace GameLibrary.GameLogic.Events
 
                         if (this.objects.TryGetValue(objEvent.TargetName, out output))
                         {
-                            output.Enable();
+                            output.Change(objEvent.Argument);
+                        }
+                    }
+
+                    break;
+                #endregion
+                #region TriggerChangeSpeed
+                case EventType.TRIGGER_CHANGE:
+                    {
+                        NodeObject output;
+
+                        if (this.objects.TryGetValue(objEvent.TargetName, out output))
+                        {
+                            output.Change(objEvent.Argument);
                         }
                     }
 
@@ -182,17 +199,23 @@ namespace GameLibrary.GameLogic.Events
 
                         if (this.objects.TryGetValue(objEvent.TargetName, out output))
                         {
-                            if (output.GetBody() != null)
-                            {
-                                this.gameScreen.World.RemoveBody(output.GetBody());
-                            }
-
-                            this.gameScreen.Level.ObjectsList.Remove(output);
+                            this.gameScreen.RemoveObject(output);
                         }
 
                         break;
                     }
                     #endregion
+
+                case EventType.TRIGGER_TOGGLE_SHADOW:
+                    {
+                        NodeObject output;
+
+                        if (this.objects.TryGetValue(objEvent.TargetName, out output))
+                        {
+                            output.ToggleShadows();
+                        }
+                    }
+                    break;
 
                 #region WorldRotateCCW90
                 case EventType.WORLD_ROTATE_CCW90:

@@ -32,7 +32,6 @@ namespace GameLibrary.GameLogic
         Texture2D blankTexture;
 
         bool isInitialized;
-        bool traceEnabled = false;
         bool skipStartup = false;
         GraphicsDeviceManager _deviceManager;
 
@@ -88,8 +87,17 @@ namespace GameLibrary.GameLogic
         public override void Initialize()
         {
             base.Initialize();
+            this.GraphicsDevice.DeviceReset += new EventHandler<EventArgs>(GraphicsDevice_DeviceReset);
 
             isInitialized = true;
+        }
+
+        void GraphicsDevice_DeviceReset(object sender, EventArgs e)
+        {
+            for (int i = 0; i < screens.Count; i++)
+            {
+                screens[i].Activate();
+            }
         }
 
         protected override void LoadContent()
@@ -198,7 +206,6 @@ namespace GameLibrary.GameLogic
             // If we have a graphics device, we can begin to properly init
             if (isInitialized)
             {
-                screen.Initialize();
                 screen.Activate();
             }
 

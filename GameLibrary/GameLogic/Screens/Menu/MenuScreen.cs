@@ -25,12 +25,12 @@ namespace GameLibrary.GameLogic.Screens.Menu
         SpriteFont _titleFont;
         protected Vector2 _itemsPosition;
 
-        InputAction menuUp;
-        InputAction menuDown;
-        InputAction menuLeft;
-        InputAction menuRight;
-        InputAction menuSelect;
-        InputAction menuCancel;
+        protected InputAction menuUp;
+        protected InputAction menuDown;
+        protected InputAction menuLeft;
+        protected InputAction menuRight;
+        protected InputAction menuSelect;
+        protected InputAction menuCancel;
 
         #endregion
 
@@ -84,11 +84,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
                 new Buttons[] { Buttons.B, Buttons.Back },
                 new Keys[] { Keys.Escape },
                 true);
-        }
-
-        public override void Initialize()
-        {
-            this.ScreenManager.GraphicsDevice.DeviceReset += DeviceReset;
         }
 
         public override void Activate()

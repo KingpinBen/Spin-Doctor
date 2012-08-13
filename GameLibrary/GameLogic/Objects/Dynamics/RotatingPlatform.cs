@@ -38,14 +38,21 @@ namespace GameLibrary.GameLogic.Objects
     public class RotatingPlatform : StaticObject
     {
         #region Fields
+
+
 #if EDITOR
 
 #else
+<<<<<<< HEAD
         private FixedRevoluteJoint revoluteJoint;
         private FixedAngleJoint _angleJoint;
 
+=======
+        private FixedRevoluteJoint _revoluteJoint;
+>>>>>>> Tech Doc revisions
         private float _targetRotation;
 #endif
+
         [ContentSerializer(Optional = true)]
         private bool _rotatesWithLevel;
         [ContentSerializer(Optional = true)]
@@ -149,36 +156,13 @@ namespace GameLibrary.GameLogic.Objects
         }
         #endregion
 
-        #region LoadContent
-        /// <summary>
-        /// Loads game content.
-        /// </summary>
-        public override void Load(ContentManager content, World world)
-        {
-            if (this._textureAsset != "")
-                _texture = content.Load<Texture2D>(this._textureAsset);
-
-            this._origin = new Vector2(_texture.Width, _texture.Height) * 0.5f;
-
-#if EDITOR
-            if (this.Width == 0.0f || this.Height == 0.0f)
-            {
-                this.Width = this._texture.Width;
-                this.Height = this._texture.Height;
-            }
-#else
-            SetupPhysics(world);
-            RegisterObject();
-#endif
-        }
-        #endregion
-
         #region Update
         public override void Update(float delta)
         {
 #if EDITOR
 
 #else
+<<<<<<< HEAD
             if (_rotatesWithLevel && _motorEnabled)
             {
                 if (Camera.Instance.IsLevelRotating)
@@ -220,6 +204,49 @@ namespace GameLibrary.GameLogic.Objects
                     }
                 }
             }
+=======
+            //if (_rotatesWithLevel && _motorEnabled)
+            //{
+            //    if (Camera.Instance.IsLevelRotating)
+            //    {
+            //        this.revoluteJoint.LimitEnabled = false;
+
+            //        float rot = Camera.Instance.Rotation;
+
+            //        this.revoluteJoint.UpperLimit = rot;
+            //        this.revoluteJoint.LowerLimit = rot;
+            //    }
+            //    else
+            //    {
+            //        if (!revoluteJoint.LimitEnabled)
+            //        {
+            //            this.revoluteJoint.LimitEnabled = true;
+            //        }
+            //    }
+            //}
+
+            //if (_rotatesWithLevel && _motorEnabled)
+            //{
+            //    if (this.Body.Rotation != TargetRotation)
+            //    {
+            //        float amountToTurn = TargetRotation - this.Body.Rotation;
+
+            //        if ((amountToTurn > 0 && _motorSpeed < 0) ||
+            //            (amountToTurn < 0 && _motorSpeed > 0))
+            //        {
+            //            _motorSpeed *= -1;
+            //        }
+
+            //        this.Body.Rotation += _motorSpeed;
+            //        amountToTurn -= _motorSpeed;
+
+            //        if (Math.Abs(amountToTurn) <= Math.Abs(_motorSpeed))
+            //        {
+            //            this.Body.Rotation += amountToTurn;
+            //        }
+            //    }
+            //}
+>>>>>>> Tech Doc revisions
 
             //  Limit it so it can only be at 1 angle, the level rotation
             //if (_rotatesWithLevel)
@@ -232,8 +259,8 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_texture, _position, null, _tint, _rotation + 0.0f, _origin, 1.0f, SpriteEffects.None, this._zLayer);
-            sb.Draw(_texture, _position, null, _tint * 0.4f, _rotation + MathHelper.Pi, _origin, 1.0f, SpriteEffects.None, this._zLayer + 0.01f);
+            sb.Draw(_texture, _position, new Rectangle(0, 0, (int)this._width, (int)this._height), _tint, _rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
+            sb.Draw(_texture, _position, new Rectangle(0, 0, (int)this._width, (int)this._height), _tint * 0.4f, _rotation + MathHelper.Pi, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer + 0.01f);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
@@ -250,25 +277,25 @@ namespace GameLibrary.GameLogic.Objects
         public override void Toggle()
         {
 
-            if (this.revoluteJoint.MotorSpeed ==  0.0f)
+            if (this._revoluteJoint.MotorSpeed == 0.0f)
             {
-                this.revoluteJoint.MotorSpeed = this._motorSpeed;
+                this._revoluteJoint.MotorSpeed = this._motorSpeed;
             }
             else
             {
-                this.revoluteJoint.MotorSpeed = 0.0f;
+                this._revoluteJoint.MotorSpeed = 0.0f;
             }
 
         }
 
         public override void Start()
         {
-            this.revoluteJoint.MotorSpeed = this._motorSpeed;
+            this._revoluteJoint.MotorSpeed = this._motorSpeed;
         }
 
         public override void Stop()
         {
-            this.revoluteJoint.MotorSpeed = 0.0f;
+            this._revoluteJoint.MotorSpeed = 0.0f;
         }
 
         public override void Change(object sent)
@@ -290,7 +317,7 @@ namespace GameLibrary.GameLogic.Objects
 
                 if (_enabled)
                 {
-                    this.revoluteJoint.MotorSpeed = _motorSpeed;
+                    this._revoluteJoint.MotorSpeed = _motorSpeed;
                 }
             }
         }
@@ -340,7 +367,7 @@ namespace GameLibrary.GameLogic.Objects
                         }
                 }
 
-                this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, Vector2.Zero, simPosition);
+                this._revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, Vector2.Zero, simPosition);
             }
             else
             {
@@ -360,22 +387,33 @@ namespace GameLibrary.GameLogic.Objects
                     //this._origin = input.Origin;
                     this._origin = Vector2.Zero;
                     this.Body.LocalCenter = Vector2.Zero;// ConvertUnits.ToSimUnits(new Vector2(this._texture.Width, this._texture.Height) * 0.5f);
+<<<<<<< HEAD
                     this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, ConvertUnits.ToSimUnits(new Vector2(this._texture.Width, this._texture.Height) * 0.5f), simPosition);
+=======
+                    this._revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, ConvertUnits.ToSimUnits(new Vector2(this._texture.Width, this._texture.Height) * 0.5f), simPosition);
+>>>>>>> Tech Doc revisions
                 }
                 else
                 {
                     this._origin = Vector2.Zero;// new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
-                    this.revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
+                    this._revoluteJoint = JointFactory.CreateFixedRevoluteJoint(world, this.Body, this.Body.LocalCenter, simPosition);
                 }
             }
 
             this.Body.Position = simPosition;
             this.Body.SleepingAllowed = false;
 
+<<<<<<< HEAD
             if (this.revoluteJoint != null)
             {
                 this.revoluteJoint.MaxMotorTorque = float.MaxValue;
                 this.revoluteJoint.MotorEnabled = true;
+=======
+            if (this._revoluteJoint != null)
+            {
+                this._revoluteJoint.MaxMotorTorque = float.MaxValue;
+                this._revoluteJoint.MotorEnabled = true;
+>>>>>>> Tech Doc revisions
             }
 
             if (!_rotatesWithLevel)
@@ -394,11 +432,11 @@ namespace GameLibrary.GameLogic.Objects
             {
                 if (this._motorEnabled)
                 {
-                    this.revoluteJoint.MotorSpeed = _motorSpeed;
+                    this._revoluteJoint.MotorSpeed = _motorSpeed;
                 }
                 else
                 {
-                    this.revoluteJoint.MotorSpeed = 0.0f;
+                    this._revoluteJoint.MotorSpeed = 0.0f;
                 }
             }
 

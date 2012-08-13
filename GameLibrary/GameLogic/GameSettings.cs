@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using GameLibrary.System;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic
 {
@@ -47,11 +48,13 @@ namespace GameLibrary.GameLogic
 
         #region Game
 
-
         private ResolutionData _resolution;
         private SettingLevel _shadows = SettingLevel.Off;
         private SettingLevel _particleDetails = SettingLevel.Low;
         private bool _enableMultiSampling = false;
+
+        private int _soundVolume = 10;
+        private int _musicVolume = 6;
 
 
         #endregion
@@ -116,6 +119,31 @@ namespace GameLibrary.GameLogic
             set
             {
                 _resolution = value;
+            }
+        }
+
+        public int MusicVolume
+        {
+            get
+            {
+                return _musicVolume;
+            }
+            set
+            {
+                this._musicVolume = (int)MathHelper.Clamp(value, 0, 10);
+                AudioManager.Instance.MusicVolume = value;
+            }
+        }
+        public int SoundVolume
+        {
+            get
+            {
+                return _soundVolume;
+            }
+            set
+            {
+                this._soundVolume = (int)MathHelper.Clamp(value, 0, 10);
+                AudioManager.Instance.SoundVolume = this._soundVolume;
             }
         }
 

@@ -43,12 +43,13 @@ namespace SpinEditor
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.deselectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewMenuHideOverlay = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewMenuHideGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewMenuHideCoordinates = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewMenuHideMovementPath = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewMenuHideSpawn = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewMenuHideEvents = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideMovementPath = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideNames = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideOverlay = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewMenuHideSpawn = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -200,29 +201,16 @@ namespace SpinEditor
             // viewToolStripMenuItem
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ViewMenuHideOverlay,
-            this.ViewMenuHideGrid,
             this.ViewMenuHideCoordinates,
+            this.ViewMenuHideEvents,
+            this.ViewMenuHideGrid,
             this.ViewMenuHideMovementPath,
-            this.ViewMenuHideSpawn,
-            this.ViewMenuHideEvents});
+            this.ViewMenuHideNames,
+            this.ViewMenuHideOverlay,
+            this.ViewMenuHideSpawn});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
-            // 
-            // ViewMenuHideOverlay
-            // 
-            this.ViewMenuHideOverlay.Name = "ViewMenuHideOverlay";
-            this.ViewMenuHideOverlay.Size = new System.Drawing.Size(204, 22);
-            this.ViewMenuHideOverlay.Text = "Hide Object Overlay";
-            this.ViewMenuHideOverlay.Click += new System.EventHandler(this.ViewMenuHideOverlay_Click);
-            // 
-            // ViewMenuHideGrid
-            // 
-            this.ViewMenuHideGrid.Name = "ViewMenuHideGrid";
-            this.ViewMenuHideGrid.Size = new System.Drawing.Size(204, 22);
-            this.ViewMenuHideGrid.Text = "Hide Grid";
-            this.ViewMenuHideGrid.Click += new System.EventHandler(this.ViewMenuHideGrid_Click);
             // 
             // ViewMenuHideCoordinates
             // 
@@ -230,20 +218,6 @@ namespace SpinEditor
             this.ViewMenuHideCoordinates.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideCoordinates.Text = "Hide Coordinates";
             this.ViewMenuHideCoordinates.Click += new System.EventHandler(this.ViewMenuHideCoordinates_Click);
-            // 
-            // ViewMenuHideMovementPath
-            // 
-            this.ViewMenuHideMovementPath.Name = "ViewMenuHideMovementPath";
-            this.ViewMenuHideMovementPath.Size = new System.Drawing.Size(204, 22);
-            this.ViewMenuHideMovementPath.Text = "Hide Movement Lines";
-            this.ViewMenuHideMovementPath.Click += new System.EventHandler(this.ViewMenuHideMovementPath_Click);
-            // 
-            // ViewMenuHideSpawn
-            // 
-            this.ViewMenuHideSpawn.Name = "ViewMenuHideSpawn";
-            this.ViewMenuHideSpawn.Size = new System.Drawing.Size(204, 22);
-            this.ViewMenuHideSpawn.Text = "Hide Player Spawn";
-            this.ViewMenuHideSpawn.Click += new System.EventHandler(this.ViewMenuHideSpawn_Click);
             // 
             // ViewMenuHideEvents
             // 
@@ -253,6 +227,43 @@ namespace SpinEditor
             this.ViewMenuHideEvents.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideEvents.Text = "Hide Event Objects Lines";
             this.ViewMenuHideEvents.Click += new System.EventHandler(this.ViewMenuHideEvents_Click);
+            // 
+            // ViewMenuHideGrid
+            // 
+            this.ViewMenuHideGrid.Name = "ViewMenuHideGrid";
+            this.ViewMenuHideGrid.Size = new System.Drawing.Size(204, 22);
+            this.ViewMenuHideGrid.Text = "Hide Grid";
+            this.ViewMenuHideGrid.Click += new System.EventHandler(this.ViewMenuHideGrid_Click);
+            // 
+            // ViewMenuHideMovementPath
+            // 
+            this.ViewMenuHideMovementPath.Name = "ViewMenuHideMovementPath";
+            this.ViewMenuHideMovementPath.Size = new System.Drawing.Size(204, 22);
+            this.ViewMenuHideMovementPath.Text = "Hide Movement Lines";
+            this.ViewMenuHideMovementPath.Click += new System.EventHandler(this.ViewMenuHideMovementPath_Click);
+            // 
+            // ViewMenuHideNames
+            // 
+            this.ViewMenuHideNames.Checked = true;
+            this.ViewMenuHideNames.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ViewMenuHideNames.Name = "ViewMenuHideNames";
+            this.ViewMenuHideNames.Size = new System.Drawing.Size(204, 22);
+            this.ViewMenuHideNames.Text = "Hide Object Names";
+            this.ViewMenuHideNames.Click += new System.EventHandler(this.ViewMenuHideNames_Click);
+            // 
+            // ViewMenuHideOverlay
+            // 
+            this.ViewMenuHideOverlay.Name = "ViewMenuHideOverlay";
+            this.ViewMenuHideOverlay.Size = new System.Drawing.Size(204, 22);
+            this.ViewMenuHideOverlay.Text = "Hide Object Overlay";
+            this.ViewMenuHideOverlay.Click += new System.EventHandler(this.ViewMenuHideOverlay_Click);
+            // 
+            // ViewMenuHideSpawn
+            // 
+            this.ViewMenuHideSpawn.Name = "ViewMenuHideSpawn";
+            this.ViewMenuHideSpawn.Size = new System.Drawing.Size(204, 22);
+            this.ViewMenuHideSpawn.Text = "Hide Player Spawn";
+            this.ViewMenuHideSpawn.Click += new System.EventHandler(this.ViewMenuHideSpawn_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -704,6 +715,7 @@ namespace SpinEditor
             this.xnA_RenderControl1.HideEventTargets = false;
             this.xnA_RenderControl1.HideGrid = false;
             this.xnA_RenderControl1.HideMovementPath = false;
+            this.xnA_RenderControl1.HideObjectNames = false;
             this.xnA_RenderControl1.HideOverlay = false;
             this.xnA_RenderControl1.HidePlayerSpawn = false;
             this.xnA_RenderControl1.levelBackground = null;
@@ -814,6 +826,10 @@ namespace SpinEditor
         private GroupBox NewObjectBox;
         private ToolStripMenuItem ViewMenuHideEvents;
         private GroupBox AlignmentBox;
+<<<<<<< HEAD
+=======
+        private ToolStripMenuItem ViewMenuHideNames;
+>>>>>>> Tech Doc revisions
 
 
     }

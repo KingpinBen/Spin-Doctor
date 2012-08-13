@@ -53,13 +53,35 @@ namespace GameLibrary.Levels
 
         public LevelBackdrop() { }
 
-        public void Load(ContentManager content, Vector2 roomDimensions, RoomTheme theme, RoomType type, string backgroundFile)
+        public void Load(ref ContentManager content, Vector2 roomDimensions, RoomTheme theme, RoomType type, string backgroundFile)
         {
             this.roomDimensions = new Point((int)roomDimensions.X, (int)roomDimensions.Y);
+            this._levelBackground = content.Load<Texture2D>(backgroundFile);
 
             if (type == RoomType.Rotating)
             {
-                LoadType(content, theme, backgroundFile);
+                switch (theme)
+                {
+                    case RoomTheme.General:
+                        this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
+                        break;
+
+                    case RoomTheme.Industrial:
+                        this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
+                        break;
+
+                    case RoomTheme.Medical:
+                        this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
+                        break;
+
+                    case RoomTheme.Study:
+                        this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
+                        break;
+                }
+
+                //  The width of the ring multiplied by 2 (one per side)
+                float shellWidth = 30 * 2;
+                this._shellScale = Camera.Instance.LevelDiameter / (_roomShell.Width - shellWidth);
             }
         }
 
@@ -69,39 +91,6 @@ namespace GameLibrary.Levels
 
             sb.Draw(_levelBackground, new Rectangle(-(int)(this.roomDimensions.X * 0.5f), -(int)(this.roomDimensions.Y * 0.5f), this.roomDimensions.X, this.roomDimensions.Y),
                 new Rectangle(0, 0, this.roomDimensions.X, this.roomDimensions.Y), backgroundTint, 0.0f, Vector2.Zero, SpriteEffects.None, 1f);
-        }
-
-        /// <summary>
-        /// Makes the artistic choices on what art should be displayed for each level.
-        /// </summary>
-        /// <param name="content">Content</param>
-        /// <param name="type">What sort of style the room is.</param>
-        private void LoadType(ContentManager content, RoomTheme roomTheme, string backgroundFile)
-        {
-            this._levelBackground = content.Load<Texture2D>(backgroundFile);
-
-            switch (roomTheme)
-            {
-                case RoomTheme.General:
-                    this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
-                    break;
-
-                case RoomTheme.Industrial:
-                    this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
-                    break;
-
-                case RoomTheme.Medical:
-                    this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
-                    break;
-
-                case RoomTheme.Study:
-                    this._roomShell = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/RingWood");
-                    break;
-            }
-
-            //  The width of the ring multiplied by 2 (one per side)
-            float shellWidth = 30 * 2;
-            this._shellScale = Camera.Instance.LevelDiameter / (_roomShell.Width - shellWidth);
         }
     }
 }

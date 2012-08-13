@@ -71,21 +71,17 @@ namespace GameLibrary.GameLogic.Objects
 
 #else
             this.SetupPhysics(world);
+            this.Body.BodyType = BodyType.Dynamic;
 #endif
         }
         #endregion
 
         public override void Update(float delta)
         {
-#if EDITOR
-
-#else
-            if (!Camera.Instance.IsLevelRotating)
-            {
-                return;
-            }
-
-            if (!this.Body.Awake)
+#if !EDITOR
+            //  If the level starts rotating, we want to wake the 
+            //  object.
+            if (Camera.Instance.IsLevelRotating)
             {
                 this.Body.Awake = true;
             }
@@ -110,28 +106,11 @@ namespace GameLibrary.GameLogic.Objects
 #else
         public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            //  Doesn't strech image. Tiles instead
             spriteBatch.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
                 Tint, this.Body.Rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, _zLayer);
         }
 #endif
-        #endregion
-
-        #region Private Methods
-
-        protected override void SetupPhysics(World world)
-        {
-#if EDITOR
-
-#else
-            base.SetupPhysics(world);
-            this.Body.BodyType = BodyType.Dynamic;
-#endif
-        }
-
-
-
         #endregion
     }
 }
