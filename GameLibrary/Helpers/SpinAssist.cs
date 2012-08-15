@@ -66,7 +66,7 @@ namespace GameLibrary.Helpers
             uint[] data = new uint[texture.Width * texture.Height];
 
             texture.GetData(data);
-            
+
             verts = PolygonTools.CreatePolygon(data, texture.Width, false);
 
             Vector2 centroid = Vector2.Zero;
@@ -81,7 +81,7 @@ namespace GameLibrary.Helpers
             {
                 centroid = ConvertUnits.ToSimUnits(new Vector2(texture.Width, texture.Height) * 0.5f);
             }
-            
+
 
             float simScale = ConvertUnits.ToSimUnits(scale);
             Vector2 Scale = new Vector2(simScale, simScale);
@@ -96,8 +96,6 @@ namespace GameLibrary.Helpers
             {
                 body.LocalCenter = centroid;
             }
-
-               // body.LocalCenter = centroid;
 
             output.Body = body;
             output.Origin = ConvertUnits.ToDisplayUnits(centroid);

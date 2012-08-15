@@ -19,6 +19,7 @@ namespace GameLibrary.System
             {
                 Settings.FoundEntries[i] = reader.ReadBoolean();
             }
+
             Settings.BackpackEnabled = reader.ReadBoolean();
             Settings.DoubleJumpEnabled = reader.ReadBoolean();
             //Settings.MinutesPlayed = reader.ReadUInt32();
@@ -34,6 +35,7 @@ namespace GameLibrary.System
             {
                 writer.Write(Settings.FoundEntries[i]);
             }
+
             writer.Write(Settings.BackpackEnabled);
             writer.Write(Settings.DoubleJumpEnabled);
             //writer.Write(Settings.MinutesPlayed);

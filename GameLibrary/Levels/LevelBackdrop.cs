@@ -53,13 +53,19 @@ namespace GameLibrary.Levels
 
         public LevelBackdrop() { }
 
-        public void Load(ref ContentManager content, Vector2 roomDimensions, RoomTheme theme, RoomType type, string backgroundFile)
+        public void Load(ref ContentManager content, Vector2 roomDimensions, 
+            RoomTheme theme, RoomType type, string backgroundFile)
         {
+            //  The level dimensions of the level to work out the zoom and shell scale.
             this.roomDimensions = new Point((int)roomDimensions.X, (int)roomDimensions.Y);
-            this._levelBackground = content.Load<Texture2D>(backgroundFile);
 
+            #region If Level Rotates
+            //  If the level is rotating, we want to load a background to the level,
+            //  the containing shell and scale it properly to the level.
             if (type == RoomType.Rotating)
             {
+                this._levelBackground = content.Load<Texture2D>(backgroundFile);
+
                 switch (theme)
                 {
                     case RoomTheme.General:
@@ -83,6 +89,7 @@ namespace GameLibrary.Levels
                 float shellWidth = 30 * 2;
                 this._shellScale = Camera.Instance.LevelDiameter / (_roomShell.Width - shellWidth);
             }
+            #endregion
         }
 
         public void Draw(SpriteBatch sb)

@@ -47,12 +47,12 @@ namespace FarseerPhysics
         /// <summary>
         /// The number of velocity iterations used in the solver.
         /// </summary>
-        public static int VelocityIterations = 8;
+        public static int VelocityIterations = 16;
 
         /// <summary>
         /// The number of position iterations used in the solver.
         /// </summary>
-        public static int PositionIterations = 3;
+        public static int PositionIterations = 9;
 
         /// <summary>
         /// Enable/Disable Continuous Collision Detection (CCD)
@@ -62,7 +62,7 @@ namespace FarseerPhysics
         /// <summary>
         /// The number of velocity iterations in the TOI solver
         /// </summary>
-        public static int TOIVelocityIterations = 8;
+        public static int TOIVelocityIterations = 16;
 
         /// <summary>
         /// The number of position iterations in the TOI solver

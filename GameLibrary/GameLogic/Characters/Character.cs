@@ -57,6 +57,7 @@ namespace GameLibrary.GameLogic.Characters
         protected float _airTime;
 
         protected PlayerState _playerState;
+        protected bool _inAir = false;
 
         #endregion
 
@@ -65,7 +66,7 @@ namespace GameLibrary.GameLogic.Characters
 
         private string _currentAnimation = null;
         protected Dictionary<string, FrameAnimation> _animations;
-        protected List<Fixture> _touchingFixtures;
+        protected List<Fixture> _touchingFixtures = new List<Fixture>();
 
 
         #endregion
@@ -222,6 +223,22 @@ namespace GameLibrary.GameLogic.Characters
 
         public virtual void Update(float delta, World world)
         {
+            if (_inAir && (_playerState != Characters.PlayerState.Dead || 
+                _playerState == Characters.PlayerState.Falling))
+            {
+                if (_touchingFixtures.Count == 0)
+                {
+                    if (_airTime > 0.2f &&
+                        _playerState != Characters.PlayerState.Falling)
+                    {
+                        if (_playerState != PlayerState.Jumping && _playerState != PlayerState.Climbing)
+                        {
+                            this.PlayerState = PlayerState.Falling;
+                        }
+                    }
+                }
+            }
+
             Vector2 tempPosition = ConvertUnits.ToDisplayUnits(this.Body.Position - this._wheelBody.Position);
             this._texturePosition = ConvertUnits.ToDisplayUnits(this._wheelBody.Position) + (tempPosition);
 

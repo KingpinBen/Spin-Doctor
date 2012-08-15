@@ -35,8 +35,14 @@ namespace GameLibrary.GameLogic
 
         #region Player
 
+        //  20 notes
+        private List<bool> _foundEntries = new List<bool>() 
+        {   false, false, false, false, false, 
+            false, false, false, false, false,
+            false, false, false, false, false,
+            false, false, false, false, false
+        };
 
-        private List<bool> _foundEntries = new List<bool>() { false, false, false, false, false, false };
         private bool _allowDoubleJump = false;
         private int _currentLevel = 0;
         private bool _backbackFound = false;
@@ -215,6 +221,7 @@ namespace GameLibrary.GameLogic
 
         /// <summary>
         /// TODO : Delete this and all references before the beta hand-in
+        /// and also remove the debug solution.
         /// </summary>
         private bool _developmentMode = false;
 

@@ -394,6 +394,7 @@ namespace GameLibrary.Levels
         }
 
         #endregion
+
         #region Public Methods
 #if !EDITOR
 
@@ -414,8 +415,5 @@ namespace GameLibrary.Levels
 #endif
         }
         #endregion
-
-
-
     }
 }

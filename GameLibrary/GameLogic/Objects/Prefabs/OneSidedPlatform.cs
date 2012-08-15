@@ -52,10 +52,10 @@ namespace GameLibrary.GameLogic.Objects
         #region Fields
 
         [ContentSerializer(Optional = true)]
-        private bool _orientationDependant = false;
+        protected bool _orientationDependant = false;
 
-#if EDITOR || Development
-        protected Texture2D displayTexture;
+#if EDITOR
+
 #else
         private float top;
         private float radius;
@@ -63,27 +63,36 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
-        public OneSidedPlatform() : base() { }
+        #region Properties
 
-        public override void Init(Vector2 position)
+#if EDITOR
+        [ContentSerializerIgnore]
+        public bool OrientationDependant
         {
-            this._mass = 1000.0f;
-            base.Init(position);
+            get
+            {
+                return _orientationDependant;
+            }
+            set
+            {
+                _orientationDependant = value;
+            }
         }
+#endif
+
+        #endregion
+
+        public OneSidedPlatform() : base() { }
 
         public override void Load(ContentManager content, World world)
         {
-#if Development
-            displayTexture = content.Load<Texture2D>(FileLoc.DevTexture());
-#endif
 #if EDITOR
-
-            displayTexture = content.Load<Texture2D>(Defines.DEVELOPMENT_TEXTURE);
+            this._texture = content.Load<Texture2D>(Defines.DEVELOPMENT_TEXTURE);
 
             if (Width == 0 || Height == 0)
             {
-                Width = displayTexture.Width;
-                Height = displayTexture.Height;
+                Width = _texture.Width;
+                Height = _texture.Height;
             }
 
 
@@ -93,23 +102,12 @@ namespace GameLibrary.GameLogic.Objects
         }
 
         #region Draw
-#if EDITOR
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height), 
-                Color.White * 0.5f, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, 0.2f);
-        }
-
-#else
+#if !EDITOR
         public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
 #if Development
-            spriteBatch.DrawString(Fonts.DebugFont, "PosY: " + Player.Instance.WheelBody.Position.Y, this.Position + new Vector2(0, -100), Color.Red, 0.0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);
-            spriteBatch.DrawString(Fonts.DebugFont, "TopY: " + ConvertUnits.ToDisplayUnits(this.Body.Position.Y - top), this.Position + new Vector2(0, -85), Color.Red, 0.0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);
-            spriteBatch.DrawString(Fonts.DebugFont, top + " " + radius, this.Position + new Vector2(0, -70), Color.Red, 0.0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0.0f);
-
-            spriteBatch.Draw(displayTexture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Color.White * 0.7f, this.TextureRotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, 0.0f);
+            spriteBatch.Draw(_texture, this._position, new Rectangle(0, 0, (int)this._width, (int)this._height),
+                Color.White * 0.5f, this.TextureRotation, new Vector2(_width, _height) * 0.5f, 1.0f, SpriteEffects.None, 0.0f);
 #endif
         }
 #endif

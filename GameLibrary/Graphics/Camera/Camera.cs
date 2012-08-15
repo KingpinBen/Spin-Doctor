@@ -23,7 +23,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 #region Using Statements
 using System;
@@ -313,10 +313,14 @@ namespace GameLibrary.Graphics.Camera
 
         private void HandleRotation(float delta)
         {
+            //  If the delay timer hasn't cooled down,
+            //  reduce the timer
             if (_rotateDelayTimer > 0)
             {
+                //  by delta time
                 _rotateDelayTimer -= delta;
 
+                //  If it's passed 0s cooldown, reset it to 0 seconds.
                 if (_rotateDelayTimer < 0)
                 {
                     _rotateDelayTimer = 0.0f;
@@ -356,23 +360,34 @@ namespace GameLibrary.Graphics.Camera
 
         private void HandleInput()
         {
+            //  If the players dead, don't allow input.
             if (Player.Instance.PlayerState == PlayerState.Dead)
             {
                 return;
             }
 
+            //  Check if it's a rotating level and that rotation isn't 
+            //  locked.
             if (_allowLevelRotation && _levelRotates)
             {
+                //  If the room rotation delay cooldown timer is up
+                //  check if the player wants to rotate.
+
                 if (_rotateDelayTimer == 0.0f)
                 {
                     if (InputManager.Instance.RotateLeft(true))
                     {
-                        ForceRotateLeft();
+                        this.ForceRotateLeft();
 
+                        this._levelRotating = true;
+                        this._rotateDelayTimer = Defines.LEVEL_ROTATION_COOLDOWN;
                     }
                     else if (InputManager.Instance.RotateRight(true))
                     {
-                        ForceRotateRight();
+                        this.ForceRotateRight();
+
+                        this._levelRotating = true;
+                        this._rotateDelayTimer = Defines.LEVEL_ROTATION_COOLDOWN;
                     }
                 }
             }
@@ -392,8 +407,6 @@ namespace GameLibrary.Graphics.Camera
         public void ForceRotateLeft()
         {
             _rotationToAdd -= MathHelper.PiOver2;
-            _levelRotating = true;
-            _rotateDelayTimer = 2.0f;
 
             switch (UpIs)
             {
@@ -428,8 +441,7 @@ namespace GameLibrary.Graphics.Camera
         public void ForceRotateRight()
         {
             _rotationToAdd += MathHelper.PiOver2;
-            _levelRotating = true;
-            _rotateDelayTimer = 2.0f;
+
 
             switch (UpIs)
             {

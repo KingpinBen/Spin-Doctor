@@ -1,7 +1,6 @@
 ﻿[ Collision Group Assignments ]
-	All physicsobjects - Collision group 10.
+	Most objects - Collision group 20.
 	PlayerBody - Collision group 10.
-	WheelBody - Collision group 12.
 
 
 
@@ -20,7 +19,5 @@
 
 
 [ To do ]
-
-	Save states (things that need saving: unlocked rooms, current unlocked gear, collectables >> HUB state(?)),
 
 	implement sound cues (probably one of the last things to do),

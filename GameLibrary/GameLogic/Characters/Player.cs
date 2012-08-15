@@ -149,8 +149,6 @@ namespace GameLibrary.GameLogic.Characters
                     this._canJump = true;
                     this._canDoubleJump = true;
                 }
-
-                this._airTime = 0.0f;
             }
         }
 
@@ -246,13 +244,17 @@ namespace GameLibrary.GameLogic.Characters
             _animations["Idle"].Scale = 0.35f;
 
             _animations.Add("Falling", new FrameAnimation(falling, 21, new Point(291, 462), 0, new Point(6, 4), false));
+            _animations["Falling"].Scale = 0.363f;
             //  Jump1
             //  _animations.Add("Jumping", new FrameAnimation(jumping, 16, new Point(471, 480), 0, new Point(6, 3), true));
             //  Jump2
             _animations.Add("Jumping", new FrameAnimation(jumping, 22, new Point(313, 464), 0, new Point(6, 3), true));
-            _animations.Add("Climbing", new FrameAnimation(climbing, 20, new Point(233, 503), 0, new Point(6, 4), false, 24));
+            _animations["Jumping"].Scale = 0.36f;
+            _animations.Add("Climbing", new FrameAnimation(climbing, 20, new Point(233, 503), 0, new Point(6, 4), false, 30));
+            _animations["Climbing"].Scale = 0.41f;
             _animations.Add("Dead", new FrameAnimation(death, 26, new Point(587, 480), 0, new Point(6, 5), true, 48));
             _animations.Add("Swinging", new FrameAnimation(swinging, 1, new Point(640, 488), 0, new Point(1, 1), true, 1));
+            _animations["Swinging"].Scale = 0.34f;
         }
 
         #endregion
@@ -273,7 +275,7 @@ namespace GameLibrary.GameLogic.Characters
             {
                 if (InputManager.Instance.Jump(true))
                 {
-                    if (CanJump || CanDoubleJump)
+                    if (_canDoubleJump || _canJump)
                     {
                         HandleJumping(-world.Gravity);
                     }
@@ -329,16 +331,9 @@ namespace GameLibrary.GameLogic.Characters
             //  off of a ledge.
             if (this._touchingFixtures.Count == 0)
             {
-                //  Player shouldn't be able to initiate a jump if not touching
-                //  the floor, only able to use double jump.
-                this._canJump = false;
-                
+                this._inAir = true;
                 this._wheelJoint.MotorSpeed = 0.0f;
-
-                if (_playerState != PlayerState.Jumping && _playerState != PlayerState.Climbing)
-                {
-                    this.PlayerState = PlayerState.Falling;
-                }
+                this._airTime = 0.0f;
             }
         }
 
@@ -361,13 +356,19 @@ namespace GameLibrary.GameLogic.Characters
                 return true;
             }
 
+            
+
             //  Hold a reference to every fixture that is in contact with the player
             if (!this._touchingFixtures.Contains(fixtureB))
             {
                 this._touchingFixtures.Add(fixtureB);
+                
+                this._airTime = 0.0f;
             }
 
-            //  Handle whatever state they're in if they're not running or idle. XOR
+            this._inAir = false;
+
+            //  Handle whatever state they're in if they're not running or idle.
             if (!(_playerState == PlayerState.Running || _playerState == PlayerState.Grounded))
             {
                 //  Check if the colliding object has any UserData.
@@ -392,7 +393,10 @@ namespace GameLibrary.GameLogic.Characters
                     return true;
                 }
 
-                this.PlayerState = PlayerState.Grounded;
+                if (_playerState != Characters.PlayerState.Grounded)
+                {
+                    this.PlayerState = PlayerState.Grounded;
+                }
             }
 
             if (!_canJump || !_canDoubleJump)
@@ -536,6 +540,11 @@ namespace GameLibrary.GameLogic.Characters
 
         void HandleMoving(float delta)
         {
+            if (_inAir)
+            {
+                return;
+            }
+
             if (InputManager.Instance.MoveLeft(false))
             {
                 this._wheelJoint.MotorSpeed = -_movementSpeed;
@@ -553,11 +562,13 @@ namespace GameLibrary.GameLogic.Characters
 
             if (_wheelJoint.MotorSpeed == 0)
             {
-                this.PlayerState = PlayerState.Grounded;
+                if (_playerState != Characters.PlayerState.Grounded)
+                    this.PlayerState = PlayerState.Grounded;
             }
             else
             {
-                this.PlayerState = PlayerState.Running;
+                if (_playerState != Characters.PlayerState.Running)
+                    this.PlayerState = PlayerState.Running;
             }
 
         }
@@ -614,9 +625,6 @@ namespace GameLibrary.GameLogic.Characters
 
         public void JoinLadder(Vector2 MoveTo)
         {
-            _canDoubleJump = true;
-            _canJump = true;
-
             if (_playerState != PlayerState.Climbing)
             {
                 this.PlayerState = PlayerState.Climbing;
@@ -667,16 +675,16 @@ namespace GameLibrary.GameLogic.Characters
 
         void HandleAir(float delta)
         {
-            if (_playerState != PlayerState.Falling)
+            if (_playerState == Characters.PlayerState.Falling)
+            {
+                
+            }
+            else
             {
                 if (CurrentAnimation.Completed)
                 {
                     this.PlayerState = PlayerState.Falling;
                 }
-            }
-            else
-            {
-                _airTime += delta * Math.Abs(SpinAssist.ModifyVectorByUp(Vector2.Normalize(this._mainBody.LinearVelocity)).Y);
             }
 
             if (InputManager.Instance.MoveLeft(false))

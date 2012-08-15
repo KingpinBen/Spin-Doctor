@@ -361,7 +361,7 @@ namespace GameLibrary.GameLogic.Objects
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
-            
+            this._origin = new Vector2(_width, _height) * 0.5f;
 #if EDITOR
             if (this.Width == 0.0f || this.Height == 0.0f)
             {
@@ -374,7 +374,7 @@ namespace GameLibrary.GameLogic.Objects
             base.Load(content, world);
 #endif
 
-            this._origin = new Vector2(_width, _height) * 0.5f;
+            
         }
 
         #region Draw

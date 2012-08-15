@@ -38,13 +38,13 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializer(Optional = true)]
         protected Vector2 _endPosition;
         [ContentSerializer(Optional = true)]
-        protected float _motorSpeed;
+        protected float _motorSpeed = 3.0f;
         [ContentSerializer(Optional = true)]
-        protected Direction _movementDirection;
+        protected Direction _movementDirection = Direction.Horizontal;
         [ContentSerializer(Optional = true)]
-        protected bool _startsMoving;
+        protected bool _startsMoving = true;
         [ContentSerializer(Optional = true)]
-        protected float _timeToReverse;
+        protected float _timeToReverse = 1.0f;
         [ContentSerializer(Optional = true)]
         protected float _startTranslation;
 
@@ -55,7 +55,7 @@ namespace GameLibrary.GameLogic.Objects
         [ContentSerializerIgnore]
         protected FixedPrismaticJoint _prismaticJoint;
         [ContentSerializerIgnore]
-        protected float _elapsedTimer;
+        protected float _elapsedTimer = 0.0f;
         [ContentSerializerIgnore]
         protected bool _isMoving;
         [ContentSerializerIgnore]
@@ -223,11 +223,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             base.Init(position, tex);
 
-            this._movementDirection = Direction.Horizontal;
             this._mass = 100.0f;
-            this._motorSpeed = 3.0f;
-            this._timeToReverse = 1.0f;
-            this._startsMoving = true;
             this._endPosition = position + new Vector2(200, 0);
         }
 
@@ -247,7 +243,6 @@ namespace GameLibrary.GameLogic.Objects
                 this.Height = this._texture.Height;
             }
 #else
-            this._elapsedTimer = 0.0f;
             this._currentMovingDirection = false;
             this.RegisterObject();
 

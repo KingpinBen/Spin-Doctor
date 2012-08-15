@@ -42,7 +42,7 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-        private float lastTouched = -1.0f;
+        private float _elapsed = 00f;
         private const float _bounceCooldown = 2f;
 #endif
 
@@ -60,63 +60,65 @@ namespace GameLibrary.GameLogic.Objects
             }
             set
             {
-                _restitution = MathHelper.Clamp(value, 0.0f, 1.0f);
-            }
-        }
-#else
-        [ContentSerializerIgnore]
-        public float Restitution
-        {
-            get
-            {
-                return _restitution;
+                _restitution = MathHelper.Clamp(value, 0.0f, 2.5f);
             }
         }
 #endif
         #endregion
 
         #region Constructor and Load
+
+
         public BouncePad() : base() { }
+
+
 
         public override void  Load(ContentManager content, World world)
         {
+            //  It's essentially a one-sided platform, so baseLoad
  	        base.Load(content, world);
 
 #if !EDITOR
+            //  Apply the bouncepad specific properties.
+
             this.Body.Restitution = _restitution;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
 #endif
         }
+
+
+
         #endregion
 
         #region Update
+
         public override void Update(float delta)
         {
 #if !EDITOR
+            //  Elapsed is set to cooldown timer in OnCollision.
 
-            /*  This sort of gets the right effect but depending on how the 
-             * designers want it to work, it'll need redoing.
-             * 
-             * If they want it to only allow one bounce, then I'll need 'Reset' 
-             * it by waiting for a separation of the player from the trigger.
-             * 
-             * I'll have to ask tomorrow
-             * */
-
-            if (lastTouched >= 0)
+            //  Check if it's recently been bounced upon.
+            if (_elapsed > 0)
             {
-                lastTouched += delta;
+                //  Force the restitution to 0 so it's a normal
+                //  surface
+                this.Body.Restitution = 0.0f;
 
-                if (this.Body.Restitution == _restitution)
+                //  Decrement the counter.
+                _elapsed -= delta;
+            }
+            //  If it's below 0, the timer has ran it's course and 
+            //  can reset the pad
+            else if (_elapsed < 0)
+            {
+                //  Check the player has totally left the pad.
+                if (_touchingFixtures.Count == 0)
                 {
-                    this.Body.Restitution = 0.0f;
-                }
+                    //  Reset to zero as to not do anything now in update.
+                    this._elapsed = 0.0f;
 
-
-                if (lastTouched >= _bounceCooldown)
-                {
-                    lastTouched = -1f;
+                    //  and reapply the restitution.
                     this.Body.Restitution = _restitution;
                 }
             }
@@ -125,25 +127,45 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
         #region Collisions
-
 #if !EDITOR
+
+
+
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-
+            //  Due to the presolve, we only need to check if FixB is the wheel.
             if (fixtureB != Player.Instance.WheelFixture)
             {
                 return false;
             }
 
-            if (lastTouched < 0.0f)
+            //  We want to check if the contact is enabled so the cooldown
+            //  only triggers on a bounce, not touch.
+            if (!_touchingFixtures.Contains(fixtureB) && contact.Enabled)
             {
-                lastTouched = 0.0f;
+                _touchingFixtures.Add(fixtureB);
+                this._elapsed = _bounceCooldown;
             }
 
+            //  Complete the collision.
             return true;
         }
-#endif
 
+
+
+        protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
+        {
+            //  Remove the fixture from the list so we can
+            //  reset the timer for the next bounce on 0 count.
+            if (_touchingFixtures.Contains(fixtureB))
+            {
+                _touchingFixtures.Remove(fixtureB);
+            }
+        }
+
+
+
+#endif
         #endregion
     }
 }

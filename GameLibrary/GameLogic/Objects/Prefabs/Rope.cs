@@ -269,21 +269,23 @@ namespace GameLibrary.GameLogic.Objects
             this._pathBodies = new List<Body>();
             float width = ConvertUnits.ToSimUnits(this._texture.Width * 0.5f);
             float height = ConvertUnits.ToSimUnits(this._texture.Height * 0.5f);
+            Vector2 startPos = ConvertUnits.ToSimUnits(this._position);
+            Vector2 endPos = ConvertUnits.ToSimUnits(this._endPosition);
 
             Path _ropePath = new Path();
-            _ropePath.Add(ConvertUnits.ToSimUnits(this._position));
-            _ropePath.Add(ConvertUnits.ToSimUnits(this._endPosition));
+            _ropePath.Add(startPos);
+            _ropePath.Add(endPos);
 
             PolygonShape rotationPointShape = new PolygonShape(PolygonTools.CreateCircle(height, 8), 25);
-            PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), 1.0f);
-            PolygonShape sensorShape = new PolygonShape(PolygonTools.CreateCircle(height, 6), 1.0f);
+            PolygonShape shape = new PolygonShape(PolygonTools.CreateRectangle(width, height), ConvertUnits.ToSimUnits(1.0f));
+            PolygonShape sensorShape = new PolygonShape(PolygonTools.CreateCircle(height * 1.5f, 6), 1.0f);
 
             Body prevBody = new Body(world); ;
             for (int i = 0; i < _chainCount; ++i)
             {
                 Body body = new Body(world);
                 body.BodyType = BodyType.Dynamic;
-                body.Position = ConvertUnits.ToSimUnits(Position) + new Vector2(0, height * i);
+                body.Position = startPos + new Vector2(0, height * i);
 
                 if (i == 0)
                 {
@@ -291,7 +293,7 @@ namespace GameLibrary.GameLogic.Objects
                     fixture.Friction = 0.2f;
                     body.AngularDamping = 0.4f;
                     
-                    FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, body, Vector2.Zero, ConvertUnits.ToSimUnits(Position));
+                    FixedRevoluteJoint fixedJoint = JointFactory.CreateFixedRevoluteJoint(world, body, Vector2.Zero, startPos);
                 }
                 else
                 {

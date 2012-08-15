@@ -196,7 +196,6 @@
     <Compile Include="GameLogic\Objects\Dynamics\MovingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Note.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\OneSidedPlatform.cs" />
-    <Compile Include="GameLogic\Objects\Dynamics\OldPiston.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\PullableObject.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\PushingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\RotateRoomButton.cs" />
@@ -211,7 +210,7 @@
     <Compile Include="GameLogic\Objects\Prefabs\PhysicsObject.cs" />
     <Compile Include="GameLogic\Characters\Player.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Rope.cs" />
-    <Compile Include="GameLogic\Objects\Dynamics\RotatingPlatform.cs" />
+    <Compile Include="GameLogic\Objects\Prefabs\RotatingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\StaticObject.cs" />
     <Compile Include="GameLogic\GameSettings.cs" />
     <Compile Include="System\GameData.cs" />

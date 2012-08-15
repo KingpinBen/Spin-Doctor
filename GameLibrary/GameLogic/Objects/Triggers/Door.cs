@@ -283,19 +283,19 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         public override void Enable()
         {
-            this._triggered = false;
+            ChangeTriggered(false);
             base.Enable();
         }
 
         public override void Disable()
         {
-            this._triggered = false;
+            ChangeTriggered(false);
             base.Disable();
         }
 
         public override void Toggle()
         {
-            this._triggered = false;
+            ChangeTriggered(false);
             base.Toggle();
         }
 
