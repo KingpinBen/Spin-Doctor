@@ -24,6 +24,7 @@ using GameLibrary.GameLogic.Events;
 using GameLibrary.GameLogic.Objects;
 using GameLibrary.GameLogic.Characters;
 using GameLibrary.System;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Screens
 {
@@ -31,12 +32,11 @@ namespace GameLibrary.GameLogic.Screens
     {
         #region Fields
 
-        private ContentManager _content;
-
         private World _world = new World(Vector2.Zero);
 
         private Level _level;
 
+#if !EDITOR
         private float pauseAlpha;
         private float _bgRotation;
 
@@ -49,6 +49,7 @@ namespace GameLibrary.GameLogic.Screens
         private RenderTarget2D rtEffect;
 
         private Texture2D _objectsTexture;
+#endif 
 
         #endregion
 
@@ -88,6 +89,7 @@ namespace GameLibrary.GameLogic.Screens
 
         public GameplayScreen()
         {
+#if !EDITOR
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
             TransitionOffTime = TimeSpan.FromSeconds(0.5);
 
@@ -95,14 +97,17 @@ namespace GameLibrary.GameLogic.Screens
                 new Buttons[] { Buttons.Start},
                 new Microsoft.Xna.Framework.Input.Keys[] { Microsoft.Xna.Framework.Input.Keys.Escape },
                 true);
+#endif
         }
 
         public override void Activate()
         {
-#if EDITOR
+#if !EDITOR
+            ContentManager content = new ContentManager(this.ScreenManager.Game.Services, "Content");
 
-#else
-            _content = new ContentManager(this.ScreenManager.Game.Services, "Content");
+            //  Simulate something large loading because why not..
+            //  Also doing it first so that the sounds load when it's finished.
+            Thread.Sleep(1000);
 
             //  Setup the Hud elements
             HUD.Instance.Load(this.ScreenManager);
@@ -127,12 +132,8 @@ namespace GameLibrary.GameLogic.Screens
                 rtBlur = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
                 rtEffect = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
 
-                _silhouetteEffect = _content.Load<Effect>("Assets/Other/Effects/MaskEffect");
+                _silhouetteEffect = content.Load<Effect>("Assets/Other/Effects/MaskEffect");
             }
-
-
-            //  Simulate something large loading because why not..
-            Thread.Sleep(1000);
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
             // timing mechanism that we have just finished a very long frame, and that
@@ -154,6 +155,7 @@ namespace GameLibrary.GameLogic.Screens
 
         public override void Update(float delta, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
+#if !EDITOR
             base.Update(delta, otherScreenHasFocus, false);
 
             // Gradually fade in or out depending on whether we are covered by the pause screen.
@@ -185,6 +187,7 @@ namespace GameLibrary.GameLogic.Screens
 
                 _bgRotation = -Camera.Instance.Rotation;
             }
+#endif
         }
 
         public override void HandleInput(float delta, InputState input)
@@ -212,15 +215,22 @@ namespace GameLibrary.GameLogic.Screens
             }
             else
             {
-                if (Player.Instance.PlayerState == PlayerState.Dead && InputManager.Instance.Jump(true))
+                //  Make the player go through the death animation so they know they've died.
+                if (Player.Instance.PlayerState == PlayerState.Dead && Player.Instance.CurrentAnimation.Completed)
                 {
-                    LoadLevel();
+                    if (InputManager.Instance.Jump(true))
+                        LoadLevel();
                 }
 
                 //  TODO: REMOVE FOR BETA HANDIN
                 if (InputManager.Instance.IsNewGpPress(Buttons.DPadDown) || InputManager.Instance.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F1))
                 {
                     GameSettings.Instance.ToggleDoubleJump();
+                }
+
+                if (InputManager.Instance.F5)
+                {
+                    this.CurrentLevelID = CurrentLevelID + 1;
                 }
             }
 #endif
@@ -242,8 +252,6 @@ namespace GameLibrary.GameLogic.Screens
             if (GameSettings.Instance.Shadows == SettingLevel.On)
             {
                 graphics.SetRenderTarget(rtEffect);
-
-
                 graphics.Clear(Color.Transparent);
 
                 this.DrawObjects(spriteBatch, SpriteSortMode.Immediate, BlendState.NonPremultiplied, false, true);
@@ -333,6 +341,7 @@ namespace GameLibrary.GameLogic.Screens
             EventManager.Instance.Load(this);
             SpriteManager.Instance.Clear();
             HUD.Instance.RefreshHUD();
+            AudioManager.Instance.StopAllSounds(Microsoft.Xna.Framework.Audio.AudioStopOptions.AsAuthored);
             
             try
             {

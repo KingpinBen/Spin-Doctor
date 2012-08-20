@@ -81,6 +81,18 @@ namespace GameLibrary.Graphics.Drawing
 
 #if EDITOR
         [ContentSerializerIgnore]
+        public float Alpha
+        {
+            get
+            {
+                return _alpha * 255f;
+            }
+            set
+            {
+                _alpha = MathHelper.Clamp(value / 255f, 0.0f, 1.0f);
+            }
+        }
+        [ContentSerializerIgnore]
         public override float Width
         {
             get
@@ -102,6 +114,18 @@ namespace GameLibrary.Graphics.Drawing
             set
             {
                 _singleFrameDimensions.Y = (int)value;
+            }
+        }
+        [ContentSerializerIgnore]
+        public override float Rotation
+        {
+            get
+            {
+                return _rotation;
+            }
+            set
+            {
+                _rotation = MathHelper.ToRadians(value);
             }
         }
 #else
@@ -137,6 +161,28 @@ namespace GameLibrary.Graphics.Drawing
                 _singleFrameDimensions.Y = (int)value;
             }
         }
+        [ContentSerializerIgnore]
+        public float Alpha
+        {
+            get
+            {
+                return _alpha;
+            }
+            set
+            {
+                _alpha = MathHelper.Clamp(value, 0.0f, 1.0f);
+            }
+        }
+        [ContentSerializerIgnore]
+        public float Rotation
+        {
+        get{
+        return _rotation;
+        }
+        set{
+        _rotation = value;
+        }
+        }
 #endif
 
         
@@ -153,29 +199,18 @@ namespace GameLibrary.Graphics.Drawing
             }
         }
         [ContentSerializerIgnore]
-        public Color Tint
+        public Vector3 Tint
         {
             get
             {
-                return _tint;
+                return new Vector3(_tint.R, _tint.G, _tint.B);
             }
             set
             {
-                _tint = value;
+                _tint = new Color(value.X, value.Y, value.Z, 255);
             }
         }
-        [ContentSerializerIgnore]
-        public float Rotation
-        {
-            get
-            {
-                return _rotation;
-            }
-            set
-            {
-                _rotation = value;
-            }
-        }
+
         [ContentSerializerIgnore]
         public int TimesToPlay
         {
@@ -203,18 +238,7 @@ namespace GameLibrary.Graphics.Drawing
                 _velocity = value;
             }
         }
-        [ContentSerializerIgnore]
-        public float Alpha
-        {
-            get
-            {
-                return _alpha;
-            }
-            set
-            {
-                _alpha = MathHelper.Clamp(value, 0.0f, 1.0f);
-            }
-        }
+        
         [ContentSerializerIgnore]
         public bool Animate
         {
@@ -303,6 +327,7 @@ namespace GameLibrary.Graphics.Drawing
             this._isAnimated = false;
             this._position = position;
             this._textureAsset = textureAsset;
+
         }
 
         #endregion
@@ -319,6 +344,7 @@ namespace GameLibrary.Graphics.Drawing
                 this.Height = _texture.Height;
             }
 #else
+            this._singleFrameDimensions = new Point(_texture.Width, _texture.Height);
             this.RegisterObject();
 #endif
         }
@@ -385,13 +411,8 @@ namespace GameLibrary.Graphics.Drawing
 #if EDITOR
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(_texture, new Rectangle(
-                (int)(_position.X - _singleFrameDimensions.X * 0.5f),
-                (int)(_position.Y - _singleFrameDimensions.Y * 0.5f),
-                (int)(_singleFrameDimensions.X),
-                (int)(_singleFrameDimensions.Y)), 
-                null, _tint, _rotation, new Vector2(_singleFrameDimensions.X * 0.5f,
-                                _singleFrameDimensions.Y * 0.5f), SpriteEffects.None, _zLayer);
+            sb.Draw(_texture, _position,
+                new Rectangle(0, 0, (int)Width, (int)Height), _tint * _alpha, _rotation, new Vector2(_singleFrameDimensions.X, _singleFrameDimensions.Y) * 0.5f, _scale, SpriteEffects.None, _zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
@@ -409,15 +430,16 @@ namespace GameLibrary.Graphics.Drawing
                             _currentFrame.X * _singleFrameDimensions.X,
                             _currentFrame.Y * _singleFrameDimensions.Y,
                             _singleFrameDimensions.X,
-                            _singleFrameDimensions.Y), Tint, _rotation,
+                            _singleFrameDimensions.Y), this._tint * _alpha, _rotation,
                             new Vector2(_singleFrameDimensions.X * 0.5f,
                                 _singleFrameDimensions.Y * 0.5f), _scale, SpriteEffects.None, _zLayer);
                 }
                 else
                 {
                     sb.Draw(this._texture, this._position,
-                        null, this._tint * _alpha, this._rotation,
-                        new Vector2(this._texture.Width, this._texture.Height) * 0.5f,
+                        new Rectangle(0,0,_singleFrameDimensions.X, _singleFrameDimensions.Y), 
+                        this._tint * _alpha, this._rotation,
+                        new Vector2(_singleFrameDimensions.X, _singleFrameDimensions.Y) * 0.5f,
                         _scale, SpriteEffects.None, this._zLayer);
                 }
 
@@ -434,7 +456,14 @@ namespace GameLibrary.Graphics.Drawing
 
         public override void Toggle()
         {
-            this._isAnimating = !this._isAnimating;
+            if (_isAnimated)
+            {
+                this._isAnimating = !this._isAnimating;
+            }
+            else
+            {
+                this._enabled = !_enabled;
+            }
         }
 
         public override void Start()
@@ -466,6 +495,7 @@ namespace GameLibrary.Graphics.Drawing
         public void SetTexture(Texture2D texture)
         {
             this._texture = texture;
+            this._singleFrameDimensions = new Point(_texture.Width, _texture.Height);
         }
     }
 }

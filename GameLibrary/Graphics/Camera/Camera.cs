@@ -23,7 +23,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-//#define Development
+#define Development
 
 #region Using Statements
 using System;
@@ -35,6 +35,7 @@ using GameLibrary.Helpers;
 using GameLibrary.GameLogic;
 using GameLibrary.GameLogic.Screens;
 using GameLibrary.GameLogic.Characters;
+using GameLibrary.Audio;
 #endregion
 
 namespace GameLibrary.Graphics.Camera
@@ -436,6 +437,7 @@ namespace GameLibrary.Graphics.Camera
             }
 
             Player.Instance.Body.ResetDynamics();
+            AudioManager.Instance.PlayCue("Rotate_AntiClockwise", true);
         }
 
         public void ForceRotateRight()
@@ -471,6 +473,7 @@ namespace GameLibrary.Graphics.Camera
             }
 
             Player.Instance.Body.ResetDynamics();
+            AudioManager.Instance.PlayCue("Rotate_Clockwise", true);
         }
 
         public void ForceRotateHalf()

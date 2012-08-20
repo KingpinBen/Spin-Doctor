@@ -12,12 +12,9 @@
 [ Random Notes ]
 	It may be a bit of a weird thing to do but because some features use percentage modifers on the X,Y of thumbsticks, we may have to use them also on the FPS for sprite animation for players.
 
-[ Body Userdata Flags ] - Make them uints.
-
-0 - None.
-1 - Dont kill from fall damage.
-
 
 [ To do ]
 
 	implement sound cues (probably one of the last things to do),
+	better commenting on piston,
+	look into bouncepad collision (playing sound when contact should be false),

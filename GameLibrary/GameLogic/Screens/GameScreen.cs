@@ -17,6 +17,21 @@ namespace GameLibrary.GameLogic.Screens
     public abstract class GameScreen
     {
         #region Fields and Properties
+
+        public bool AcceptInput
+        {
+            get
+            {
+                return acceptInput;
+            }
+            protected set
+            {
+                acceptInput = value;
+            }
+        }
+        bool acceptInput = true;
+
+
         /// <summary>
         /// Normally when one screen is brought up over the top of another,
         /// the first screen will transition off to make room for the new

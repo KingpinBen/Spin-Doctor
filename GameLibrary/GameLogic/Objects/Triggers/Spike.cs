@@ -10,6 +10,7 @@ using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Factories;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Characters;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Objects.Triggers
 {
@@ -28,7 +29,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         protected override void SetupPhysics(World world)
         {
 
-            this.Body = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(5), ConvertUnits.ToSimUnits(5), 3, ConvertUnits.ToSimUnits(_mass));
+            this.Body = BodyFactory.CreateRoundedRectangle(world, ConvertUnits.ToSimUnits(_width - 12), ConvertUnits.ToSimUnits(_height * 0.75f), ConvertUnits.ToSimUnits(5), ConvertUnits.ToSimUnits(5), 3, ConvertUnits.ToSimUnits(_mass));
             this.Body.BodyType = BodyType.Static;
             this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
             this.Body.Rotation = _rotation;
@@ -44,10 +45,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (!_touchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
+            if (!_touchingFixtures.Contains(fixtureB) && Player.Instance.PlayerHitBox(fixtureB))
             {
                 _touchingFixtures.Add(fixtureB);
                 Player.Instance.Kill();
+                AudioManager.Instance.PlayCue("Death_Spikes", true);
             }
 
             return true;

@@ -813,11 +813,16 @@ namespace GameLibrary.GameLogic.Controls
         #region Update
         public void Update(float delta)
         {
+            _lastGamepadState = _currentGamepadState;
+            _currentGamepadState = GamePad.GetState(PlayerIndex.One);
+            _lastKeyboardState = _currentKeyboardState;
+            _currentKeyboardState = Keyboard.GetState();
+
+            _lastMouseState = _currentMouseState;
+            _currentMouseState = Mouse.GetState();
+
             if (_isGamePad)
             {
-                _lastGamepadState = _currentGamepadState;
-                _currentGamepadState = GamePad.GetState(PlayerIndex.One);
-
                 if (VibrationTime > 0)
                 {
                     VibrationTime -= delta;
@@ -828,14 +833,6 @@ namespace GameLibrary.GameLogic.Controls
                     VibrationTime = 0;
                     GamePad.SetVibration(PlayerIndex.One, 0, 0);
                 }
-            }
-            else
-            {
-                _lastKeyboardState = _currentKeyboardState;
-                _currentKeyboardState = Keyboard.GetState();
-
-                _lastMouseState = _currentMouseState;
-                _currentMouseState = Mouse.GetState();
             }
         }
         #endregion

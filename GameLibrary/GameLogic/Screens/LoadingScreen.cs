@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using GameLibrary.Audio;
+using Microsoft.Xna.Framework.Audio;
 
 namespace GameLibrary.GameLogic.Screens
 {
@@ -68,6 +70,8 @@ namespace GameLibrary.GameLogic.Screens
             // off, it is time to actually perform the load.
             if (otherScreensAreGone)
             {
+                AudioManager.Instance.StopAllSounds(AudioStopOptions.AsAuthored);
+
                 ScreenManager.RemoveScreen(this);
 
                 foreach (GameScreen screen in screensToLoad)

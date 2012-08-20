@@ -54,7 +54,7 @@ namespace SpinDoctor
             this.IsMouseVisible = true;
             this.Content.RootDirectory = "Content";
             this.IsFixedTimeStep = false;
-            this.Window.Title = "Spin Doctor - Development";
+            this.Window.Title = "Spin Doctor Beta";
 
             //  Setup the graphics manager
             _graphics = new GraphicsDeviceManager(this);

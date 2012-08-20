@@ -97,7 +97,7 @@ namespace GameLibrary.GameLogic.Objects
 
 
 #else
-            SetupPhysics(world);
+            this.SetupPhysics(world);
 #endif
         }
 
@@ -246,7 +246,7 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.Mass = ConvertUnits.ToSimUnits(10000);
             this.Body.Rotation = _rotation;
             this.Body.Friction = 3.0f;
-
+            this.Body.UserData = MaterialType.None;
             
             //  The Player wheel radius.
             radius = ConvertUnits.ToSimUnits(28);

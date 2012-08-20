@@ -38,92 +38,33 @@ namespace GameLibrary.Audio
 {
     public class AudioManager
     {
-        private static AudioManager _singleton = null;
-        public static AudioManager Instance
-        {
-            get
-            {
-                if (_singleton == null)
-                {
-                    _singleton = new AudioManager();
-                }
-
-                return _singleton;
-            }
-        }
-
         #region Fields
 
         private AudioEngine _engine;
-        private SoundBank[] _soundBanks;
-        private WaveBank[] _waveBanks;
-        private int _soundVolume;
-        private int _musicVolume;
-
-        /// <summary>
-        /// Temporary banks for testing.
-        /// Switch to array when we have something here.
-        /// </summary>
         private SoundBank _soundBank;
         private WaveBank _waveBank;
+
+        private int _musicVolume;
+        private int _effectsVolume;
+        private int _voiceVolume;
+        private int _ambienceVolume;
+
+
+        private List<Cue> _activeSounds = new List<Cue>(255);
+       
 
         #endregion
 
         #region Properties
 
-        #region Sound Getters and Setters
+        #region Music Getter and Setters
 
 
-        /// <summary>
-        /// Sound level get/set
-        /// </summary>
-        public int SoundVolume
-        {
-            get
-            {
-                return _soundVolume;
-            }
-            set
-            {
-                SetSoundVolume(value);
-            }
-        }
-
-
-        /// <summary>
-        /// Set the current volume level between 0 and 10
-        /// </summary>
-        /// <param name="Volume Level">What should the volume level be?</param>
-        public void SetSoundVolume(int volumeLevel)
-        {
-            _soundVolume = volumeLevel;
-
-            if (this._engine != null)
-            {
-                this._engine.GetCategory("Sound").SetVolume(this._soundVolume * 0.1f);
-            }
-        }
-
-
-
-        #endregion
-
-        #region Music Related Getter and Setters
-
-
-
-        /// <summary>
-        /// Music Volume GetSet
-        /// </summary>
         public int MusicVolume
         {
             get
             {
                 return _musicVolume;
-            }
-            set
-            {
-                SetMusicVolume(value);
             }
         }
 
@@ -147,17 +88,102 @@ namespace GameLibrary.Audio
 
         #endregion
 
+        #region Effects Get Set
+
+        public int EffectsVolume
+        {
+            get
+            {
+                return _effectsVolume;
+            }
+        }
+
+        public void SetEffectsVolume(int volumeLevel)
+        {
+            //  Cap the volume level between 0 and 10
+            _effectsVolume = volumeLevel;
+
+            //  If we can use the 
+            if (this._engine != null)
+            {
+                this._engine.GetCategory("Effects").SetVolume(this._effectsVolume * 0.1f);
+            }
+        }
+
         #endregion
 
-        private AudioManager() { }
+        #region Voice Get Set
 
+        public int VoiceVolume
+        {
+            get
+            {
+                return _voiceVolume;
+            }
+        }
+
+        public void SetVoiceVolume(int volumeLevel)
+        {
+            //  Cap the volume level between 0 and 10
+            _voiceVolume = volumeLevel;
+
+            //  If we can use the 
+            if (this._engine != null)
+            {
+                this._engine.GetCategory("Voice").SetVolume(this._voiceVolume * 0.1f);
+            }
+        }
+
+        #endregion
+
+        #region Ambience Get Set
+
+        public int AmbienceVolume
+        {
+            get
+            {
+                return _ambienceVolume;
+            }
+        }
+
+        public void SetAmbienceVolume(int volumeLevel)
+        {
+            //  Cap the volume level between 0 and 10
+            _ambienceVolume = volumeLevel;
+
+            //  If we can use the 
+            if (this._engine != null)
+            {
+                this._engine.GetCategory("Background").SetVolume(this._ambienceVolume * 0.1f);
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Constructor and Load
+        private static AudioManager _singleton = new AudioManager();
+        public static AudioManager Instance
+        {
+            get
+            {
+                return _singleton;
+            }
+        }
+
+        private AudioManager() { }
+        
         public void Load()
         {
             while (_engine == null)
             {
                 try
                 {
-                    _engine = new AudioEngine("Content/Assets/Audio/SDAudio.xgs");
+                    _engine = new AudioEngine("Content\\Assets\\Audio\\Audio.XGS");
+
+                    _waveBank = new WaveBank(_engine, "Content\\Assets\\Audio\\Wave Bank.XWB");
+                    _soundBank = new SoundBank(_engine, "Content\\Assets\\Audio\\Sound Bank.XSB");
                 }
                 catch (InvalidOperationException e)
                 {
@@ -177,20 +203,85 @@ namespace GameLibrary.Audio
                     }
                 }
             }
-
-            _waveBank = new WaveBank(_engine, "Content/Assets/Audio/SDWaveBank.xwb", 0, (short)16);
-            _soundBank = new SoundBank(_engine, "Content/Assets/Audio/SDSoundBank.xsb");
-            
         }
+        #endregion
+
+        #region Update
 
         public void Update()
         {
+            for (int i = _activeSounds.Count - 1; i >= 0; i--)
+            {
+                if (_activeSounds[i].IsStopped)
+                {
+                    _activeSounds.RemoveAt(i);
+                }
+            }
+
             _engine.Update();
         }
+        #endregion
 
-        public void PlayCue(Banks bank, string name)
+        #region Cue Control
+
+        public Cue PlayCue(string name, bool play)
         {
-            this._soundBanks[(int)bank].PlayCue(name);
+            Cue cue = null;
+
+            cue = this._soundBank.GetCue(name);
+
+            if (play)
+            {
+                this.PlayCue(cue);
+            }
+
+            //  Return it in case the object wants a reference to it.
+            return cue;
         }
+
+        public void PlayCue(Cue cue)
+        {
+            _activeSounds.Add(cue);
+            cue.Play();
+        }
+
+        public void StopCue(string name, AudioStopOptions option)
+        {
+            Cue cue = null;
+            try
+            {
+                cue = _soundBank.GetCue(name);
+            }
+            catch
+            {
+                //  If name doesn't exist as a cue, exit out.
+                return;
+            }
+
+            this.StopCue(cue, option);
+        }
+
+        public void StopCue(Cue cue, AudioStopOptions option)
+        {
+            if (cue != null)
+            {
+                cue.Stop(option);
+            }
+        }
+
+        public void StopAllSounds(AudioStopOptions option)
+        {
+            for(int i = 0; i < _activeSounds.Count; i++)
+            {
+                Cue cue = _activeSounds[i];
+
+                if (!cue.IsStopped)
+                {
+                    cue.Stop(option);
+                }
+            }
+        }
+
+        #endregion
     }
 }

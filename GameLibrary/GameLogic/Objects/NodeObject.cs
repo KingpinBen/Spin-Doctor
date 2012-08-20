@@ -131,6 +131,16 @@ namespace GameLibrary.GameLogic.Objects
                 _objectEvents = value;
             }
         }
+        [ContentSerializerIgnore, CategoryAttribute("General")]
+        public virtual float Rotation 
+        {
+            get 
+            {
+                return 0.0f;
+            }
+            set { }
+        }
+
 
 #else
         [ContentSerializerIgnore]

@@ -5,11 +5,20 @@ using System.Text;
 using GameLibrary.GameLogic.Screens.Menu.Options;
 using Microsoft.Xna.Framework;
 using GameLibrary.System;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
     public class MainMenuScreen : MenuScreen
     {
+        #region Fields
+
+        private ContentManager content;
+        private Texture2D _gameLogo;
+
+        #endregion
+
         #region Initialization
 
 
@@ -19,13 +28,12 @@ namespace GameLibrary.GameLogic.Screens.Menu
         public MainMenuScreen()
             : base("Main Menu")
         {
-            //this._mainPosition = new Vector2(this.ScreenManager.GraphicsDevice.Viewport.Width * 0.5f, this.ScreenManager.GraphicsDevice.Viewport.Height * 0.33f);
-
-            // Create our menu entries.
-
+            //  Check if there is already a game save file.
             SaveManager.Instance.LoadGame();
 
-            if (SaveManager.Instance.Loaded)
+            //  If a save has been found, we want to display a way of continuing
+            //  the game.
+            if (SaveManager.Instance.FoundSave)
             {
                 MenuEntry continueMenuEntry = new MenuEntry("Continue");
                 continueMenuEntry.Origin = Graphics.UI.TextAlignment.Centre;
@@ -33,6 +41,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
                 menuEntries.Add(continueMenuEntry);
             }
 
+            // Create our menu entries.
             MenuEntry playGameMenuEntry = new MenuEntry("New Game");
             MenuEntry optionsMenuEntry = new MenuEntry("Options");
             MenuEntry exitMenuEntry = new MenuEntry("Exit");
@@ -55,6 +64,13 @@ namespace GameLibrary.GameLogic.Screens.Menu
         public override void Activate()
         {
             base.Activate();
+
+            if (content == null)
+            {
+                this.content = new ContentManager(ScreenManager.Game.Services, "Content");
+            }
+
+            this._gameLogo = content.Load<Texture2D>("Assets/Other/Game/TitleLogo");
         }
 
         #endregion
@@ -96,5 +112,37 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
 
         #endregion
+
+        public override void Draw(GameTime gameTime)
+        {
+            UpdateMenuEntryLocations();
+
+            GraphicsDevice graphics = ScreenManager.GraphicsDevice;
+            SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
+
+            Vector2 logoPosition = new Vector2(graphics.Viewport.Width * 0.75f,
+                graphics.Viewport.Height * 0.25f);
+
+            float scale = 0.5f;
+
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+
+            // Draw each menu entry in turn.
+            for (int i = 0; i < menuEntries.Count; i++)
+            {
+                MenuEntry menuEntry = menuEntries[i];
+
+                bool isSelected = IsActive && (i == selectedEntry);
+
+                if (menuEntry.ItemType != MenuEntryType.Separator)
+                    menuEntry.Draw(this, isSelected, gameTime);
+            }
+
+            spriteBatch.Draw(_gameLogo, logoPosition, null,
+                Color.White * TransitionAlpha,
+                0.0f, new Vector2(_gameLogo.Width, _gameLogo.Height) * 0.5f, scale, SpriteEffects.None,0.0f);
+
+            spriteBatch.End();
+        }
     }
 }

@@ -39,9 +39,8 @@ namespace GameLibrary.GameLogic.Events
         WORLD_ROTATE_TOGGLE,
 
         //  System
-        CHANGE_LEVEL,
-        
-        //  Change camera.
-        FIRE_POPUP
+        ENGINE_CHANGE_LEVEL,
+        ENGINE_ROLL_CREDITS,
+        UNLOCK_ITEM_STEAMBOOTS,
     }
 }

@@ -39,6 +39,7 @@ using FarseerPhysics.Factories;
 using FarseerPhysics.Collision.Shapes;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.Animation;
+using GameLibrary.Audio;
 #endregion
 
 namespace GameLibrary.GameLogic.Characters
@@ -49,6 +50,8 @@ namespace GameLibrary.GameLogic.Characters
 
         protected ContentManager _content;
 
+        protected Vector2 _lastSafePosition = Vector2.Zero;
+
         #region Settings and States
 
         protected float _charMass;
@@ -58,6 +61,8 @@ namespace GameLibrary.GameLogic.Characters
 
         protected PlayerState _playerState;
         protected bool _inAir = false;
+
+        protected float _soundElapsed;
 
         #endregion
 
@@ -129,7 +134,7 @@ namespace GameLibrary.GameLogic.Characters
             }
         }
 
-        protected FrameAnimation CurrentAnimation
+        public FrameAnimation CurrentAnimation
         {
             get
             {
@@ -144,7 +149,7 @@ namespace GameLibrary.GameLogic.Characters
             }
         }
 
-        public string CurrentAnimationName
+        protected string CurrentAnimationName
         {
             get 
             { 
@@ -228,20 +233,23 @@ namespace GameLibrary.GameLogic.Characters
             {
                 if (_touchingFixtures.Count == 0)
                 {
-                    if (_airTime > 0.2f &&
-                        _playerState != Characters.PlayerState.Falling)
+                    this._airTime += delta;
+
+                    if (_airTime > 0.2f)
                     {
-                        if (_playerState != PlayerState.Jumping && _playerState != PlayerState.Climbing)
+                        if (_playerState != Characters.PlayerState.Falling)
                         {
-                            this.PlayerState = PlayerState.Falling;
+                            if (_playerState != PlayerState.Jumping && _playerState != PlayerState.Climbing)
+                            {
+                                this.PlayerState = PlayerState.Falling;
+                            }
                         }
                     }
                 }
             }
 
-            Vector2 tempPosition = ConvertUnits.ToDisplayUnits(this.Body.Position - this._wheelBody.Position);
-            this._texturePosition = ConvertUnits.ToDisplayUnits(this._wheelBody.Position) + (tempPosition);
-
+            this._texturePosition = ConvertUnits.ToDisplayUnits(this._wheelBody.Position + (this.Body.Position - this._wheelBody.Position));
+            //this._wheelBody.LinearVelocity = this._mainBody.LinearVelocity;
             if (this._wheelBody.Enabled)
             {
                 HandleAnimation(delta);
@@ -337,11 +345,11 @@ namespace GameLibrary.GameLogic.Characters
             Fixture mainBodyFixture = FixtureFactory.AttachEllipse(ConvertUnits.ToSimUnits(CharWidth * 0.4f), ConvertUnits.ToSimUnits(height), 8, 0.0f, _mainBody);
             this._mainBody.BodyType = BodyType.Dynamic;
             this._mainBody.Position = ConvertUnits.ToSimUnits(StartPosition);
-            this._mainBody.Restitution = 0.0f;
-            this._mainBody.Friction = 0.0f;
+            //this._mainBody.Restitution = 0.0f;
+            this._mainBody.Friction = 0.01f;
             
             //  Wheel
-            float MotorPivot = (height) - 8.0f;
+            float MotorPivot = (height) - 14.0f;
             this._wheelBody = BodyFactory.CreateBody(world);
             this._wheelBody.Position = ConvertUnits.ToSimUnits(StartPosition + new Vector2(0, MotorPivot));
             this._wheelBody.BodyType = BodyType.Dynamic;

@@ -34,6 +34,8 @@ using FarseerPhysics.Dynamics.Contacts;
 using System.ComponentModel;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Characters;
+using GameLibrary.Audio;
+using Microsoft.Xna.Framework.Audio;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -49,7 +51,8 @@ namespace GameLibrary.GameLogic.Objects
 
 #else
         private Texture2D _bloodiedTexture;
-        private bool _touched = false;     
+        private bool _touched = false;
+        private bool _stationary = false;
 #endif
         #endregion
 
@@ -126,26 +129,8 @@ namespace GameLibrary.GameLogic.Objects
                 }
                 else
                 {
-                    return Texture;
+                    return _texture;
                 }
-            }
-        }
-
-        [ContentSerializerIgnore]
-        public string TouchedSawBladeAsset
-        {
-            get
-            {
-                return _bloodiedTextureAsset;
-            }
-        }
-
-        [ContentSerializerIgnore]
-        public bool BeenTouched
-        {
-            get
-            {
-                return _touched;
             }
         }
 #endif
@@ -169,7 +154,14 @@ namespace GameLibrary.GameLogic.Objects
             base.Load(content, world);
 #if !EDITOR
             this._bloodiedTexture = content.Load<Texture2D>(_bloodiedTextureAsset);
-            this.SetupPhysics(world);
+
+            this._soundEffectAsset = "Saw_On";
+            this._soundEffect = AudioManager.Instance.PlayCue(_soundEffectAsset, _isMoving);
+
+            if (_position == _endPosition)
+            {
+                this._stationary = true;
+            }
 #endif
         }
 
@@ -178,7 +170,7 @@ namespace GameLibrary.GameLogic.Objects
 #if !EDITOR
             if (_enabled)
             {
-                if (_prismaticJoint.MotorEnabled)
+                if ((this._prismaticJoint.MotorSpeed != 0 && _isMoving) || _stationary)
                 {
                     _rotation += 0.3f;
 
@@ -187,30 +179,40 @@ namespace GameLibrary.GameLogic.Objects
                         _rotation -= 4;
                     }
                 }
-
-                base.Update(delta);
+                if (!_stationary)
+                {
+                    base.Update(delta);
+                }
             }
 #endif
         }
 
         #region Draw
+
+
 #if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(this._texture, this._position, null, this._tint, 0.0f, _origin, _scale, SpriteEffects.None, this._zLayer);
         }
 #else
+
+
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(TextureToUse, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, 
                 this._rotation, new Vector2(this.TextureToUse.Width, this.TextureToUse.Height) * 0.5f, _scale, SpriteEffects.None, this._zLayer); 
         }
+
+
 #endif
         #endregion
 
         #region Private Methods
 
 #if !EDITOR
+
+
         protected override void SetupPhysics(World world)
         {
             this.Body = BodyFactory.CreateCircle(world,
@@ -218,26 +220,35 @@ namespace GameLibrary.GameLogic.Objects
                 ConvertUnits.ToSimUnits(_mass));
 
             this.Body.BodyType = BodyType.Dynamic;
-            this.Body.Position = ConvertUnits.ToSimUnits(this.Position);
+            this.Body.Position = ConvertUnits.ToSimUnits(this._position);
             this.Body.Friction = 1.0f;
             this.Body.Restitution = 0.2f;
-
-            base.SetUpJoint(world);
-
+            this.Body.Enabled = _enabled;
+            this.Body.CollisionCategories = Category.Cat20;
+            this.Body.CollidesWith = Category.All & ~Category.Cat20;
+            this.Body.UserData = _materialType;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
 
-            this.Body.CollisionCategories = Category.Cat20;
-            this.Body.CollidesWith = Category.All & ~Category.Cat20;
+            base.SetUpJoint(world);
 
+            
         }
+
+
+        #region Collisions
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (!_touchingFixtures.Contains(fixtureB) && fixtureB == Player.Instance.PlayerHitBox)
+            if (!_touchingFixtures.Contains(fixtureB) && Player.Instance.PlayerHitBox(fixtureB))
             {
                 _touchingFixtures.Add(fixtureB);
-                Player.Instance.Kill();
+
+                if (Player.Instance.PlayerState != PlayerState.Dead)
+                {
+                    Player.Instance.Kill();
+                    AudioManager.Instance.PlayCue("Death_Saw", true);
+                }
                 _touched = true;
             }
             else
@@ -252,6 +263,11 @@ namespace GameLibrary.GameLogic.Objects
         {
             _touchingFixtures.Remove(fixtureB);
         }
+
+        #endregion
+
+
+
 #endif
 
         #endregion

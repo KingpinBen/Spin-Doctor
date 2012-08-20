@@ -5,9 +5,14 @@ using System.Text;
 
 namespace GameLibrary.GameLogic.Objects
 {
-    internal enum SpecialBodyFlags
+    public enum MaterialType
     {
-        FallImmune = 1,
-        OneDirectional = 2
+        Metal,
+        Wood,
+        Cushion,
+        Concrete,
+        Tile,
+        Water,
+        None
     }
 }

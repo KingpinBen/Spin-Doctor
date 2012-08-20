@@ -79,7 +79,7 @@ namespace GameLibrary.GameLogic.Events
             switch (objEvent.EventType)
             {
                 #region ChangeLevel
-                case EventType.CHANGE_LEVEL:
+                case EventType.ENGINE_CHANGE_LEVEL:
                     {
                         try
                         {
@@ -262,7 +262,19 @@ namespace GameLibrary.GameLogic.Events
 
                     break;
                 #endregion
-                
+
+                case EventType.UNLOCK_ITEM_STEAMBOOTS:
+                    {
+                        GameSettings.Instance.DoubleJumpEnabled = true;
+                    }
+                    break;
+
+                case EventType.ENGINE_ROLL_CREDITS:
+                    {
+                        this.gameScreen.ScreenManager.AddScreen(new CreditRollScreen(), gameScreen.ControllingPlayer);
+                    }
+                    break;
+
                 default:
                     break;
             }

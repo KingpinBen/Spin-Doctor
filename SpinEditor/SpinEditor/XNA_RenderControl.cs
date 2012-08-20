@@ -92,9 +92,6 @@ namespace SpinEditor
             devCharacter = contentMan.Load<Texture2D>("Assets/Other/Dev/devHarland");
             font = contentMan.Load<SpriteFont>("Assets/Fonts/Debug");
 
-            this.HideEventTargets = true;
-            this.HideObjectNames = true;
-
             //  Setup the grid initially
             RefreshGrid();
 
@@ -212,7 +209,7 @@ namespace SpinEditor
                                                 new Rectangle(0, 0,
                                                     (int)objectsList[index].Width,
                                                     (int)objectsList[index].Height),
-                                                Color.Green * 0.3f, 0f, new Vector2(objectsList[index].Width, objectsList[index].Height) * 0.5f,
+                                                Color.Green * 0.3f, 0.0f, new Vector2(objectsList[index].Width, objectsList[index].Height) * 0.5f,
                                                 1.0f, SpriteEffects.None, 0.001f);
                         }
                         else

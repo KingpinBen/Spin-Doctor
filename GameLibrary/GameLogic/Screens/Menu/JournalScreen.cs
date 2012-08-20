@@ -5,6 +5,7 @@ using System.Text;
 using GameLibrary.GameLogic.Screens.Menu.Options;
 using Microsoft.Xna.Framework;
 using GameLibrary.Helpers;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
@@ -28,10 +29,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
             back.Selected += OnCancel;
             back.Origin = Graphics.UI.TextAlignment.Centre;
 
-            MenuEntry sep = new MenuEntry("sep");
-            sep.ItemType = MenuEntryType.Separator;
-
-            menuEntries.Add(sep);
             menuEntries.Add(back);
 
             //  Make it select back as the default/start position in the entry list.
@@ -49,14 +46,29 @@ namespace GameLibrary.GameLogic.Screens.Menu
         {
             Vector2 position = _itemsPosition;
 
-            for (int i = 0; i < menuEntries.Count; i++)
+            float height = menuEntries[15].GetHeight(this);
+
+            //  Remove3x the height to centre them on the screen.
+            position.Y -= height * 3;
+
+            //  Create a 4x4 grid with all the entries in.
+            float width = (menuEntries[15].GetWidth(this) * 0.5f) + 20; 
+
+            for (int i = 0; i < 4; i++)
             {
-                MenuEntry menuEntry = menuEntries[i];
+                int j = i * 4; 
+                menuEntries[j].Position = new Vector2(position.X - (width + 100 * 2), position.Y);
+                menuEntries[j + 1].Position = new Vector2(position.X - width, position.Y); ;
+                menuEntries[j + 2].Position = new Vector2(position.X + width, position.Y); ;
+                menuEntries[j + 3].Position = new Vector2(position.X + (width + 100 * 2), position.Y); ;
 
-                menuEntry.Position = position;
-
-                position.Y += menuEntry.GetHeight(this);
+                position.Y += menuEntries[i].GetHeight(this);
             }
+
+            menuEntries[16].Position = new Vector2(_itemsPosition.X, position.Y);
+            position.Y += menuEntries[0].GetHeight(this);
+
+            menuEntries[17].Position = new Vector2(_itemsPosition.X, position.Y);
         }
 
         public override void Draw(GameTime gameTime)
@@ -69,7 +81,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         void JournalEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-            this.ScreenManager.AddScreen(new MessageOverlay(Defines.NOTE_DIRECTORY + (selectedEntry + 1).ToString()), e.PlayerIndex);
+            this.ScreenManager.AddScreen(new MessageOverlay(selectedEntry + 1), e.PlayerIndex);
+            AudioManager.Instance.PlayCue("Journal_Turn_Page", true);
         }
     }
 }

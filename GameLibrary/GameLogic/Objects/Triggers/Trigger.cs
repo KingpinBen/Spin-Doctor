@@ -250,34 +250,35 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public override void Update(float delta)
         {
 #if !EDITOR
-            //  If it's set to fire once and has been fired, we don't 
-            //  need to go any further.
-            if (_triggerOnce && _fired)
+            
+
+
+            if (_fired)
             {
                 return;
             }
-
-            //  First check if it's been enabled.
-            if (_triggered && !_fired)
+            else
             {
-                if (Player.Instance.PlayerState == PlayerState.Dead)
+                if (_triggered)
                 {
-                    ChangeTriggered(false);
-                }
+                    if (Player.Instance.PlayerState == PlayerState.Dead)
+                    {
+                        ChangeTriggered(false);
+                        return;
+                    }
 
-                if (_triggerType == TriggerType.PlayerInput)
-                {
-                    if (InputManager.Instance.Interact(true))
+                    if (_triggerType == TriggerType.PlayerInput)
+                    {
+                        if (InputManager.Instance.Interact(true))
+                        {
+                            this.FireEvent();
+                        }
+                    }
+                    else
                     {
                         this.FireEvent();
                     }
                 }
-                else
-                {
-                    this.FireEvent();
-                }
-
-                
             }
 #endif
         }
@@ -311,14 +312,13 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         protected override void FireEvent()
         {
             base.FireEvent();
-
             this._fired = true;
             ChangeTriggered(false);
 
             if (_triggerOnce)
             {
                 EventManager.Instance.DeregisterObject(this);
-                this.Body.Enabled = false;
+                this.Disable();
             }
         }
 
@@ -338,21 +338,19 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         /// <returns></returns>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (!_touchingFixtures.Contains(fixtureB) && Player.Instance.CheckBodyBox(fixtureB))
+            if (_touchingFixtures.Count == 0 && Player.Instance.CheckBodyBox(fixtureB))
             {
                 _touchingFixtures.Add(fixtureB);
-            }
-            else
-            {
-                //  If it's not the player, we can just ignore it.
+
+                if (!_triggered)
+                {
+                    ChangeTriggered(true);
+                }
+
                 return true;
             }
 
-            if (!Triggered)
-            {
-                ChangeTriggered(true);
-            }
-
+            //  If it's not the player, we can just ignore it.
             return true;
         }
 
@@ -362,13 +360,18 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             if (_touchingFixtures.Contains(fixtureB))
             {
                 _touchingFixtures.Remove(fixtureB);
-            }
 
-            //  So if it's empty, the player has fully left the trigger.
-            if (_touchingFixtures.Count == 0)
-            {
-                //  so turn it off.
-                ChangeTriggered(false);
+                //  So if it's empty, the player has fully left the trigger.
+                if (_touchingFixtures.Count == 0)
+                {
+                    //  so turn it off.
+                    ChangeTriggered(false);
+
+                    if (!_triggerOnce)
+                    {
+                        this._fired = false;
+                    }
+                }
             }
         }
 
@@ -384,11 +387,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             else
             {
                 HUD.Instance.ShowOnScreenMessage(false, "");
-
-                if (!this._triggerOnce)
-                {
-                    this._fired = false;
-                }
             }
 
             this._triggered = state;
@@ -412,28 +410,20 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
             else
             {
-                if (_message.Length == 0)
-                {
-                    _message = " FORGOTTEN TO PLACE A MESSAGE.";
-                }
-
-                if (_message[0] != ' ')
-                {
-                    _message.Insert(0, " ");
-                }
+                ChooseMessage();
             }
         }
 
         public override void Enable()
         {
             base.Enable();
-            this._triggered = false;
+            ChangeTriggered(false);
         }
 
         public override void Disable()
         {
             base.Disable();
-            this._triggered = false;
+            ChangeTriggered(false);
         }
 
         protected void ChooseMessage()
@@ -445,23 +435,26 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
             else
             {
-                switch (_interactType)
+                if (_message == "")
                 {
-                    case InteractType.Continue:
-                        _message = " to continue";
-                        break;
-                    case InteractType.Grab:
-                        _message = " to grab";
-                        break;
-                    case InteractType.Open:
-                        _message = " to open";
-                        break;
-                    case InteractType.PickUp:
-                        _message = " to pick up";
-                        break;
-                    case InteractType.Use:
-                        _message = " to use";
-                        break;
+                    switch (_interactType)
+                    {
+                        case InteractType.Continue:
+                            _message = " to continue";
+                            break;
+                        case InteractType.Grab:
+                            _message = " to grab";
+                            break;
+                        case InteractType.Open:
+                            _message = " to open";
+                            break;
+                        case InteractType.PickUp:
+                            _message = " to pick up";
+                            break;
+                        case InteractType.Use:
+                            _message = " to use";
+                            break;
+                    }
                 }
             }
 #endif

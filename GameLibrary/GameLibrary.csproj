@@ -116,7 +116,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Audio\Banks.cs" />
     <Compile Include="GameLogic\Controls\InputAction.cs" />
     <Compile Include="GameLogic\Controls\InputState.cs" />
     <Compile Include="GameLogic\Events\Event.cs" />
@@ -124,10 +123,11 @@
     <Compile Include="GameLogic\Events\EventType.cs" />
     <Compile Include="GameLogic\Objects\IEventObject.cs" />
     <Compile Include="GameLogic\Objects\InteractType.cs" />
+    <Compile Include="GameLogic\Objects\MaterialType.cs" />
     <Compile Include="GameLogic\Objects\ObjectShape.cs" />
-    <Compile Include="GameLogic\Objects\SpecialBodyFlags.cs" />
     <Compile Include="GameLogic\Objects\Triggers\TriggerType.cs" />
     <Compile Include="GameLogic\Characters\PlayerState.cs" />
+    <Compile Include="GameLogic\Screens\CreditRollScreen.cs" />
     <Compile Include="GameLogic\Screens\GameplayScreen.cs" />
     <Compile Include="GameLogic\Screens\GameScreen.cs" />
     <Compile Include="GameLogic\Screens\LoadingScreen.cs" />
@@ -174,7 +174,6 @@
     <Compile Include="Graphics\Camera\UpIs.cs" />
     <Compile Include="Graphics\Drawing\Decal.cs" />
     <Compile Include="Graphics\Animation\FrameAnimation.cs" />
-    <Compile Include="Graphics\UI\FullscreenPicture.cs" />
     <Compile Include="Graphics\UI\HUD.cs" />
     <Compile Include="Graphics\Drawing\Particle.cs" />
     <Compile Include="Levels\RoomTheme.cs" />
@@ -196,10 +195,9 @@
     <Compile Include="GameLogic\Objects\Dynamics\MovingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\Note.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\OneSidedPlatform.cs" />
-    <Compile Include="GameLogic\Objects\Prefabs\PullableObject.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\PushingPlatform.cs" />
     <Compile Include="GameLogic\Objects\Prefabs\RotateRoomButton.cs" />
-    <Compile Include="GameLogic\Objects\Prefabs\Saw.cs" />
+    <Compile Include="GameLogic\Objects\Dynamics\Saw.cs" />
     <Compile Include="GameLogic\Objects\RotateDirection.cs" />
     <Compile Include="GameLogic\Objects\Triggers\Door.cs" />
     <Compile Include="GameLogic\Objects\Triggers\Spike.cs" />

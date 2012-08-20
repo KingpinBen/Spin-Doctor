@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Media;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
@@ -12,8 +13,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
     {
         #region Fields
 
-        ContentManager content;
-        Texture2D backgroundTexture;
+        Texture2D _texture;
 
         #endregion
 
@@ -31,18 +31,9 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         public override void Activate()
         {
-            if (content == null)
-            {
-                content = new ContentManager(ScreenManager.Game.Services, "Content");
-            }
+            ContentManager content = new ContentManager(ScreenManager.Game.Services, "Content");
 
-            backgroundTexture = content.Load<Texture2D>("Assets/Images/Basics/gradient");
-        }
-
-
-        public override void Unload()
-        {
-            content.Unload();
+            this._texture = content.Load<Texture2D>("Assets/Other/Game/TITLE IMAGE");
         }
 
         #endregion
@@ -57,14 +48,20 @@ namespace GameLibrary.GameLogic.Screens.Menu
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
+
+            //  Make sure the full picture is shown at once.
             Viewport viewport = ScreenManager.GraphicsDevice.Viewport;
-            Rectangle fullscreen = new Rectangle(0, 0, viewport.Width, viewport.Height);
 
-            spriteBatch.Begin();
+            //  Position in the centre of the screen.
+            Vector2 position = new Vector2(viewport.Width, viewport.Height) * 0.5f;
 
-            spriteBatch.Draw(backgroundTexture, fullscreen,
-                             new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha));
+            //  Scale it so it always fits on screen.
+            float scale = (float)viewport.Width / (float)_texture.Width;
 
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
+            spriteBatch.Draw(_texture, position, null,
+                             new Color(TransitionAlpha, TransitionAlpha, TransitionAlpha), 0.0f, 
+                             new Vector2(_texture.Width, _texture.Height) * 0.5f, scale, SpriteEffects.None, 0.0f);
             spriteBatch.End();
         }
 

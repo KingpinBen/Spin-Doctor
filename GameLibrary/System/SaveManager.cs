@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using GameLibrary.GameLogic;
+using GameLibrary.Helpers;
 
 namespace GameLibrary.System
 {
@@ -24,29 +25,38 @@ namespace GameLibrary.System
         }
         #endregion
 
-        private bool _loaded;
-
-        private const string savePath = "./Data/SavedGame";
-        private const string settingsPath = "./Data/Settings";
+        private bool _saveFound;
 
         /// <summary>
         /// Has the save manager found a save file?
         /// </summary>
-        public bool Loaded
+        public bool FoundSave
         {
             get
             {
-                return _loaded;
+                return _saveFound;
             }
         }
 
+        /// <summary>
+        /// Set up a new game.
+        /// </summary>
         public void NewGame()
         {
+            //  Get a local instance of the game settings.
             GameSettings instance = GameSettings.Instance;
 
+            //  Make sure the backpack is turned off for the
+            //  first few levels.
             instance.BackpackEnabled = false;
+
+            //  Start the game from the beginning
             instance.CurrentLevel = 0;
+
+            //  Disable double jump
             instance.DoubleJumpEnabled = false;
+
+            //  Hide any collected notes.
             for (int i = 0; i < instance.FoundEntries.Count; i++)
             {
                 instance.FoundEntries[i] = false;
@@ -54,13 +64,14 @@ namespace GameLibrary.System
         }
         public void LoadGame()
         {
+            string path = Defines.SYSTEM_SAVE_DIRECTORY;
             BinaryReader reader = null;
 
-            if (File.Exists(savePath + ".sav"))
+            if (File.Exists(path + ".sav"))
             {
                 try
                 {
-                    reader = new BinaryReader(File.OpenRead(savePath + ".sav"));
+                    reader = new BinaryReader(File.OpenRead(path + ".sav"));
 
                     GameData.Read(reader);
                 }
@@ -77,27 +88,32 @@ namespace GameLibrary.System
                     reader.Close();
                 }
 
-                _loaded = true;
+                _saveFound = true;
             }
         }
         public void SaveGame()
         {
+            //  Set the save directory to a local variable
+            string path = Defines.SYSTEM_SAVE_DIRECTORY;
+
             //  Initialize the writer and make a temp file.
-            BinaryWriter writer = new BinaryWriter(File.Create(savePath + ".tmp"));
+            BinaryWriter writer = new BinaryWriter(File.Create(path + ".tmp"));
+
             //  Save the actual game data
             GameData.Write(writer);
+
             //  Start closing the stream
             writer.Flush();
             writer.Close();
 
             //  If there is already a save file, remove it
-            if (File.Exists(savePath + ".sav"))
+            if (File.Exists(path + ".sav"))
             {
-                File.Delete(savePath + ".sav");
+                File.Delete(path + ".sav");
             }
             
             //  and make the temp file the new save file.
-            File.Move(savePath + ".tmp", savePath + ".sav");
+            File.Move(path + ".tmp", path + ".sav");
         }
 
         public void LoadSettings()
@@ -105,9 +121,11 @@ namespace GameLibrary.System
             GameSettings instance = GameSettings.Instance;
             BinaryReader reader = null;
 
+            string path = Defines.SYSTEM_SETTINGS_DIRECTORY;
+
             try
             {
-                reader = new BinaryReader(File.OpenRead(settingsPath + ".sav"));
+                reader = new BinaryReader(File.OpenRead(path + ".sav"));
 
                 ResolutionData resolution;
 
@@ -121,8 +139,10 @@ namespace GameLibrary.System
                 instance.ParticleDetail = (SettingLevel)reader.ReadInt32();
                 instance.MultiSamplingEnabled = reader.ReadBoolean();
 
-                instance.SoundVolume = reader.ReadInt32();
+                instance.AmbienceVolume = reader.ReadInt32();
+                instance.EffectsVolume = reader.ReadInt32();
                 instance.MusicVolume = reader.ReadInt32();
+                instance.VoiceVolume = reader.ReadInt32();
             }
             catch
             {
@@ -139,8 +159,9 @@ namespace GameLibrary.System
         }
         public void SaveSettings()
         {
+            string path = Defines.SYSTEM_SETTINGS_DIRECTORY;
             GameSettings instance = GameSettings.Instance;
-            BinaryWriter writer = new BinaryWriter(File.Create(settingsPath + ".tmp"));
+            BinaryWriter writer = new BinaryWriter(File.Create(path + ".tmp"));
 
             ResolutionData resolution = instance.Resolution;
 
@@ -150,18 +171,21 @@ namespace GameLibrary.System
             writer.Write((int)instance.Shadows);
             writer.Write((int)instance.ParticleDetail);
             writer.Write(instance.MultiSamplingEnabled);
-            writer.Write(instance.SoundVolume);
+
+            writer.Write(instance.AmbienceVolume);
+            writer.Write(instance.EffectsVolume);
             writer.Write(instance.MusicVolume);
+            writer.Write(instance.VoiceVolume);
 
             writer.Flush();
             writer.Close();
 
-            if (File.Exists(settingsPath + ".sav"))
+            if (File.Exists(path + ".sav"))
             {
-                File.Delete(settingsPath + ".sav");
+                File.Delete(path + ".sav");
             }
 
-            File.Move(settingsPath + ".tmp", settingsPath + ".sav");
+            File.Move(path + ".tmp", path + ".sav");
         }
     }
 }

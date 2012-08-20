@@ -189,30 +189,37 @@ namespace GameLibrary.GameLogic.Objects
         public override void Update(float delta)
         {
 #if !EDITOR
-            if (_orientation == Direction.Vertical && (Camera.Instance.UpIs == UpIs.Left || Camera.Instance.UpIs == UpIs.Right))
+            if (Player.Instance.PlayerState == PlayerState.Dead)
             {
                 return;
             }
-
-            if (_orientation == Direction.Horizontal && (Camera.Instance.UpIs == UpIs.Up || Camera.Instance.UpIs == UpIs.Down))
+            else
             {
-                return;
-            }
-
-            if (_inRange)
-            {
-                if (!_grabbed)
+                if (_orientation == Direction.Vertical && (Camera.Instance.UpIs == UpIs.Left || Camera.Instance.UpIs == UpIs.Right))
                 {
-                    if (InputManager.Instance.Grab(true) || InputManager.Instance.MoveUp(false) || InputManager.Instance.MoveDown(false))
-                    {
-                        ConnectPlayer();
-                    }
+                    return;
                 }
-                else
+
+                if (_orientation == Direction.Horizontal && (Camera.Instance.UpIs == UpIs.Up || Camera.Instance.UpIs == UpIs.Down))
                 {
-                    if (InputManager.Instance.Grab(true))// || InputManager.Instance.MoveLeft(true) || InputManager.Instance.MoveRight(true)
+                    return;
+                }
+
+                if (_inRange)
+                {
+                    if (!_grabbed)
                     {
-                        DisconnectPlayer();
+                        if (InputManager.Instance.Grab(true) || InputManager.Instance.MoveUp(false) || InputManager.Instance.MoveDown(false))
+                        {
+                            ConnectPlayer();
+                        }
+                    }
+                    else
+                    {
+                        if (InputManager.Instance.Grab(true))// || InputManager.Instance.MoveLeft(true) || InputManager.Instance.MoveRight(true)
+                        {
+                            DisconnectPlayer();
+                        }
                     }
                 }
             }
@@ -245,7 +252,7 @@ namespace GameLibrary.GameLogic.Objects
 
             sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
                 new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
-                this.Tint, this._rotation, new Vector2(this._texture.Width, (this._texture.Height * _climbableSections)) * 0.5f, 1.0f, SpriteEffects.None, zLayer);
+                _tint, this._rotation, new Vector2(_texture.Width, (_texture.Height * _climbableSections)) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
         }
 #endif
         #endregion

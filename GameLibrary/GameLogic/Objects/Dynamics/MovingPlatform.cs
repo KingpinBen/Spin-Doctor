@@ -33,6 +33,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System.ComponentModel;
 using GameLibrary.Helpers;
+using GameLibrary.Audio;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -99,11 +100,9 @@ namespace GameLibrary.GameLogic.Objects
         public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
-
-#if EDITOR
-
-#else
-            SetupPhysics(world);
+#if !EDITOR
+            this._soundEffectAsset = "Cogs_Rotating_On";
+            this._soundEffect = AudioManager.Instance.PlayCue(_soundEffectAsset, _isMoving);
 #endif
         }
 
@@ -137,6 +136,10 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.Friction = 3.0f;
             this.SetUpJoint(world);
+
+            this.Body.CollisionCategories = Category.Cat20;
+            this.Body.CollidesWith = Category.All & ~Category.Cat20;
+            this.Body.UserData = _materialType;
 #endif
         }
 

@@ -46,41 +46,39 @@ namespace GameLibrary.GameLogic.Objects
 {
     public class PhysicsObject : StaticObject
     {
-        #region Construct and Initialize
-        public PhysicsObject() : base()
-        {
+        #region Constructer and Load
 
-        }
+
+        public PhysicsObject() : base() { }
+
 
         public override void Init(Vector2 position, string tex)
         {
             base.Init(position, tex);
+
+            //  Sets a more suitable mass to the object by default.
             this._mass = 20.0f;
         }
-        #endregion
+        
 
-        #region Load
-        /// <summary>
-        /// Load object game content
-        /// </summary>
-        /// <param name="tex">Texture location</param>
         public override void Load(ContentManager content, World world)
         {
             base.Load(content, world);
-#if EDITOR
 
-#else
-            this.SetupPhysics(world);
+#if !EDITOR
+            //  This object needs its body to be dynamic so that it moves.
             this.Body.BodyType = BodyType.Dynamic;
 #endif
         }
+
+
         #endregion
 
         public override void Update(float delta)
         {
 #if !EDITOR
             //  If the level starts rotating, we want to wake the 
-            //  object.
+            //  object otherwise it will stick in place.
             if (Camera.Instance.IsLevelRotating)
             {
                 this.Body.Awake = true;
@@ -108,7 +106,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             spriteBatch.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
-                Tint, this.Body.Rotation, new Vector2(this._width, this._height) * 0.5f, 1f, SpriteEffects.None, _zLayer);
+                this._tint, this.Body.Rotation, this._origin, 1f, SpriteEffects.None, _zLayer);
         }
 #endif
         #endregion

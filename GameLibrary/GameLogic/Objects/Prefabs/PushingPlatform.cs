@@ -41,6 +41,8 @@ using GameLibrary.Helpers;
 using GameLibrary.Graphics.Drawing;
 using GameLibrary.Graphics;
 using GameLibrary.GameLogic.Characters;
+using Microsoft.Xna.Framework.Audio;
+using GameLibrary.Audio;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -55,6 +57,9 @@ namespace GameLibrary.GameLogic.Objects
         private float _elapsed;
         private float _createDelay;
         private Sprite _exhaustSprite;
+        private bool _triggered;
+        private Cue _soundEffect;
+        private string _soundEffectAsset;
 #endif
 
         [ContentSerializer(Optional = true)]
@@ -192,9 +197,9 @@ namespace GameLibrary.GameLogic.Objects
             this._textureAsset = texLoc;
             this._tint = Color.White;
             this._exhaustTextureAsset = "Assets/Images/Effects/steam";
-            this._message = "";
             this._timePulsing = 1.0f;
             this._timeBetweenPulses = 3.0f;
+            
         }
 
         public override void Load(ContentManager content, World world)
@@ -219,26 +224,25 @@ namespace GameLibrary.GameLogic.Objects
 #else
             this.SetupTrigger(world);
             this.RegisterObject();
+            this._soundEffectAsset = "Steam_Emit_Constant";
 
             #region Setup the steam sprite
             _exhaustSprite = new Sprite();
             _exhaustSprite.Init(ConvertUnits.ToDisplayUnits(this.Body.Position) + SpinAssist.ModifyVectorByOrientation(new Vector2(0, _triggerHeight * 0.5f), _orientation));
             _exhaustSprite.SetTexture(content.Load<Texture2D>(_exhaustTextureAsset));
             _exhaustSprite.Alpha = 0.4f;
-            _exhaustSprite.AlphaDecay = 0.01f;
+            _exhaustSprite.AlphaDecay = 0.02f;
             _exhaustSprite.ZLayer = this._zLayer + 0.01f;
             _exhaustSprite.Scale = 0.3f;
             _exhaustSprite.RotationSpeed = 0.001f;
             _exhaustSprite.ScaleFactor = SpinAssist.GetRandom(0.0005f, 0.01f);
             #endregion
-
 #endif
         }
 
         public override void Update(float delta)
         {
-#if EDITOR
-#else
+#if !EDITOR
             if (_enabled)
             {
                 _elapsed += delta;
@@ -262,7 +266,7 @@ namespace GameLibrary.GameLogic.Objects
                     if (_elapsed >= _timePulsing)
                     {
                         _elapsed = 0;
-                        _triggered = false;
+                        this.Stop();
                         _createDelay = 0.0f;
                     }
                 }
@@ -271,7 +275,7 @@ namespace GameLibrary.GameLogic.Objects
                     //  Check if it should activate.
                     if (_elapsed >= _timeBetweenPulses)
                     {
-                        Triggered = true;
+                        this.Start();
                         _elapsed = 0;
                     }
                 }
@@ -338,6 +342,12 @@ namespace GameLibrary.GameLogic.Objects
             //  We want to add all the bodies that come into contact with it.
             if (!_touchingFixtures.Contains(fixtureB))
             {
+                //  We don't want to readd Harland if he's dead.
+                if (Player.Instance.CheckBodyBox(fixtureB))
+                {
+                    return true;
+                }
+
                 _touchingFixtures.Add(fixtureB);
             }
 
@@ -346,9 +356,11 @@ namespace GameLibrary.GameLogic.Objects
 
         protected override void SetupTrigger(World world)
         {
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(TriggerWidth), ConvertUnits.ToSimUnits(TriggerHeight), 1.0f); 
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_triggerWidth), ConvertUnits.ToSimUnits(_triggerHeight), 1.0f); 
             this.Body.Position = GetTriggerPosition(true);
             this.Body.IsSensor = true;
+
+            this.Body.Rotation = _rotation;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
         }
@@ -366,18 +378,24 @@ namespace GameLibrary.GameLogic.Objects
             dir.Normalize();
 
             //  Then apply a speed.
-            dir *= 15;
+            dir *= 8;
 
             //  Check all the fixtures that are touching the trigger and apply a force to them.
             for (int i = _touchingFixtures.Count - 1; i >= 0; i--)
             {
 
                 //  We have a special way to push the player, so check if 'i' is a player fixture.
-                if (_touchingFixtures[i] == Player.Instance.PlayerHitBox)
+                if (Player.Instance.PlayerHitBox(_touchingFixtures[i]))
                 {
+                    //  If Harland is dead, remove him and continue.
+                    if (Player.Instance.PlayerState == PlayerState.Dead)
+                    {
+                        _touchingFixtures.RemoveAt(i);
+                        continue;
+                    }
 
                     //  It is the player, so apply the force
-                    Player.Instance.ApplyForce(dir, 70.0f);
+                    Player.Instance.ApplyForce(dir, 10.0f);
                     continue;
                 }
 
@@ -413,5 +431,39 @@ namespace GameLibrary.GameLogic.Objects
 
 #endif
         #endregion
+
+        #if !EDITOR
+        public override void Start()
+        {
+            this._triggered = true;
+
+            if (_soundEffectAsset != "")
+            {
+                _soundEffect = AudioManager.Instance.PlayCue(_soundEffectAsset, true);
+            }
+        }
+
+        public override void Stop()
+        {
+            this._triggered = false;
+
+            if (_soundEffect != null && !_soundEffect.IsStopped)
+            {
+                _soundEffect.Stop(AudioStopOptions.AsAuthored);
+            }
+        }
+
+        public override void Toggle()
+        {
+            if (_triggered)
+            {
+                this.Stop();
+            }
+            else
+            {
+                this.Start();
+            }
+        }
+#endif
     }
 }

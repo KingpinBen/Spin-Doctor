@@ -221,8 +221,6 @@ namespace SpinEditor
             // 
             // ViewMenuHideEvents
             // 
-            this.ViewMenuHideEvents.Checked = true;
-            this.ViewMenuHideEvents.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ViewMenuHideEvents.Name = "ViewMenuHideEvents";
             this.ViewMenuHideEvents.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideEvents.Text = "Hide Event Objects Lines";
@@ -244,8 +242,6 @@ namespace SpinEditor
             // 
             // ViewMenuHideNames
             // 
-            this.ViewMenuHideNames.Checked = true;
-            this.ViewMenuHideNames.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ViewMenuHideNames.Name = "ViewMenuHideNames";
             this.ViewMenuHideNames.Size = new System.Drawing.Size(204, 22);
             this.ViewMenuHideNames.Text = "Hide Object Names";

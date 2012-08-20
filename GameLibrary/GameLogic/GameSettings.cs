@@ -35,12 +35,12 @@ namespace GameLibrary.GameLogic
 
         #region Player
 
-        //  20 notes
+        //  16 notes
         private List<bool> _foundEntries = new List<bool>() 
         {   false, false, false, false, false, 
             false, false, false, false, false,
             false, false, false, false, false,
-            false, false, false, false, false
+            false, false
         };
 
         private bool _allowDoubleJump = false;
@@ -59,8 +59,10 @@ namespace GameLibrary.GameLogic
         private SettingLevel _particleDetails = SettingLevel.Low;
         private bool _enableMultiSampling = false;
 
-        private int _soundVolume = 10;
+        private int _ambienceVolume = 6;
         private int _musicVolume = 6;
+        private int _voiceVolume = 8;
+        private int _effectsVolume = 5;
 
 
         #endregion
@@ -137,19 +139,43 @@ namespace GameLibrary.GameLogic
             set
             {
                 this._musicVolume = (int)MathHelper.Clamp(value, 0, 10);
-                AudioManager.Instance.MusicVolume = value;
+                AudioManager.Instance.SetMusicVolume(_musicVolume);
             }
         }
-        public int SoundVolume
+        public int AmbienceVolume
         {
             get
             {
-                return _soundVolume;
+                return _ambienceVolume;
             }
             set
             {
-                this._soundVolume = (int)MathHelper.Clamp(value, 0, 10);
-                AudioManager.Instance.SoundVolume = this._soundVolume;
+                this._ambienceVolume = (int)MathHelper.Clamp(value, 0, 10);
+                AudioManager.Instance.SetAmbienceVolume(_ambienceVolume);
+            }
+        }
+        public int VoiceVolume
+        {
+            get
+            {
+                return _voiceVolume;
+            }
+            set
+            {
+                this._voiceVolume = (int)MathHelper.Clamp(value, 0, 10);
+                AudioManager.Instance.SetVoiceVolume(_voiceVolume);
+            }
+        }
+        public int EffectsVolume
+        {
+            get
+            {
+                return _effectsVolume;
+            }
+            set
+            {
+                this._effectsVolume = (int)MathHelper.Clamp(value, 0, 10);
+                AudioManager.Instance.SetEffectsVolume(_effectsVolume);
             }
         }
 

@@ -5,6 +5,7 @@ using System.Text;
 using GameLibrary.GameLogic.Controls;
 using Microsoft.Xna.Framework;
 using GameLibrary.GameLogic.Screens.Menu.Options;
+using GameLibrary.System;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
@@ -12,19 +13,25 @@ namespace GameLibrary.GameLogic.Screens.Menu
     {
         GameSettings _settingsInstance = GameSettings.Instance;
 
-        MenuEntry _soundEntry;
+        MenuEntry _ambienceEntry;
         MenuEntry _musicEntry;
+        MenuEntry _voiceEntry;
+        MenuEntry _effectsEntry;
 
         public AudioOptionsScreen()
             : base("Audio")
         {
-            this._soundEntry = new MenuEntry("Sound Volume:");
-            this._musicEntry = new MenuEntry("Music Volume:");
+            this._ambienceEntry = new MenuEntry("Sound Volume: ");
+            this._musicEntry = new MenuEntry("Music Volume: ");
+            this._voiceEntry = new MenuEntry("Voice Volume: ");
+            this._effectsEntry = new MenuEntry("Effects Volume: ");
             MenuEntry sep = new MenuEntry("sep");
             MenuEntry back = new MenuEntry("Back");
 
-            this._soundEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            this._ambienceEntry.Origin = Graphics.UI.TextAlignment.Centre;
             this._musicEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            this._voiceEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            this._effectsEntry.Origin = Graphics.UI.TextAlignment.Centre;
             back.Origin = Graphics.UI.TextAlignment.Centre;
 
             sep.ItemType = MenuEntryType.Separator;
@@ -32,8 +39,10 @@ namespace GameLibrary.GameLogic.Screens.Menu
             back.Selected += OnCancel;
             
 
-            menuEntries.Add(this._soundEntry);
-            menuEntries.Add(this._musicEntry);
+            menuEntries.Add(_ambienceEntry);
+            menuEntries.Add(_effectsEntry);
+            menuEntries.Add(_musicEntry);
+            menuEntries.Add(_voiceEntry);
             menuEntries.Add(sep);
             menuEntries.Add(back);
 
@@ -90,12 +99,60 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
             if (menuLeft.Evaluate(input, ControllingPlayer, out playerIndex))
             {
-                
+                switch (selectedEntry)
+                {
+                    case 0:
+                        {
+                            _settingsInstance.AmbienceVolume--;
+                        }
+                        break;
+                    case 1:
+                        {
+                            _settingsInstance.EffectsVolume--;
+                        }
+                        break;
+                    case 2:
+                        {
+                            _settingsInstance.MusicVolume--;
+                        }
+                        break;
+                    case 3:
+                        {
+                            _settingsInstance.VoiceVolume--;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
 
             if (menuRight.Evaluate(input, ControllingPlayer, out playerIndex))
             {
-
+                switch (selectedEntry)
+                {
+                    case 0:
+                        {
+                            _settingsInstance.AmbienceVolume++;
+                        }
+                        break;
+                    case 1:
+                        {
+                            _settingsInstance.EffectsVolume++;
+                        }
+                        break;
+                    case 2:
+                        {
+                            _settingsInstance.MusicVolume++;
+                        }
+                        break;
+                    case 3:
+                        {
+                            _settingsInstance.VoiceVolume++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
 
             if (menuSelect.Evaluate(input, ControllingPlayer, out playerIndex))
@@ -114,8 +171,37 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         void SetMenuEntryText()
         {
-            this._soundEntry.Text = "Sound Volume: " + _settingsInstance.SoundVolume;
+            this._ambienceEntry.Text = "Ambience Volume: " + _settingsInstance.AmbienceVolume;
             this._musicEntry.Text = "Music Volume: " + _settingsInstance.MusicVolume;
+            this._effectsEntry.Text = "Effects Volume: " + _settingsInstance.EffectsVolume;
+            this._voiceEntry.Text = "Voice Volume: " + _settingsInstance.VoiceVolume;
+        }
+
+        public override void Activate()
+        {
+            this._itemsPosition = new Vector2(
+                this.ScreenManager.GraphicsDevice.Viewport.Width * 0.5f,
+                this.ScreenManager.GraphicsDevice.Viewport.Height * 0.33f);
+        }
+
+        protected override void OnCancel(PlayerIndex playerIndex)
+        {
+            SaveManager.Instance.SaveSettings();
+            base.OnCancel(playerIndex);
+        }
+
+        protected override void UpdateMenuEntryLocations()
+        {
+            Vector2 position = _itemsPosition;
+
+            for (int i = 0; i < menuEntries.Count; i++)
+            {
+                MenuEntry entry = menuEntries[i];
+
+                position.X = _itemsPosition.X;
+                entry.Position = position;
+                position.Y += entry.GetHeight(this);
+            }
         }
     }
 }

@@ -127,7 +127,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 throw new Exception("Doors must be given a name to properly change level.");
             }
 
-            this._objectEvents.Add(new Event(this.Name, null, EventType.CHANGE_LEVEL, 0.0f, _nextLevel));
+            this._objectEvents.Add(new Event(this.Name, null, EventType.ENGINE_CHANGE_LEVEL, 0.0f, _nextLevel));
 
             RegisterObject();
 #endif
@@ -169,7 +169,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(Texture, new Rectangle(
+            sb.Draw(_texture, new Rectangle(
                 (int)(this._position.X),
                 (int)(this._position.Y),
                 (int)(_width),

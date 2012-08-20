@@ -247,14 +247,14 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(_endTexture, ConvertUnits.ToDisplayUnits(_pathBodies[0].Position), null,
-                    Tint, _pathBodies[0].Rotation, new Vector2(_endTexture.Width, _endTexture.Height) * 0.5f, 1f,
-                    SpriteEffects.None, zLayer);
+                    this._tint, _pathBodies[0].Rotation, new Vector2(_endTexture.Width, _endTexture.Height) * 0.5f, 1f,
+                    SpriteEffects.None, this._zLayer);
 
             for (int i = 1; i < _pathBodies.Count; i++)
             {
-                sb.Draw(Texture, ConvertUnits.ToDisplayUnits(_pathBodies[i].Position), null,
-                    Tint, _pathBodies[i].Rotation, new Vector2(Texture.Width, Texture.Height) * 0.5f, 1f,
-                    SpriteEffects.None, zLayer);
+                sb.Draw(_texture, ConvertUnits.ToDisplayUnits(_pathBodies[i].Position), null,
+                    this._tint, _pathBodies[i].Rotation, new Vector2(_texture.Width, _texture.Height) * 0.5f, 1f,
+                    SpriteEffects.None, this._zLayer);
             }
         }
 #endif

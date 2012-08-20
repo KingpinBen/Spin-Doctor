@@ -21,9 +21,6 @@
 //--    BenG - Mid air jumping near done. Speed needs capping. Timer set for
 //--           max air jump time.
 //--    
-//--    TBD
-//--    ==============
-//--    
 //--
 //--------------------------------------------------------------------------
 
@@ -49,6 +46,7 @@ using GameLibrary.GameLogic.Screens;
 using GameLibrary.Graphics.Drawing;
 using System.Collections.Generic;
 using GameLibrary.Graphics.Animation;
+using GameLibrary.Audio;
 
 #endregion
 
@@ -59,12 +57,13 @@ namespace GameLibrary.GameLogic.Characters
         #region Fields
 
         private const float _movementSpeed = Defines.PLAYER_RUN_SPEED;
-        private const float _jumpForce = Defines.PLAYER_JUMP_FORCE;      // 3.2f - Waist height. Pre 24/5
-        private const float _maxAirTime = 0.68f;
+        private const float _jumpForce = Defines.PLAYER_JUMP_FORCE;
+        private const float _maxAirTime = Defines.PLAYER_MAX_AIR_TIME;
         private const float _midAirForce = Defines.PLAYER_MIDAIR_FORCE;
 
         private bool _canJump;
         private bool _canDoubleJump;
+        private bool _deadlyFall;
         private float _grabbingRotation;
 
         #region Double Jump Sprite
@@ -108,13 +107,24 @@ namespace GameLibrary.GameLogic.Characters
             }
         }
 
-        public Fixture PlayerHitBox
+        public bool PlayerHitBox(Fixture fix)
         {
-            get
+            if (_playerState == Characters.PlayerState.Dead)
             {
-                return this._mainBody.FixtureList[this._mainBody.FixtureList.Count - 1];
+                return false;
             }
+
+
+            return fix == _mainBody.FixtureList[this._mainBody.FixtureList.Count - 1];
         }
+
+        //public Fixture PlayerHitBox
+        //{
+        //    get
+        //    {
+        //        return this._mainBody.FixtureList[this._mainBody.FixtureList.Count - 1];
+        //    }
+        //}
 
         public Fixture WheelFixture
         {
@@ -140,15 +150,26 @@ namespace GameLibrary.GameLogic.Characters
             }
             protected set
             {
-                base.PlayerState = value;
-
                 if (value == PlayerState.Climbing)
                 {
                     this._mainBody.ResetDynamics();
                     this._wheelBody.ResetDynamics();
                     this._canJump = true;
                     this._canDoubleJump = true;
+
+                    this._inAir = false;
+                    this._airTime = 0.0f;
                 }
+
+                if (_playerState == Characters.PlayerState.Jumping &&
+                    value == Characters.PlayerState.Falling)
+                {
+                    this._airTime = 0.0f;
+                }
+
+                this._soundElapsed = 0.0f;
+
+                base.PlayerState = value;
             }
         }
 
@@ -201,12 +222,13 @@ namespace GameLibrary.GameLogic.Characters
             AddAnimations();
 
             //  TODO: When we remove doublejump cheat, add DJEnabled to the if
-            if (_steamSprite == null)
+            if (true)
             {
                 _steamSprite = new Sprite();
                 _steamSprite.Init(Vector2.Zero, "Assets/Images/Effects/steam");
                 _steamSprite.Load(_content, world);
                 _steamSprite.CastShadows = true;
+                _steamSprite.Alpha = 0.6f;
                 _steamSprite.AlphaDecay = 0.05f;
                 _steamSprite.RotationSpeed = 0.1f;
                 _steamSprite.Scale = 0.3f;
@@ -304,6 +326,10 @@ namespace GameLibrary.GameLogic.Characters
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            SpriteFont font = FontManager.Instance.GetFont(FontList.Debug);
+
+            spriteBatch.DrawString(font, _airTime.ToString(), ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(100,0), Color.White, -Camera.Instance.Rotation, Vector2.Zero, 1.2f, SpriteEffects.None, 0.0f);
+
             base.Draw(spriteBatch);
         }
 
@@ -312,6 +338,10 @@ namespace GameLibrary.GameLogic.Characters
         #region Private Methods
 
         #region Collisions
+
+
+        #region Separation
+
 
         private void WheelBody_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
@@ -329,13 +359,20 @@ namespace GameLibrary.GameLogic.Characters
             //  the jumping state is handled in HandleJumping so
             //  on separation must check if the player has fallen 
             //  off of a ledge.
-            if (this._touchingFixtures.Count == 0)
+            if (this._touchingFixtures.Count == 0 && _playerState != Characters.PlayerState.Climbing)
             {
                 this._inAir = true;
                 this._wheelJoint.MotorSpeed = 0.0f;
                 this._airTime = 0.0f;
+                this._canJump = false;
+                this._lastSafePosition = ConvertUnits.ToDisplayUnits(this.Body.Position);
             }
         }
+
+        #endregion
+
+        #region Collision
+
 
         /// <summary>
         /// Occurs when the wheel of the player collides with surface, including sensors
@@ -348,7 +385,7 @@ namespace GameLibrary.GameLogic.Characters
         {
             //  We want to recognise a collision, but break out early if a certain condition 
             //  are met.
-            if (_playerState == PlayerState.Dead || 
+            if (_playerState == PlayerState.Dead || _playerState == Characters.PlayerState.Swinging || 
                 fixtureB.IsSensor)
             {
                 //  Returning true recognises the collision but breaks out before allowing
@@ -356,41 +393,37 @@ namespace GameLibrary.GameLogic.Characters
                 return true;
             }
 
-            
-
             //  Hold a reference to every fixture that is in contact with the player
             if (!this._touchingFixtures.Contains(fixtureB))
             {
                 this._touchingFixtures.Add(fixtureB);
-                
-                this._airTime = 0.0f;
             }
 
-            this._inAir = false;
 
             //  Handle whatever state they're in if they're not running or idle.
             if (!(_playerState == PlayerState.Running || _playerState == PlayerState.Grounded))
             {
-                //  Check if the colliding object has any UserData.
-                object type = fixtureB.UserData;
 
-                if (_playerState == PlayerState.Falling && _airTime >= _maxAirTime && type is int)
+                //  Check if the colliding object has any UserData.
+                object type = fixtureB.Body.UserData;
+
+                //  Check if the player has exceeded max air time
+                //  in case they need to die from falling.
+                if (_deadlyFall)
                 {
-                    if ((int)type == 1)
+                    AudioManager.Instance.StopCue("Harland_Falling", Microsoft.Xna.Framework.Audio.AudioStopOptions.AsAuthored);
+
+                    if (type.ToString() == "Cushion")
                     {
                         //  UserData 1 means absorbs falling damage, so don't kill.
+                        AudioManager.Instance.PlayCue("Harland_Land_Cushioned", true);
                     }
                     else
                     {
+                        AudioManager.Instance.PlayCue("Harland_Land", true);
                         this.Kill();
                         return true;
                     }
-                }
-                else if (_playerState == PlayerState.Climbing)
-                {
-                    //  I do this below the first test as I want objects to also get added to the 
-                    //  _touchingfixtures list.
-                    return true;
                 }
 
                 if (_playerState != Characters.PlayerState.Grounded)
@@ -398,35 +431,38 @@ namespace GameLibrary.GameLogic.Characters
                     this.PlayerState = PlayerState.Grounded;
                 }
             }
+            else
+            {
+                if (fixtureB.Body.UserData != null || fixtureB.Body.UserData.ToString() != "")
+                {
+                    if (_touchingFixtures.Count == 0)
+                    {
+                        AudioManager.Instance.PlayCue("Footsteps_" + fixtureB.Body.UserData.ToString(), true);
+                    }
+                }
+            }
+
+
+            this._airTime = 0.0f;
+            this._inAir = false;
+            this._deadlyFall = false;
+
+            
 
             if (!_canJump || !_canDoubleJump)
             {
                 this._canJump = true;
                 this._canDoubleJump = true;
+                AudioManager.Instance.PlayCue("Harland_Jump", true);
             }
 
             return true;
         }
+
+
+
         #endregion
 
-        #region Apply a Force
-        /// <summary>
-        /// Allows objects to force the player in a certain direction
-        /// whether it be jumping or blowing the player away.
-        /// </summary>
-        /// <param name="dir">target direction vector</param>
-        /// <param name="force">force to apply</param>
-        public void ApplyForce(Vector2 dir, float force)
-        {
-            //  Linear velocity must be made void before 
-            //  reapplying another force, otherwise it scales
-            //  and becomes wildly incorrect.
-
-            this._mainBody.ResetDynamics();
-            this._wheelBody.ResetDynamics();
-
-            this._wheelBody.ApplyLinearImpulse(dir * force);
-        }
         #endregion
 
         #region Player Specific Settings
@@ -453,11 +489,10 @@ namespace GameLibrary.GameLogic.Characters
             
             this.PlayerState = PlayerState.Grounded;
             this._canJump = true;
+            this._inAir = false;
+            this._airTime = 0.0f;
 
-            this.Body.UserData = "Player";
-            this._wheelBody.UserData = "Player";
-
-            _canDoubleJump = GameSettings.Instance.DoubleJumpEnabled;
+            this._canDoubleJump = GameSettings.Instance.DoubleJumpEnabled;
 
             this._wheelBody.CollisionCategories = Category.Cat10;
             this._mainBody.CollisionCategories = Category.Cat10;
@@ -465,14 +500,14 @@ namespace GameLibrary.GameLogic.Characters
 
         #endregion
 
-        #region PlayerState Dependent Methods
+        #region Player State Dependent Methods
 
         void HandleJumping(Vector2 Gravity)
         {
             Vector2 force = Gravity;
 
             //  First jump
-            if (CanJump)
+            if (_canJump)
             {
                 if (_playerState == PlayerState.Climbing)
                 {
@@ -492,6 +527,7 @@ namespace GameLibrary.GameLogic.Characters
                     this.ToggleBodies(true);
                     this._wheelBody.ApplyLinearImpulse(force);
                     this.PlayerState = PlayerState.Jumping;
+                    this._canJump = false;
                 }
                 else
                 {
@@ -499,12 +535,17 @@ namespace GameLibrary.GameLogic.Characters
                     force *= _jumpForce;
                     _wheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
                     this.PlayerState = PlayerState.Jumping;
-                    _canJump = false;
+                    this._canJump = false;
+                    this._airTime = 0.0f;
+                    AudioManager.Instance.PlayCue("Harland_Grunt", true);
                 }
             }
             //  Second jump (steam jump)
             else if (GameSettings.Instance.DoubleJumpEnabled && _canDoubleJump)
             {
+                //  We only want to 0 the Up/Down depending on the
+                //  orientation.
+                #region Reset the Y dynamics.
                 if (Math.Abs(Gravity.Y) > 0)
                 {
                     this.Body.LinearVelocity = new Vector2(this.Body.LinearVelocity.X, 0);
@@ -515,6 +556,8 @@ namespace GameLibrary.GameLogic.Characters
                     this.Body.LinearVelocity = new Vector2(0, this.Body.LinearVelocity.Y);
                     this._wheelBody.LinearVelocity = new Vector2(0, this.Body.LinearVelocity.Y);
                 }
+
+                #endregion
 
                 force *= _jumpForce;
 
@@ -528,13 +571,23 @@ namespace GameLibrary.GameLogic.Characters
                     _wheelBody.ApplyLinearImpulse(direction);
                 }
 
-                _wheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
-                _canDoubleJump = false;
+                //  Disable the possibilty to double jump.
+                this._canDoubleJump = false;
 
-                CreateSteamPlume();
+                //  Reset any previous jump/fall timers.
+                this._airTime = 0.0f;
+                this._deadlyFall = false;
 
+                //  Switch the animation and reset it incase the player
+                //  is already jumping.
                 this.PlayerState = PlayerState.Jumping;
                 this.CurrentAnimation.ResetCurrentFrame();
+
+                //  Apply the force
+                this._wheelBody.FixtureList[0].Body.ApplyLinearImpulse(force);
+
+                //  then create the steam plume.
+                this.CreateSteamPlume();
             }
         }
 
@@ -568,9 +621,39 @@ namespace GameLibrary.GameLogic.Characters
             else
             {
                 if (_playerState != Characters.PlayerState.Running)
+                {
                     this.PlayerState = PlayerState.Running;
+                }
+
+                if (_touchingFixtures.Count > 0)
+                {
+                    this._soundElapsed += delta;
+                    if (_soundElapsed > 0.5f)
+                    {
+                        PlayFootsteps();
+                        this._soundElapsed = 0.0f;
+                    }
+                }
             }
 
+        }
+
+        void PlayFootsteps()
+        {
+            if (_touchingFixtures.Count > 0)
+            {
+                //  Get the type of material it should play.
+                string materialType = _touchingFixtures[0].Body.UserData.ToString();
+
+                //  If the material type is a type we don't want, just escape.
+                if (materialType == null || materialType == "Static" || materialType == "None")
+                {
+                    return;
+                }
+
+                //  Play the material type footstep sound
+                AudioManager.Instance.PlayCue("Footsteps_" + materialType, true);
+            }
         }
 
         #region Death and Killing the player
@@ -669,12 +752,24 @@ namespace GameLibrary.GameLogic.Characters
         public void GrabRope()
         {
             this.PlayerState = PlayerState.Swinging;
+            this._airTime = 0.0f;
+            this._inAir = false;
+            this._deadlyFall = false;
         }
 
         #endregion
 
         void HandleAir(float delta)
         {
+            Vector2 bodyPos  = ConvertUnits.ToDisplayUnits(Body.Position);
+            float distance = SpinAssist.ModifyVectorByUp(bodyPos - _lastSafePosition).Y;
+
+            if (_inAir && (Math.Abs(distance) > 550) && !_deadlyFall)
+            {
+                _deadlyFall = true;
+                AudioManager.Instance.PlayCue("Harland_Falling", true);
+            }
+
             if (_playerState == Characters.PlayerState.Falling)
             {
                 
@@ -699,6 +794,8 @@ namespace GameLibrary.GameLogic.Characters
 
         #endregion
 
+        #region Create Steam Plume
+
         /// <summary>
         /// Create
         /// </summary>
@@ -716,7 +813,7 @@ namespace GameLibrary.GameLogic.Characters
             if (GameSettings.Instance.FartCheat)
             {
                 //  Make it come from his buttocks and turn it green..
-                _steamSprite.Tint = Color.LightGreen;
+                _steamSprite.Tint = Color.LightGreen.ToVector3();
                 _steamSprite.Position = ConvertUnits.ToDisplayUnits(this.Body.Position);
             }
             else
@@ -728,6 +825,8 @@ namespace GameLibrary.GameLogic.Characters
             //  Then add it to the SpriteManager for handling.
             SpriteManager.Instance.AddSprite((Sprite)_steamSprite.Clone());
         }
+
+        #endregion
 
         private void ToggleBodies(bool active)
         {
@@ -746,6 +845,8 @@ namespace GameLibrary.GameLogic.Characters
 
         #endregion
 
+        #region Public Methods
+
         public bool CheckBodyBox(Fixture fixture)
         {
             if (_playerState == Characters.PlayerState.Dead)
@@ -760,5 +861,28 @@ namespace GameLibrary.GameLogic.Characters
 
             return false;
         }
+
+        #region Apply a Force
+        /// <summary>
+        /// Allows objects to force the player in a certain direction
+        /// whether it be jumping or blowing the player away.
+        /// </summary>
+        /// <param name="dir">target direction vector</param>
+        /// <param name="force">force to apply</param>
+        public void ApplyForce(Vector2 dir, float force)
+        {
+            //  Linear velocity must be made void before 
+            //  reapplying another force, otherwise it scales
+            //  and becomes wildly incorrect.
+
+            this._mainBody.ResetDynamics();
+            this._wheelBody.ResetDynamics();
+
+            this._wheelBody.ApplyLinearImpulse(dir * force);
+            this._mainBody.ApplyLinearImpulse(dir * force);
+        }
+        #endregion
+
+        #endregion
     }
 }

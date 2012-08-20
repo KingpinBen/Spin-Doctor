@@ -139,8 +139,8 @@ namespace GameLibrary.GameLogic.Objects
         {
             if (!_beenCollected)
             {
-                sb.Draw(this._texture, this._position, null, 
-                    this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
+                sb.Draw(this._texture, this._position, null,
+                    this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, _zLayer);
             }
         }
 #endif
@@ -165,7 +165,6 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.OnSeparation += Body_OnSeparation;
             this.Body.Enabled = _enabled;
             this.Body.IsSensor = true;
-            
         }
 
         #region Collisions

@@ -29,6 +29,8 @@ using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework.Graphics;
 using System.ComponentModel;
 using GameLibrary.Helpers;
+using Microsoft.Xna.Framework.Audio;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -52,14 +54,12 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-        [ContentSerializerIgnore]
         protected FixedPrismaticJoint _prismaticJoint;
-        [ContentSerializerIgnore]
         protected float _elapsedTimer = 0.0f;
-        [ContentSerializerIgnore]
-        protected bool _isMoving;
-        [ContentSerializerIgnore]
-        private bool _currentMovingDirection;
+        protected bool _isMoving = false;
+        private bool _currentMovingDirection = false;
+        protected Cue _soundEffect;
+        protected string _soundEffectAsset = String.Empty;
 #endif
         #endregion
 
@@ -231,10 +231,9 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            if (this._textureAsset != "")
-                _texture = content.Load<Texture2D>(this._textureAsset);
+            this._texture = content.Load<Texture2D>(this._textureAsset);
 
-            this._origin = new Vector2(_texture.Width, _texture.Height) * 0.5f;
+            
 
 #if EDITOR
             if (_width == 0 || _height == 0)
@@ -243,15 +242,17 @@ namespace GameLibrary.GameLogic.Objects
                 this.Height = this._texture.Height;
             }
 #else
-            this._currentMovingDirection = false;
             this.RegisterObject();
-
+            this.SetupPhysics(world);
 
             if (_startsMoving)
             {
-                _isMoving = true;
+                this._isMoving = true;
+                this._prismaticJoint.MotorSpeed = _motorSpeed;
             }
 #endif
+
+            this._origin = new Vector2(_width, _height) * 0.5f;
         }
 
         public override void Update(float delta)
@@ -259,36 +260,40 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-            if (_isMoving)
-            {
-                if ((this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit && !this.MovingToStart) ||
+            if ((this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit && !this.MovingToStart) ||
                     (this.PrismaticJoint.JointTranslation <= this.PrismaticJoint.LowerLimit && this.MovingToStart) ||
                     _elapsedTimer > 0.0f)
+            {
+
+                //  If so zero the speed. Fixes bouncing errors in farseer.
+                if (this._prismaticJoint.MotorSpeed != 0)
                 {
+                    this._prismaticJoint.MotorSpeed = 0.0f;
 
-                    //  If so zero the speed. Fixes bouncing errors in farseer.
-                    if (this._prismaticJoint.MotorSpeed != 0)
+                    if (_soundEffect != null && !_soundEffect.IsStopped)
                     {
-                        this._prismaticJoint.MotorSpeed = 0.0f;
-                    }
-
-                    //  Update stationary timers
-                    this._elapsedTimer += delta;
-
-                    //  Check if the stationary time exceeds the pause time
-                    if (_elapsedTimer >= _timeToReverse)
-                    {
-                        //  Swap direction
-                        this._currentMovingDirection = !this._currentMovingDirection;
-
-                        //  Reverse the motor speed and apply to the motor.
-                        this._motorSpeed = -this._motorSpeed;
-                        this._prismaticJoint.MotorSpeed = this._motorSpeed;
-
-                        //  Zero timer for next go around
-                        this._elapsedTimer = 0.0f;
+                        _soundEffect.Stop(AudioStopOptions.AsAuthored);
                     }
                 }
+
+                //  Update stationary timers
+                this._elapsedTimer += delta;
+
+                //  Check if the stationary time exceeds the pause time
+                if (_elapsedTimer >= _timeToReverse)
+                {
+                    //  Swap direction
+                    this._currentMovingDirection = !this._currentMovingDirection;
+
+                    //  Reverse the motor speed and apply to the motor.
+                    this._motorSpeed = -this._motorSpeed;
+                    this.Start();
+
+                    //  Zero timer for next go around
+                    this._elapsedTimer = 0.0f;
+                }
+
+
             }
 #endif
         }
@@ -347,14 +352,11 @@ namespace GameLibrary.GameLogic.Objects
             this._prismaticJoint.LimitEnabled = true;
             this._prismaticJoint.MotorEnabled = true;
             this._prismaticJoint.MaxMotorForce = float.MaxValue;
-
-            if (_startsMoving)  
-            {
-                this._prismaticJoint.MotorSpeed = this.MotorSpeed;
-            }
 #endif
         }
         #endregion
+
+        protected override void SetupPhysics(World world) { }
 
 
 
@@ -377,14 +379,29 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Start()
         {
+            //  Joint needs to stay enabled, otherwise it just flops
+            //  and we lose the translation.
             this._prismaticJoint.MotorSpeed = _motorSpeed;
             this._isMoving = true;
+
+            if (_soundEffect != null && _soundEffectAsset != "")
+            {
+                if (!_soundEffect.IsPlaying)
+                {
+                    _soundEffect = AudioManager.Instance.PlayCue(_soundEffectAsset, true);
+                }
+            }
         }
 
         public override void Stop()
         {
             this._prismaticJoint.MotorSpeed = 0.0f;
             this._isMoving = false;
+
+            if (_soundEffect != null && !_soundEffect.IsStopped)
+            {
+                _soundEffect.Stop(AudioStopOptions.AsAuthored);
+            }
         }
 
         public override void Change(object sent)

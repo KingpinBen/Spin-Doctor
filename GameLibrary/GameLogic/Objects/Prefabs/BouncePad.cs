@@ -30,6 +30,7 @@ using FarseerPhysics.Dynamics;
 using GameLibrary.Graphics;
 using GameLibrary.GameLogic.Characters;
 using FarseerPhysics.Dynamics.Contacts;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -84,6 +85,7 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.Restitution = _restitution;
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
+            this.Body.UserData = MaterialType.Cushion;
 #endif
         }
 
@@ -143,8 +145,13 @@ namespace GameLibrary.GameLogic.Objects
             //  only triggers on a bounce, not touch.
             if (!_touchingFixtures.Contains(fixtureB) && contact.Enabled)
             {
-                _touchingFixtures.Add(fixtureB);
-                this._elapsed = _bounceCooldown;
+                if (_elapsed == 0.0f)
+                {
+                    AudioManager.Instance.PlayCue("Bounce", true);
+                    this._elapsed = _bounceCooldown;
+                }
+
+                this._touchingFixtures.Add(fixtureB);
             }
 
             //  Complete the collision.

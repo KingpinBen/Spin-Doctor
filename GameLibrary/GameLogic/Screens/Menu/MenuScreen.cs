@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using GameLibrary.GameLogic.Controls;
 using GameLibrary.Graphics;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
@@ -22,8 +23,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
         protected List<MenuEntry> menuEntries = new List<MenuEntry>();
         protected int selectedEntry = 0;
         protected Vector2 _itemsPosition;
-        private string menuTitle;
-        private SpriteFont _titleFont;
 
         protected InputAction menuUp;
         protected InputAction menuDown;
@@ -31,6 +30,9 @@ namespace GameLibrary.GameLogic.Screens.Menu
         protected InputAction menuRight;
         protected InputAction menuSelect;
         protected InputAction menuCancel;
+
+        private string menuTitle;
+        private SpriteFont _titleFont;
 
         #endregion
 
@@ -120,6 +122,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
                         selectedEntry = menuEntries.Count - 1;
                     }
                 }
+
+                AudioManager.Instance.PlayCue("UI_Move_1", true);
             }
 
             // Move to the next menu entry?
@@ -140,11 +144,14 @@ namespace GameLibrary.GameLogic.Screens.Menu
                         selectedEntry = 0;
                     }
                 }
+                AudioManager.Instance.PlayCue("UI_Move_1", true);
             }
 
             if (menuSelect.Evaluate(input, ControllingPlayer, out playerIndex))
             {
+                AudioManager.Instance.PlayCue("UI_Select_1", true);
                 OnSelectEntry(selectedEntry, playerIndex);
+
             }
             else if (menuCancel.Evaluate(input, ControllingPlayer, out playerIndex))
             {

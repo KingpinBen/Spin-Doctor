@@ -14,6 +14,7 @@ using GameLibrary.Graphics;
 using GameLibrary.GameLogic.Screens.Menu;
 using GameLibrary.GameLogic.Screens.Splash;
 using GameLibrary.System;
+using GameLibrary.Audio;
 #endregion
 
 namespace GameLibrary.GameLogic
@@ -106,6 +107,7 @@ namespace GameLibrary.GameLogic
             ContentManager content = new ContentManager(Game.Services, "Content");
 
             FontManager.Instance.Load(content);
+            AudioManager.Instance.Load();
 
             AddScreen(new BackgroundScreen(), null);
             AddScreen(new MainMenuScreen(), null);
@@ -141,7 +143,7 @@ namespace GameLibrary.GameLogic
             float delta = (float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f;
 
             input.Update();
-
+            AudioManager.Instance.Update();
             tempScreensList.Clear();
 
             foreach (GameScreen screen in screens)
@@ -166,7 +168,7 @@ namespace GameLibrary.GameLogic
                 {
                     // If this is the first active screen we came across,
                     // give it a chance to handle input.
-                    if (!otherScreenHasFocus)
+                    if (!otherScreenHasFocus && screen.AcceptInput)
                     {
                         screen.HandleInput(delta, input);
 
@@ -176,7 +178,9 @@ namespace GameLibrary.GameLogic
                     // If this is an active non-popup, inform any subsequent
                     // screens that they are covered by it.
                     if (!screen.IsPopup)
+                    {
                         coveredByOtherScreen = true;
+                    }
                 }
             }
         }
@@ -222,8 +226,10 @@ namespace GameLibrary.GameLogic
         public void RemoveScreen(GameScreen screen)
         {
             // If we have a graphics device, tell the screen to unload content.
+            
             if (isInitialized)
             {
+                screen.Deactivate();
                 screen.Unload();
             }
 

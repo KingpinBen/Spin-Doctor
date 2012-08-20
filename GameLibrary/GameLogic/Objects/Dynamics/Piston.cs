@@ -13,6 +13,7 @@ using GameLibrary.Helpers;
 using System.ComponentModel;
 using FarseerPhysics.Dynamics.Contacts;
 using GameLibrary.GameLogic.Characters;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -92,35 +93,17 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Load(ContentManager content, World world)
         {
-            this._texture = content.Load<Texture2D>(this._textureAsset);
+            //  Load the crushing end piece texture.
             this._crusherTexture = content.Load<Texture2D>(this._endTextureAsset);
-
-#if EDITOR
-            if (Width == 0 || Height == 0)
-            {
-                this.Width = this._texture.Width;
-                this.Height = this._texture.Height;
-            }
-#else
-            this._isMoving = this._startsMoving;
-            SetupPhysics(world);
-
-            if (!this._isMoving)
-            {
-                this._prismaticJoint.MotorSpeed = 0.0f;
-            }
-            else
-            {
-                this._prismaticJoint.MotorSpeed = MotorSpeed;
-            }
-            this.RegisterObject();
-#endif
-
             this._crusherTextureOrigin = new Vector2(
                 this._crusherTexture.Width, this._crusherTexture.Height) * 0.5f;
+
+            base.Load(content, world);
         }
 
         #region Update and Draw
+
+
 
         public override void Update(float delta)
         {
@@ -131,7 +114,7 @@ namespace GameLibrary.GameLogic.Objects
             {
                 for (int i = 0; i < _joints.Count; i++)
                 {
-                    this.HandleJoint(delta, _joints[i]);
+                    this.HandleJoint(delta, _joints[i], i);
                 }
             }
 #endif
@@ -158,10 +141,11 @@ namespace GameLibrary.GameLogic.Objects
                 spriteBatch.Draw(_texture, ConvertUnits.ToDisplayUnits(_shaftBodies[i].Position),
                     new Rectangle(0, 0, (int)(this._texture.Width - ((this._texture.Width * 0.1f) * i)), 
                         (int)_texture.Height), this._tint, this._shaftBodies[i].Rotation, shaftOrigin, 
-                        1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * i)));
+                        1.0f, SpriteEffects.None, (float)(_zLayer + (0.001 * i)));
             }
 
-            spriteBatch.Draw(_crusherTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._crusherTextureOrigin, 1.0f, SpriteEffects.None, (float)(this.zLayer + (0.001 * (_shaftPieces + 1))));
+            spriteBatch.Draw(_crusherTexture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, 
+                this.Body.Rotation, this._crusherTextureOrigin, 1.0f, SpriteEffects.None, (float)(_zLayer + (0.001 * (_shaftPieces + 1))));
         }
 #endif
         #endregion
@@ -172,9 +156,12 @@ namespace GameLibrary.GameLogic.Objects
 
         #region Private Methods
 
+
+#if !EDITOR
+
+
         protected override void SetupPhysics(World world)
         {
-#if !EDITOR
             float textureWidth = ConvertUnits.ToSimUnits(this._texture.Width);
             float textureHeight = ConvertUnits.ToSimUnits(this._texture.Height);
             Vector2 axis = SpinAssist.ModifyVectorByOrientation(new Vector2(0, -1), _orientation);
@@ -194,7 +181,7 @@ namespace GameLibrary.GameLogic.Objects
                 }
                 else
                 {
-                    Fixture fixture = FixtureFactory.AttachRectangle(textureWidth - ((textureWidth * 0.1f) * i), textureHeight, 1.0f, Vector2.Zero, body);
+                    Fixture fixture = FixtureFactory.AttachRectangle(textureWidth - ((textureWidth * 0.04f) * i), textureHeight, 1.0f, Vector2.Zero, body);
                     body.BodyType = BodyType.Dynamic;
 
                     FixedPrismaticJoint _joint = JointFactory.CreateFixedPrismaticJoint(world, body, ConvertUnits.ToSimUnits(this._position), axis);
@@ -205,11 +192,11 @@ namespace GameLibrary.GameLogic.Objects
                     _joint.UpperLimit = (textureHeight * i);
                     _joints.Add(_joint);
                 }
-
+                body.Friction = 3.0f;
                 body.CollisionCategories = Category.Cat2;
                 //  Ignore collision with Statics and other pistons.
                 body.CollidesWith = Category.All & ~Category.Cat2 & ~Category.Cat20;
-
+                body.UserData = _materialType;
                 _shaftBodies.Add(body);
             }
 #endregion
@@ -231,6 +218,7 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.CollisionCategories = Category.Cat2;
             //  Ignore collision with Statics and other pistons.
             this.Body.CollidesWith = Category.All & ~Category.Cat2 & ~Category.Cat20;
+            this.Body.UserData = _materialType;
 
             this._prismaticJoint = JointFactory.CreateFixedPrismaticJoint(world, this.Body, ConvertUnits.ToSimUnits(this._position + new Vector2(0, 40)), axis);
             this._prismaticJoint.UpperLimit = (textureHeight * (_shaftPieces));
@@ -256,9 +244,8 @@ namespace GameLibrary.GameLogic.Objects
                 fix.Body.OnCollision += TouchedLethal;
                 fix.Body.OnSeparation += LeftLethal;
             }
-#endif
         }
-#if !EDITOR
+
         bool TouchedLethal(Fixture fixA, Fixture fixB, Contact contact)
         {
             if (fixA == Body.FixtureList[0])
@@ -266,16 +253,18 @@ namespace GameLibrary.GameLogic.Objects
                 return false;
             }
 
-            if (Player.Instance.CheckBodyBox(fixB))
+            if (Player.Instance.PlayerHitBox(fixB))
             {
                 if (!_touchingFixtures.Contains(fixB))
                 {
                     _touchingFixtures.Add(fixB);
                     Player.Instance.Kill();
+                    AudioManager.Instance.PlayCue("Death_Spikes", true);
                 }
+                return false;
             }
-
-            return true;
+            
+            return false;
         }
 
         void LeftLethal(Fixture fixA, Fixture fixB)
@@ -287,7 +276,7 @@ namespace GameLibrary.GameLogic.Objects
         }
 #endif
 
-        void HandleJoint(float delta, FixedPrismaticJoint joint)
+        void HandleJoint(float delta, FixedPrismaticJoint joint, float i )
         {
 #if !EDITOR
             if ((joint.JointTranslation >= joint.UpperLimit && !this.MovingToStart) ||
@@ -300,6 +289,11 @@ namespace GameLibrary.GameLogic.Objects
             }
             else
             {
+                if (_motorSpeed < 0)
+                {
+                    i *= -1.0f;
+                }
+
                 if (joint.MotorSpeed != this._motorSpeed)
                 {
                     joint.MotorSpeed = this._motorSpeed;

@@ -80,7 +80,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         void RestartLevelMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
-
+            LoadingScreen.Load(ScreenManager, false, PlayerIndex.One, new GameplayScreen());
         }
 
         void JournalMenuEntrySelected(object sender, PlayerIndexEventArgs e)
@@ -112,7 +112,15 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         void ConfirmReturnMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, false, PlayerIndex.One, new GameplayScreen());
+            GameScreen[] screenList = this.ScreenManager.GetScreens();
+
+            for (int i = 0; i < screenList.Length; i++)
+            {
+                if (screenList[i].GetType() == typeof(GameplayScreen))
+                {
+                    ((GameplayScreen)screenList[i]).CurrentLevelID = 0;
+                }
+            }
         }
 
         void ConfirmQuitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)

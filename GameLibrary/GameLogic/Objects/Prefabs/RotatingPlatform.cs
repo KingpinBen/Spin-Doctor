@@ -192,7 +192,7 @@ namespace GameLibrary.GameLogic.Objects
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position), null, this._tint, this.Body.Rotation, this._origin, 1.0f, SpriteEffects.None, this.zLayer);
+            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position), new Rectangle(0, 0, (int)_width, (int)_height), this._tint, this.Body.Rotation, this._origin, 1.0f, SpriteEffects.None, _zLayer);
         }
 #endif
         #endregion
@@ -337,6 +337,8 @@ namespace GameLibrary.GameLogic.Objects
             this.Body.CollisionCategories = Category.Cat20;
 
             this.Body.Friction = 3.0f;
+
+            this.Body.UserData = _materialType;
 #endif
         }
         #endregion

@@ -35,6 +35,7 @@ using GameLibrary.Helpers;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Characters;
 using System.ComponentModel;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -96,10 +97,12 @@ namespace GameLibrary.GameLogic.Objects
 #if !EDITOR
             if (GameSettings.Instance.FoundEntries[_noteID])
             {
+                _beenCollected = true;
                 RemoveNote();
                 return;
             }
 
+            this._castShadows = false;
             this._triggerType = TriggerType.PlayerInput;
             this._message = " to pick up.";
 #endif
@@ -110,7 +113,7 @@ namespace GameLibrary.GameLogic.Objects
         public override void Update(float delta)
         {
 #if !EDITOR
-            if (_triggered)
+            if (_triggered && !_beenCollected)
             {
                 if (Player.Instance.PlayerState == PlayerState.Dead)
                 {
@@ -134,12 +137,6 @@ namespace GameLibrary.GameLogic.Objects
             spriteBatch.Draw(_texture, this._position, new Rectangle(0, 0, (int)_width, (int)_height),
                 this._tint, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, this._zLayer);
         }
-#else
-        public override void Draw(SpriteBatch spriteBatch, GraphicsDevice graphics)
-        {
-            spriteBatch.Draw(_texture, this._position, new Rectangle(0, 0, (int)_width, (int)_height), 
-                this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
-        }
 #endif
         #endregion
 
@@ -149,10 +146,11 @@ namespace GameLibrary.GameLogic.Objects
             //  We call this before making the note screen incase we end up having text on there too.
             ChangeTriggered(false);
 
-            Camera.Instance.GetGameScreen().ScreenManager.AddScreen(new MessageOverlay(Defines.NOTE_DIRECTORY + _noteID), null);
+            Camera.Instance.GetGameScreen().ScreenManager.AddScreen(new MessageOverlay(_noteID), null);
             //  We want to set the settings to display as though they've got it.
             //  It'll only stick though when they complete the level with it.
-            GameSettings.Instance.FoundEntries[_noteID] = true;
+            GameSettings.Instance.FoundEntries[_noteID - 1] = true;
+            AudioManager.Instance.PlayCue("Note_Pick_Up", true);
         }
 
         private void RemoveNote()

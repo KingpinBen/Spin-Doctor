@@ -16,11 +16,6 @@
 //--           
 //--    
 //--    
-//--    TBD
-//--    ==============
-//--    The rest of it, durrh
-//--    
-//--    
 //--------------------------------------------------------------------------
 
 #region Using Statements
@@ -39,6 +34,7 @@ using System.Diagnostics;
 using Poly2Tri.Triangulation.Polygon;
 using FarseerPhysics.Collision.Shapes;
 using GameLibrary.Helpers;
+using Microsoft.Xna.Framework.Audio;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects
@@ -63,6 +59,8 @@ namespace GameLibrary.GameLogic.Objects
         protected float _rotation = 0;
         [ContentSerializer(Optional = true)]
         protected Orientation _orientation = Orientation.Up;
+        [ContentSerializer(Optional = true)]
+        protected MaterialType _materialType = MaterialType.Metal;
 
         protected Texture2D _texture;
         protected Vector2 _origin;
@@ -78,6 +76,18 @@ namespace GameLibrary.GameLogic.Objects
         #region Properties
 
 #if EDITOR
+        [ContentSerializerIgnore, CategoryAttribute("General")]
+        public MaterialType MaterialType
+        {
+            get
+            {
+                return _materialType;
+            }
+            set
+            {
+                _materialType = value;
+            }
+        }
         [ContentSerializerIgnore, CategoryAttribute("General")]
         public override float Height
         {
@@ -149,11 +159,11 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]
-        public virtual float Rotation
+        public override float Rotation
         {
             get
             {
-                return MathHelper.ToDegrees(_rotation);
+                return _rotation;
             }
             set
             {
@@ -238,105 +248,26 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
         [ContentSerializerIgnore]
-        public virtual float Mass
+        public virtual MaterialType MaterialType
         {
             get
             {
-                return _mass;
-            }
-            protected set
-            {
-                _mass = value;
+                return _materialType;
             }
         }
-        [ContentSerializerIgnore]
-        public virtual string AssetLocation
-        {
-            get
-            {
-                return _textureAsset;
-            }
-            protected set
-            {
-                _textureAsset = value;
-            }
-
-        }
-        [ContentSerializerIgnore]
-        public virtual Vector2 Origin
-        {
-            get
-            {
-                return _origin;
-            }
-            protected set
-            {
-                _origin = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public virtual Color Tint
-        {
-            get
-            {
-                return _tint;
-            }
-            protected set
-            {
-                _tint = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public virtual float zLayer
-        {
-            get
-            {
-                return _zLayer;
-            }
-            protected set
-            {
-                _zLayer = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public virtual float Rotation
-        {
-            get
-            {
-                return _rotation;
-            }
-            protected set
-            {
-                _rotation = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public Texture2D Texture
-        {
-            get
-            {
-                return _texture;
-            }
-            protected set
-            {
-                _texture = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public virtual Orientation Orientation
-        {
-            get
-            {
-                return _orientation;
-            }
-            protected set
-            {
-                _orientation = value;
-            }
-        }       
 #endif
         #endregion
 
+        #region Constructor and Load
+
+
+
+        /// <summary>
+        /// Constructor. 
+        /// 
+        /// Most game objects will want to have CastShadows as true
+        /// so it gets set here as NodeObjects may not want to.
+        /// </summary>
         public StaticObject() : base() 
         {
             //  Generally we want all the game objects to cast
@@ -344,8 +275,18 @@ namespace GameLibrary.GameLogic.Objects
             this._castShadows = true;
         }
 
+
+
+        /// <summary>
+        /// Initialize the object. 
+        /// 
+        ///  * Only used by the editor.
+        /// </summary>
+        /// <param name="position">The position to set the object at.</param>
+        /// <param name="tex">The texture to apply.</param>
         public virtual void Init(Vector2 position, string tex)
         {
+            //  Set the position
             base.Init(position);
 
             //  Set the texture
@@ -358,6 +299,20 @@ namespace GameLibrary.GameLogic.Objects
             this._mass = 1000.0f;
         }
 
+
+
+        /// <summary>
+        /// Load the texture of the object.
+        /// 
+        /// Game: 
+        ///  * Generate the body for the object,
+        ///  * Register the object for events.
+        ///  
+        /// Editor:
+        ///  * Check that the object has positive width/height.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <param name="world"></param>
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(_textureAsset);
@@ -373,9 +328,10 @@ namespace GameLibrary.GameLogic.Objects
             this.SetupPhysics(world);
             base.Load(content, world);
 #endif
-
-            
         }
+
+
+        #endregion
 
         #region Draw
 #if EDITOR
@@ -388,9 +344,8 @@ namespace GameLibrary.GameLogic.Objects
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-            sb.Draw(_texture, _position,
-                new Rectangle(0, 0, (int)_width, (int)_height), _tint, Body.Rotation, 
-                _origin, 1.0f, SpriteEffects.None, _zLayer);
+            sb.Draw(_texture, _position, new Rectangle(0, 0, (int)_width, (int)_height), 
+                this._tint, this.Body.Rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
         }
 #endif
         #endregion
@@ -400,21 +355,28 @@ namespace GameLibrary.GameLogic.Objects
         protected virtual void SetupPhysics(World world)
         {
 #if !EDITOR
-            //  This function will have to be changed if we have things that aren't going to be square/rectangles.
-            //  Fortunately, Farseer will allow us to use the Texture to find the outline. Haven't tried it with 
-            //  full coloured images, only outlines. Will have to research! More demos!
-            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(this._mass));
+            //  Create the intial body
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_width), 
+                ConvertUnits.ToSimUnits(_height), ConvertUnits.ToSimUnits(this._mass));
+
+            //  Set the position
             this.Body.Position = ConvertUnits.ToSimUnits(_position);
-            //  Give it a 0 for no flags.
-            this.Body.FixtureList[0].UserData = (int)0;
+
             this.Body.Rotation = _rotation;
+
             // Elastic (>1) <->Non-elastic collisions (0).
             this.Body.Restitution = 0f;
+
+            //  Set collision categories so that it doesn't collide 
+            //  with other Cat20 objects.
             this.Body.CollisionCategories = Category.Cat20;
             this.Body.CollidesWith = Category.All & ~Category.Cat20;
+
             // Default friction the body has when colliding with other objects.
             this.Body.Friction = 5.0f;
             this.Body.Enabled = _enabled;
+
+            this.Body.UserData = _materialType;
 #endif
         }
 
@@ -425,12 +387,17 @@ namespace GameLibrary.GameLogic.Objects
 
         protected virtual bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+            if (!_touchingFixtures.Contains(fixtureB))
+            {
+                _touchingFixtures.Add(fixtureB);
+            }
+
             return true;
         }
 
         protected virtual void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-
+            _touchingFixtures.Remove(fixtureB);
         }
         
 
