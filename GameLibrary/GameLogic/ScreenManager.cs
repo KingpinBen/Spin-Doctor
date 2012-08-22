@@ -107,7 +107,7 @@ namespace GameLibrary.GameLogic
             ContentManager content = new ContentManager(Game.Services, "Content");
 
             FontManager.Instance.Load(content);
-            AudioManager.Instance.Load();
+            AudioManager.Instance.Load(this.Game);
 
             AddScreen(new BackgroundScreen(), null);
             AddScreen(new MainMenuScreen(), null);
@@ -116,6 +116,8 @@ namespace GameLibrary.GameLogic
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = FontManager.Instance.GetFont(FontList.MenuTitle);
             blankTexture = content.Load<Texture2D>("Assets/Images/Basics/BlankPixel");
+
+            InputManager.Instance.Load(content);
 
             foreach (GameScreen screen in screens)
             {
@@ -144,13 +146,15 @@ namespace GameLibrary.GameLogic
 
             input.Update();
             AudioManager.Instance.Update();
+            InputManager.Instance.Update(delta);
             tempScreensList.Clear();
 
             foreach (GameScreen screen in screens)
                 tempScreensList.Add(screen);
 
-            bool otherScreenHasFocus = !Game.IsActive;
+            bool otherScreenHasFocus = false;
             bool coveredByOtherScreen = false;
+
 
             // Loop as long as there are screens waiting to be updated.
             while (tempScreensList.Count > 0)

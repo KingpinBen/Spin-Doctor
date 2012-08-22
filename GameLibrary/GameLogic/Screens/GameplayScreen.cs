@@ -107,7 +107,7 @@ namespace GameLibrary.GameLogic.Screens
 
             //  Simulate something large loading because why not..
             //  Also doing it first so that the sounds load when it's finished.
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
 
             //  Setup the Hud elements
             HUD.Instance.Load(this.ScreenManager);
@@ -120,8 +120,7 @@ namespace GameLibrary.GameLogic.Screens
             //  Setup the SpriteManager.
             SpriteManager.Instance.Load(this.ScreenManager);
 
-            //  Load anything control related
-            InputManager.Instance.Load();
+            
 
             //  Setup use of shadows if they're enabled.
             if (GameSettings.Instance.Shadows == SettingLevel.On)
@@ -141,11 +140,6 @@ namespace GameLibrary.GameLogic.Screens
             ScreenManager.Game.ResetElapsedTime();
 #endif
 
-        }
-
-        public override void Deactivate()
-        {
-            base.Deactivate();
         }
 
 
@@ -172,7 +166,7 @@ namespace GameLibrary.GameLogic.Screens
             {
                 
                 HUD.Instance.Update(delta);
-                InputManager.Instance.Update(delta);
+                
                 Camera.Instance.Update(delta);
 
                 _world.Step(delta);
@@ -303,9 +297,7 @@ namespace GameLibrary.GameLogic.Screens
 
             #endregion
 
-            spriteBatch.Begin();
             HUD.Instance.Draw(spriteBatch);
-            spriteBatch.End();
 
             if (GameSettings.Instance.DevelopmentMode)
             {
@@ -341,8 +333,10 @@ namespace GameLibrary.GameLogic.Screens
             EventManager.Instance.Load(this);
             SpriteManager.Instance.Clear();
             HUD.Instance.RefreshHUD();
+
             AudioManager.Instance.StopAllSounds(Microsoft.Xna.Framework.Audio.AudioStopOptions.AsAuthored);
-            
+            this.PlayRandomAmbience();
+
             try
             {
                 using (XmlReader reader = XmlReader.Create(Defines.Level(LevelID)))
@@ -425,6 +419,41 @@ namespace GameLibrary.GameLogic.Screens
             }
 
             this._level.GetObjectsToRemove().Add(obj);
+        }
+
+        void PlayRandomAmbience()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                int odds = SpinAssist.GetRandom(1, 10);
+
+                if (odds > 5)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            {
+                                AudioManager.Instance.PlayCue("Background_Clangs", true);
+                                break;
+                            }
+                        case 1:
+                            {
+                                AudioManager.Instance.PlayCue("Background_Creeks", true);
+                                break;
+                            }
+                        case 2:
+                            {
+                                AudioManager.Instance.PlayCue("Background_Echos", true);
+                                break;
+                            }
+                        case 3:
+                            {
+                                AudioManager.Instance.PlayCue("Background_Wind", true);
+                                break;
+                            }
+                    }
+                }
+            }
         }
 #endif
     }

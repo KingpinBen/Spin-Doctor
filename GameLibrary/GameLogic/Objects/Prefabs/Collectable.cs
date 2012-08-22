@@ -127,36 +127,15 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         }
 
-        #region Draw
-
-#if EDITOR
-        public override void Draw(SpriteBatch sb)
-        {
-            base.Draw(sb);
-        }
-#else
-        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
-        {
-            if (!_beenCollected)
-            {
-                sb.Draw(this._texture, this._position, null,
-                    this._tint, this._rotation, this._origin, 1.0f, SpriteEffects.None, _zLayer);
-            }
-        }
-#endif
-        #endregion
-
         #region Private Methods
 
 #if !EDITOR 
 
         protected override void SetupPhysics(World world)
         {
-            float height = ConvertUnits.ToSimUnits(25);
-
-            this.Body = BodyFactory.CreateRectangle(world, height, height, _mass);
+            this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(30), ConvertUnits.ToSimUnits(_texture.Height), _mass);
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);
-
+            this.Body.Rotation = _rotation;
             //  Give it it's own category but make it only collide with 10 (Player) and nothing else.
             this.Body.CollisionCategories = Category.Cat3;
             this.Body.CollidesWith = Category.Cat10;
@@ -209,12 +188,12 @@ namespace GameLibrary.GameLogic.Objects
             {
                 if (_triggerType == TriggerType.PlayerInput)
                 {
-                    HUD.Instance.ShowOnScreenMessage(true, _message);
+                    HUD.Instance.ShowOnScreenMessage(true, _message, ButtonIcon.Action3);
                 }
             }
             else
             {
-                HUD.Instance.ShowOnScreenMessage(false, "");
+                HUD.Instance.ShowOnScreenMessage(false, "", ButtonIcon.Action3);
             }
 
             this._triggered = state;

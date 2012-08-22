@@ -8,6 +8,10 @@ using GameLibrary.GameLogic.Objects.Triggers;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Characters;
+using GameLibrary.GameLogic.Screens.Menu;
+using GameLibrary.Audio;
+using GameLibrary.Graphics.UI;
+using Microsoft.Xna.Framework.Audio;
 
 namespace GameLibrary.GameLogic.Events
 {
@@ -78,6 +82,26 @@ namespace GameLibrary.GameLogic.Events
         {
             switch (objEvent.EventType)
             {
+                case EventType.AUDIO_PAUSE_SONGS:
+                    {
+                        AudioManager.Instance.PauseSounds();
+
+                        break;
+                    }
+                case EventType.AUDIO_RESUME_SONGS:
+                    {
+                        AudioManager.Instance.ResumeSounds();
+
+                        break;
+                    }
+                case EventType.AUDIO_STOP_SOUNDS:
+                    {
+                        AudioManager.Instance.StopAllCues(AudioStopOptions.AsAuthored);
+
+                        break;
+                    }
+
+
                 #region ChangeLevel
                 case EventType.ENGINE_CHANGE_LEVEL:
                     {
@@ -202,7 +226,7 @@ namespace GameLibrary.GameLogic.Events
                         break;
                     }
                     #endregion
-
+                #region TriggerToggleShadow
                 case EventType.TRIGGER_TOGGLE_SHADOW:
                     {
                         NodeObject output;
@@ -213,6 +237,7 @@ namespace GameLibrary.GameLogic.Events
                         }
                     }
                     break;
+                #endregion
 
                 #region WorldRotateCCW90
                 case EventType.WORLD_ROTATE_CCW90:
@@ -263,17 +288,43 @@ namespace GameLibrary.GameLogic.Events
                     break;
                 #endregion
 
+                #region Play Song
+                case EventType.AUDIO_PLAY_SONG:
+                    {
+                        string songName = objEvent.TargetName;
+
+                        AudioManager.Instance.LoadSong(songName, songName + "1");
+
+                        break;
+                    }
+                #endregion
+
                 case EventType.UNLOCK_ITEM_STEAMBOOTS:
                     {
                         GameSettings.Instance.DoubleJumpEnabled = true;
+                        break;
                     }
-                    break;
-
                 case EventType.ENGINE_ROLL_CREDITS:
                     {
                         this.gameScreen.ScreenManager.AddScreen(new CreditRollScreen(), gameScreen.ControllingPlayer);
+                        break;
                     }
-                    break;
+                case EventType.ENGINE_FORCE_MAIN_MENU:
+                    {
+                        LoadingScreen.Load(this.gameScreen.ScreenManager, false, null, new BackgroundScreen(),
+                                                           new MainMenuScreen());
+                        break;
+                    }
+
+                case EventType.ENGINE_HUD_MESSAGE:
+                    {
+                        int num = 0;
+                        if (objEvent.Argument != null)
+                            num = (int)objEvent.Argument;
+
+                        HUD.Instance.CreateTemporaryPopup(objEvent.TargetName, num);
+                        break;
+                    }
 
                 default:
                     break;

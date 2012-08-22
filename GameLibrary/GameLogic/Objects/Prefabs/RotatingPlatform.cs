@@ -40,11 +40,11 @@ namespace GameLibrary.GameLogic.Objects
         #region Fields
 
         [ContentSerializer(Optional = true)]
-        private bool _rotatesWithLevel;
+        private bool _rotatesWithLevel = true;
         [ContentSerializer(Optional = true)]
-        private float _motorSpeed;
+        private float _motorSpeed = 5;
         [ContentSerializer(Optional = true)]
-        private bool _motorEnabled;
+        private bool _motorEnabled = true;
         [ContentSerializer(Optional = true)]
         private bool _useShape = true;
         [ContentSerializer(Optional = true)]
@@ -136,18 +136,9 @@ namespace GameLibrary.GameLogic.Objects
         #endregion
 
         #region Constructor
+
         public RotatingPlatform() : base() { }
 
-        public override void Init(Vector2 position, string tex)
-        {
-            base.Init(position, tex);
-
-            this._rotatesWithLevel = true;
-            this._motorEnabled = true;
-            this._useShape = true;
-            this._motorSpeed = 5;
-            this._shapeType = ObjectShape.Quadrilateral;
-        }
         #endregion
 
         #region Update

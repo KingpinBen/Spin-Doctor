@@ -23,13 +23,14 @@ namespace GameLibrary.GameLogic.Events
         TRIGGER_CHANGE,
         TRIGGER_TOGGLE,
         TRIGGER_TOGGLE_SHADOW,
-        
-
-        /// <summary>
-        /// Handled through EventManager rather than the object.
-        /// </summary>
         TRIGGER_REMOVE,
         TRIGGER_DEATH,
+
+        AUDIO_PLAY_SONG,
+        AUDIO_STOP_SOUNDS,
+        AUDIO_STOP_SONG,
+        AUDIO_RESUME_SONGS,
+        AUDIO_PAUSE_SONGS,
 
         WORLD_ROTATE_CW90,
         WORLD_ROTATE_CCW90,
@@ -41,6 +42,9 @@ namespace GameLibrary.GameLogic.Events
         //  System
         ENGINE_CHANGE_LEVEL,
         ENGINE_ROLL_CREDITS,
+        ENGINE_FORCE_MAIN_MENU,
+        ENGINE_HUD_MESSAGE,
+
         UNLOCK_ITEM_STEAMBOOTS,
     }
 }

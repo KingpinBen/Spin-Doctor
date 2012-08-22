@@ -20,19 +20,22 @@ namespace GameLibrary.GameLogic.Screens
     {
         private Vector2 _scrollPosition;
         private string[] _creditsText;
-        private float _textAlpha = 0.0f;
+        private float _alpha = 0.0f;
         private float _elapsed;
         private float _sectionShowingTime;
         private float _sectionSeparationTime;
         private float _speedMultiplier;
-        private State _state;
+        private State _state = State.Hidden;
         private int _creditSection = 0;
         private SpriteFont _font;
+        private Texture2D _gameLogo;
 
         public CreditRollScreen() : base() { }
 
         public override void Activate()
         {
+            ContentManager content = new ContentManager(this.ScreenManager.Game.Services, "Content");
+
             //  Set the position.
             Viewport vp = this.ScreenManager.Game.GraphicsDevice.Viewport;
             this._scrollPosition = new Vector2(vp.Width * 0.1f, vp.Height * 0.25f);
@@ -42,8 +45,10 @@ namespace GameLibrary.GameLogic.Screens
             this.IsPopup = true;
 
             //  Get the font.
-            this._font = FontManager.Instance.GetFont(FontList.Game);
-            
+            this._font = FontManager.Instance.GetFont(FontList.Credits);
+
+            this._gameLogo = content.Load<Texture2D>("Assets/Other/Game/TitleLogo");
+
             //  Sort out the credits text.
             string path = "./Content/Assets/Other/Game/Credits.txt";
             string fullCredits = File.ReadAllText(path);
@@ -65,9 +70,9 @@ namespace GameLibrary.GameLogic.Screens
             {
                 case State.FadeIn:
                     {
-                        this._textAlpha = Math.Min(_textAlpha + (_elapsed * _speedMultiplier), 1.0f);
+                        this._alpha = Math.Min(_alpha + (_elapsed * _speedMultiplier), 1.0f);
 
-                        if (_textAlpha >= 1)
+                        if (_alpha >= 1)
                         {
                             this._state = State.Show;
                             this._elapsed = 0.0f;
@@ -77,15 +82,16 @@ namespace GameLibrary.GameLogic.Screens
                     }
                 case State.FadeOut:
                     {
-                        this._textAlpha = Math.Max(_textAlpha - (_elapsed * _speedMultiplier), 0.0f);
+                        this._alpha = Math.Max(_alpha - (_elapsed * _speedMultiplier), 0.0f);
 
-                        if (_textAlpha <= 0.0f)
+                        if (_alpha <= 0.0f)
                         {
                             this._state = State.Hidden;
                             this._elapsed = 0.0f;
-                            this._creditSection++;
 
-                            if (_creditSection + 1 > _creditsText.Length)
+                            //  We want to go one above the credtext length 
+                            //  so we can show the logo
+                             if (_creditSection >= _creditsText.Length)
                             {
                                 this.ExitScreen();
                             }
@@ -123,10 +129,20 @@ namespace GameLibrary.GameLogic.Screens
         public override void Draw(GameTime gameTime)
         {
             SpriteBatch sb = this.ScreenManager.SpriteBatch;
+            GraphicsDevice graphics = this.ScreenManager.GraphicsDevice;
 
             sb.Begin();
 
-            sb.DrawString(_font, _creditsText[_creditSection], _scrollPosition, Color.DarkGoldenrod * _textAlpha, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
+            if (_creditSection < _creditsText.Length)
+            {
+                sb.DrawString(_font, _creditsText[_creditSection], _scrollPosition, 
+                    Color.DarkGoldenrod * _alpha, 0.0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0.0f);
+            }
+            else
+            {
+                sb.Draw(_gameLogo, new Vector2(graphics.Viewport.Width, graphics.Viewport.Height) * 0.5f, null, Color.White * _alpha, 0.0f,
+                    new Vector2(_gameLogo.Width, _gameLogo.Height) * 0.5f, 0.5f, SpriteEffects.None, 0.0f);
+            }
 
 
             sb.End();

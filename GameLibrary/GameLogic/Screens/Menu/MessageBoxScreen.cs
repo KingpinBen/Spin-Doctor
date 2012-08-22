@@ -62,18 +62,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
             ContentManager content = ScreenManager.Game.Content;
             _gradientTexture = content.Load<Texture2D>("Assets/Images/Basics/gradient");
 
-            if (InputManager.Instance.IsGamepad)
-            {
-                _yesTexture = content.Load<Texture2D>("Assets/Other/Controls/A");
-                _noTexture = content.Load<Texture2D>("Assets/Other/Controls/B");
-            }
-            else
-            {
-                //  CHANGE TO KEYBOARD KEYS
-
-                _yesTexture = content.Load<Texture2D>("Assets/Other/Controls/A");
-                _noTexture = content.Load<Texture2D>("Assets/Other/Controls/B");
-            }
+            this._yesTexture = InputManager.Instance.GetButtonTexture(0);
+            this._noTexture = InputManager.Instance.GetButtonTexture(1);
 
             _font = FontManager.Instance.GetFont(FontList.GUI);
         }
@@ -137,27 +127,27 @@ namespace GameLibrary.GameLogic.Screens.Menu
             Rectangle backgroundRectangle = new Rectangle((int)textPosition.X - hPad,
                                                           (int)textPosition.Y - vPad,
                                                           (int)textSize.X + hPad * 2,
-                                                          (int)textSize.Y + vPad * 2);
+                                                          (int)textSize.Y + vPad * 5);
 
             // Fade the popup alpha during transitions.
-            Color color = Color.DarkGoldenrod * TransitionAlpha;
+            Color color = Color.White * TransitionAlpha;
 
             string yesno = "Yes             No";
             Vector2 bgCentre = new Vector2(backgroundRectangle.Center.X, backgroundRectangle.Center.Y);
             Vector2 yesnoTextOrigin = new Vector2(_font.MeasureString(yesno).X, _font.MeasureString(yesno).Y) * 0.5f;
-
+            float scale = 0.5f;
 
             spriteBatch.Begin();
 
             // Draw the background rectangle.
-            spriteBatch.Draw(_gradientTexture, backgroundRectangle, color);
+            spriteBatch.Draw(_gradientTexture, backgroundRectangle, Color.DarkGoldenrod * TransitionAlpha);
 
             // Draw the message box text.
             spriteBatch.DrawString(_font, message, textPosition, color);
             spriteBatch.DrawString(_font, yesno, bgCentre, color, 0.0f, yesnoTextOrigin - new Vector2(0, yesnoTextOrigin.Y), 1.0f, SpriteEffects.None, 1.0f);
 
-            spriteBatch.Draw(_yesTexture, bgCentre - new Vector2(yesnoTextOrigin.X + _yesTexture.Width, 0), Color.White);
-            spriteBatch.Draw(_noTexture, bgCentre + new Vector2(yesnoTextOrigin.X + _noTexture.Width, 0), Color.White);
+            spriteBatch.Draw(_yesTexture, bgCentre + new Vector2(-yesnoTextOrigin.X + _font.MeasureString("Yes").X * 0.5f, (_yesTexture.Height * scale) * 0.8f), null, Color.White * TransitionAlpha, 0.0f, new Vector2(_yesTexture.Width, 0) * 0.5f, scale, SpriteEffects.None, 0.0f);
+            spriteBatch.Draw(_noTexture, bgCentre + new Vector2(yesnoTextOrigin.X - _font.MeasureString("No").X * 0.5f, (_noTexture.Height * scale) * 0.8f), null, Color.White * TransitionAlpha, 0.0f, new Vector2(_noTexture.Width, 0) * 0.5f, scale, SpriteEffects.None, 0.0f);
 
             spriteBatch.End();
         }

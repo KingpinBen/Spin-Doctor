@@ -23,7 +23,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-#define Development
+//#define Development
 
 #region Using Statements
 using System;
@@ -237,10 +237,10 @@ namespace GameLibrary.Graphics.Camera
             }
             else if (_cameraType == CameraType.Focus)
             {
-                //  TODO:
-                //  Create a variablee for target focus.
-                //  Chase vector from current camera position to Focus position.
-                _cameraPosition = ConvertUnits.ToDisplayUnits(Player.Instance.Body.Position);
+                if (Player.Instance.PlayerState != PlayerState.Dead)
+                {
+                    _cameraPosition = ConvertUnits.ToDisplayUnits(Player.Instance.Body.Position);
+                }
             }
 #if Development
             else if (_cameraType == CameraType.Free)

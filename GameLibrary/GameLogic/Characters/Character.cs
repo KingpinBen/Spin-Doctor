@@ -259,8 +259,8 @@ namespace GameLibrary.GameLogic.Characters
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(CurrentAnimation.CurrentAnimationTexture,
-            this._texturePosition, CurrentAnimation.CurrentRect, Color.White,
-            this._mainBody.Rotation, CurrentAnimation.FrameOrigin, CurrentAnimation.Scale, _lookingDirection, 0.3f);
+                _texturePosition, CurrentAnimation.CurrentRect, Color.White,
+                _mainBody.Rotation, CurrentAnimation.FrameOrigin, CurrentAnimation.Scale, _lookingDirection, 0.3f);
         }
 
         #endregion

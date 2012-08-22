@@ -38,7 +38,7 @@ namespace GameLibrary.GameLogic.Objects
         string _textureAsset;
 
         [ContentSerializer(Optional = true)]
-        float _timeNewParticle;
+        float _timeNewParticle = 3.0f;
         [ContentSerializer(Optional = true)]
         float _minSpawnAngle = 0;
         [ContentSerializer(Optional = true)]
@@ -296,12 +296,13 @@ namespace GameLibrary.GameLogic.Objects
         public void Init(Vector2 position, string texAsset)
         {
             this._position = position;
-            this._timeNewParticle = 1 / 60;
             this._textureAsset = texAsset;
         }
 
         public override void Load(ContentManager content, World world)
         {
+            base.Load(content, world);
+
 #if EDITOR
             _devTexture = content.Load<Texture2D>("Assets/Other/Dev/Trigger");
             _arrow = content.Load<Texture2D>("Assets/Other/Dev/arrow");
@@ -312,7 +313,6 @@ namespace GameLibrary.GameLogic.Objects
             this._texture = content.Load<Texture2D>(_textureAsset);
             this._particles = new List<Particle>(_particleCount);
             this._queuedParticles = new Queue<Particle>(_particleCount);
-            this.RegisterObject();
             this._world = world;
 
             for (int i = 0; i < _particleCount; i++)

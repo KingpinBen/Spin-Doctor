@@ -345,7 +345,7 @@ namespace GameLibrary.GameLogic.Objects
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
             sb.Draw(_texture, _position, new Rectangle(0, 0, (int)_width, (int)_height), 
-                this._tint, this.Body.Rotation, this._origin, 1.0f, SpriteEffects.None, this._zLayer);
+                _tint, _rotation, _origin, 1.0f, SpriteEffects.None, _zLayer);
         }
 #endif
         #endregion

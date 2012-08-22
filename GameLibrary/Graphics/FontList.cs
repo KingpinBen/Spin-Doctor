@@ -12,6 +12,7 @@ namespace GameLibrary.Graphics
         MenuOption,
         GUI,
         Notes,
-        Debug
+        Debug,
+        Credits
     }
 }

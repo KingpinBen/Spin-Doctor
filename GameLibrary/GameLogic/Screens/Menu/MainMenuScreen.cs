@@ -90,7 +90,7 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         protected override void OnCancel(PlayerIndex playerIndex)
         {
-            const string message = "Are you sure you want to exit this sample?";
+            const string message = "Are you sure you want to exit the game?";
 
             MessageBoxScreen confirmExitMessageBox = new MessageBoxScreen(message);
 

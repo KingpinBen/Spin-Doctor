@@ -33,13 +33,14 @@ namespace GameLibrary.Graphics
 
         private FontManager()
         {
-            _fonts = new FontType[6];
+            _fonts = new FontType[7];
             _fonts[0] = new FontType();
             _fonts[1] = new FontType();
             _fonts[2] = new FontType();
             _fonts[3] = new FontType();
             _fonts[4] = new FontType();
             _fonts[5] = new FontType();
+            _fonts[6] = new FontType();
         }
 
         public void Load(ContentManager content)
@@ -48,9 +49,10 @@ namespace GameLibrary.Graphics
             _fonts[1].Load(content.Load<SpriteFont>("Assets/Fonts/Menu")); //  Menu Title
             _fonts[2].Load(content.Load<SpriteFont>("Assets/Fonts/Menu")); //  MenuOption
             _fonts[2].Spacing = 1;
-            _fonts[3].Load(content.Load<SpriteFont>("Assets/Fonts/Menu"));  //  GUI
+            _fonts[3].Load(content.Load<SpriteFont>("Assets/Fonts/Gui"));  //  GUI
             _fonts[4].Load(content.Load<SpriteFont>("Assets/Fonts/Notes"));    //  Notes
             _fonts[5].Load(content.Load<SpriteFont>("Assets/Fonts/Debug"));    // Debug
+            _fonts[6].Load(content.Load<SpriteFont>("Assets/Fonts/Credits"));
         }
 
         public SpriteFont GetFont(FontList fontName)

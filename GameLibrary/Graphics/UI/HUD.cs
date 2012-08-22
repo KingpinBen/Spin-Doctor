@@ -19,8 +19,6 @@
 //--    
 //--------------------------------------------------------------------------
 
-//#define Development
-
 #region Using Statements
 using System;
 using System.Collections.Generic;
@@ -39,34 +37,21 @@ namespace GameLibrary.Graphics.UI
     {
         #region Fields
 
-        private static HUD _singleton = null;
-        private static object _singletonLock = new object();
-        public static HUD Instance
-        {
-            get
-            {
-                if (HUD._singleton == null)
-                {
-                    object obj;
-                    Monitor.Enter(obj = HUD._singletonLock);
-                    try
-                    {
-                        if (HUD._singleton == null)
-                        {
-                            HUD._singleton = new HUD();
-                        }
-                    }
-                    finally
-                    {
-                        Monitor.Exit(obj);
-                    }
-                }
+        private ContentManager _content;
+        private ScreenManager _screenManager;
 
-                return HUD._singleton;
-            }
-        }
-        ScreenManager _screenManager;
-        bool _showPopup;
+        private bool _showPopup;
+        private TextString _popupText;
+
+        private bool _tempPopupEnabled = false;
+        private bool _tempHold = false;
+        private TextString _tempPopupText;
+        private float _tempElapsed = 0.0f;
+        
+        #endregion
+
+        #region Properties
+
         public bool ShowPopup
         {
             get
@@ -79,114 +64,171 @@ namespace GameLibrary.Graphics.UI
             }
         }
 
-        private AnimatedText _overlayText;
-
-        private ContentManager _content;
-
-#if Development
-        private static PrimitiveBatch _primBatch = new PrimitiveBatch(Screen_Manager.Graphics);
-#endif
         #endregion
+
+        #region Singleton and Load
+
+        private static HUD _singleton = new HUD();
+        public static HUD Instance
+        {
+            get
+            {
+                return HUD._singleton;
+            }
+        }
 
         private HUD()
         {
+
         }
 
-        #region Load
         public void Load(ScreenManager screenManager)
         {
             this._screenManager = screenManager;
-            _content = new ContentManager(screenManager.Game.Services, "Content");
+            this._content = new ContentManager(screenManager.Game.Services, "Content");
 
-            _overlayText = new AnimatedText("", ButtonIcon.Interact, 0.5f, TextAlignment.Left);
-            _overlayText.SetPosition(ScreenAnchorLocation.BottomLeft, screenManager.GraphicsDevice);
-            _overlayText.TextType = AnimatedTextType.Flash;
-            _overlayText.AnchorPoint = ScreenAnchorLocation.BottomLeft;
-            _overlayText.Offset = new Vector2(20, -20);
-            _overlayText.Load(_content);
-            _overlayText.Scale = 0.5f;
+            this._popupText = new TextString("");
+            this._popupText.Load(_content);
+            this._popupText.Alpha = 0.0f;
+            this._popupText.TextAlignment = TextAlignment.Centre;
+            this._popupText.Position = new Vector2(this._screenManager.GraphicsDevice.Viewport.Width * 0.5f, this._screenManager.GraphicsDevice.Viewport.Height * 0.85f);
 
-            this._screenManager.GraphicsDevice.DeviceReset += DeviceReset;
+            this._tempPopupText = new TextString("");
+            this._tempPopupText.Load(_content);
+            this._tempPopupText.Alpha = 0.0f;
+            this._tempPopupText.TextScale = 1.3f;
+            this._tempPopupText.TextAlignment = TextAlignment.Centre;
+            this._tempPopupText.Position = new Vector2(this._screenManager.GraphicsDevice.Viewport.Width * 0.5f, this._screenManager.GraphicsDevice.Viewport.Height * 0.9f);
         }
+
         #endregion
 
-        #region Update
+        #region Update and Draw
         public void Update(float delta)
         {
-            if (!ShowPopup)
+            if (_showPopup)
             {
-                return;
+                if (_popupText.Alpha < 1.0f)
+                {
+                    this._popupText.Alpha = Math.Min(_popupText.Alpha + (delta * 3), 1.0f);
+                }
+            }
+            else
+            {
+                if (_popupText.Alpha > 0)
+                {
+                    this._popupText.Alpha = Math.Max(_popupText.Alpha - (delta * 3), 0.0f);
+                }
             }
 
-            _overlayText.Update(delta);
-        }
-        #endregion
+            if (_tempPopupEnabled)
+            {
+                if (_tempPopupText.Alpha < 1.0f)
+                {
+                    this._tempPopupText.Alpha = Math.Min(_tempPopupText.Alpha + (delta * 3), 1.0f);
+                }
+                else
+                {
+                    this._tempElapsed += delta;
 
-        #region Draw
+                    if (_tempElapsed >= 5.0f)
+                    {
+                        this._tempPopupEnabled = false;
+                        this._tempElapsed = 0.0f;
+                    }
+                }
+            }
+            else
+            {
+                if (_tempPopupText.Alpha > 0)
+                {
+                    this._tempPopupText.Alpha = Math.Max(_tempPopupText.Alpha - (delta * 3), 0.0f);
+                }
+            }
+        }
+
         public void Draw(SpriteBatch sb)
         {
-#if Development
+            sb.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+
+            if (_popupText.Alpha != 0)
+            {
+                this._popupText.Draw(sb);
+            }
+
+            if (_tempPopupText.Alpha != 0)
+            {
+                this._tempPopupText.Draw(sb);
+            }
+
             sb.End();
 
-            _primBatch.Begin(PrimitiveType.LineList);
-
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Left, Screen_Manager.Graphics.Viewport.TitleSafeArea.Top), Color.Red);
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Left, Screen_Manager.Graphics.Viewport.TitleSafeArea.Bottom), Color.Red);
-
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Left, Screen_Manager.Graphics.Viewport.TitleSafeArea.Bottom), Color.Red);
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Right, Screen_Manager.Graphics.Viewport.TitleSafeArea.Bottom), Color.Red);
-
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Right, Screen_Manager.Graphics.Viewport.TitleSafeArea.Bottom), Color.Red);
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Right, Screen_Manager.Graphics.Viewport.TitleSafeArea.Top), Color.Red);
-
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Right, Screen_Manager.Graphics.Viewport.TitleSafeArea.Top), Color.Blue);
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Left, Screen_Manager.Graphics.Viewport.TitleSafeArea.Top), Color.Red);
-
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Left, Screen_Manager.Graphics.Viewport.TitleSafeArea.Center.Y), Color.Blue);
-            _primBatch.AddVertex(new Vector2(Screen_Manager.Graphics.Viewport.TitleSafeArea.Right, Screen_Manager.Graphics.Viewport.TitleSafeArea.Center.Y), Color.Red);
-
-
-            _primBatch.End();
-
-            sb.Begin();
-#endif
-
-            if (!ShowPopup) 
-                return;
-
-            _overlayText.Draw(sb);
         }
         #endregion
 
-        #region Message toggle
+        #region Public Methods
 
-        public void ShowOnScreenMessage(bool set, string message)
+        public void RefreshHUD()
         {
-            _overlayText.Reset();
+            this._showPopup = false;
+            this._popupText.Alpha = 0.0f;
+        }
 
+        public void ShowOnScreenMessage(bool set, string message, ButtonIcon type)
+        {
             if (set)
             {
                 _showPopup = true;
 
-                _overlayText.Text = message;
-                _overlayText.UpdateOrigin();
+                _popupText.ButtonType = type;
+                _popupText.Text = message;
+                _popupText.UpdateOrigin();
             }
             else
             {
                 _showPopup = false;
             }
         }
+
+        public void CreateTemporaryPopup(string message, int i)
+        {
+            //  Enable the temporary popup
+            this._tempPopupEnabled = true;
+
+            //  Assign the icon
+            switch (i)
+            {
+                case 1:
+                    this._tempPopupText.ButtonType = ButtonIcon.Action1;
+                    break;
+                case 2:
+                    this._tempPopupText.ButtonType = ButtonIcon.Action2;
+                    break;
+                case 3:
+                    this._tempPopupText.ButtonType  = ButtonIcon.Action3;
+                    break;
+                case 4:
+                    this._tempPopupText.ButtonType = ButtonIcon.Action4;
+                    break;
+                default:
+                    this._tempPopupText.ButtonType = ButtonIcon.None;
+                    break;
+            }
+            
+
+            //  Setup the message
+            this._tempPopupText.Text = message;
+        }
+
         #endregion
+
+        #region Private Methods
 
         void DeviceReset(object sender, EventArgs e)
         {
-            _overlayText.SetPosition(ScreenAnchorLocation.BottomLeft, this._screenManager.GraphicsDevice);
+            this._popupText.SetPosition(ScreenAnchorLocation.BottomLeft, this._screenManager.GraphicsDevice);
         }
 
-        public void RefreshHUD()
-        {
-            ShowPopup = false;
-            _overlayText.Reset();
-        }
+        #endregion
     }
 }

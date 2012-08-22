@@ -39,6 +39,7 @@ using GameLibrary.Graphics;
 using GameLibrary.GameLogic.Events;
 using GameLibrary.GameLogic.Characters;
 using GameLibrary.GameLogic.Controls;
+using GameLibrary.Audio;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
@@ -239,7 +240,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             this.Triggered = false;
             this.ChooseMessage();
             this.RegisterObject();
-            this.SetupTrigger(world);
+            this.SetupPhysics(world);
 #endif
 
 
@@ -250,36 +251,33 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public override void Update(float delta)
         {
 #if !EDITOR
-            
-
-
-            if (_fired)
+            if (_triggerOnce && _fired)
             {
                 return;
             }
-            else
-            {
-                if (_triggered)
-                {
-                    if (Player.Instance.PlayerState == PlayerState.Dead)
-                    {
-                        ChangeTriggered(false);
-                        return;
-                    }
 
-                    if (_triggerType == TriggerType.PlayerInput)
-                    {
-                        if (InputManager.Instance.Interact(true))
-                        {
-                            this.FireEvent();
-                        }
-                    }
-                    else
+            if (_triggered)
+            {
+                if (Player.Instance.PlayerState == PlayerState.Dead)
+                {
+                    ChangeTriggered(false);
+                    return;
+                }
+
+                if (_triggerType == TriggerType.PlayerInput)
+                {
+                    if (InputManager.Instance.Interact(true))
                     {
                         this.FireEvent();
+                        AudioManager.Instance.PlayCue("Switch", true);
                     }
                 }
+                else
+                {
+                    this.FireEvent();
+                }
             }
+
 #endif
         }
 
@@ -312,13 +310,18 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         protected override void FireEvent()
         {
             base.FireEvent();
-            this._fired = true;
-            ChangeTriggered(false);
+
+            if (_triggerType == TriggerType.Automatic)
+            {
+                this._fired = true;
+                ChangeTriggered(false);
+            }
 
             if (_triggerOnce)
             {
                 EventManager.Instance.DeregisterObject(this);
                 this.Disable();
+                this.ChangeTriggered(false);
             }
         }
 
@@ -375,18 +378,18 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             }
         }
 
-        void ChangeTriggered(bool state)
+        protected virtual void ChangeTriggered(bool state)
         {
             if (state)
             {
                 if (_triggerType == TriggerType.PlayerInput)
                 {
-                    HUD.Instance.ShowOnScreenMessage(true, _message);
+                    HUD.Instance.ShowOnScreenMessage(true, _message, ButtonIcon.Action3);
                 }
             }
             else
             {
-                HUD.Instance.ShowOnScreenMessage(false, "");
+                HUD.Instance.ShowOnScreenMessage(false, "", ButtonIcon.Action3);
             }
 
             this._triggered = state;
@@ -394,7 +397,7 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
         #endregion
 
-        protected virtual void SetupTrigger(World world)
+        protected override void SetupPhysics(World world)
         {
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_width), ConvertUnits.ToSimUnits(_height), 0f);
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);

@@ -220,7 +220,7 @@ namespace GameLibrary.GameLogic.Objects
                     
                 }
 
-                Player.Instance.GrabRotation = rotation;
+                Player.Instance.GrabRotation = Math.Abs(rotation);
 
                 if (InputManager.Instance.Jump(true) || InputManager.Instance.Grab(true) || Player.Instance.PlayerState == PlayerState.Dead)
                 {

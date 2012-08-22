@@ -34,6 +34,7 @@ using GameLibrary.GameLogic.Controls;
 using GameLibrary.Graphics.UI;
 using GameLibrary.GameLogic.Events;
 using GameLibrary.GameLogic.Characters;
+using GameLibrary.Audio;
 #endregion
 
 namespace GameLibrary.GameLogic.Objects.Triggers
@@ -46,11 +47,11 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
 #else
         private bool _triggered = false;
-        private TriggerType _triggerType = TriggerType.Automatic;
+        private TriggerType _triggerType = Triggers.TriggerType.PlayerInput;
 #endif
         
         [ContentSerializer(Optional = true)]
-        protected int _nextLevel;
+        protected int _nextLevel = 0;
 
         #endregion
 
@@ -90,17 +91,8 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         public Door()
             : base()
         {
-            
-        }
-
-        public override void Init(Vector2 position, string texLoc)
-        {
-            base.Init(position);
-
-            this._nextLevel = 0;
-            this._textureAsset = texLoc;
-            this._name = "ExitDoor";
             this._castShadows = false;
+            this._name = "ExitDoor";
         }
 
         #endregion
@@ -108,30 +100,19 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Load
         public override void Load(ContentManager content, World world)
         {
-            this._texture = content.Load<Texture2D>(_textureAsset);
-            this._origin = new Vector2(this._texture.Width, this._texture.Height) * 0.5f;
-
-#if EDITOR
-            if (_width == 0 || _height == 0)
-            {
-                this.Width = this._texture.Width;
-                this.Height = this._texture.Height;
-            }
-#else
-            this._triggerType = Triggers.TriggerType.PlayerInput;
-
-            this.SetupTrigger(world);
-
+#if !EDITOR
             if (this.Name == null || this.Name == "")
             {
                 throw new Exception("Doors must be given a name to properly change level.");
             }
 
             this._objectEvents.Add(new Event(this.Name, null, EventType.ENGINE_CHANGE_LEVEL, 0.0f, _nextLevel));
-
-            RegisterObject();
 #endif
+
+            base.Load(content, world);
         }
+
+        
         #endregion
 
         public override void Update(float delta)
@@ -143,12 +124,25 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 if (InputManager.Instance.Interact(true) && _triggered)
                 {
-                    FireEvent();
+                    this.FireEvent();
+                    switch (_materialType)
+                    {
+                        case Objects.MaterialType.Wood:
+                            {
+                                AudioManager.Instance.PlayCue("Door_Wood_Open", true);
+                                break;
+                            }
+                        default:
+                            {
+                                AudioManager.Instance.PlayCue("Door_Metal_Open", true);
+                                break;
+                            }
+                    }
                 }
             }
             else
             {
-                _triggered = false;
+                this._triggered = false;
             }
 #endif
         }
@@ -165,15 +159,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
                 null, this._tint, this._rotation, 
                 this._origin, 
                 SpriteEffects.None, this._zLayer);
-        }
-#else
-        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
-        {
-            sb.Draw(_texture, new Rectangle(
-                (int)(this._position.X),
-                (int)(this._position.Y),
-                (int)(_width),
-                (int)(_height)), null, this._tint, _rotation, _origin, SpriteEffects.None, this._zLayer);
         }
 #endif
         #endregion
@@ -248,19 +233,19 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 if (_triggerType == TriggerType.PlayerInput)
                 {
-                    HUD.Instance.ShowOnScreenMessage(true, " to use.");
+                    HUD.Instance.ShowOnScreenMessage(true, " to use.", ButtonIcon.Action3);
                 }
             }
             else
             {
-                HUD.Instance.ShowOnScreenMessage(false, "");
+                HUD.Instance.ShowOnScreenMessage(false, "", ButtonIcon.Action3);
             }
 
             this._triggered = state;
         }
         #endregion
 
-        protected void SetupTrigger(World world)
+        protected override void SetupPhysics(World world)
         {
             this.Body = BodyFactory.CreateRectangle(world, 
                 ConvertUnits.ToSimUnits(30), 
@@ -278,7 +263,6 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             
             this.Body.IsSensor = true;
             this.Body.Enabled = _enabled;
-            //this.Body.CollisionCategories = Category.Cat10;
         }
 
         public override void Enable()

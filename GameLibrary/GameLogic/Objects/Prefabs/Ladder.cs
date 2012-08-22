@@ -131,34 +131,11 @@ namespace GameLibrary.GameLogic.Objects
             }
             set { }
         }
-#else
-        [ContentSerializerIgnore]
-        public override float Height
-        {
-            get
-            {
-                if (_orientation == Direction.Horizontal)
-                    return -_width;
-                return _height * _climbableSections;
-            }
-        }
-
-        [ContentSerializerIgnore]
-        public override float Width
-        {
-            get
-            {
-                if (_orientation == Direction.Horizontal)
-                    return -_height * _climbableSections;
-                return _width;
-            }
-        }
 #endif
         #endregion
 
         #region Constructor and Load
         public Ladder() : base() { }
-
 
         public override void Load(ContentManager content, World world)
         {
@@ -189,12 +166,10 @@ namespace GameLibrary.GameLogic.Objects
         public override void Update(float delta)
         {
 #if !EDITOR
-            if (Player.Instance.PlayerState == PlayerState.Dead)
+            if (Player.Instance.PlayerState != PlayerState.Dead)
             {
-                return;
-            }
-            else
-            {
+                #region Disallow grabbing under certain conditions
+
                 if (_orientation == Direction.Vertical && (Camera.Instance.UpIs == UpIs.Left || Camera.Instance.UpIs == UpIs.Right))
                 {
                     return;
@@ -204,6 +179,8 @@ namespace GameLibrary.GameLogic.Objects
                 {
                     return;
                 }
+
+#endregion
 
                 if (_inRange)
                 {
@@ -244,13 +221,7 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
         {
-#if Development
-            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "Grabbed: " + Grabbed.ToString(), Position + new Vector2(20, 0), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "InRange: " + PlayerInRange.ToString(), Position + new Vector2(20, 15), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-            sb.DrawString(FontManager.Instance.GetFont(FontList.Debug), "Orientation: " + _orientation, Position + new Vector2(20, 45), Color.Red, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-#endif
-
-            sb.Draw(this._texture, ConvertUnits.ToDisplayUnits(this.Body.Position),
+            sb.Draw(_texture, _position,
                 new Rectangle(0, 0, (int)_width, (int)_height * _climbableSections),
                 _tint, this._rotation, new Vector2(_texture.Width, (_texture.Height * _climbableSections)) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
         }
@@ -329,13 +300,7 @@ namespace GameLibrary.GameLogic.Objects
 #if EDITOR
 
 #else
-            float newWidth = _width;
-
-            //  If the width is negative, make it positive.
-            if (newWidth < 0)
-            {
-                newWidth *= -1;
-            }
+            float newWidth = Math.Abs(_width);
 
             if (_orientation == Direction.Vertical)
             {
@@ -388,7 +353,9 @@ namespace GameLibrary.GameLogic.Objects
         /// </summary>
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (fixtureB == Player.Instance.GrabFixture)
+            Player instance = Player.Instance;
+
+            if (fixtureB == instance.GrabFixture && instance.PlayerState != PlayerState.Dead)
             {
                 if (!_touchingFixtures.Contains(fixtureB))
                 {

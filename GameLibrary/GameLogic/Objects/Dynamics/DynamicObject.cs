@@ -34,7 +34,7 @@ using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Objects
 {
-    public abstract class DynamicObject : PhysicsObject
+    public abstract class DynamicObject : StaticObject
     {
         #region Fields
         [ContentSerializer(Optional = true)]
@@ -128,19 +128,6 @@ namespace GameLibrary.GameLogic.Objects
         }
 #else
         [ContentSerializerIgnore]
-        public FixedPrismaticJoint PrismaticJoint
-        {
-            get
-            {
-                return _prismaticJoint;
-            }
-            protected set
-
-            {
-                _prismaticJoint = value;
-            }
-        }
-        [ContentSerializerIgnore]
         public bool MovingToStart
         {
             get
@@ -148,152 +135,63 @@ namespace GameLibrary.GameLogic.Objects
                 return _currentMovingDirection;
             }
         }
-        [ContentSerializerIgnore]
-        public virtual Direction MovementDirection
-        {
-            get
-            {
-                return _movementDirection;
-            }
-            protected set
-            {
-                _movementDirection = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public virtual float MotorSpeed
-        {
-            get
-            {
-                return _motorSpeed;
-            }
-            protected set
-            {
-                _motorSpeed = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public virtual Vector2 EndPosition
-        {
-            get
-            {
-                return _endPosition;
-            }
-            protected set
-            {
-                _endPosition = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public virtual bool StartsMoving
-        {
-            get
-            {
-                return _startsMoving;
-            }
-            protected set
-            {
-                _startsMoving = value;
-            }
-        }
-        [ContentSerializerIgnore]
-        public float TimeToReverse
-        {
-            get
-            {
-                return _timeToReverse;
-            }
-            protected set
-            {
-                _timeToReverse = value;
-            }
-        }
 #endif
         #endregion
 
-        #region Constructor and Initialization
+        #region Constructor
 
-        public DynamicObject()
-            : base()
-        {
-            
-        }
+
+        public DynamicObject() : base() { }
+
 
         public override void Init(Vector2 position, string tex)
         {
             base.Init(position, tex);
-
-            this._mass = 100.0f;
             this._endPosition = position + new Vector2(200, 0);
         }
 
+
         #endregion
-
-        public override void Load(ContentManager content, World world)
-        {
-            this._texture = content.Load<Texture2D>(this._textureAsset);
-
-            
-
-#if EDITOR
-            if (_width == 0 || _height == 0)
-            {
-                this.Width = this._texture.Width;
-                this.Height = this._texture.Height;
-            }
-#else
-            this.RegisterObject();
-            this.SetupPhysics(world);
-
-            if (_startsMoving)
-            {
-                this._isMoving = true;
-                this._prismaticJoint.MotorSpeed = _motorSpeed;
-            }
-#endif
-
-            this._origin = new Vector2(_width, _height) * 0.5f;
-        }
 
         public override void Update(float delta)
         {
-#if EDITOR
-
-#else
-            if ((this.PrismaticJoint.JointTranslation >= this.PrismaticJoint.UpperLimit && !this.MovingToStart) ||
-                    (this.PrismaticJoint.JointTranslation <= this.PrismaticJoint.LowerLimit && this.MovingToStart) ||
-                    _elapsedTimer > 0.0f)
+#if !EDITOR
+            if (_isMoving)
             {
-
-                //  If so zero the speed. Fixes bouncing errors in farseer.
-                if (this._prismaticJoint.MotorSpeed != 0)
+                if ((_prismaticJoint.JointTranslation >= _prismaticJoint.UpperLimit && !this.MovingToStart) ||
+                        (_prismaticJoint.JointTranslation <= _prismaticJoint.LowerLimit && this.MovingToStart) ||
+                        _elapsedTimer > 0.0f)
                 {
-                    this._prismaticJoint.MotorSpeed = 0.0f;
 
-                    if (_soundEffect != null && !_soundEffect.IsStopped)
+                    //  If so zero the speed. Fixes bouncing errors in farseer.
+                    if (this._prismaticJoint.MotorSpeed != 0)
                     {
-                        _soundEffect.Stop(AudioStopOptions.AsAuthored);
+                        this._prismaticJoint.MotorSpeed = 0.0f;
+
+                        if (_soundEffect != null && !_soundEffect.IsStopped)
+                        {
+                            _soundEffect.Stop(AudioStopOptions.AsAuthored);
+                        }
                     }
+
+                    //  Update stationary timers
+                    this._elapsedTimer += delta;
+
+                    //  Check if the stationary time exceeds the pause time
+                    if (_elapsedTimer >= _timeToReverse)
+                    {
+                        //  Swap direction
+                        this._currentMovingDirection = !this._currentMovingDirection;
+
+                        //  Reverse the motor speed and apply to the motor.
+                        this._motorSpeed = -this._motorSpeed;
+                        this.Start();
+
+                        //  Zero timer for next go around
+                        this._elapsedTimer = 0.0f;
+                    }
+
                 }
-
-                //  Update stationary timers
-                this._elapsedTimer += delta;
-
-                //  Check if the stationary time exceeds the pause time
-                if (_elapsedTimer >= _timeToReverse)
-                {
-                    //  Swap direction
-                    this._currentMovingDirection = !this._currentMovingDirection;
-
-                    //  Reverse the motor speed and apply to the motor.
-                    this._motorSpeed = -this._motorSpeed;
-                    this.Start();
-
-                    //  Zero timer for next go around
-                    this._elapsedTimer = 0.0f;
-                }
-
-
             }
 #endif
         }
@@ -352,13 +250,17 @@ namespace GameLibrary.GameLogic.Objects
             this._prismaticJoint.LimitEnabled = true;
             this._prismaticJoint.MotorEnabled = true;
             this._prismaticJoint.MaxMotorForce = float.MaxValue;
+
+            if (_startsMoving)
+            {
+                this._isMoving = true;
+                this._prismaticJoint.MotorSpeed = _motorSpeed;
+            }
 #endif
         }
         #endregion
 
         protected override void SetupPhysics(World world) { }
-
-
 
         #endregion
 
@@ -431,6 +333,5 @@ namespace GameLibrary.GameLogic.Objects
         
 #endif
         #endregion
-
     }
 }

@@ -23,12 +23,15 @@ namespace GameLibrary.GameLogic.Objects
             this._materialType = Objects.MaterialType.Cushion;
             base.SetupPhysics(world);
             this.Body.OnCollision += Body_OnCollision;
+            this.Body.OnSeparation += Body_OnSeparation;
 #endif
         }
 
 #if !EDITOR
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
+            //  Get the current amount of touching fixtures to 
+            //  compare later.
             int fixCount = _touchingFixtures.Count;
 
             if (!_touchingFixtures.Contains(fixtureB) && 
@@ -37,6 +40,8 @@ namespace GameLibrary.GameLogic.Objects
                 _touchingFixtures.Add(fixtureB);
             }
 
+            //  If a fixture has been added or removed,
+            //  make the bouncing noise.
             if (_touchingFixtures.Count != fixCount)
             {
                 AudioManager.Instance.PlayCue("Bounce", true);

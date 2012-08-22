@@ -121,6 +121,13 @@ namespace GameLibrary.GameLogic.Objects
                 new Rectangle(0, 0, (int)this._width, (int)this._height),
                 this._tint * 0.4f, this._rotation, new Vector2(this._width, this._height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
         }
+#else
+        public override void Draw(SpriteBatch sb, GraphicsDevice graphics)
+        {
+            sb.Draw(_texture, ConvertUnits.ToDisplayUnits(Body.Position), new Rectangle(0, 0, (int)_width, (int)_height), _tint,
+                Body.Rotation, new Vector2(_width, _height) * 0.5f, 1.0f, SpriteEffects.None, _zLayer);
+        }
+
 #endif
         #endregion
 

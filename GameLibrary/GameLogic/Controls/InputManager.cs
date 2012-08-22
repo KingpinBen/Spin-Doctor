@@ -35,6 +35,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using System.Threading;
 using GameLibrary.GameLogic.Characters;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 #endregion
 
 namespace GameLibrary.GameLogic.Controls
@@ -76,7 +78,9 @@ namespace GameLibrary.GameLogic.Controls
         private MouseState _currentMouseState, _lastMouseState;
         private GamePadState _currentGamepadState, _lastGamepadState;
 
-        private bool _isGamePad;
+        private Texture2D[] _buttonTextures = new Texture2D[7];
+
+        private bool _isGamePad = false;
 
         public float VibrationTime { get; internal set; }
         public float VibrationIntensity { get; internal set;}
@@ -92,14 +96,54 @@ namespace GameLibrary.GameLogic.Controls
             }
         }
 
+        public Texture2D[] ButtonTextures
+        {
+            get
+            {
+                return _buttonTextures;
+            }
+        }
+        /// <summary>
+        /// A, B, X, Y, LT, RT, LStick
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public Texture2D GetButtonTexture(int i)
+        {
+            return _buttonTextures[i];
+        }
+
         #endregion
 
-        public void Load()
+        public void Load(ContentManager content)
         {
             if (GamePad.GetState(PlayerIndex.One).IsConnected)
-                _isGamePad = true;
-            else 
-                _isGamePad = false;
+            {
+                this._isGamePad = true;
+            }
+
+            string path = "Assets/Other/Controls/";
+
+            if (_isGamePad)
+            {
+                this._buttonTextures[0] = content.Load<Texture2D>(path + "xboxControllerButtonA");
+                this._buttonTextures[1] = content.Load<Texture2D>(path + "xboxControllerButtonB");
+                this._buttonTextures[2] = content.Load<Texture2D>(path + "xboxControllerButtonY");
+                this._buttonTextures[3] = content.Load<Texture2D>(path + "xboxControllerButtonX");
+                this._buttonTextures[4] = content.Load<Texture2D>(path + "xboxControllerLeftTrigger");
+                this._buttonTextures[5] = content.Load<Texture2D>(path + "xboxControllerRightTrigger");
+                this._buttonTextures[6] = content.Load<Texture2D>(path + "xboxControllerLeftThumbstick");
+            }
+            else
+            {
+                this._buttonTextures[0] = content.Load<Texture2D>(path + "key-space");
+                this._buttonTextures[1] = content.Load<Texture2D>(path + "key-esc");
+                this._buttonTextures[2] = content.Load<Texture2D>(path + "key-e");
+                this._buttonTextures[3] = _buttonTextures[2];
+                this._buttonTextures[4] = content.Load<Texture2D>(path + "key-left");
+                this._buttonTextures[5] = content.Load<Texture2D>(path + "key-right");
+                this._buttonTextures[6] = content.Load<Texture2D>(path + "key-wasd");
+            }
         }
 
         #region Key Down Properties

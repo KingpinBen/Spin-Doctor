@@ -7,9 +7,10 @@ namespace GameLibrary.Graphics.UI
 {
     public enum ButtonIcon
     {
-        None,
-        Continue,
-        Interact,
-        Cancel
+        None = -1,
+        Action1,
+        Action2,
+        Action3,
+        Action4
     }
 }

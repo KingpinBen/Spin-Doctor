@@ -51,16 +51,17 @@ namespace SpinDoctor
 
         public Game1()
         {
-            this.IsMouseVisible = true;
             this.Content.RootDirectory = "Content";
             this.IsFixedTimeStep = false;
             this.Window.Title = "Spin Doctor Beta";
 
             //  Setup the graphics manager
-            _graphics = new GraphicsDeviceManager(this);
-            
-            _graphics.SynchronizeWithVerticalRetrace = true;
-            _graphics.ApplyChanges();
+            this._graphics = new GraphicsDeviceManager(this);
+            this._graphics.PreferredBackBufferWidth = 1280;
+            this._graphics.PreferredBackBufferHeight = 720;
+            this._graphics.PreferMultiSampling = true;
+            this._graphics.SynchronizeWithVerticalRetrace = true;
+            this._graphics.ApplyChanges();
             
             ConvertUnits.SetDisplayUnitToSimUnitRatio(24f);
 
@@ -72,9 +73,10 @@ namespace SpinDoctor
 
         protected override void Initialize()
         {
+            GameSettings instance = GameSettings.Instance;
+
             SaveManager.Instance.LoadSettings();
 
-            GameSettings instance = GameSettings.Instance;
             ResolutionData resolution;
             resolution.Width = _graphics.PreferredBackBufferWidth;
             resolution.Height = _graphics.PreferredBackBufferHeight;

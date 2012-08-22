@@ -237,47 +237,7 @@ namespace GameLibrary.GameLogic.Characters
 #endif
         }
 
-        /// <summary>
-        /// Adds required aniations to the dict.
-        /// </summary>
-        protected override void AddAnimations()
-        {
-            base.AddAnimations();
-
-            string spriteSheetLocation = "Assets/Images/Spritesheets/";
-
-            //Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "Running-Sheet");
-            Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "HarlandRun");
-            Texture2D idle = _content.Load<Texture2D>(spriteSheetLocation + "HarlandIdle");
-            Texture2D falling = _content.Load<Texture2D>(spriteSheetLocation + "HarlandFall");
-            //  Jump1
-            //  Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "HarlandJump");
-            //  Jump2
-            Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "HarlandJump2");
-            Texture2D climbing = _content.Load<Texture2D>(spriteSheetLocation + "HarlandLadder");
-            Texture2D death = _content.Load<Texture2D>(spriteSheetLocation + "HarlandDeath");
-            Texture2D swinging = _content.Load<Texture2D>(spriteSheetLocation + "HarlandSwing");
-
-            //_animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));
-            _animations.Add("Run", new FrameAnimation(running, 24, new Point(446, 466), 90.0f, new Point(6, 4), false, 30));
-            _animations["Run"].Scale = 0.35f;
-
-            _animations.Add("Idle", new FrameAnimation(idle, 21, new Point(268, 468), 90.0f, new Point(6, 4), false, 16));
-            _animations["Idle"].Scale = 0.35f;
-
-            _animations.Add("Falling", new FrameAnimation(falling, 21, new Point(291, 462), 0, new Point(6, 4), false));
-            _animations["Falling"].Scale = 0.363f;
-            //  Jump1
-            //  _animations.Add("Jumping", new FrameAnimation(jumping, 16, new Point(471, 480), 0, new Point(6, 3), true));
-            //  Jump2
-            _animations.Add("Jumping", new FrameAnimation(jumping, 22, new Point(313, 464), 0, new Point(6, 3), true));
-            _animations["Jumping"].Scale = 0.36f;
-            _animations.Add("Climbing", new FrameAnimation(climbing, 20, new Point(233, 503), 0, new Point(6, 4), false, 30));
-            _animations["Climbing"].Scale = 0.41f;
-            _animations.Add("Dead", new FrameAnimation(death, 26, new Point(587, 480), 0, new Point(6, 5), true, 48));
-            _animations.Add("Swinging", new FrameAnimation(swinging, 1, new Point(640, 488), 0, new Point(1, 1), true, 1));
-            _animations["Swinging"].Scale = 0.34f;
-        }
+        
 
         #endregion
 
@@ -326,10 +286,6 @@ namespace GameLibrary.GameLogic.Characters
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            SpriteFont font = FontManager.Instance.GetFont(FontList.Debug);
-
-            spriteBatch.DrawString(font, _airTime.ToString(), ConvertUnits.ToDisplayUnits(this.Body.Position) + new Vector2(100,0), Color.White, -Camera.Instance.Rotation, Vector2.Zero, 1.2f, SpriteEffects.None, 0.0f);
-
             base.Draw(spriteBatch);
         }
 
@@ -337,7 +293,9 @@ namespace GameLibrary.GameLogic.Characters
 
         #region Private Methods
 
-        #region Collisions
+
+
+        #region Collision Events
 
 
         #region Separation
@@ -413,7 +371,7 @@ namespace GameLibrary.GameLogic.Characters
                 {
                     AudioManager.Instance.StopCue("Harland_Falling", Microsoft.Xna.Framework.Audio.AudioStopOptions.AsAuthored);
 
-                    if (type.ToString() == "Cushion")
+                    if (type != null && type.ToString() == "Cushion")
                     {
                         //  UserData 1 means absorbs falling damage, so don't kill.
                         AudioManager.Instance.PlayCue("Harland_Land_Cushioned", true);
@@ -433,7 +391,7 @@ namespace GameLibrary.GameLogic.Characters
             }
             else
             {
-                if (fixtureB.Body.UserData != null || fixtureB.Body.UserData.ToString() != "")
+                if (fixtureB.Body.UserData != null && fixtureB.Body.UserData.ToString() != "")
                 {
                     if (_touchingFixtures.Count == 0)
                     {
@@ -465,40 +423,7 @@ namespace GameLibrary.GameLogic.Characters
 
         #endregion
 
-        #region Player Specific Settings
-
-        /// <summary>
-        /// Set up some player specific settings, such as the hitbox
-        /// </summary>
-        private void SetupPlayerSettings()
-        {
-            float height = ConvertUnits.ToSimUnits(_charHeight);
-            float width = ConvertUnits.ToSimUnits(_charWidth);
-
-            this._wheelBody.OnCollision += WheelBody_OnCollision;
-            this._wheelBody.OnSeparation += WheelBody_OnSeparation;
-            
-            this._mainBody.IsSensor = false;
-
-            float fixtureWidth = ConvertUnits.ToSimUnits(56);
-
-            Fixture grabBox = FixtureFactory.AttachRectangle(fixtureWidth * 0.5f, fixtureWidth * 0.5f, 0.0f, new Vector2(0, -height * 0.4f), this._mainBody);
-
-            Fixture hitbox = FixtureFactory.AttachRectangle(fixtureWidth, height, 0.0f, ConvertUnits.ToSimUnits(new Vector2(0, 28)), _mainBody);
-            this._mainBody.FixtureList[this._mainBody.FixtureList.Count - 1].IsSensor = true;
-            
-            this.PlayerState = PlayerState.Grounded;
-            this._canJump = true;
-            this._inAir = false;
-            this._airTime = 0.0f;
-
-            this._canDoubleJump = GameSettings.Instance.DoubleJumpEnabled;
-
-            this._wheelBody.CollisionCategories = Category.Cat10;
-            this._mainBody.CollisionCategories = Category.Cat10;
-        }
-
-        #endregion
+        
 
         #region Player State Dependent Methods
 
@@ -577,6 +502,7 @@ namespace GameLibrary.GameLogic.Characters
                 //  Reset any previous jump/fall timers.
                 this._airTime = 0.0f;
                 this._deadlyFall = false;
+                this._lastSafePosition = ConvertUnits.ToDisplayUnits(Body.Position);
 
                 //  Switch the animation and reset it incase the player
                 //  is already jumping.
@@ -588,6 +514,7 @@ namespace GameLibrary.GameLogic.Characters
 
                 //  then create the steam plume.
                 this.CreateSteamPlume();
+                AudioManager.Instance.PlayCue("Harland_Jump_Steam", true);
             }
         }
 
@@ -616,7 +543,10 @@ namespace GameLibrary.GameLogic.Characters
             if (_wheelJoint.MotorSpeed == 0)
             {
                 if (_playerState != Characters.PlayerState.Grounded)
+                {
                     this.PlayerState = PlayerState.Grounded;
+                    this._soundElapsed = 0.25f;
+                }
             }
             else
             {
@@ -627,11 +557,12 @@ namespace GameLibrary.GameLogic.Characters
 
                 if (_touchingFixtures.Count > 0)
                 {
-                    this._soundElapsed += delta;
-                    if (_soundElapsed > 0.5f)
+                    this._soundElapsed -= delta;
+
+                    if (_soundElapsed <= 0.0f)
                     {
                         PlayFootsteps();
-                        this._soundElapsed = 0.0f;
+                        this._soundElapsed = 0.5f;
                     }
                 }
             }
@@ -642,17 +573,20 @@ namespace GameLibrary.GameLogic.Characters
         {
             if (_touchingFixtures.Count > 0)
             {
-                //  Get the type of material it should play.
-                string materialType = _touchingFixtures[0].Body.UserData.ToString();
-
-                //  If the material type is a type we don't want, just escape.
-                if (materialType == null || materialType == "Static" || materialType == "None")
+                if (_touchingFixtures[0].Body.UserData != null)
                 {
-                    return;
-                }
+                    //  Get the type of material it should play.
+                    string materialType = _touchingFixtures[0].Body.UserData.ToString();
 
-                //  Play the material type footstep sound
-                AudioManager.Instance.PlayCue("Footsteps_" + materialType, true);
+                    //  If the material type is a type we don't want, just escape.
+                    if (materialType == null || materialType == "Static" || materialType == "None")
+                    {
+                        return;
+                    }
+
+                    //  Play the material type footstep sound
+                    AudioManager.Instance.PlayCue("Footsteps_" + materialType, true);
+                }
             }
         }
 
@@ -794,6 +728,8 @@ namespace GameLibrary.GameLogic.Characters
 
         #endregion
 
+
+
         #region Create Steam Plume
 
         /// <summary>
@@ -842,6 +778,84 @@ namespace GameLibrary.GameLogic.Characters
                 this._wheelBody.Enabled = active;
             }
         }
+
+        /// <summary>
+        /// Adds required aniations to the dict.
+        /// </summary>
+        protected override void AddAnimations()
+        {
+            base.AddAnimations();
+
+            string spriteSheetLocation = "Assets/Images/Spritesheets/";
+
+            //Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "Running-Sheet");
+            Texture2D running = _content.Load<Texture2D>(spriteSheetLocation + "HarlandRun");
+            Texture2D idle = _content.Load<Texture2D>(spriteSheetLocation + "HarlandIdle");
+            Texture2D falling = _content.Load<Texture2D>(spriteSheetLocation + "HarlandFall");
+            //  Jump1
+            //  Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "HarlandJump");
+            //  Jump2
+            Texture2D jumping = _content.Load<Texture2D>(spriteSheetLocation + "HarlandJump2");
+            Texture2D climbing = _content.Load<Texture2D>(spriteSheetLocation + "HarlandLadder");
+            Texture2D death = _content.Load<Texture2D>(spriteSheetLocation + "HarlandDeath");
+            Texture2D swinging = _content.Load<Texture2D>(spriteSheetLocation + "HarlandSwing");
+
+            //_animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));
+            _animations.Add("Run", new FrameAnimation(running, 24, new Point(446, 466), 65.0f, new Point(6, 4), false, 30));
+            _animations["Run"].Scale = 0.355f;
+
+            _animations.Add("Idle", new FrameAnimation(idle, 21, new Point(268, 468), 70, new Point(6, 4), false, 16));
+            _animations["Idle"].Scale = 0.35f;
+
+            _animations.Add("Falling", new FrameAnimation(falling, 21, new Point(291, 462), 100.0f, new Point(6, 4), false));
+            _animations["Falling"].Scale = 0.363f;
+            //  Jump1
+            //  _animations.Add("Jumping", new FrameAnimation(jumping, 16, new Point(471, 480), 0, new Point(6, 3), true));
+            //  Jump2
+            _animations.Add("Jumping", new FrameAnimation(jumping, 22, new Point(313, 464), 0, new Point(6, 3), true));
+            _animations["Jumping"].Scale = 0.36f;
+            _animations.Add("Climbing", new FrameAnimation(climbing, 20, new Point(233, 503), 0, new Point(6, 4), false, 30));
+            _animations["Climbing"].Scale = 0.41f;
+            _animations.Add("Dead", new FrameAnimation(death, 26, new Point(587, 480), 70, new Point(6, 5), true, 48));
+            _animations["Dead"].Scale = 0.35f;
+            _animations.Add("Swinging", new FrameAnimation(swinging, 1, new Point(640, 488), 0, new Point(1, 1), true, 1));
+            _animations["Swinging"].Scale = 0.32f;
+        }
+
+        #region Player Specific Settings
+
+        /// <summary>
+        /// Set up some player specific settings, such as the hitbox
+        /// </summary>
+        private void SetupPlayerSettings()
+        {
+            float height = ConvertUnits.ToSimUnits(_charHeight);
+            float width = ConvertUnits.ToSimUnits(_charWidth);
+
+            this._wheelBody.OnCollision += WheelBody_OnCollision;
+            this._wheelBody.OnSeparation += WheelBody_OnSeparation;
+
+            this._mainBody.IsSensor = false;
+
+            float fixtureWidth = ConvertUnits.ToSimUnits(56);
+
+            Fixture grabBox = FixtureFactory.AttachRectangle(fixtureWidth * 0.5f, fixtureWidth * 0.5f, 0.0f, new Vector2(0, -height * 0.4f), this._mainBody);
+
+            Fixture hitbox = FixtureFactory.AttachRectangle(fixtureWidth, height, 0.0f, ConvertUnits.ToSimUnits(new Vector2(0, 18)), _mainBody);
+            this._mainBody.FixtureList[this._mainBody.FixtureList.Count - 1].IsSensor = true;
+
+            this.PlayerState = PlayerState.Grounded;
+            this._canJump = true;
+            this._inAir = false;
+            this._airTime = 0.0f;
+
+            this._canDoubleJump = GameSettings.Instance.DoubleJumpEnabled;
+
+            this._wheelBody.CollisionCategories = Category.Cat10;
+            this._mainBody.CollisionCategories = Category.Cat10;
+        }
+
+        #endregion
 
         #endregion
 

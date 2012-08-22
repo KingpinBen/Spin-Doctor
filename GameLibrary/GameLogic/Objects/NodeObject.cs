@@ -9,6 +9,7 @@ using System.ComponentModel;
 using FarseerPhysics.Dynamics;
 using GameLibrary.GameLogic.Screens;
 using GameLibrary.GameLogic.Events;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Objects
 {

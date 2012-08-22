@@ -63,11 +63,11 @@ namespace GameLibrary.GameLogic.Objects
 #endif
 
         [ContentSerializer(Optional = true)]
-        private float _timeBetweenPulses;
+        private float _timeBetweenPulses = 3.0f;
         [ContentSerializer(Optional = true)]
-        private string _exhaustTextureAsset;
+        private string _exhaustTextureAsset = "Assets/Images/Effects/steam";
         [ContentSerializer(Optional = true)]
-        private float _timePulsing;
+        private float _timePulsing = 1.0f;
         [ContentSerializer(Optional = true)]
         private Vector2 _triggerOffset = Vector2.Zero;
 
@@ -190,18 +190,6 @@ namespace GameLibrary.GameLogic.Objects
 
         public PushingPlatform() : base() { }
 
-        public override void Init(Vector2 position, string texLoc)
-        {
-            base.Init(position);
-
-            this._textureAsset = texLoc;
-            this._tint = Color.White;
-            this._exhaustTextureAsset = "Assets/Images/Effects/steam";
-            this._timePulsing = 1.0f;
-            this._timeBetweenPulses = 3.0f;
-            
-        }
-
         public override void Load(ContentManager content, World world)
         {
             this._texture = content.Load<Texture2D>(this._textureAsset);
@@ -222,7 +210,7 @@ namespace GameLibrary.GameLogic.Objects
                 this._triggerHeight = 250.0f;
             }
 #else
-            this.SetupTrigger(world);
+            this.SetupPhysics(world);
             this.RegisterObject();
             this._soundEffectAsset = "Steam_Emit_Constant";
 
@@ -332,6 +320,8 @@ namespace GameLibrary.GameLogic.Objects
 
 #if !EDITOR
 
+        #region Collision Events
+
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
             _touchingFixtures.Remove(fixtureB);
@@ -354,7 +344,9 @@ namespace GameLibrary.GameLogic.Objects
             return true;
         }
 
-        protected override void SetupTrigger(World world)
+#endregion
+
+        protected override void SetupPhysics(World world)
         {
             this.Body = BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(_triggerWidth), ConvertUnits.ToSimUnits(_triggerHeight), 1.0f); 
             this.Body.Position = GetTriggerPosition(true);

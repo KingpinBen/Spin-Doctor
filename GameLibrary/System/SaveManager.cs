@@ -43,7 +43,7 @@ namespace GameLibrary.System
         /// </summary>
         public void NewGame()
         {
-            //  Get a local instance of the game settings.
+            //  Get a local reference to the game settings.
             GameSettings instance = GameSettings.Instance;
 
             //  Make sure the backpack is turned off for the

@@ -32,6 +32,8 @@ using Microsoft.Xna.Framework.Content;
 using System.Windows.Forms;
 using System.Diagnostics;
 using GameLibrary.Helpers;
+using Microsoft.Xna.Framework.Media;
+using System.IO;
 #endregion
 
 namespace GameLibrary.Audio
@@ -39,6 +41,8 @@ namespace GameLibrary.Audio
     public class AudioManager
     {
         #region Fields
+
+        private Game _game;
 
         private AudioEngine _engine;
         private SoundBank _soundBank;
@@ -51,7 +55,7 @@ namespace GameLibrary.Audio
 
 
         private List<Cue> _activeSounds = new List<Cue>(255);
-       
+        Dictionary<string, Song> _musicBank = new Dictionary<string,Song>();       
 
         #endregion
 
@@ -81,6 +85,7 @@ namespace GameLibrary.Audio
             //  If we can use the 
             if (this._engine != null)
             {
+                MediaPlayer.Volume = this._musicVolume * 0.1f;
                 this._engine.GetCategory("Music").SetVolume(this._musicVolume * 0.1f);
             }
         }
@@ -174,8 +179,10 @@ namespace GameLibrary.Audio
 
         private AudioManager() { }
         
-        public void Load()
+        public void Load(Game game)
         {
+            this._game = game;
+
             while (_engine == null)
             {
                 try
@@ -269,6 +276,19 @@ namespace GameLibrary.Audio
             }
         }
 
+        public void StopAllCues(AudioStopOptions option)
+        {
+            for (int i = 0; i < _activeSounds.Count; i++)
+            {
+                Cue cue = _activeSounds[i];
+
+                if (!cue.IsStopped)
+                {
+                    cue.Stop(option);
+                }
+            }
+        }
+
         public void StopAllSounds(AudioStopOptions option)
         {
             for(int i = 0; i < _activeSounds.Count; i++)
@@ -280,8 +300,107 @@ namespace GameLibrary.Audio
                     cue.Stop(option);
                 }
             }
+
+            this.StopMusic();
         }
 
         #endregion
+
+        #region Music Control
+
+        public void LoadSong(string name, string nameAlias)
+        {
+            string path = Defines.SYSTEM_AUDIO_DIRECTORY;
+
+            if (File.Exists("./Content/" + path + name + ".wma"))
+            {
+                Song song = this._game.Content.Load<Song>("Assets/Audio/" + name);
+
+                if (!_musicBank.ContainsKey(nameAlias))
+                {
+                    this._musicBank.Add(nameAlias, song);
+                    MediaPlayer.Play(song);
+                }
+            }
+        }
+
+        public void StopMusic()
+        {
+            if (MediaPlayer.State != MediaState.Stopped)
+            {
+                MediaPlayer.Stop();
+                this._musicBank.Clear();
+            }
+        }
+
+
+        #endregion
+
+        public void PauseSounds()
+        {
+            for (int i = 0; i < _activeSounds.Count; i++)
+            {
+                if (!_activeSounds[i].IsPaused)
+                {
+                    _activeSounds[i].Pause();
+                }
+            }
+
+            if (MediaPlayer.State == MediaState.Playing)
+            {
+                MediaPlayer.Pause();
+            }
+        }
+
+        public void ResumeSounds()
+        {
+            for (int i = 0; i < _activeSounds.Count; i++)
+            {
+                if (_activeSounds[i].IsPaused)
+                {
+                    _activeSounds[i].Resume();
+                }
+            }
+
+            if (MediaPlayer.State == MediaState.Paused)
+            {
+                MediaPlayer.Resume();
+            }
+        }
+
+
+        public void PauseAllSounds(object sender, EventArgs e)
+        {
+            for (int i = 0; i < _activeSounds.Count; i++)
+            {
+                if (!_activeSounds[i].IsPaused)
+                {
+                    _activeSounds[i].Pause();
+                }
+            }
+
+            if (MediaPlayer.State == MediaState.Playing)
+            {
+                MediaPlayer.Pause();
+            }
+        }
+
+        public void ResumeAllSounds(object sender, EventArgs e)
+        {
+            for (int i = 0; i < _activeSounds.Count; i++)
+            {
+                if (_activeSounds[i].IsPaused)
+                {
+                    _activeSounds[i].Resume();
+                }
+            }
+
+            if (MediaPlayer.State == MediaState.Paused)
+            {
+                MediaPlayer.Resume();
+            }
+        }
+
+        
     }
 }

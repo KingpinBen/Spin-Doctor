@@ -344,7 +344,11 @@ namespace GameLibrary.Graphics.Drawing
                 this.Height = _texture.Height;
             }
 #else
-            this._singleFrameDimensions = new Point(_texture.Width, _texture.Height);
+            if (Width == 0 || Height == 0)
+            {
+                this._singleFrameDimensions = new Point(_texture.Width, _texture.Height);
+            }
+
             this.RegisterObject();
 #endif
         }
@@ -412,7 +416,7 @@ namespace GameLibrary.Graphics.Drawing
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(_texture, _position,
-                new Rectangle(0, 0, (int)Width, (int)Height), _tint * _alpha, _rotation, new Vector2(_singleFrameDimensions.X, _singleFrameDimensions.Y) * 0.5f, _scale, SpriteEffects.None, _zLayer);
+                new Rectangle(0, 0, (int)_singleFrameDimensions.X, (int)_singleFrameDimensions.Y), _tint * _alpha, _rotation, new Vector2(_singleFrameDimensions.X, _singleFrameDimensions.Y) * 0.5f, _scale, SpriteEffects.None, _zLayer);
         }
 #else
         public override void Draw(SpriteBatch sb, GraphicsDevice graphics)

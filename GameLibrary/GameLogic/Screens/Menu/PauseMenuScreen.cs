@@ -5,6 +5,7 @@ using System.Text;
 using GameLibrary.GameLogic.Screens.Menu.Options;
 using GameLibrary.Graphics.UI;
 using Microsoft.Xna.Framework;
+using GameLibrary.Audio;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
@@ -22,21 +23,18 @@ namespace GameLibrary.GameLogic.Screens.Menu
             // Create our menu entries.
             MenuEntry resumeGameMenuEntry = new MenuEntry("Resume Game");
             MenuEntry restartGameMenuEntry = new MenuEntry("Restart Level");
-            MenuEntry HUBGameMenuEntry = new MenuEntry("Return to Hub");
             MenuEntry journalMenuEntry = new MenuEntry("Open Journal");
             MenuEntry sep = new MenuEntry("sep");
             MenuEntry quitGameMenuEntry = new MenuEntry("Quit Game");
 
             resumeGameMenuEntry.Origin = TextAlignment.Centre;
             restartGameMenuEntry.Origin = TextAlignment.Centre;
-            HUBGameMenuEntry.Origin = TextAlignment.Centre;
             journalMenuEntry.Origin = TextAlignment.Centre;
             quitGameMenuEntry.Origin = TextAlignment.Centre;
 
             // Hook up menu event handlers.
             resumeGameMenuEntry.Selected += OnCancel;
             restartGameMenuEntry.Selected += RestartLevelMenuEntrySelected;
-            HUBGameMenuEntry.Selected += ReturnHUBMenuEntrySelected;
             journalMenuEntry.Selected += JournalMenuEntrySelected;
             quitGameMenuEntry.Selected += QuitGameMenuEntrySelected;
 
@@ -45,7 +43,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
             // Add entries to the menu.
             MenuEntries.Add(resumeGameMenuEntry);
             MenuEntries.Add(restartGameMenuEntry);
-            MenuEntries.Add(HUBGameMenuEntry);
             MenuEntries.Add(journalMenuEntry);
             MenuEntries.Add(sep);
             MenuEntries.Add(quitGameMenuEntry);
@@ -60,6 +57,15 @@ namespace GameLibrary.GameLogic.Screens.Menu
             this._itemsPosition = new Vector2(
                 this.ScreenManager.GraphicsDevice.Viewport.Width * 0.5f,
                 this.ScreenManager.GraphicsDevice.Viewport.Height * 0.33f);
+
+            AudioManager.Instance.PauseSounds();
+        }
+
+        public override void Deactivate()
+        {
+            AudioManager.Instance.ResumeSounds();
+
+            base.Deactivate();
         }
 
         protected override void UpdateMenuEntryLocations()
@@ -86,17 +92,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
         void JournalMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             this.ScreenManager.AddScreen(new JournalScreen(), e.PlayerIndex);
-        }
-
-        void ReturnHUBMenuEntrySelected(object sender, PlayerIndexEventArgs e)
-        {
-            const string message = "Return to Hub?";
-
-            MessageBoxScreen confirmReturnMessageBox = new MessageBoxScreen(message);
-
-            confirmReturnMessageBox.Accepted += ConfirmReturnMessageBoxAccepted;
-
-            ScreenManager.AddScreen(confirmReturnMessageBox, ControllingPlayer);
         }
 
         void QuitGameMenuEntrySelected(object sender, PlayerIndexEventArgs e)

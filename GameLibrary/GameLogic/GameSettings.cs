@@ -22,9 +22,7 @@ namespace GameLibrary.GameLogic
 
         private GameSettings()
         {
-            this._resolution.Width = 800;
-            this._resolution.Height = 600;
-            this._resolution.Fullscreen = false;
+            _resolution = new ResolutionData(1280, 720, true);
         }
         #endregion
 

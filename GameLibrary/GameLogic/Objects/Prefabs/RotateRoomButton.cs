@@ -38,6 +38,7 @@ using GameLibrary.GameLogic.Controls;
 using GameLibrary.Helpers;
 using GameLibrary.GameLogic.Objects.Triggers;
 using System.ComponentModel;
+using GameLibrary.GameLogic.Characters;
 
 namespace GameLibrary.GameLogic.Objects
 {
@@ -54,6 +55,7 @@ namespace GameLibrary.GameLogic.Objects
 #else
         private bool _aboutToRotate;
         private float _elapsed;
+        private bool _firedRecently;
 #endif
 
         #endregion
@@ -157,7 +159,7 @@ namespace GameLibrary.GameLogic.Objects
             this._message = " to rotate " + RDirection;
 
             this._triggerWidth = this._triggerHeight = this._texture.Width * 0.5f;
-            this.SetupTrigger(world);
+            this.SetupPhysics(world);
             this.RegisterObject();
 #endif
         }
@@ -165,15 +167,24 @@ namespace GameLibrary.GameLogic.Objects
         public override void Update(float delta)
         {
 #if !EDITOR
-            if (_triggered && !_aboutToRotate)
+            if (_triggered) 
             {
-                //  If the player is touching the trigger and it's not
-                //  about to rotate, check for an interation input.
-                if (InputManager.Instance.Interact(true))
+                if (Player.Instance.PlayerState == PlayerState.Dead)
                 {
-                    //  If it's been pushed, push it over to aboutToRotate
-                    //  to countdown for room rotation.
-                    this._aboutToRotate = true;
+                    ChangeTriggered(false);
+                    return;
+                }
+
+                if (!_aboutToRotate && !_firedRecently)
+                {
+                    //  If the player is touching the trigger and it's not
+                    //  about to rotate, check for an interation input.
+                    if (InputManager.Instance.Interact(true))
+                    {
+                        //  If it's been pushed, push it over to aboutToRotate
+                        //  to countdown for room rotation.
+                        this._aboutToRotate = true;
+                    }
                 }
             }
 
@@ -181,8 +192,7 @@ namespace GameLibrary.GameLogic.Objects
             {
                 //  If the room has been triggered for a rotate, do a 
                 //  countdown.
-
-                _elapsed += delta;
+                this._elapsed += delta;
 
                 //  Check if the elapsed since trigger has passed the delay
                 //  timer
@@ -199,8 +209,24 @@ namespace GameLibrary.GameLogic.Objects
                     }
 
                     //  Reset the object.
-                    _elapsed = 0.0f;
-                    _aboutToRotate = false;
+                    this._elapsed = 0.0f;
+                    this._aboutToRotate = false;
+                    //  Set the object as having been fired recently.
+                    this._firedRecently = true;
+                }
+            }
+            else
+            {
+                if (_firedRecently)
+                {
+                    this._elapsed += delta;
+
+                    //  Has the elapsed timer exceeded the CD timer?
+                    if (_elapsed >= 1.5)
+                    {
+                        //  Reset the ability to rotate.
+                        this._firedRecently = false;
+                    }
                 }
             }
 #endif

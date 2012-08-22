@@ -90,7 +90,7 @@ namespace GameLibrary.Levels
         {
             Vector2 origin = new Vector2(this._gearsTex.Width, this._gearsTex.Height) * 0.5f;
 
-            sb.Draw(_background, Vector2.Zero, null, Color.White * 1.0f, 0.0f, new Vector2(_background.Width, _background.Height) * 0.5f, _scale * 2.0f, SpriteEffects.None, 1.0f);
+            sb.Draw(_background, Vector2.Zero, null, Color.DarkGoldenrod * 0.3f, 0.0f, new Vector2(_background.Width, _background.Height) * 0.5f, _scale * 2.0f, SpriteEffects.None, 1.0f);
             sb.Draw(_gearsTex, _topLeftGear, null, Color.White, _gearRotation, origin, _scale, SpriteEffects.None, 0.3f);
             sb.Draw(_gearsTex, _topRightGear, null, Color.White, _gearRotation, origin, _scale, SpriteEffects.None, 0.3f);
             sb.Draw(_gearsTex, _botLeftGear, null, Color.White, _gearRotation, origin, _scale, SpriteEffects.None, 0.3f);

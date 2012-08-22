@@ -107,14 +107,14 @@ namespace GameLibrary.Graphics.UI
         /// <param name="ButtonType">What type, if at all, button should be shown next to the text</param>
         /// <param name="AnimationTime">How long between animation cusps</param>
         /// <param name="alignment">From the position of the text, where should the text be aligned from?</param>
-        public AnimatedText(string TextToDisplay, ButtonIcon ButtonType, float AnimationTime, TextAlignment alignment)
+        public AnimatedText(string TextToDisplay, float AnimationTime, TextAlignment alignment)
             : base(TextToDisplay)
         {
             this._animationPeak = false;
             this._elapsedTimer = 0f;
             this._textAlignment = alignment;
             this._animationTime = AnimationTime;
-            this._buttonType = ButtonType;
+            this._buttonType = ButtonIcon.None;
             this._alpha = _minimumAlpha;
         }
         #endregion
@@ -151,11 +151,6 @@ namespace GameLibrary.Graphics.UI
                 else
                     _alpha = Math.Min(_alpha + delta, 1.0f);
             }
-        }
-
-        public override void Draw(SpriteBatch sb)
-        {
-            base.Draw(sb);
         }
 
         #region Public Methods

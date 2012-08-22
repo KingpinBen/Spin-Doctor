@@ -81,6 +81,8 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
+        #region Constructor and Load
+
         public Note() : base() { }
 
         public override void Init(Vector2 Position, string texLoc)
@@ -94,22 +96,30 @@ namespace GameLibrary.GameLogic.Objects
 
         public override void Load(ContentManager content, World world)
         {
-#if !EDITOR
-            if (GameSettings.Instance.FoundEntries[_noteID])
-            {
-                _beenCollected = true;
-                RemoveNote();
-                return;
-            }
 
+            //  We need to load all the note before we remove it as it's 
+            //  only removed on the next update cycle, so it draws at least 
+            //  once.
+            base.Load(content, world);
+
+#if !EDITOR
             this._castShadows = false;
             this._triggerType = TriggerType.PlayerInput;
             this._message = " to pick up.";
+
+            if (GameSettings.Instance.FoundEntries[_noteID - 1])
+            {
+                this._beenCollected = true;
+                this.RemoveNote();
+            }
 #endif
             
-            base.Load(content, world);
+            
         }
 
+        #endregion
+
+        #region Update and Draw
         public override void Update(float delta)
         {
 #if !EDITOR
@@ -123,14 +133,14 @@ namespace GameLibrary.GameLogic.Objects
 
                 if (InputManager.Instance.Interact(true))
                 {
-                    CreatePopUp();
-                    RemoveNote();
+                    this.CreatePopUp();
+                    this.RemoveNote();
                 }
             }
 #endif
         }
 
-        #region Draw
+        
 #if EDITOR
         public override void Draw(SpriteBatch spriteBatch)
         {
@@ -140,8 +150,9 @@ namespace GameLibrary.GameLogic.Objects
 #endif
         #endregion
 
+        #region Private Methods
 #if !EDITOR
-        private void CreatePopUp()
+        void CreatePopUp()
         {
             //  We call this before making the note screen incase we end up having text on there too.
             ChangeTriggered(false);
@@ -153,10 +164,11 @@ namespace GameLibrary.GameLogic.Objects
             AudioManager.Instance.PlayCue("Note_Pick_Up", true);
         }
 
-        private void RemoveNote()
+        void RemoveNote()
         {
             Camera.Instance.GetGameScreen().RemoveObject(this);
         }
 #endif
+        #endregion
     }
 }

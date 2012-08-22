@@ -21,9 +21,7 @@ namespace GameLibrary.GameLogic.Objects
     {
         #region Fields
 
-#if EDITOR
-
-#else
+#if !EDITOR
         private List<FixedPrismaticJoint> _joints = new List<FixedPrismaticJoint>();
         private List<Body> _shaftBodies = new List<Body>();
 #endif
@@ -39,6 +37,7 @@ namespace GameLibrary.GameLogic.Objects
         private bool _isLethal = false;
 
         #endregion
+
 
         #region Properties
 
@@ -81,7 +80,12 @@ namespace GameLibrary.GameLogic.Objects
 
         #endregion
 
+
+        #region Constructor and Load
+
+
         public Piston() : base() { }
+
 
         public void Init(Vector2 position, string tex, string texEnd)
         {
@@ -91,6 +95,7 @@ namespace GameLibrary.GameLogic.Objects
             this._isLethal = false;
         }
 
+
         public override void Load(ContentManager content, World world)
         {
             //  Load the crushing end piece texture.
@@ -99,7 +104,19 @@ namespace GameLibrary.GameLogic.Objects
                 this._crusherTexture.Width, this._crusherTexture.Height) * 0.5f;
 
             base.Load(content, world);
+
+#if !EDITOR
+            if (_startsMoving)
+            {
+                this._isMoving = true;
+                this._prismaticJoint.MotorSpeed = _motorSpeed;
+            }
+#endif
         }
+
+
+        #endregion
+
 
         #region Update and Draw
 
@@ -154,12 +171,10 @@ namespace GameLibrary.GameLogic.Objects
 
         #endregion
 
+
         #region Private Methods
 
-
 #if !EDITOR
-
-
         protected override void SetupPhysics(World world)
         {
             float textureWidth = ConvertUnits.ToSimUnits(this._texture.Width);
@@ -198,6 +213,8 @@ namespace GameLibrary.GameLogic.Objects
                 body.CollidesWith = Category.All & ~Category.Cat2 & ~Category.Cat20;
                 body.UserData = _materialType;
                 _shaftBodies.Add(body);
+
+
             }
 #endregion
 
@@ -246,6 +263,8 @@ namespace GameLibrary.GameLogic.Objects
             }
         }
 
+        #region Collisions
+
         bool TouchedLethal(Fixture fixA, Fixture fixB, Contact contact)
         {
             if (fixA == Body.FixtureList[0])
@@ -274,7 +293,8 @@ namespace GameLibrary.GameLogic.Objects
                 _touchingFixtures.Remove(fixB);
             }
         }
-#endif
+
+        #endregion
 
         void HandleJoint(float delta, FixedPrismaticJoint joint, float i )
         {
@@ -301,7 +321,7 @@ namespace GameLibrary.GameLogic.Objects
             }
 #endif
         }
-
+#endif
         #endregion
     }
 }

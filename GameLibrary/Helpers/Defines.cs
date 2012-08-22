@@ -28,6 +28,7 @@ namespace GameLibrary.Helpers
 
         public const string SYSTEM_SAVE_DIRECTORY = "./Data/SavedGame";
         public const string SYSTEM_SETTINGS_DIRECTORY = "./Data/Settings";
+        public const string SYSTEM_AUDIO_DIRECTORY = "./Assets/Audio/";
 
         //  The time separating the credit sections showing.
         public const float SYSTEM_CREDITS_SECT_SEPARATION = 5.0f;

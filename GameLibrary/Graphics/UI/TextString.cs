@@ -41,19 +41,21 @@ namespace GameLibrary.Graphics.UI
     class TextString
     {
         #region Fields
-        protected string _text;
+        
         protected SpriteFont _font;
-        protected ScreenAnchorLocation _anchorPoint;
+        protected Color _tint;
         protected Vector2 _textOrigin;
-        protected Vector2 _offset;
+        protected Vector2 _position;
+
         protected float _scale;
         protected float _alpha;
-        protected Color _tint;
+        protected string _text;
+        
         protected ButtonIcon _buttonType;
-        protected Texture2D _texture;
+        protected ScreenAnchorLocation _anchorPoint;
+        protected Texture2D[] _buttonTextures;
         protected TextAlignment _textAlignment;
-        private Vector2 _textureOffset;
-        protected Vector2 _position;
+        
 
         #endregion
 
@@ -70,13 +72,15 @@ namespace GameLibrary.Graphics.UI
                 _text = value;
             }
         }
-
         public virtual Vector2 Position
         {
             get
             {
-                
                 return _position;
+            }
+            set
+            {
+                _position = value;
             }
         }
         public Vector2 Origin
@@ -86,18 +90,7 @@ namespace GameLibrary.Graphics.UI
                 return _textOrigin;
             }
         }
-        public Vector2 Offset
-        {
-            get
-            {
-                return _offset;
-            }
-            set
-            {
-                _offset = value;
-            }
-        }
-        public float Scale
+        public float ButtonScale
         {
             get
             {
@@ -108,14 +101,18 @@ namespace GameLibrary.Graphics.UI
                 _scale = value;
             }
         }
+        public float TextScale { get; set; }
         public float Alpha
         {
             get
             {
                 return _alpha;
             }
+            set
+            {
+                _alpha = value;
+            }
         }
-
         public Color Tint
         {
             get
@@ -123,31 +120,50 @@ namespace GameLibrary.Graphics.UI
                 return _tint;
             }
         }
-
         public ButtonIcon ButtonType
         {
             get
             {
                 return _buttonType;
             }
+            set
+            {
+                _buttonType = value;
+            }
         }
-
-        public Texture2D ButtonTexture
+        private Texture2D ButtonTexture
         {
             get
             {
-                return _texture;
+                if (_buttonType == ButtonIcon.Action1)
+                {
+                    return _buttonTextures[0];
+                }
+                else if (_buttonType == ButtonIcon.Action2)
+                {
+                    return _buttonTextures[1];
+                }
+                else if (_buttonType == ButtonIcon.Action3)
+                {
+                    return _buttonTextures[2];
+                }
+                else
+                {
+                    return _buttonTextures[3];
+                }
             }
         }
-
         public TextAlignment TextAlignment
         {
             get
             {
                 return _textAlignment;
             }
+            set
+            {
+                _textAlignment = value;
+            }
         }
-
         public ScreenAnchorLocation AnchorPoint
         {
             get
@@ -165,9 +181,9 @@ namespace GameLibrary.Graphics.UI
         public TextString(string text)
         {
             this._text = text;
-            this._scale = 1.0f;
             this._alpha = 1.0f;
             this._tint = Color.White;
+            this.TextScale = 1.0f;
             this._anchorPoint = ScreenAnchorLocation.Centre;
         }
 
@@ -179,87 +195,60 @@ namespace GameLibrary.Graphics.UI
         /// <param name="content">Content</param>
         public virtual void Load(ContentManager content)
         {
-            #region Button Texture Load
+            this._buttonTextures = new Texture2D[4];
 
-            #region Cancel
-            if (_buttonType == ButtonIcon.Cancel)
+            InputManager instance = InputManager.Instance;
+
+            this._buttonTextures[0] = instance.GetButtonTexture(0);
+            this._buttonTextures[1] = instance.GetButtonTexture(1);
+            this._buttonTextures[2] = instance.GetButtonTexture(2);
+            this._buttonTextures[3] = instance.GetButtonTexture(3);
+
+            if (instance.IsGamepad)
             {
-                if (InputManager.Instance.IsGamepad)
-                {
-                    _texture = content.Load<Texture2D>
-                        ("Assets/Other/Controls/B");
-                }
-                else
-                {
-                    _texture = content.Load<Texture2D>
-                        ("Assets/Other/Controls/B");
-                }
-
-                this._textureOffset = new Vector2(_texture.Width * 1.2f, 0);
+                this._scale = 0.4f;
             }
-            #endregion
-
-            #region Continue
-            else if (_buttonType == ButtonIcon.Continue)
-            {
-                if (InputManager.Instance.IsGamepad)
-                {
-                    _texture = content.Load<Texture2D>
-                        ("Assets/Other/Controls/A");
-                }
-                else
-                {
-                    _texture = content.Load<Texture2D>
-                        ("Assets/Other/Controls/A");
-                }
-
-                this._textureOffset = new Vector2(_texture.Width * 1.2f, 0);
-            }
-            #endregion
-
-            #region Interact
-            else if (_buttonType == ButtonIcon.Interact)
-            {
-                if (InputManager.Instance.IsGamepad)
-                {
-                    _texture = content.Load<Texture2D>
-                        ("Assets/Other/Controls/Y");
-                }
-                else
-                {
-                    _texture = content.Load<Texture2D>
-                        ("Assets/Other/Controls/Y");
-                }
-
-                this._textureOffset = new Vector2(_texture.Width * 1.2f, 0);
-            }
-            #endregion
-
             else
             {
-                this._textureOffset = Vector2.Zero;
+                this._scale = 0.6f;
             }
-            #endregion
 
-            _font = FontManager.Instance.GetFont(FontList.GUI);
+            this._font = FontManager.Instance.GetFont(FontList.GUI);
 
             UpdateOrigin();
         }
         #endregion
 
+        #region Update and Draw
+
         public virtual void Update(float delta) { }
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(_font, _text, _position + _offset + (this._textureOffset * Scale), _tint * _alpha, 0f, _textOrigin, _scale, SpriteEffects.None, 0.1f);
+            Vector2 textureOffset = Vector2.Zero;
+            this.UpdateOrigin();
 
             if (_buttonType != ButtonIcon.None)
-                spriteBatch.Draw(_texture, _position + _offset, null, Color.White * _alpha, 0f, _textOrigin, _scale, SpriteEffects.None, 0.1f);
+            {
+                textureOffset = new Vector2((_buttonTextures[(int)_buttonType].Width * _scale), 0);
+
+                spriteBatch.Draw(_buttonTextures[(int)_buttonType], _position - _textOrigin, null, Color.White * _alpha, 0f, 
+                    Vector2.Zero, _scale, SpriteEffects.None, 0.1f);
+            }
+
+            spriteBatch.DrawString(_font, _text, _position - _textOrigin + textureOffset, _tint * _alpha, 0f, Vector2.Zero, TextScale, SpriteEffects.None, 0.1f);
         }
+
+        #endregion
 
         public virtual void UpdateOrigin()
         {
             Vector2 textSize = _font.MeasureString(_text);
+
+            if (_buttonType != ButtonIcon.None)
+            {
+                textSize += new Vector2((_buttonTextures[0].Width * _scale), 0);
+            }
 
             switch (_textAlignment)
             {

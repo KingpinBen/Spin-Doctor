@@ -98,6 +98,11 @@ namespace SpinEditor
 
         private void CreateObject(string Type, Vector2 Position)
         {
+            if (listBox_Classes.SelectedIndex < 0)
+            {
+                return;
+            }
+
             string texloc0 = "";
             string texloc1 = "";
             string texloc2 = "";

@@ -70,9 +70,9 @@ namespace GameLibrary.GameLogic.Screens
             // off, it is time to actually perform the load.
             if (otherScreensAreGone)
             {
-                AudioManager.Instance.StopAllSounds(AudioStopOptions.AsAuthored);
-
                 ScreenManager.RemoveScreen(this);
+
+                AudioManager.Instance.StopAllSounds(AudioStopOptions.AsAuthored);
 
                 foreach (GameScreen screen in screensToLoad)
                 {

@@ -4,6 +4,8 @@ using System.Threading;
 using System.IO;
 using System.Windows.Forms;
 using GameLibrary.Helpers;
+using GameLibrary.Audio;
+using Microsoft.Xna.Framework.Audio;
 
 namespace SpinDoctor
 {
@@ -27,6 +29,8 @@ namespace SpinDoctor
 
         private static void WriteErrorReport(object sender, UnhandledExceptionEventArgs e)
         {
+            AudioManager.Instance.StopAllSounds(AudioStopOptions.Immediate);
+
             string value = e.ExceptionObject.ToString();
             ErrorReport.GenerateReport(value, e);
         }
