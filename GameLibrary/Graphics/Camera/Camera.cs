@@ -23,7 +23,7 @@
 //--    
 //--------------------------------------------------------------------------
 
-//#define Development
+#define Development
 
 #region Using Statements
 using System;
@@ -131,35 +131,6 @@ namespace GameLibrary.Graphics.Camera
             get { return _cameraPosition; }
         }
 
-        public float RotateDelayTimer
-        {
-            get
-            {
-                return _rotateDelayTimer;
-            }
-        }
-
-        /// <summary>
-        /// Current world rotation.
-        /// 
-        /// Used by the world gravity.
-        /// </summary>
-        public float Rotation
-        {
-            get
-            {
-                return _worldRotation;
-            }
-        }
-
-        public CameraType CameraType
-        {
-            get
-            {
-                return _cameraType;
-            }
-        }
-
         public float Zoom
         {
             get
@@ -172,41 +143,12 @@ namespace GameLibrary.Graphics.Camera
             }
         }
 
-        public UpIs UpIs
-        {
-            get
-            {
-                return _upIs;
-            }
-            set
-            {
-                _upIs = value;
-                ChangeGravity();
-            }
-        }
-
         public void SetUpIs(UpIs val)
         {
             this._upIs = val;
-            ChangeGravity();
+            this.changeGravity();
         }
 
-        public float LevelDiameter
-        {
-            get
-            {
-                return _largestLevelDimension;
-            }
-        }
-
-        public GameplayScreen GetGameScreen()
-        {
-            return _gameScreen;
-        }
-        public void SetGameplayScreen(GameplayScreen screen)
-        {
-            this._gameScreen = screen;
-        }
 
         #endregion
 
@@ -215,9 +157,9 @@ namespace GameLibrary.Graphics.Camera
             this._gameScreen = gameScreen;
             this._levelRotates = levelCanRotate;
             this.AllowRotation = _levelRotates;
-            this.UpIs = UpIs.Up;
+            this.SetUpIs(UpIs.Up);
             this._largestLevelDimension = LargestLevelDimension;
-            this.CalculateZoom();
+            this.calculateZoom();
             this._fullLevelZoom = Zoom;
 
             this._worldRotation = 0.0f;
@@ -228,18 +170,18 @@ namespace GameLibrary.Graphics.Camera
 
         public void Update(float delta)
         {
-            if (_cameraType == CameraType.Level && Position != Vector2.Zero)
-            {
-                //  TODO:
-                //  Chase vector from current camera position to Level Origin
+            Player playerInstance = Player.Instance;
+            InputManager input = InputManager.Instance;
 
-                _cameraPosition = Vector2.Zero;
+            if (_cameraType == CameraType.Level && _cameraPosition != Vector2.Zero)
+            {
+                this._cameraPosition = Vector2.Zero;
             }
             else if (_cameraType == CameraType.Focus)
             {
-                if (Player.Instance.PlayerState != PlayerState.Dead)
+                if (playerInstance.PlayerState != PlayerState.Dead)
                 {
-                    _cameraPosition = ConvertUnits.ToDisplayUnits(Player.Instance.Body.Position);
+                    this._cameraPosition = ConvertUnits.ToDisplayUnits(playerInstance.GetMainBody().Position);
                 }
             }
 #if Development
@@ -271,22 +213,19 @@ namespace GameLibrary.Graphics.Camera
                 }
             }
 #endif
-                HandleInput();
-                HandleRotation(delta);
+                this.handleInput();
+                this.handleRotation(delta);
         }
+
+
 
         #region Private Methods
 
-
-
-        /// <summary>
-        /// Changes the world gravity when the UpIs property has been changed.
-        /// </summary>
-        private void ChangeGravity()
+        private void changeGravity()
         {
 #if !EDITOR
 
-            switch (UpIs)
+            switch (_upIs)
             {
                 case UpIs.Up:
                     {
@@ -312,7 +251,8 @@ namespace GameLibrary.Graphics.Camera
 #endif
         }
 
-        private void HandleRotation(float delta)
+
+        private void handleRotation(float delta)
         {
             //  If the delay timer hasn't cooled down,
             //  reduce the timer
@@ -359,7 +299,8 @@ namespace GameLibrary.Graphics.Camera
             }
         }
 
-        private void HandleInput()
+
+        private void handleInput()
         {
             //  If the players dead, don't allow input.
             if (Player.Instance.PlayerState == PlayerState.Dead)
@@ -394,7 +335,17 @@ namespace GameLibrary.Graphics.Camera
             }
         }
 
+
+        private void calculateZoom()
+        {
+            _currentCameraZoom = (_gameScreen.ScreenManager.GraphicsDevice.Viewport.Height * 0.5f) / ((_largestLevelDimension * 0.5f) * largestDimensionModifier);
+        }
+
+
+
         #endregion
+
+
 
         #region Public Methods
 
@@ -409,34 +360,34 @@ namespace GameLibrary.Graphics.Camera
         {
             _rotationToAdd -= MathHelper.PiOver2;
 
-            switch (UpIs)
+            switch (_upIs)
             {
                 case UpIs.Up:
                     {
-                        UpIs = UpIs.Right;
+                        this.SetUpIs(UpIs.Right);
                         break;
                     }
 
                 case UpIs.Left:
                     {
-                        UpIs = UpIs.Up;
+                        this.SetUpIs(UpIs.Up);
                         break;
                     }
 
                 case UpIs.Down:
                     {
-                        UpIs = UpIs.Left;
+                        this.SetUpIs(UpIs.Left);
                         break;
                     }
 
                 case UpIs.Right:
                     {
-                        UpIs = UpIs.Down;
+                        this.SetUpIs(UpIs.Down);
                         break;
                     }
             }
 
-            Player.Instance.Body.ResetDynamics();
+            Player.Instance.GetMainBody().ResetDynamics();
             AudioManager.Instance.PlayCue("Rotate_AntiClockwise", true);
         }
 
@@ -445,34 +396,34 @@ namespace GameLibrary.Graphics.Camera
             _rotationToAdd += MathHelper.PiOver2;
 
 
-            switch (UpIs)
+            switch (_upIs)
             {
                 case UpIs.Up:
                     {
-                        UpIs = UpIs.Left;
+                        this.SetUpIs(UpIs.Left);
                         break;
                     }
 
                 case UpIs.Left:
                     {
-                        UpIs = UpIs.Down;
+                        this.SetUpIs(UpIs.Down);
                         break;
                     }
 
                 case UpIs.Down:
                     {
-                        UpIs = UpIs.Right;
+                        this.SetUpIs(UpIs.Right);
                         break;
                     }
 
                 case UpIs.Right:
                     {
-                        UpIs = UpIs.Up;
+                        this.SetUpIs(UpIs.Up);
                         break;
                     }
             }
 
-            Player.Instance.Body.ResetDynamics();
+            Player.Instance.GetMainBody().ResetDynamics();
             AudioManager.Instance.PlayCue("Rotate_Clockwise", true);
         }
 
@@ -482,51 +433,37 @@ namespace GameLibrary.Graphics.Camera
             _levelRotating = true;
             _rotateDelayTimer = 2.0f;
 
-            switch (UpIs)
+            switch (_upIs)
             {
                 case UpIs.Up:
                     {
-                        UpIs = UpIs.Down;
+                        this.SetUpIs(UpIs.Down);
                         break;
                     }
 
                 case UpIs.Left:
                     {
-                        UpIs = UpIs.Right;
+                        this.SetUpIs(UpIs.Right);
                         break;
                     }
 
                 case UpIs.Down:
                     {
-                        UpIs = UpIs.Up;
+                        this.SetUpIs(UpIs.Up);
                         break;
                     }
 
                 case UpIs.Right:
                     {
-                        UpIs = UpIs.Left;
+                        this.SetUpIs(UpIs.Left);
                         break;
                     }
             }
 
-            Player.Instance.Body.ResetDynamics();
+            Player.Instance.GetMainBody().ResetDynamics();
         }
 
         #endregion
-
-        public void CalculateZoom()
-        {
-            _currentCameraZoom = (_gameScreen.ScreenManager.GraphicsDevice.Viewport.Height * 0.5f) / ((_largestLevelDimension * 0.5f )* largestDimensionModifier);
-        }
-
-        public Matrix TransformMatrix()
-        {
-            Matrix _transform = Matrix.CreateTranslation(new Vector3(-Position.X, -Position.Y, 0)) *
-                                         Matrix.CreateRotationZ((float)_worldRotation) *
-                                         Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
-                                         Matrix.CreateTranslation(new Vector3((new Vector2(_gameScreen.ScreenManager.GraphicsDevice.Viewport.Width, _gameScreen.ScreenManager.GraphicsDevice.Viewport.Height) * 0.5f), 0));
-            return _transform;
-        }
 
         #region Events
 
@@ -538,6 +475,46 @@ namespace GameLibrary.Graphics.Camera
         #endregion
 
         #endregion
+
+        #region Getters and Setters
+
+        public float GetWorldRotation()
+        {
+            return _worldRotation;
+        }
+
+        public float GetLevelDiameter()
+        {
+            return _largestLevelDimension;
+        }
+
+        public Matrix GetTransformMatrix()
+        {
+            Matrix _transform = Matrix.CreateTranslation(new Vector3(-_cameraPosition, 0)) *
+                                         Matrix.CreateRotationZ((float)_worldRotation) *
+                                         Matrix.CreateScale(new Vector3(Zoom, Zoom, 1)) *
+                                         Matrix.CreateTranslation(new Vector3((new Vector2(_gameScreen.ScreenManager.GraphicsDevice.Viewport.Width, _gameScreen.ScreenManager.GraphicsDevice.Viewport.Height) * 0.5f), 0));
+            return _transform;
+        }
+
+        public GameplayScreen GetGameplayScreen()
+        {
+            return this._gameScreen;
+        }
+
+        public void SetGameplayScreen(GameplayScreen screen)
+        {
+            this._gameScreen = screen;
+        }
+
+        public UpIs GetUpIs()
+        {
+            return this._upIs;
+        }
+
+        #endregion
+
+
 
         #region Development Only
 #if Development

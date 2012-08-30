@@ -44,20 +44,24 @@ namespace GameLibrary.GameLogic.Screens.Menu
             // Create our menu entries.
             MenuEntry playGameMenuEntry = new MenuEntry("New Game");
             MenuEntry optionsMenuEntry = new MenuEntry("Options");
+            MenuEntry creditsMenuEntry = new MenuEntry("Credits");
             MenuEntry exitMenuEntry = new MenuEntry("Exit");
 
             playGameMenuEntry.Origin= Graphics.UI.TextAlignment.Centre;
             optionsMenuEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            creditsMenuEntry.Origin = Graphics.UI.TextAlignment.Centre;
             exitMenuEntry.Origin = Graphics.UI.TextAlignment.Centre;
 
             // Hook up menu event handlers.
             playGameMenuEntry.Selected += NewGameSelected;
             optionsMenuEntry.Selected += OptionsSelected;
+            creditsMenuEntry.Selected += CreditsSelected;
             exitMenuEntry.Selected += OnCancel;
 
             // Add entries to the menu.
             MenuEntries.Add(playGameMenuEntry);
             MenuEntries.Add(optionsMenuEntry);
+            MenuEntries.Add(creditsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
         }
 
@@ -77,15 +81,21 @@ namespace GameLibrary.GameLogic.Screens.Menu
 
         #region Handle Input
 
-        void NewGameSelected(object sender, PlayerIndexEventArgs e)
+        private void NewGameSelected(object sender, PlayerIndexEventArgs e)
         {
             SaveManager.Instance.NewGame();
             StartGame(sender, e);
         }
 
-        void OptionsSelected(object sender, PlayerIndexEventArgs e)
+        private void OptionsSelected(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
+        }
+
+        private void CreditsSelected(object sender, PlayerIndexEventArgs e)
+        {
+
+            LoadingScreen.Load(ScreenManager, false, e.PlayerIndex, new CreditHandler(), new GameplayScreen());
         }
 
         protected override void OnCancel(PlayerIndex playerIndex)
@@ -99,12 +109,12 @@ namespace GameLibrary.GameLogic.Screens.Menu
             ScreenManager.AddScreen(confirmExitMessageBox, playerIndex);
         }
 
-        void ConfirmExitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
+        private void ConfirmExitMessageBoxAccepted(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.Game.Exit();
         }
 
-        void StartGame(object sender, PlayerIndexEventArgs e)
+        private void StartGame(object sender, PlayerIndexEventArgs e)
         {
             LoadingScreen.Load(ScreenManager, true, e.PlayerIndex,
                                new GameplayScreen());

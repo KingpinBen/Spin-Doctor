@@ -157,7 +157,7 @@ namespace SpinEditor
                 List<ObjectIndex> selectedList = STATIC_EDITOR_MODE.selectedObjectIndices;
 
                 #region Objects and selection overlay
-                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, Camera.get_transformation(new Vector2(this.Width, this.Height)));
+                spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.AnisotropicWrap, null, null, null, Camera.get_transformation(new Vector2(this.Width, this.Height)));
 
                 #region Draw Generics
                 if (levelBackground != null)

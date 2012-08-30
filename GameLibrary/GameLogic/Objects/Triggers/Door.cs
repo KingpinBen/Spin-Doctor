@@ -180,24 +180,26 @@ namespace GameLibrary.GameLogic.Objects.Triggers
 
                     #region World-Door Orientation Check
 
+                    UpIs upIs = Camera.Instance.GetUpIs();
+
                     if (!_triggered)
                     {
-                        if (Camera.Instance.UpIs == UpIs.Up &&
+                        if (upIs == UpIs.Up &&
                             _orientation == Orientation.Up)
                         {
                             ChangeTriggered(true);
                         }
-                        else if (Camera.Instance.UpIs == UpIs.Down &&
+                        else if (upIs == UpIs.Down &&
                           _orientation == Orientation.Down)
                         {
                             ChangeTriggered(true);
                         }
-                        else if (Camera.Instance.UpIs == UpIs.Left &&
+                        else if (upIs == UpIs.Left &&
                           _orientation == Orientation.Right)
                         {
                             ChangeTriggered(true);
                         }
-                        else if (Camera.Instance.UpIs == UpIs.Right &&
+                        else if (upIs == UpIs.Right &&
                           _orientation == Orientation.Left)
                         {
                             ChangeTriggered(true);
@@ -233,12 +235,12 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 if (_triggerType == TriggerType.PlayerInput)
                 {
-                    HUD.Instance.ShowOnScreenMessage(true, " to use.", ButtonIcon.Action3);
+                    HUD.Instance.ShowOnScreenMessage(true, " to use.", 3);
                 }
             }
             else
             {
-                HUD.Instance.ShowOnScreenMessage(false, "", ButtonIcon.Action3);
+                HUD.Instance.ShowOnScreenMessage(false, "", 3);
             }
 
             this._triggered = state;

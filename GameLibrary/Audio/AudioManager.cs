@@ -316,11 +316,13 @@ namespace GameLibrary.Audio
             {
                 Song song = this._game.Content.Load<Song>("Assets/Audio/" + name);
 
-                if (!_musicBank.ContainsKey(nameAlias))
+                if (_musicBank.ContainsKey(nameAlias))
                 {
-                    this._musicBank.Add(nameAlias, song);
-                    MediaPlayer.Play(song);
+                    this._musicBank.Remove(nameAlias);
                 }
+                
+                this._musicBank.Add(nameAlias, song);
+                MediaPlayer.Play(song);
             }
         }
 
@@ -342,7 +344,14 @@ namespace GameLibrary.Audio
             {
                 if (!_activeSounds[i].IsPaused)
                 {
-                    _activeSounds[i].Pause();
+                    try
+                    {
+                        _activeSounds[i].Pause();
+                    }
+                    catch
+                    {
+                        _activeSounds[i].Stop(AudioStopOptions.Immediate);
+                    }
                 }
             }
 

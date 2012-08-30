@@ -66,6 +66,9 @@ namespace GameLibrary.GameLogic.Characters
         private bool _deadlyFall;
         private float _grabbingRotation;
 
+        private Fixture _connectedFixture;
+
+
         #region Double Jump Sprite
         /// <summary>
         /// The sprite to copy from for the doublejump effect.
@@ -79,69 +82,6 @@ namespace GameLibrary.GameLogic.Characters
 
         #region Properties
 
-        public bool CanJump
-        {
-            get
-            {
-                return _canJump;
-            }
-        }
-
-        public bool CanDoubleJump
-        {
-            get
-            {
-                return _canDoubleJump;
-            }
-        }
-
-        public float GrabRotation
-        {
-            get
-            {
-                return _grabbingRotation;
-            }
-            set
-            {
-                _grabbingRotation = value;
-            }
-        }
-
-        public bool PlayerHitBox(Fixture fix)
-        {
-            if (_playerState == Characters.PlayerState.Dead)
-            {
-                return false;
-            }
-
-
-            return fix == _mainBody.FixtureList[this._mainBody.FixtureList.Count - 1];
-        }
-
-        //public Fixture PlayerHitBox
-        //{
-        //    get
-        //    {
-        //        return this._mainBody.FixtureList[this._mainBody.FixtureList.Count - 1];
-        //    }
-        //}
-
-        public Fixture WheelFixture
-        {
-            get
-            {
-                return _wheelBody.FixtureList[0];
-            }
-        }
-
-        public List<Fixture> TouchingFixtures
-        {
-            get
-            {
-                return _touchingFixtures;
-            }
-        }
-
         public override PlayerState PlayerState
         {
             get
@@ -150,7 +90,7 @@ namespace GameLibrary.GameLogic.Characters
             }
             protected set
             {
-                if (value == PlayerState.Climbing)
+                if (value == Characters.PlayerState.Climbing)
                 {
                     this._mainBody.ResetDynamics();
                     this._wheelBody.ResetDynamics();
@@ -160,11 +100,15 @@ namespace GameLibrary.GameLogic.Characters
                     this._inAir = false;
                     this._airTime = 0.0f;
                 }
-
-                if (_playerState == Characters.PlayerState.Jumping &&
-                    value == Characters.PlayerState.Falling)
+                else if (value == Characters.PlayerState.Falling)
                 {
-                    this._airTime = 0.0f;
+                    this._lastSafePosition = ConvertUnits.ToDisplayUnits(_mainBody.Position);
+                    this._canJump = false;
+
+                    if (_playerState == Characters.PlayerState.Jumping)
+                    {
+                        this._airTime = 0.0f;
+                    }
                 }
 
                 this._soundElapsed = 0.0f;
@@ -173,13 +117,6 @@ namespace GameLibrary.GameLogic.Characters
             }
         }
 
-        public Fixture GrabFixture
-        {
-            get
-            {
-                return this._mainBody.FixtureList[this._mainBody.FixtureList.Count - 2];
-            }
-        }
 
         #endregion
 
@@ -221,19 +158,16 @@ namespace GameLibrary.GameLogic.Characters
             _animations.Clear();
             AddAnimations();
 
-            //  TODO: When we remove doublejump cheat, add DJEnabled to the if
-            if (true)
-            {
-                _steamSprite = new Sprite();
-                _steamSprite.Init(Vector2.Zero, "Assets/Images/Effects/steam");
-                _steamSprite.Load(_content, world);
-                _steamSprite.CastShadows = true;
-                _steamSprite.Alpha = 0.6f;
-                _steamSprite.AlphaDecay = 0.05f;
-                _steamSprite.RotationSpeed = 0.1f;
-                _steamSprite.Scale = 0.3f;
-                _steamSprite.ScaleFactor = 0.01f;
-            }
+            _steamSprite = new Sprite();
+            _steamSprite.Init(Vector2.Zero, "Assets/Images/Effects/steam");
+            _steamSprite.Load(_content, world);
+            _steamSprite.CastShadows = true;
+            _steamSprite.Alpha = 0.6f;
+            _steamSprite.AlphaDecay = 0.05f;
+            _steamSprite.RotationSpeed = 0.1f;
+            _steamSprite.Scale = 0.3f;
+            _steamSprite.ScaleFactor = 0.01f;
+            
 #endif
         }
 
@@ -246,11 +180,12 @@ namespace GameLibrary.GameLogic.Characters
         public override void Update(float delta, World world)
         {
             base.Update(delta, world);
+            float worldRotation = Camera.Instance.GetWorldRotation();
 
             //Keeps the body rotation up, moving with the camera.
-            if (Camera.Instance.IsLevelRotating || (this._mainBody.Rotation != (float)-Camera.Instance.Rotation && PlayerState != PlayerState.Swinging))
+            if (Camera.Instance.IsLevelRotating || (_mainBody.Rotation != (float)-worldRotation && _playerState != PlayerState.Swinging))
             {
-                this._mainBody.Rotation = (float)-Camera.Instance.Rotation;
+                this._mainBody.Rotation = (float)-worldRotation;
             }
 
             if (_playerState != PlayerState.Dead)
@@ -259,7 +194,7 @@ namespace GameLibrary.GameLogic.Characters
                 {
                     if (_canDoubleJump || _canJump)
                     {
-                        HandleJumping(-world.Gravity);
+                        this.HandleJumping(-world.Gravity);
                     }
                 }
 
@@ -323,7 +258,7 @@ namespace GameLibrary.GameLogic.Characters
                 this._wheelJoint.MotorSpeed = 0.0f;
                 this._airTime = 0.0f;
                 this._canJump = false;
-                this._lastSafePosition = ConvertUnits.ToDisplayUnits(this.Body.Position);
+                this._lastSafePosition = ConvertUnits.ToDisplayUnits(_mainBody.Position);
             }
         }
 
@@ -429,24 +364,37 @@ namespace GameLibrary.GameLogic.Characters
 
         void HandleJumping(Vector2 Gravity)
         {
+            if (_playerState == Characters.PlayerState.Swinging)
+            {
+                return;
+            }
+
             Vector2 force = Gravity;
+            InputManager input = InputManager.Instance;
 
             //  First jump
             if (_canJump)
             {
                 if (_playerState == PlayerState.Climbing)
                 {
+                    if (!(input.MoveLeft(false) || input.MoveRight(false)))
+                    {
+                        return;
+                    }
+
                     force *= 3.0f;
 
-                    if (InputManager.Instance.MoveLeft(false))
+                    if (input.MoveLeft(false))
                     {
                         Vector2 additionalForce = SpinAssist.ModifyVectorByUp(new Vector2(-150, -force.Y * 0.5f));
                         Vector2.Add(ref force, ref additionalForce, out force);
+                        this._lookingDirection = SpriteEffects.FlipHorizontally;
                     }
                     else if (InputManager.Instance.MoveRight(false))
                     {
                         Vector2 additionalForce = SpinAssist.ModifyVectorByUp(new Vector2(150, -force.Y * 0.5f));
                         Vector2.Add(ref force, ref additionalForce, out force);
+                        this._lookingDirection = SpriteEffects.None;
                     }
 
                     this.ToggleBodies(true);
@@ -473,13 +421,13 @@ namespace GameLibrary.GameLogic.Characters
                 #region Reset the Y dynamics.
                 if (Math.Abs(Gravity.Y) > 0)
                 {
-                    this.Body.LinearVelocity = new Vector2(this.Body.LinearVelocity.X, 0);
-                    this._wheelBody.LinearVelocity = new Vector2(this.Body.LinearVelocity.X, 0);
+                    this._mainBody.LinearVelocity = new Vector2(_mainBody.LinearVelocity.X, 0);
+                    this._wheelBody.LinearVelocity = new Vector2(_mainBody.LinearVelocity.X, 0);
                 }
                 else
                 {
-                    this.Body.LinearVelocity = new Vector2(0, this.Body.LinearVelocity.Y);
-                    this._wheelBody.LinearVelocity = new Vector2(0, this.Body.LinearVelocity.Y);
+                    this._mainBody.LinearVelocity = new Vector2(0, _mainBody.LinearVelocity.Y);
+                    this._wheelBody.LinearVelocity = new Vector2(0, _mainBody.LinearVelocity.Y);
                 }
 
                 #endregion
@@ -502,7 +450,7 @@ namespace GameLibrary.GameLogic.Characters
                 //  Reset any previous jump/fall timers.
                 this._airTime = 0.0f;
                 this._deadlyFall = false;
-                this._lastSafePosition = ConvertUnits.ToDisplayUnits(Body.Position);
+                this._lastSafePosition = ConvertUnits.ToDisplayUnits(_mainBody.Position);
 
                 //  Switch the animation and reset it incase the player
                 //  is already jumping.
@@ -520,53 +468,52 @@ namespace GameLibrary.GameLogic.Characters
 
         void HandleMoving(float delta)
         {
-            if (_inAir)
-            {
-                return;
-            }
+            InputManager input = InputManager.Instance;
 
-            if (InputManager.Instance.MoveLeft(false))
+            if (!_inAir)
             {
-                this._wheelJoint.MotorSpeed = -_movementSpeed;
-                this._lookingDirection = SpriteEffects.FlipHorizontally;
-            }
-            else if (InputManager.Instance.MoveRight(false))
-            {
-                this._wheelJoint.MotorSpeed = _movementSpeed;
-                this._lookingDirection = SpriteEffects.None;
-            }
-            else
-            {
-                this._wheelJoint.MotorSpeed = 0.0f;
-            }
-
-            if (_wheelJoint.MotorSpeed == 0)
-            {
-                if (_playerState != Characters.PlayerState.Grounded)
+                if (input.MoveLeft(false))
                 {
-                    this.PlayerState = PlayerState.Grounded;
-                    this._soundElapsed = 0.25f;
+                    this._wheelJoint.MotorSpeed = -_movementSpeed;
+                    this._lookingDirection = SpriteEffects.FlipHorizontally;
                 }
-            }
-            else
-            {
-                if (_playerState != Characters.PlayerState.Running)
+                else if (input.MoveRight(false))
                 {
-                    this.PlayerState = PlayerState.Running;
+                    this._wheelJoint.MotorSpeed = _movementSpeed;
+                    this._lookingDirection = SpriteEffects.None;
+                }
+                else
+                {
+                    this._wheelJoint.MotorSpeed = 0.0f;
                 }
 
-                if (_touchingFixtures.Count > 0)
+                if (_wheelJoint.MotorSpeed == 0)
                 {
-                    this._soundElapsed -= delta;
-
-                    if (_soundElapsed <= 0.0f)
+                    if (_playerState != Characters.PlayerState.Grounded)
                     {
-                        PlayFootsteps();
-                        this._soundElapsed = 0.5f;
+                        this.PlayerState = PlayerState.Grounded;
+                        this._soundElapsed = 0.25f;
+                    }
+                }
+                else
+                {
+                    if (_playerState != Characters.PlayerState.Running)
+                    {
+                        this.PlayerState = PlayerState.Running;
+                    }
+
+                    if (_touchingFixtures.Count > 0)
+                    {
+                        this._soundElapsed -= delta;
+
+                        if (_soundElapsed <= 0.0f)
+                        {
+                            this.PlayFootsteps();
+                            this._soundElapsed = 0.5f;
+                        }
                     }
                 }
             }
-
         }
 
         void PlayFootsteps()
@@ -658,6 +605,11 @@ namespace GameLibrary.GameLogic.Characters
         {
             this.ToggleBodies(true);
 
+            if (_playerState == Characters.PlayerState.Dead)
+            {
+                return;
+            }
+
             if (!(_playerState == PlayerState.Running || _playerState == PlayerState.Grounded))
             {
                 this.PlayerState = PlayerState.Falling;
@@ -671,7 +623,7 @@ namespace GameLibrary.GameLogic.Characters
 
         void HandleSwinging(float delta)
         {
-            this._mainBody.Rotation = GrabRotation;
+            this._mainBody.Rotation = _grabbingRotation;
 
             if (InputManager.Instance.MoveLeft(false))
             {
@@ -695,7 +647,7 @@ namespace GameLibrary.GameLogic.Characters
 
         void HandleAir(float delta)
         {
-            Vector2 bodyPos  = ConvertUnits.ToDisplayUnits(Body.Position);
+            Vector2 bodyPos = ConvertUnits.ToDisplayUnits(_mainBody.Position);
             float distance = SpinAssist.ModifyVectorByUp(bodyPos - _lastSafePosition).Y;
 
             if (_inAir && (Math.Abs(distance) > 550) && !_deadlyFall)
@@ -704,11 +656,7 @@ namespace GameLibrary.GameLogic.Characters
                 AudioManager.Instance.PlayCue("Harland_Falling", true);
             }
 
-            if (_playerState == Characters.PlayerState.Falling)
-            {
-                
-            }
-            else
+            if (_playerState != Characters.PlayerState.Falling)
             {
                 if (CurrentAnimation.Completed)
                 {
@@ -718,11 +666,47 @@ namespace GameLibrary.GameLogic.Characters
 
             if (InputManager.Instance.MoveLeft(false))
             {
+                UpIs upIs = Camera.Instance.GetUpIs();
+                float speedLimit = 25;
+
                 this._wheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(-_midAirForce, 0)));
+
+                if (upIs == UpIs.Up || upIs == UpIs.Down)
+                {
+                    this._wheelBody.LinearVelocity = new Vector2(
+                        MathHelper.Clamp(_wheelBody.LinearVelocity.X, -speedLimit, speedLimit),
+                        _wheelBody.LinearVelocity.Y);
+                }
+                else 
+                {
+                    this._wheelBody.LinearVelocity = new Vector2(
+                        _wheelBody.LinearVelocity.X,
+                        MathHelper.Clamp(_wheelBody.LinearVelocity.Y, -speedLimit, speedLimit));
+                }
+
+                this._lookingDirection = SpriteEffects.FlipHorizontally;
             }
             else if (InputManager.Instance.MoveRight(false))
             {
+                UpIs upIs = Camera.Instance.GetUpIs();
+                float speedLimit = 25;
+
                 this._wheelBody.ApplyForce(SpinAssist.ModifyVectorByUp(new Vector2(_midAirForce, 0)));
+
+                if (upIs == UpIs.Up || upIs == UpIs.Down)
+                {
+                    this._wheelBody.LinearVelocity = new Vector2(
+                        MathHelper.Clamp(_wheelBody.LinearVelocity.X, -speedLimit, speedLimit),
+                        _wheelBody.LinearVelocity.Y);
+                }
+                else
+                {
+                    this._wheelBody.LinearVelocity = new Vector2(
+                        _wheelBody.LinearVelocity.X,
+                        MathHelper.Clamp(_wheelBody.LinearVelocity.Y, -speedLimit, speedLimit));
+                }
+
+                this._lookingDirection = SpriteEffects.None;
             }
         }
 
@@ -750,12 +734,12 @@ namespace GameLibrary.GameLogic.Characters
             {
                 //  Make it come from his buttocks and turn it green..
                 _steamSprite.Tint = Color.LightGreen.ToVector3();
-                _steamSprite.Position = ConvertUnits.ToDisplayUnits(this.Body.Position);
+                _steamSprite.Position = ConvertUnits.ToDisplayUnits(_mainBody.Position);
             }
             else
             {
                 //  Otherwise from the wheel.
-                _steamSprite.Position = ConvertUnits.ToDisplayUnits(this._wheelBody.Position);
+                _steamSprite.Position = ConvertUnits.ToDisplayUnits(_wheelBody.Position);
             }
 
             //  Then add it to the SpriteManager for handling.
@@ -764,20 +748,7 @@ namespace GameLibrary.GameLogic.Characters
 
         #endregion
 
-        private void ToggleBodies(bool active)
-        {
-            if (_wheelBody.Enabled != active)
-            {
-                //  Wake them up
-                this._mainBody.Awake = true;
-                this._wheelBody.Awake = true;
 
-                //  toggle
-                this._mainBody.ResetDynamics();
-                this._mainBody.IgnoreGravity = !active;
-                this._wheelBody.Enabled = active;
-            }
-        }
 
         /// <summary>
         /// Adds required aniations to the dict.
@@ -801,23 +772,23 @@ namespace GameLibrary.GameLogic.Characters
             Texture2D swinging = _content.Load<Texture2D>(spriteSheetLocation + "HarlandSwing");
 
             //_animations.Add("Run",       new FrameAnimation(running, 24, new Point(322, 443), 9.0f, new Point(6, 4), false, 30));
-            _animations.Add("Run", new FrameAnimation(running, 24, new Point(446, 466), 65.0f, new Point(6, 4), false, 30));
-            _animations["Run"].Scale = 0.355f;
+            _animations.Add("Run", new FrameAnimation(running, 24, new Point(341, 357), 57.0f, new Point(6, 4), false, 30));
+            _animations["Run"].Scale = 0.45f;
 
-            _animations.Add("Idle", new FrameAnimation(idle, 21, new Point(268, 468), 70, new Point(6, 4), false, 16));
-            _animations["Idle"].Scale = 0.35f;
+            _animations.Add("Idle", new FrameAnimation(idle, 21, new Point(268, 468), 67, new Point(6, 4), false, 16));
+            _animations["Idle"].Scale = 0.34f;
 
             _animations.Add("Falling", new FrameAnimation(falling, 21, new Point(291, 462), 100.0f, new Point(6, 4), false));
-            _animations["Falling"].Scale = 0.363f;
+            _animations["Falling"].Scale = 0.38f;
             //  Jump1
             //  _animations.Add("Jumping", new FrameAnimation(jumping, 16, new Point(471, 480), 0, new Point(6, 3), true));
             //  Jump2
-            _animations.Add("Jumping", new FrameAnimation(jumping, 22, new Point(313, 464), 0, new Point(6, 3), true));
-            _animations["Jumping"].Scale = 0.36f;
+            _animations.Add("Jumping", new FrameAnimation(jumping, 22, new Point(313, 464), 0, new Point(6, 4), true));
+            _animations["Jumping"].Scale = 0.38f;
             _animations.Add("Climbing", new FrameAnimation(climbing, 20, new Point(233, 503), 0, new Point(6, 4), false, 30));
             _animations["Climbing"].Scale = 0.41f;
-            _animations.Add("Dead", new FrameAnimation(death, 26, new Point(587, 480), 70, new Point(6, 5), true, 48));
-            _animations["Dead"].Scale = 0.35f;
+            _animations.Add("Dead", new FrameAnimation(death, 26, new Point(341, 279), 70, new Point(6, 5), true, 48));
+            _animations["Dead"].Scale = 0.56f;
             _animations.Add("Swinging", new FrameAnimation(swinging, 1, new Point(640, 488), 0, new Point(1, 1), true, 1));
             _animations["Swinging"].Scale = 0.32f;
         }
@@ -842,7 +813,7 @@ namespace GameLibrary.GameLogic.Characters
             Fixture grabBox = FixtureFactory.AttachRectangle(fixtureWidth * 0.5f, fixtureWidth * 0.5f, 0.0f, new Vector2(0, -height * 0.4f), this._mainBody);
 
             Fixture hitbox = FixtureFactory.AttachRectangle(fixtureWidth, height, 0.0f, ConvertUnits.ToSimUnits(new Vector2(0, 18)), _mainBody);
-            this._mainBody.FixtureList[this._mainBody.FixtureList.Count - 1].IsSensor = true;
+            hitbox.IsSensor = true;
 
             this.PlayerState = PlayerState.Grounded;
             this._canJump = true;
@@ -861,19 +832,19 @@ namespace GameLibrary.GameLogic.Characters
 
         #region Public Methods
 
-        public bool CheckBodyBox(Fixture fixture)
+        public void ToggleBodies(bool active)
         {
-            if (_playerState == Characters.PlayerState.Dead)
+            if (_wheelBody.Enabled != active)
             {
-                return false;
-            }
+                //  Wake them up
+                this._mainBody.Awake = true;
+                this._wheelBody.Awake = true;
 
-            if (fixture == _mainBody.FixtureList[0] || fixture == _wheelBody.FixtureList[0])
-            {
-                return true;
+                //  toggle
+                this._mainBody.ResetDynamics();
+                this._mainBody.IgnoreGravity = !active;
+                this._wheelBody.Enabled = active;
             }
-
-            return false;
         }
 
         #region Apply a Force
@@ -896,6 +867,76 @@ namespace GameLibrary.GameLogic.Characters
             this._mainBody.ApplyLinearImpulse(dir * force);
         }
         #endregion
+
+        #region Gets
+
+        public Body GetWheelBody()
+        {
+            return _wheelBody;
+        }
+
+        public Body GetMainBody()
+        {
+            return _mainBody;
+        }
+
+        #endregion
+
+
+        #region Sets
+
+        public void SetRotation(float rotation)
+        {
+            this._grabbingRotation = rotation;
+        }
+
+        #endregion
+
+
+        #region Checks
+
+        public bool CheckWheelFixture(Fixture fixture)
+        {
+            return fixture == _wheelBody.FixtureList[0];
+        }
+
+        public bool CheckGrabFixture(Fixture fixture)
+        {
+            if (_playerState == Characters.PlayerState.Dead)
+            {
+                return false;
+            }
+
+            return fixture == _mainBody.FixtureList[_mainBody.FixtureList.Count - 2];
+        }
+
+        public bool CheckHitBoxFixture(Fixture fixture)
+        {
+            if (_playerState == Characters.PlayerState.Dead)
+            {
+                return false;
+            }
+
+            return fixture == _mainBody.FixtureList[this._mainBody.FixtureList.Count - 1];
+        }
+
+        public bool CheckBodyBox(Fixture fixture)
+        {
+            if (_playerState == Characters.PlayerState.Dead)
+            {
+                return false;
+            }
+
+            if (fixture == _mainBody.FixtureList[0] || fixture == _wheelBody.FixtureList[0])
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
+
 
         #endregion
     }

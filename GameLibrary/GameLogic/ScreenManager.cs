@@ -33,7 +33,6 @@ namespace GameLibrary.GameLogic
         Texture2D blankTexture;
 
         bool isInitialized;
-        bool skipStartup = false;
         GraphicsDeviceManager _deviceManager;
 
         #endregion
@@ -60,18 +59,6 @@ namespace GameLibrary.GameLogic
             get
             {
                 return _deviceManager.GraphicsDevice;
-            }
-        }
-
-        public bool SkipStartup
-        {
-            get
-            {
-                return skipStartup;
-            }
-            set
-            {
-                skipStartup = value;
             }
         }
 

@@ -384,12 +384,12 @@ namespace GameLibrary.GameLogic.Objects.Triggers
             {
                 if (_triggerType == TriggerType.PlayerInput)
                 {
-                    HUD.Instance.ShowOnScreenMessage(true, _message, ButtonIcon.Action3);
+                    HUD.Instance.ShowOnScreenMessage(true, _message, 3);
                 }
             }
             else
             {
-                HUD.Instance.ShowOnScreenMessage(false, "", ButtonIcon.Action3);
+                HUD.Instance.ShowOnScreenMessage(false, "", 3);
             }
 
             this._triggered = state;

@@ -52,8 +52,6 @@ namespace GameLibrary.GameLogic.Characters
 
         protected Vector2 _lastSafePosition = Vector2.Zero;
 
-        #region Settings and States
-
         protected float _charMass;
         protected float _charWidth;
         protected float _charHeight;
@@ -64,35 +62,19 @@ namespace GameLibrary.GameLogic.Characters
 
         protected float _soundElapsed;
 
-        #endregion
-
-        #region Animation
-
-
         private string _currentAnimation = null;
         protected Dictionary<string, FrameAnimation> _animations;
-        protected List<Fixture> _touchingFixtures = new List<Fixture>();
-
-
-        #endregion
-
-        #region Physics Elements
-
+        
 
         protected Body _wheelBody;
         protected Body _mainBody;
         protected RevoluteJoint _wheelJoint;
 
-
-        #endregion
-
-        #region Draw Fields
-
         protected Texture2D _charTexture;
         private Vector2 _texturePosition;
         protected SpriteEffects _lookingDirection;
 
-        #endregion
+        protected List<Fixture> _touchingFixtures = new List<Fixture>();
 
         #endregion
 
@@ -110,27 +92,11 @@ namespace GameLibrary.GameLogic.Characters
             }
         }
 
-        public Body Body
-        {
-            get
-            {
-                return _mainBody;
-            }
-        }
-
         public float TotalHeight
         {
             get 
             { 
                 return (_charHeight - 8.0f) + (_charWidth * 0.5f); 
-            }
-        }
-
-        public float CharWidth
-        {
-            get
-            {
-                return _charWidth;
             }
         }
 
@@ -248,7 +214,7 @@ namespace GameLibrary.GameLogic.Characters
                 }
             }
 
-            this._texturePosition = ConvertUnits.ToDisplayUnits(this._wheelBody.Position + (this.Body.Position - this._wheelBody.Position));
+            this._texturePosition = ConvertUnits.ToDisplayUnits(_wheelBody.Position + (_mainBody.Position - _wheelBody.Position));
             //this._wheelBody.LinearVelocity = this._mainBody.LinearVelocity;
             if (this._wheelBody.Enabled)
             {
@@ -342,7 +308,7 @@ namespace GameLibrary.GameLogic.Characters
 
             //  Body
             this._mainBody = new Body(world);
-            Fixture mainBodyFixture = FixtureFactory.AttachEllipse(ConvertUnits.ToSimUnits(CharWidth * 0.4f), ConvertUnits.ToSimUnits(height), 8, 0.0f, _mainBody);
+            Fixture mainBodyFixture = FixtureFactory.AttachEllipse(ConvertUnits.ToSimUnits(_charWidth * 0.4f), ConvertUnits.ToSimUnits(height), 8, 0.0f, _mainBody);
             this._mainBody.BodyType = BodyType.Dynamic;
             this._mainBody.Position = ConvertUnits.ToSimUnits(StartPosition);
             //this._mainBody.Restitution = 0.0f;

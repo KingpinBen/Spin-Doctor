@@ -55,7 +55,7 @@ namespace GameLibrary.Helpers
             }
 
             //  ...don't judge me. I'm desperate.
-            Camera.Instance.GetGameScreen().ScreenManager.Game.Exit();
+            Camera.Instance.GetGameplayScreen().ScreenManager.Game.Exit();
         }
     }
 }

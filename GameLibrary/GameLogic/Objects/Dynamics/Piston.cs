@@ -225,7 +225,6 @@ namespace GameLibrary.GameLogic.Objects
             _crusherTextureOrigin = -ConvertUnits.ToSimUnits(input.Origin);
 
             this.Body = input.Body;
-            //  TODO: Add proper position.
             this.Body.Position = ConvertUnits.ToSimUnits(this._position);
             this.Body.Rotation = this._rotation;
             this.Body.Friction = 3.0f;
@@ -272,12 +271,14 @@ namespace GameLibrary.GameLogic.Objects
                 return false;
             }
 
-            if (Player.Instance.PlayerHitBox(fixB))
+            Player playerInstance = Player.Instance;
+
+            if (playerInstance.CheckHitBoxFixture(fixB))
             {
                 if (!_touchingFixtures.Contains(fixB))
                 {
                     _touchingFixtures.Add(fixB);
-                    Player.Instance.Kill();
+                    playerInstance.Kill();
                     AudioManager.Instance.PlayCue("Death_Spikes", true);
                 }
                 return false;

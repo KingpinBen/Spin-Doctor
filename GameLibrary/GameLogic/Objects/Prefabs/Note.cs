@@ -157,7 +157,7 @@ namespace GameLibrary.GameLogic.Objects
             //  We call this before making the note screen incase we end up having text on there too.
             ChangeTriggered(false);
 
-            Camera.Instance.GetGameScreen().ScreenManager.AddScreen(new MessageOverlay(_noteID), null);
+            Camera.Instance.GetGameplayScreen().ScreenManager.AddScreen(new MessageOverlay(_noteID), null);
             //  We want to set the settings to display as though they've got it.
             //  It'll only stick though when they complete the level with it.
             GameSettings.Instance.FoundEntries[_noteID - 1] = true;
@@ -166,7 +166,7 @@ namespace GameLibrary.GameLogic.Objects
 
         void RemoveNote()
         {
-            Camera.Instance.GetGameScreen().RemoveObject(this);
+            Camera.Instance.GetGameplayScreen().RemoveObject(this);
         }
 #endif
         #endregion

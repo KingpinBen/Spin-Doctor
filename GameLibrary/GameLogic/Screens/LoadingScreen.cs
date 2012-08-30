@@ -13,10 +13,10 @@ namespace GameLibrary.GameLogic.Screens
     {
         #region Fields
 
-        bool loadingIsSlow;
-        bool otherScreensAreGone;
+        private bool loadingIsSlow;
+        private bool otherScreensAreGone;
 
-        GameScreen[] screensToLoad;
+        private GameScreen[] screensToLoad;
 
         #endregion
 

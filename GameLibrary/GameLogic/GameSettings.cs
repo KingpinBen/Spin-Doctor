@@ -22,7 +22,7 @@ namespace GameLibrary.GameLogic
 
         private GameSettings()
         {
-            _resolution = new ResolutionData(1280, 720, true);
+            _resolution = new ResolutionData(1280, 720, false);
         }
         #endregion
 

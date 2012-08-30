@@ -53,7 +53,7 @@ namespace SpinDoctor
         {
             this.Content.RootDirectory = "Content";
             this.IsFixedTimeStep = false;
-            this.Window.Title = "Spin Doctor Beta";
+            this.Window.Title = "Spin Doctor";
 
             //  Setup the graphics manager
             this._graphics = new GraphicsDeviceManager(this);
@@ -67,7 +67,6 @@ namespace SpinDoctor
 
             // Create the screen manager component.
             screenManager = new ScreenManager(this, this._graphics);
-            screenManager.SkipStartup = _skipStartup;
             Components.Add(screenManager);
         }
 

@@ -150,12 +150,12 @@ namespace GameLibrary.Graphics.Animation
         #endregion
 
         #region Constructor
-        public FrameAnimation(Texture2D asset, int numOfFrames, Point frameDims, float yOffset, Point frameCount, bool playOnce)
+        public FrameAnimation(Texture2D texture, int numOfFrames, Point frameDims, float yOffset, Point frameCount, bool playOnce)
         {
             //Adds the frames
             this._frames = new Rectangle[numOfFrames];
             this._frameOrigin = new Vector2(frameDims.X * 0.5f, (frameDims.Y - yOffset) * 0.5f);
-            this._texture = asset;
+            this._texture = texture;
             this._currentFrame = _frames.Length - 1;
             this._playOnce = playOnce;
 

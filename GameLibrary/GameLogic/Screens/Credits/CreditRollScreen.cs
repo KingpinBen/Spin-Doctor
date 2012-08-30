@@ -18,6 +18,8 @@ namespace GameLibrary.GameLogic.Screens
 
     public class CreditRollScreen : GameScreen
     {
+        private static bool _creditsRolling = false;
+
         private Vector2 _scrollPosition;
         private string[] _creditsText;
         private float _alpha = 0.0f;
@@ -30,7 +32,9 @@ namespace GameLibrary.GameLogic.Screens
         private SpriteFont _font;
         private Texture2D _gameLogo;
 
-        public CreditRollScreen() : base() { }
+        private CreditRollScreen()
+        {
+        }
 
         public override void Activate()
         {
@@ -60,7 +64,20 @@ namespace GameLibrary.GameLogic.Screens
             this._sectionShowingTime = Defines.SYSTEM_CREDITS_TIME_ON_SCREEN;
         }
 
-        public override void Update(float delta, bool otherScreenHasFocus, bool coveredByOtherScreen)
+        public static void Load(ScreenManager screenManager, 
+                                PlayerIndex? controllingPlayer)
+        {
+            //  We only want one instance of the credits screen.
+            if (!_creditsRolling)
+            {
+                CreditRollScreen screen = new CreditRollScreen();
+                screenManager.AddScreen(screen, controllingPlayer);
+                _creditsRolling = true;
+            }
+        }
+
+        public override void Update(float delta, bool otherScreenHasFocus, 
+                                    bool coveredByOtherScreen)
         {
             base.Update(delta, true, false);
 
@@ -93,6 +110,7 @@ namespace GameLibrary.GameLogic.Screens
                             //  so we can show the logo
                              if (_creditSection >= _creditsText.Length)
                             {
+                                _creditsRolling = false;
                                 this.ExitScreen();
                             }
                             else

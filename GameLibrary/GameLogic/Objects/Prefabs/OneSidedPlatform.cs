@@ -132,28 +132,32 @@ namespace GameLibrary.GameLogic.Objects
 
             if (fixtureA == this.Body.FixtureList[0] || fixtureB == this.Body.FixtureList[0])
             {
+                Player instance = Player.Instance;
+
                 //  We only want a contact with the player
                 //  As it's not the player, disable the contact
                 contact.Enabled = false;
 
-                if (Player.Instance.PlayerState == PlayerState.Climbing)
+                if (instance.PlayerState == PlayerState.Climbing)
                 {
                     return;
                 }
 
-                if (fixtureB == Player.Instance.WheelFixture)
+                if (instance.CheckWheelFixture(fixtureB))
                 {
+                    UpIs upIs = Camera.Instance.GetUpIs();
+
                     //  If the centre of the player wheel is above (depending on the orientation 
                     //  and the world rotation) to the top point (1/2 w/h depending on ^) and the
                     //  radius of the wheel + a small bounding number.
                     switch (_orientation)
                     {
                         case Orientation.Up:
-                            if (Player.Instance.WheelFixture.Body.Position.Y < top - radius * Settings.LinearSlop)
+                            if (instance.GetWheelBody().Position.Y < top - radius * Settings.LinearSlop)
                             {
                                 if (_orientationDependant)
                                 {
-                                    if (Camera.Instance.UpIs == UpIs.Up)
+                                    if (upIs == UpIs.Up)
                                     {
                                         contact.Enabled = true;
                                     }
@@ -165,11 +169,11 @@ namespace GameLibrary.GameLogic.Objects
                             }
                             break;
                         case Orientation.Down:
-                            if (Player.Instance.WheelFixture.Body.Position.Y > top - radius * Settings.LinearSlop)
+                            if (instance.GetWheelBody().Position.Y > top - radius * Settings.LinearSlop)
                             {
                                 if (_orientationDependant)
                                 {
-                                    if (Camera.Instance.UpIs == UpIs.Down)
+                                    if (upIs == UpIs.Down)
                                     {
                                         contact.Enabled = true;
                                     }
@@ -183,11 +187,11 @@ namespace GameLibrary.GameLogic.Objects
                             }
                             break;
                         case Orientation.Left:
-                            if (Player.Instance.WheelFixture.Body.Position.X > top - radius * Settings.LinearSlop)
+                            if (instance.GetWheelBody().Position.X > top - radius * Settings.LinearSlop)
                             {
                                 if (_orientationDependant)
                                 {
-                                    if (Camera.Instance.UpIs == UpIs.Left)
+                                    if (upIs == UpIs.Left)
                                     {
                                         contact.Enabled = true;
                                     }
@@ -201,11 +205,11 @@ namespace GameLibrary.GameLogic.Objects
                             }
                             break;
                         case Orientation.Right:
-                            if (Player.Instance.WheelFixture.Body.Position.X < top + radius * Settings.LinearSlop)
+                            if (instance.GetWheelBody().Position.X < top + radius * Settings.LinearSlop)
                             {
                                 if (_orientationDependant)
                                 {
-                                    if (Camera.Instance.UpIs == UpIs.Right)
+                                    if (upIs == UpIs.Right)
                                     {
                                         contact.Enabled = true;
                                     }

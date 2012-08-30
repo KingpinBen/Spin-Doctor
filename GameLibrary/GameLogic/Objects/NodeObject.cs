@@ -97,7 +97,7 @@ namespace GameLibrary.GameLogic.Objects
             }
             set
             {
-                _zLayer = MathHelper.Clamp(value, 0.1f, 0.95f);
+                _zLayer = value;
             }
         }
         [ContentSerializerIgnore, CategoryAttribute("General")]

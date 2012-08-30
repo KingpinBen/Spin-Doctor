@@ -8,7 +8,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -20,7 +19,9 @@ using GameLibrary.GameLogic.Objects.Triggers;
 using GameLibrary.Levels;
 using GameLibrary.Helpers;
 using GameLibrary.Graphics.Drawing;
-using Microsoft.Xna.Framework.Content.Pipeline;
+using System.Xml.Serialization;
+using Microsoft.Xna.Framework.Storage;
+using GameLibrary.Helpers.Serializer;
 #endregion
 
 namespace SpinEditor
@@ -736,7 +737,8 @@ namespace SpinEditor
                         xnA_RenderControl1.bDoNotDraw = false;
 
                         Update_undoArray();
-                        
+
+                        this.Text = "SpinDoctor Level Editor - " + openFileDialog1.FileName;
                         MessageBox.Show("Level Loaded!", "Level loaded info box", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return true;
                     }
@@ -834,6 +836,8 @@ namespace SpinEditor
                     }
 
                     File.Move(tempLocation + ".tmp", tempLocation);
+
+                    this.Text = "SpinDoctor Level Editor - " + saveFileDialog1.FileName;
                 }
 
                 return true;

@@ -39,10 +39,12 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.GameLogic.Objects;
+using System.Xml;
+using Microsoft.Xna.Framework.Content;
 
 namespace GameLibrary.Helpers
 {
-    public static class SpinAssist
+    public sealed class SpinAssist
     {
         private static Random staticRandom = new Random();
 
@@ -115,7 +117,7 @@ namespace GameLibrary.Helpers
         {
             Vector2 tempVec = Vector2.Zero;
 
-            switch (Camera.Instance.UpIs)
+            switch (Camera.Instance.GetUpIs())
             {
                 case UpIs.Up:
                     tempVec = new Vector2(inVector.X, inVector.Y);

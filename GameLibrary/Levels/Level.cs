@@ -33,7 +33,6 @@ using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate;
 using FarseerPhysics.Dynamics;
 using System.Threading;
 using GameLibrary.Graphics;
@@ -261,7 +260,7 @@ namespace GameLibrary.Levels
             //  if it's not.
             if (_roomType == RoomType.Rotating)
             {
-                _gears.Load(_content, Camera.Instance.LevelDiameter);
+                _gears.Load(_content);
             }
 
             //  Create all the objects for the level world.
@@ -303,14 +302,14 @@ namespace GameLibrary.Levels
 
             _objectsToRemove.Clear();
 
+            Player.Instance.Update(delta, _gameScreen.World);
+
             for (int i = this._objectList.Count - 1; i >= 0; i--)
             {
                 this._objectList[i].Update(delta);
             }
 
             EventManager.Instance.Update(delta);
-
-            Player.Instance.Update(delta, _gameScreen.World);
 
             if (_roomType != RoomType.NonRotating)
             {
@@ -331,7 +330,7 @@ namespace GameLibrary.Levels
         {
             SpriteBatch spriteBatch = this._gameScreen.ScreenManager.SpriteBatch;
 
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null,
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, null, null, null,
                     Matrix.CreateTranslation(new Vector3(-Camera.Instance.Position, 0)) *
                     Matrix.CreateRotationZ(0) *
                     Matrix.CreateScale(new Vector3(Camera.Instance.Zoom, Camera.Instance.Zoom, 1)) *

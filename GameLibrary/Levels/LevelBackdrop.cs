@@ -87,7 +87,8 @@ namespace GameLibrary.Levels
 
                 //  The width of the ring multiplied by 2 (one per side)
                 float shellWidth = 30 * 2;
-                this._shellScale = Camera.Instance.LevelDiameter / (_roomShell.Width - shellWidth);
+                float levelDiameter = Camera.Instance.GetLevelDiameter();
+                this._shellScale = levelDiameter / (_roomShell.Width - shellWidth);
             }
             #endregion
         }

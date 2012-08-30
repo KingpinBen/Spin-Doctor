@@ -136,7 +136,7 @@ namespace GameLibrary.GameLogic.Objects
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
             //  Due to the presolve, we only need to check if FixB is the wheel.
-            if (fixtureB != Player.Instance.WheelFixture)
+            if (Player.Instance.CheckWheelFixture(fixtureB))
             {
                 return false;
             }

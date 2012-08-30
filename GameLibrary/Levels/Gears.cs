@@ -58,20 +58,19 @@ namespace GameLibrary.Levels
         /// Calculate where to place the gears
         /// </summary>
         /// <param name="LC">Rotation Centre</param>
-        /// <param name="CR">Radius of the Circle</param>
-        public void Load(ContentManager content, float CR)
+        public void Load(ContentManager content)
         {
-            _gearsTex = content.Load<Texture2D>("Assets/Images/Textures/Environment/Cog 9T");
-            _background = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/rock");
+            float levelDiameter = Camera.Instance.GetLevelDiameter();
+            float offset = levelDiameter * 0.5f;
 
-            //float texHyp = (float)Math.Sqrt((this._gearsTex.Width * this._gearsTex.Width));
-            float offset = Camera.Instance.LevelDiameter * 0.5f;// + (texHyp * Scale));
-            _scale = (Camera.Instance.LevelDiameter / _gearsTex.Width) * 0.35f;
+            this._gearsTex = content.Load<Texture2D>("Assets/Images/Textures/Environment/Cog 9T");
+            this._background = content.Load<Texture2D>("Assets/Images/Textures/RoomSetup/rock");
+            this._scale = (levelDiameter / _gearsTex.Width) * 0.35f;
 
-            _topLeftGear = Vector2.Zero + new Vector2(-offset, -offset);
-            _topRightGear = Vector2.Zero + new Vector2(offset, -offset);
-            _botLeftGear = Vector2.Zero + new Vector2(-offset, offset);
-            _botRightGear = Vector2.Zero + new Vector2(offset, offset);
+            this._topLeftGear = Vector2.Zero + new Vector2(-offset, -offset);
+            this._topRightGear = Vector2.Zero + new Vector2(offset, -offset);
+            this._botLeftGear = Vector2.Zero + new Vector2(-offset, offset);
+            this._botRightGear = Vector2.Zero + new Vector2(offset, offset);
         }
         #endregion
 
@@ -80,7 +79,7 @@ namespace GameLibrary.Levels
         {
             if (Camera.Instance.IsLevelRotating)
             {
-                _gearRotation = (float)-Camera.Instance.Rotation * 2;
+                _gearRotation = (float)-Camera.Instance.GetWorldRotation() * 2;
             }
         }
         #endregion

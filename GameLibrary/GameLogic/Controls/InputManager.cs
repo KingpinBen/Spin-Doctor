@@ -78,7 +78,7 @@ namespace GameLibrary.GameLogic.Controls
         private MouseState _currentMouseState, _lastMouseState;
         private GamePadState _currentGamepadState, _lastGamepadState;
 
-        private Texture2D[] _buttonTextures = new Texture2D[7];
+        private Texture2D[] _buttonTextures;
 
         private bool _isGamePad = false;
 
@@ -126,23 +126,30 @@ namespace GameLibrary.GameLogic.Controls
 
             if (_isGamePad)
             {
-                this._buttonTextures[0] = content.Load<Texture2D>(path + "xboxControllerButtonA");
-                this._buttonTextures[1] = content.Load<Texture2D>(path + "xboxControllerButtonB");
-                this._buttonTextures[2] = content.Load<Texture2D>(path + "xboxControllerButtonY");
-                this._buttonTextures[3] = content.Load<Texture2D>(path + "xboxControllerButtonX");
-                this._buttonTextures[4] = content.Load<Texture2D>(path + "xboxControllerLeftTrigger");
-                this._buttonTextures[5] = content.Load<Texture2D>(path + "xboxControllerRightTrigger");
-                this._buttonTextures[6] = content.Load<Texture2D>(path + "xboxControllerLeftThumbstick");
+                this._buttonTextures = new Texture2D[] {
+                    content.Load<Texture2D>(path + "xboxControllerButtonA"),
+                    content.Load<Texture2D>(path + "xboxControllerButtonB"),
+                    content.Load<Texture2D>(path + "xboxControllerButtonY"),
+                    content.Load<Texture2D>(path + "xboxControllerButtonX"),
+                    content.Load<Texture2D>(path + "xboxControllerLeftTrigger"),
+                    content.Load<Texture2D>(path + "xboxControllerRightTrigger"),
+                    content.Load<Texture2D>(path + "xboxControllerLeftThumbstick"),
+                    content.Load<Texture2D>(path + "xboxControllerTriggerCombo")
+                };
             }
             else
             {
-                this._buttonTextures[0] = content.Load<Texture2D>(path + "key-space");
-                this._buttonTextures[1] = content.Load<Texture2D>(path + "key-esc");
-                this._buttonTextures[2] = content.Load<Texture2D>(path + "key-e");
-                this._buttonTextures[3] = _buttonTextures[2];
-                this._buttonTextures[4] = content.Load<Texture2D>(path + "key-left");
-                this._buttonTextures[5] = content.Load<Texture2D>(path + "key-right");
-                this._buttonTextures[6] = content.Load<Texture2D>(path + "key-wasd");
+                this._buttonTextures = new Texture2D[]
+                {
+                content.Load<Texture2D>(path + "key-space"),
+                content.Load<Texture2D>(path + "key-esc"),
+                content.Load<Texture2D>(path + "key-e"),
+                content.Load<Texture2D>(path + "key-e"),
+                content.Load<Texture2D>(path + "key-left"),
+                content.Load<Texture2D>(path + "key-right"),
+                content.Load<Texture2D>(path + "key-wasd"),
+                content.Load<Texture2D>(path + "key-LRcombo")
+                };
             }
         }
 
@@ -976,7 +983,14 @@ namespace GameLibrary.GameLogic.Controls
                 }
                 else
                 {
-                    return IsGpPressed(Buttons.LeftThumbstickLeft);
+                    if (_currentGamepadState.ThumbSticks.Left.X < -.5f)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             else
@@ -1007,7 +1021,14 @@ namespace GameLibrary.GameLogic.Controls
                 }
                 else
                 {
-                    return IsGpPressed(Buttons.LeftThumbstickRight);
+                    if (_currentGamepadState.ThumbSticks.Left.X > 0.5f)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             else

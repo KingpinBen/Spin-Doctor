@@ -5,6 +5,7 @@ using System.Text;
 using GameLibrary.GameLogic.Screens.Menu.Options;
 using Microsoft.Xna.Framework;
 using GameLibrary.System;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GameLibrary.GameLogic.Screens.Menu
 {
@@ -14,14 +15,12 @@ namespace GameLibrary.GameLogic.Screens.Menu
         MenuEntry fullscreenEntry;
         MenuEntry shadowsEntry;
         MenuEntry samplingAAEntry;
-        MenuEntry particlesEntry;
         MenuEntry applyEntry;
 
-        Resolutions resolution = Resolutions.C;
+        Resolutions resolution = Resolutions.A;
         bool fullscreen = false;
         bool samplingAA = true;
         bool drawShadows = true;
-        bool particleDetail = true;
 
         public GraphicsOptionsScreen()
             : base("Graphics")
@@ -29,17 +28,15 @@ namespace GameLibrary.GameLogic.Screens.Menu
             resolutionsEntry = new MenuEntry("Resolution: ");
             fullscreenEntry = new MenuEntry("Fullscreen: ");
             shadowsEntry = new MenuEntry("Draw Shadows: ");
-            particlesEntry = new MenuEntry("Particles Count: ");
             samplingAAEntry = new MenuEntry("Anti-Aliasing: ");
             applyEntry = new MenuEntry("Apply");
             MenuEntry sep = new MenuEntry("sep");
             MenuEntry backEntry = new MenuEntry("Back");
 
-            resolutionsEntry.Origin = Graphics.UI.TextAlignment.Right;
-            fullscreenEntry.Origin = Graphics.UI.TextAlignment.Right;
-            shadowsEntry.Origin = Graphics.UI.TextAlignment.Right;
-            samplingAAEntry.Origin = Graphics.UI.TextAlignment.Right;
-            particlesEntry.Origin = Graphics.UI.TextAlignment.Right;
+            resolutionsEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            fullscreenEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            shadowsEntry.Origin = Graphics.UI.TextAlignment.Centre;
+            samplingAAEntry.Origin = Graphics.UI.TextAlignment.Centre;
             applyEntry.Origin = Graphics.UI.TextAlignment.Centre;
             backEntry.Origin = Graphics.UI.TextAlignment.Centre;
 
@@ -49,7 +46,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
             fullscreenEntry.Selected += FullscreenEntryChange;
             shadowsEntry.Selected += ShadowEntryChange;
             samplingAAEntry.Selected += SamplingEntryChange;
-            particlesEntry.Selected += ParticlesEntryChange;
             applyEntry.Selected += ApplyEntrySelected;
             backEntry.Selected += OnCancel;
 
@@ -59,7 +55,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
             menuEntries.Add(fullscreenEntry);
             menuEntries.Add(shadowsEntry);
             menuEntries.Add(samplingAAEntry);
-            menuEntries.Add(particlesEntry);
             menuEntries.Add(sep);
             menuEntries.Add(applyEntry);
             menuEntries.Add(backEntry);
@@ -84,6 +79,63 @@ namespace GameLibrary.GameLogic.Screens.Menu
             this._itemsPosition = new Vector2(
                 this.ScreenManager.GraphicsDevice.Viewport.Width * 0.5f,
                 this.ScreenManager.GraphicsDevice.Viewport.Height * 0.33f);
+
+            PresentationParameters pp = ScreenManager.GraphicsDevice.PresentationParameters;
+            this.fullscreen = pp.IsFullScreen;
+            float height = pp.BackBufferHeight;
+
+            if (height == 720)
+            {
+                resolution = Resolutions.A;
+            }
+            else
+            {
+                if (height == 800)
+                {
+                    resolution = Resolutions.B;
+                }
+                else
+                {
+                    if (height == 768)
+                    {
+                        resolution = Resolutions.C;
+                    }
+                    else
+                    {
+                        if (height == 900)
+                        {
+                            resolution = Resolutions.D;
+                        }
+                        else
+                        {
+                            if (height == 1050)
+                            {
+                                resolution = Resolutions.E;
+                            }
+                            else
+                            {
+                                if (height == 1080)
+                                {
+                                    resolution = Resolutions.F;
+                                }
+                                else
+                                {
+                                    if (height == 1200)
+                                    {
+                                        resolution = Resolutions.G;
+                                    }
+                                    else
+                                    {
+                                        resolution = Resolutions.A;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            SetMenuEntryText();
         }
 
         void SetMenuEntryText()
@@ -91,7 +143,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
             resolutionsEntry.Text = "Preferred Resolution: " + GetResolution();
             fullscreenEntry.Text = "Fullscreen: " + (fullscreen ? "Yes" : "No");
             shadowsEntry.Text = "Draw Shadows: " + (drawShadows ? "Yes" : "No");
-            particlesEntry.Text = "Particle Detail: " + (particleDetail ? "High" : "Low");
             samplingAAEntry.Text = "Anti-Aliasing: " + (samplingAA ? "Yes" : "No");
         }
 
@@ -100,22 +151,18 @@ namespace GameLibrary.GameLogic.Screens.Menu
             switch (resolution)
             {
                 case Resolutions.A:
-                    return "800x600";
-                case Resolutions.B:
-                    return "1024x768";
-                case Resolutions.C:
                     return "1280x720";
-                case Resolutions.D:
+                case Resolutions.B:
                     return "1280x800";
-                case Resolutions.E:
+                case Resolutions.C:
                     return "1366x768";
-                case Resolutions.F:
+                case Resolutions.D:
                     return "1440x900";
-                case Resolutions.G:
+                case Resolutions.E:
                     return "1680x1050";
-                case Resolutions.H:
+                case Resolutions.F:
                     return "1920x1080";
-                case Resolutions.I:
+                case Resolutions.G:
                     return "1920x1200";
             }
 
@@ -126,8 +173,8 @@ namespace GameLibrary.GameLogic.Screens.Menu
         {
             resolution++;
 
-            if (resolution > Resolutions.I)
-                resolution = (Resolutions)1;
+            if (resolution > (Resolutions)6)
+                resolution = (Resolutions)0;
 
             SetMenuEntryText();
         }
@@ -150,12 +197,6 @@ namespace GameLibrary.GameLogic.Screens.Menu
             SetMenuEntryText();
         }
 
-        void ParticlesEntryChange(object sender, PlayerIndexEventArgs e)
-        {
-            particleDetail = !particleDetail;
-            SetMenuEntryText();
-        }
-
         void ApplyEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             GameSettings instance = GameSettings.Instance;
@@ -172,30 +213,24 @@ namespace GameLibrary.GameLogic.Screens.Menu
             switch (resolution)
             {
                 case Resolutions.A:
-                    this.ScreenManager.ChangeDevice(800, 600, fullscreen, samplingAA);
-                    break;
-                case Resolutions.B:
-                    this.ScreenManager.ChangeDevice(1024, 768, fullscreen, samplingAA);
-                    break;
-                case Resolutions.C:
                     this.ScreenManager.ChangeDevice(1280, 720, fullscreen, samplingAA);
                     break;
-                case Resolutions.D:
+                case Resolutions.B:
                     this.ScreenManager.ChangeDevice(1280, 800, fullscreen, samplingAA);
                     break;
-                case Resolutions.E:
+                case Resolutions.C:
                     this.ScreenManager.ChangeDevice(1366, 768, fullscreen, samplingAA);
                     break;
-                case Resolutions.F:
+                case Resolutions.D:
                     this.ScreenManager.ChangeDevice(1440, 900, fullscreen, samplingAA);
                     break;
-                case Resolutions.G:
+                case Resolutions.E:
                     this.ScreenManager.ChangeDevice(1680, 1050, fullscreen, samplingAA);
                     break;
-                case Resolutions.H:
+                case Resolutions.F:
                     this.ScreenManager.ChangeDevice(1920, 1080, fullscreen, samplingAA);
                     break;
-                case Resolutions.I:
+                case Resolutions.G:
                     this.ScreenManager.ChangeDevice(1920, 1200, fullscreen, samplingAA);
                     break;
             }

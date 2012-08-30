@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\x86\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;EDITOR</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -35,7 +35,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\x86\Release</OutputPath>
-    <DefineConstants>TRACE;EDITOR</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>true</NoStdLib>
@@ -68,7 +68,6 @@
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Content.Pipeline, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
       <Private>False</Private>
     </Reference>
@@ -127,7 +126,8 @@
     <Compile Include="GameLogic\Objects\ObjectShape.cs" />
     <Compile Include="GameLogic\Objects\Triggers\TriggerType.cs" />
     <Compile Include="GameLogic\Characters\PlayerState.cs" />
-    <Compile Include="GameLogic\Screens\CreditRollScreen.cs" />
+    <Compile Include="GameLogic\Screens\Credits\CreditHandler.cs" />
+    <Compile Include="GameLogic\Screens\Credits\CreditRollScreen.cs" />
     <Compile Include="GameLogic\Screens\GameplayScreen.cs" />
     <Compile Include="GameLogic\Screens\GameScreen.cs" />
     <Compile Include="GameLogic\Screens\LoadingScreen.cs" />
@@ -166,6 +166,97 @@
     <Compile Include="Graphics\FontManager.cs" />
     <Compile Include="GameLogic\Controls\InputManager.cs" />
     <Compile Include="Helpers\PrimitiveBatch.cs" />
+    <Compile Include="Helpers\Serializer\Alpha8Serializer.cs" />
+    <Compile Include="Helpers\Serializer\ArraySerializer-T-.cs" />
+    <Compile Include="Helpers\Serializer\AssemblyScanner.cs" />
+    <Compile Include="Helpers\Serializer\Bgr565Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Bgra4444Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Bgra5551Serializer.cs" />
+    <Compile Include="Helpers\Serializer\BooleanSerializer.cs" />
+    <Compile Include="Helpers\Serializer\BoundingFrustumSerializer.cs" />
+    <Compile Include="Helpers\Serializer\Byte4Serializer.cs" />
+    <Compile Include="Helpers\Serializer\ByteSerializer.cs" />
+    <Compile Include="Helpers\Serializer\CharSerializer.cs" />
+    <Compile Include="Helpers\Serializer\CollectionHelper.cs" />
+    <Compile Include="Helpers\Serializer\CollectionSerializer-TCollection, TElement-.cs" />
+    <Compile Include="Helpers\Serializer\CollectionUtils.cs" />
+    <Compile Include="Helpers\Serializer\ColorSerializer.cs" />
+    <Compile Include="Helpers\Serializer\ContentIdentity.cs" />
+    <Compile Include="Helpers\Serializer\ContentItem.cs" />
+    <Compile Include="Helpers\Serializer\ContentTypeSerializer-T-.cs" />
+    <Compile Include="Helpers\Serializer\ContentTypeSerializer.cs" />
+    <Compile Include="Helpers\Serializer\ContentTypeSerializerAttribute.cs" />
+    <Compile Include="Helpers\Serializer\ContentTypeSerializerFactory.cs" />
+    <Compile Include="Helpers\Serializer\CurveKeySerializer.cs" />
+    <Compile Include="Helpers\Serializer\DateTimeSerializer.cs" />
+    <Compile Include="Helpers\Serializer\DecimalSerializer.cs" />
+    <Compile Include="Helpers\Serializer\DictionarySerializer-Key, Value-.cs" />
+    <Compile Include="Helpers\Serializer\DoubleSerializer.cs" />
+    <Compile Include="Helpers\Serializer\EnumSerializer.cs" />
+    <Compile Include="Helpers\Serializer\ExternalReference-T-.cs" />
+    <Compile Include="Helpers\Serializer\FakeEmptyElementReader.cs" />
+    <Compile Include="Helpers\Serializer\HalfSingleSerializer.cs" />
+    <Compile Include="Helpers\Serializer\HalfVector2Serializer.cs" />
+    <Compile Include="Helpers\Serializer\HalfVector4Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Int16Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Int32Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Int64Serializer.cs" />
+    <Compile Include="Helpers\Serializer\IntermediateReader.cs" />
+    <Compile Include="Helpers\Serializer\IntermediateSerializer.cs" />
+    <Compile Include="Helpers\Serializer\IntermediateWriter.cs" />
+    <Compile Include="Helpers\Serializer\InvalidContentException.cs" />
+    <Compile Include="Helpers\Serializer\IXmlListItemSerializer.cs" />
+    <Compile Include="Helpers\Serializer\ListSerializer-T-.cs" />
+    <Compile Include="Helpers\Serializer\MathTypeSerializer-T-.cs" />
+    <Compile Include="Helpers\Serializer\MatrixSerializer.cs" />
+    <Compile Include="Helpers\Serializer\MemberHelperBase-TSerializer-.cs" />
+    <Compile Include="Helpers\Serializer\NamedValueDictionary-T-.cs" />
+    <Compile Include="Helpers\Serializer\NonGenericIDictionarySerializer.cs" />
+    <Compile Include="Helpers\Serializer\NonGenericIListSerializer.cs" />
+    <Compile Include="Helpers\Serializer\NormalizedByte2Serializer.cs" />
+    <Compile Include="Helpers\Serializer\NormalizedByte4Serializer.cs" />
+    <Compile Include="Helpers\Serializer\NormalizedShort2Serializer.cs" />
+    <Compile Include="Helpers\Serializer\NormalizedShort4Serializer.cs" />
+    <Compile Include="Helpers\Serializer\NullableSerializer-T-.cs" />
+    <Compile Include="Helpers\Serializer\OpaqueDataDictionary.cs" />
+    <Compile Include="Helpers\Serializer\PackedVectorSerializer16-T-.cs" />
+    <Compile Include="Helpers\Serializer\PackedVectorSerializer32-T-.cs" />
+    <Compile Include="Helpers\Serializer\PackedVectorSerializer64-T-.cs" />
+    <Compile Include="Helpers\Serializer\PackedVectorSerializer8-T-.cs" />
+    <Compile Include="Helpers\Serializer\PathUtils.cs" />
+    <Compile Include="Helpers\Serializer\PipelineException.cs" />
+    <Compile Include="Helpers\Serializer\PlaneSerializer.cs" />
+    <Compile Include="Helpers\Serializer\PointSerializer.cs" />
+    <Compile Include="Helpers\Serializer\QuaternionSerializer.cs" />
+    <Compile Include="Helpers\Serializer\RectangleSerializer.cs" />
+    <Compile Include="Helpers\Serializer\ReferenceEqualityComparer-T-.cs" />
+    <Compile Include="Helpers\Serializer\ReflectionEmitUtils.cs" />
+    <Compile Include="Helpers\Serializer\ReflectiveSerializer.cs" />
+    <Compile Include="Helpers\Serializer\ReflectiveSerializerMemberHelper.cs" />
+    <Compile Include="Helpers\Serializer\Resources.cs" />
+    <Compile Include="Helpers\Serializer\Rg32Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Rgba1010102Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Rgba64Serializer.cs" />
+    <Compile Include="Helpers\Serializer\SByteSerializer.cs" />
+    <Compile Include="Helpers\Serializer\Short2Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Short4Serializer.cs" />
+    <Compile Include="Helpers\Serializer\SingleSerializer.cs" />
+    <Compile Include="Helpers\Serializer\StringSerializer.cs" />
+    <Compile Include="Helpers\Serializer\TimeSpanSerializer.cs" />
+    <Compile Include="Helpers\Serializer\TypeHandlerFactory-T-.cs" />
+    <Compile Include="Helpers\Serializer\TypeNameHelper.cs" />
+    <Compile Include="Helpers\Serializer\TypeScanner.cs" />
+    <Compile Include="Helpers\Serializer\TypeSerializer.cs" />
+    <Compile Include="Helpers\Serializer\UInt16Serializer.cs" />
+    <Compile Include="Helpers\Serializer\UInt32Serializer.cs" />
+    <Compile Include="Helpers\Serializer\UInt64Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Vector2Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Vector3Serializer.cs" />
+    <Compile Include="Helpers\Serializer\Vector4Serializer.cs" />
+    <Compile Include="Helpers\Serializer\WorkerAppDomain.cs" />
+    <Compile Include="Helpers\Serializer\XmlListItemSerializer-T-.cs" />
+    <Compile Include="Helpers\Serializer\XmlListReader.cs" />
+    <Compile Include="Helpers\Serializer\XmlNamespaces.cs" />
     <Compile Include="Helpers\SpinAssist.cs" />
     <Compile Include="Helpers\TexVertOutput.cs" />
     <Compile Include="Graphics\Camera\Camera.cs" />

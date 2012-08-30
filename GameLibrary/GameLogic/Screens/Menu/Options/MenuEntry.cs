@@ -150,7 +150,7 @@ namespace GameLibrary.GameLogic.Screens.Menu.Options
             else
                 pulsate = 0.0f;
 
-            float scale = 1 + pulsate * 0.05f * _selectionFade;
+            float scale = 1 + (pulsate * 0.05f) * _selectionFade;
 
             // Modify the alpha to fade text out during transitions.
             color *= screen.TransitionAlpha;
@@ -160,7 +160,7 @@ namespace GameLibrary.GameLogic.Screens.Menu.Options
             SpriteBatch spriteBatch = screenManager.SpriteBatch;
 
             spriteBatch.DrawString(_font, _text, _position, color, 0,
-                                   _origin, scale, SpriteEffects.None, 0);
+                                   GetOrigin(), scale, SpriteEffects.None, 0);
         }
 
         public virtual int GetHeight(MenuScreen screen)

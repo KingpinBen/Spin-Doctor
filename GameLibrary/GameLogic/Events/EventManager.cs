@@ -306,12 +306,12 @@ namespace GameLibrary.GameLogic.Events
                     }
                 case EventType.ENGINE_ROLL_CREDITS:
                     {
-                        this.gameScreen.ScreenManager.AddScreen(new CreditRollScreen(), gameScreen.ControllingPlayer);
+                        CreditRollScreen.Load(gameScreen.ScreenManager, gameScreen.ControllingPlayer);
                         break;
                     }
                 case EventType.ENGINE_FORCE_MAIN_MENU:
                     {
-                        LoadingScreen.Load(this.gameScreen.ScreenManager, false, null, new BackgroundScreen(),
+                        LoadingScreen.Load(gameScreen.ScreenManager, false, null, new BackgroundScreen(),
                                                            new MainMenuScreen());
                         break;
                     }
@@ -320,7 +320,9 @@ namespace GameLibrary.GameLogic.Events
                     {
                         int num = 0;
                         if (objEvent.Argument != null)
+                        {
                             num = (int)objEvent.Argument;
+                        }
 
                         HUD.Instance.CreateTemporaryPopup(objEvent.TargetName, num);
                         break;

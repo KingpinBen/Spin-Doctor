@@ -170,17 +170,18 @@ namespace GameLibrary.GameLogic.Objects
             {
                 #region Disallow grabbing under certain conditions
 
-                if (_orientation == Direction.Vertical && (Camera.Instance.UpIs == UpIs.Left || Camera.Instance.UpIs == UpIs.Right))
+                UpIs upIs = Camera.Instance.GetUpIs();
+
+                if (_orientation == Direction.Vertical && (upIs == UpIs.Left || upIs == UpIs.Right))
+                {
+                    return;
+                }
+                else if (_orientation == Direction.Horizontal && (upIs == UpIs.Up || upIs == UpIs.Down))
                 {
                     return;
                 }
 
-                if (_orientation == Direction.Horizontal && (Camera.Instance.UpIs == UpIs.Up || Camera.Instance.UpIs == UpIs.Down))
-                {
-                    return;
-                }
-
-#endregion
+                #endregion
 
                 if (_inRange)
                 {
@@ -193,11 +194,18 @@ namespace GameLibrary.GameLogic.Objects
                     }
                     else
                     {
-                        if (InputManager.Instance.Grab(true))// || InputManager.Instance.MoveLeft(true) || InputManager.Instance.MoveRight(true)
+                        if (InputManager.Instance.Grab(true))
                         {
                             DisconnectPlayer();
                         }
                     }
+                }
+            }
+            else
+            {
+                if (_grabbed)
+                {
+                    DisconnectPlayer();
                 }
             }
 
@@ -248,6 +256,7 @@ namespace GameLibrary.GameLogic.Objects
             {
                 this._grabbed = false;
                 Camera.Instance.AllowRotation = true;
+
                 Player.Instance.ForceFall();
             }
 #endif
@@ -313,7 +322,9 @@ namespace GameLibrary.GameLogic.Objects
 
             this.Body.Position = ConvertUnits.ToSimUnits(Position);
             this.Body.IsSensor = true;
-            this.Body.CollidesWith = Category.Cat10;
+            this.Body.CollidesWith = Category.All & ~Category.Cat20;
+            this.Body.CollisionCategories = Category.Cat5;
+
             this.Body.OnCollision += Body_OnCollision;
             this.Body.OnSeparation += Body_OnSeparation;
 #endif
@@ -332,7 +343,9 @@ namespace GameLibrary.GameLogic.Objects
         /// </summary>
         protected override void Body_OnSeparation(Fixture fixtureA, Fixture fixtureB)
         {
-            if (fixtureB == Player.Instance.GrabFixture)
+            Player instance = Player.Instance;
+
+            if (instance.CheckGrabFixture(fixtureB))
             {
                 if (_touchingFixtures.Contains(fixtureB))
                 {
@@ -355,7 +368,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             Player instance = Player.Instance;
 
-            if (fixtureB == instance.GrabFixture && instance.PlayerState != PlayerState.Dead)
+            if (instance.CheckGrabFixture(fixtureB) && instance.PlayerState != PlayerState.Dead)
             {
                 if (!_touchingFixtures.Contains(fixtureB))
                 {

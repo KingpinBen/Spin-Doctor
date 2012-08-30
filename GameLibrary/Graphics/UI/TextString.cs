@@ -135,22 +135,7 @@ namespace GameLibrary.Graphics.UI
         {
             get
             {
-                if (_buttonType == ButtonIcon.Action1)
-                {
-                    return _buttonTextures[0];
-                }
-                else if (_buttonType == ButtonIcon.Action2)
-                {
-                    return _buttonTextures[1];
-                }
-                else if (_buttonType == ButtonIcon.Action3)
-                {
-                    return _buttonTextures[2];
-                }
-                else
-                {
-                    return _buttonTextures[3];
-                }
+                return _buttonTextures[(int)_buttonType];
             }
         }
         public TextAlignment TextAlignment
@@ -195,14 +180,8 @@ namespace GameLibrary.Graphics.UI
         /// <param name="content">Content</param>
         public virtual void Load(ContentManager content)
         {
-            this._buttonTextures = new Texture2D[4];
-
             InputManager instance = InputManager.Instance;
-
-            this._buttonTextures[0] = instance.GetButtonTexture(0);
-            this._buttonTextures[1] = instance.GetButtonTexture(1);
-            this._buttonTextures[2] = instance.GetButtonTexture(2);
-            this._buttonTextures[3] = instance.GetButtonTexture(3);
+            this._buttonTextures = instance.ButtonTextures;
 
             if (instance.IsGamepad)
             {

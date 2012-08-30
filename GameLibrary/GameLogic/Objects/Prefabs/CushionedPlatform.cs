@@ -34,8 +34,8 @@ namespace GameLibrary.GameLogic.Objects
             //  compare later.
             int fixCount = _touchingFixtures.Count;
 
-            if (!_touchingFixtures.Contains(fixtureB) && 
-                fixtureB == Player.Instance.WheelFixture)
+            if (!_touchingFixtures.Contains(fixtureB) &&
+                Player.Instance.CheckWheelFixture(fixtureB))
             {
                 _touchingFixtures.Add(fixtureB);
             }

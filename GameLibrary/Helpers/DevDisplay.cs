@@ -139,7 +139,7 @@ namespace GameLibrary.Helpers
             Matrix view =
                 Matrix.CreateTranslation(new Vector3((-Camera.Instance.Position / MeterInPixels), 0f)) *
                 Matrix.CreateScale(Camera.Instance.Zoom, Camera.Instance.Zoom, 0f) *
-                Matrix.CreateRotationZ(Camera.Instance.Rotation) *
+                Matrix.CreateRotationZ(Camera.Instance.GetWorldRotation()) *
                 Matrix.CreateTranslation(new Vector3(((new Vector2(graphics.Viewport.Width, graphics.Viewport.Height) * 0.5f) / MeterInPixels), 0f));
             _debugView.RenderDebugData(ref projection, ref view);
         }

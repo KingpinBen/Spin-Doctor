@@ -20,7 +20,7 @@ namespace GameLibrary.Helpers
         //  Player settings.
         public const float PLAYER_RUN_SPEED = 16.0f;
         public const float PLAYER_JUMP_FORCE = 4.2f;
-        public const float PLAYER_MIDAIR_FORCE = 200.0f;
+        public const float PLAYER_MIDAIR_FORCE = 750.0f;
         public const float PLAYER_MAX_AIR_TIME = 0.6f;
 
         //  The cooldown between level rotations

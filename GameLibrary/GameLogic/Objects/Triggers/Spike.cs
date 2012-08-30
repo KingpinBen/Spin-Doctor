@@ -45,10 +45,12 @@ namespace GameLibrary.GameLogic.Objects.Triggers
         #region Collisions
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (!_touchingFixtures.Contains(fixtureB) && Player.Instance.PlayerHitBox(fixtureB))
+            Player playerInstance = Player.Instance;
+
+            if (!_touchingFixtures.Contains(fixtureB) && playerInstance.CheckHitBoxFixture(fixtureB))
             {
                 _touchingFixtures.Add(fixtureB);
-                Player.Instance.Kill();
+                playerInstance.Kill();
                 AudioManager.Instance.PlayCue("Death_Spikes", true);
             }
 

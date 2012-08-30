@@ -57,7 +57,6 @@ namespace GameLibrary.GameLogic.Objects
         private float _elapsed;
         private float _createDelay;
         private Sprite _exhaustSprite;
-        private bool _triggered;
         private Cue _soundEffect;
         private string _soundEffectAsset;
 #endif
@@ -363,6 +362,8 @@ namespace GameLibrary.GameLogic.Objects
         /// </summary>
         private void ApplyForces()
         {
+            Player playerInstance = Player.Instance;
+
             //  What direction the player should be pushed. In this case, Up before modify.
             Vector2 dir = SpinAssist.ModifyVectorByOrientation(new Vector2(0, -100), _orientation);
             
@@ -375,24 +376,23 @@ namespace GameLibrary.GameLogic.Objects
             //  Check all the fixtures that are touching the trigger and apply a force to them.
             for (int i = _touchingFixtures.Count - 1; i >= 0; i--)
             {
-
                 //  We have a special way to push the player, so check if 'i' is a player fixture.
-                if (Player.Instance.PlayerHitBox(_touchingFixtures[i]))
+                if (playerInstance.CheckHitBoxFixture(_touchingFixtures[i]))
                 {
                     //  If Harland is dead, remove him and continue.
-                    if (Player.Instance.PlayerState == PlayerState.Dead)
+                    if (playerInstance.PlayerState == PlayerState.Dead)
                     {
-                        _touchingFixtures.RemoveAt(i);
+                        this._touchingFixtures.RemoveAt(i);
                         continue;
                     }
 
                     //  It is the player, so apply the force
-                    Player.Instance.ApplyForce(dir, 10.0f);
+                    playerInstance.ApplyForce(dir, 10.0f);
                     continue;
                 }
 
                 //  It's a random object, so apply a force to it too.
-                _touchingFixtures[i].Body.ApplyForce(dir);
+                this._touchingFixtures[i].Body.ApplyForce(dir);
             }
         }
 #endregion

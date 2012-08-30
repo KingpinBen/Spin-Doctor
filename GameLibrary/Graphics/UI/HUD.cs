@@ -174,13 +174,13 @@ namespace GameLibrary.Graphics.UI
             this._popupText.Alpha = 0.0f;
         }
 
-        public void ShowOnScreenMessage(bool set, string message, ButtonIcon type)
+        public void ShowOnScreenMessage(bool set, string message, int i)
         {
             if (set)
             {
                 _showPopup = true;
 
-                _popupText.ButtonType = type;
+                _popupText.ButtonType = (ButtonIcon)(i - 1);
                 _popupText.Text = message;
                 _popupText.UpdateOrigin();
             }
@@ -195,26 +195,7 @@ namespace GameLibrary.Graphics.UI
             //  Enable the temporary popup
             this._tempPopupEnabled = true;
 
-            //  Assign the icon
-            switch (i)
-            {
-                case 1:
-                    this._tempPopupText.ButtonType = ButtonIcon.Action1;
-                    break;
-                case 2:
-                    this._tempPopupText.ButtonType = ButtonIcon.Action2;
-                    break;
-                case 3:
-                    this._tempPopupText.ButtonType  = ButtonIcon.Action3;
-                    break;
-                case 4:
-                    this._tempPopupText.ButtonType = ButtonIcon.Action4;
-                    break;
-                default:
-                    this._tempPopupText.ButtonType = ButtonIcon.None;
-                    break;
-            }
-            
+            this._tempPopupText.ButtonType = (ButtonIcon)(i - 1);
 
             //  Setup the message
             this._tempPopupText.Text = message;

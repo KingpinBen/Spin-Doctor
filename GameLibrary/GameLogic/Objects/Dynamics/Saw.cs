@@ -240,16 +240,19 @@ namespace GameLibrary.GameLogic.Objects
 
         protected override bool Body_OnCollision(Fixture fixtureA, Fixture fixtureB, Contact contact)
         {
-            if (!_touchingFixtures.Contains(fixtureB) && Player.Instance.PlayerHitBox(fixtureB))
-            {
-                _touchingFixtures.Add(fixtureB);
+            Player playerInstance = Player.Instance;
 
-                if (Player.Instance.PlayerState != PlayerState.Dead)
+            if (!_touchingFixtures.Contains(fixtureB) && playerInstance.CheckHitBoxFixture(fixtureB))
+            {
+                this._touchingFixtures.Add(fixtureB);
+
+                if (playerInstance.PlayerState != PlayerState.Dead)
                 {
-                    Player.Instance.Kill();
+                    playerInstance.Kill();
                     AudioManager.Instance.PlayCue("Death_Saw", true);
                 }
-                _touched = true;
+
+                this._touched = true;
             }
             else
             {

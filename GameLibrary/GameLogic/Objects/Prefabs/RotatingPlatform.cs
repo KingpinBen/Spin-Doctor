@@ -127,7 +127,7 @@ namespace GameLibrary.GameLogic.Objects
         {
             get
             {
-                return _rotation - Camera.Instance.Rotation;
+                return _rotation - Camera.Instance.GetWorldRotation();
             }
         }
 #endif

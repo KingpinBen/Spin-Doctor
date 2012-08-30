@@ -14,10 +14,8 @@ using GameLibrary.Graphics;
 using GameLibrary.Levels;
 using System.Xml;
 using GameLibrary.Helpers;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate;
 using System.IO;
 using System.Windows.Forms;
-using Microsoft.Xna.Framework.Content.Pipeline;
 using GameLibrary.Graphics.Camera;
 using GameLibrary.Graphics.UI;
 using GameLibrary.GameLogic.Events;
@@ -25,6 +23,8 @@ using GameLibrary.GameLogic.Objects;
 using GameLibrary.GameLogic.Characters;
 using GameLibrary.System;
 using GameLibrary.Audio;
+using Microsoft.Xna.Framework.Audio;
+using GameLibrary.Helpers.Serializer;
 
 namespace GameLibrary.GameLogic.Screens
 {
@@ -33,7 +33,7 @@ namespace GameLibrary.GameLogic.Screens
         #region Fields
 
         private World _world = new World(Vector2.Zero);
-
+        private ContentManager _content;
         private Level _level;
 
 #if !EDITOR
@@ -103,7 +103,7 @@ namespace GameLibrary.GameLogic.Screens
         public override void Activate()
         {
 #if !EDITOR
-            ContentManager content = new ContentManager(this.ScreenManager.Game.Services, "Content");
+            _content = new ContentManager(this.ScreenManager.Game.Services, "Content");
 
             //  Simulate something large loading because why not..
             //  Also doing it first so that the sounds load when it's finished.
@@ -131,7 +131,7 @@ namespace GameLibrary.GameLogic.Screens
                 rtBlur = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight);
                 rtEffect = new RenderTarget2D(this.ScreenManager.GraphicsDevice, pp.BackBufferWidth, pp.BackBufferHeight, false, SurfaceFormat.Color, DepthFormat.Depth24);
 
-                _silhouetteEffect = content.Load<Effect>("Assets/Other/Effects/MaskEffect");
+                _silhouetteEffect = _content.Load<Effect>("Assets/Other/Effects/MaskEffect");
             }
 
             // once the load has finished, we use ResetElapsedTime to tell the game's
@@ -169,8 +169,8 @@ namespace GameLibrary.GameLogic.Screens
                 
                 Camera.Instance.Update(delta);
 
-                _world.Step(delta);
-                _level.Update(delta);
+                this._world.Step(delta);
+                this._level.Update(delta);
                 
                 SpriteManager.Instance.Update(delta);
 
@@ -179,16 +179,14 @@ namespace GameLibrary.GameLogic.Screens
                     DevDisplay.Instance.Update(delta);
                 }
 
-                _bgRotation = -Camera.Instance.Rotation;
+                this._bgRotation = -Camera.Instance.GetWorldRotation();
             }
 #endif
         }
 
         public override void HandleInput(float delta, InputState input)
         {
-#if EDITOR
-
-#else
+#if !EDITOR
             if (input == null)
             {
                 throw new ArgumentNullException("input");
@@ -215,17 +213,6 @@ namespace GameLibrary.GameLogic.Screens
                     if (InputManager.Instance.Jump(true))
                         LoadLevel();
                 }
-
-                //  TODO: REMOVE FOR BETA HANDIN
-                if (InputManager.Instance.IsNewGpPress(Buttons.DPadDown) || InputManager.Instance.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F1))
-                {
-                    GameSettings.Instance.ToggleDoubleJump();
-                }
-
-                if (InputManager.Instance.F5)
-                {
-                    this.CurrentLevelID = CurrentLevelID + 1;
-                }
             }
 #endif
         }
@@ -239,7 +226,7 @@ namespace GameLibrary.GameLogic.Screens
             SpriteBatch spriteBatch = ScreenManager.SpriteBatch;
             ScreenManager.GraphicsDevice.Clear(ClearOptions.Target, Color.Black, 0, 0);
 
-            Matrix cameraTransform = Camera.Instance.TransformMatrix();
+            Matrix cameraTransform = Camera.Instance.GetTransformMatrix();
 
             #region Get the mask for the shadows
 
@@ -320,7 +307,7 @@ namespace GameLibrary.GameLogic.Screens
 #if !EDITOR
         private void LoadLevel()
         {
-            int LevelID = GameSettings.Instance.CurrentLevel;
+            int levelID = GameSettings.Instance.CurrentLevel;
 
             if (this._level != null)
             {
@@ -329,32 +316,26 @@ namespace GameLibrary.GameLogic.Screens
 
             this._level = new Level();
             this._world = new World(Vector2.Zero);
-            Camera.Instance.SetUpIs(UpIs.Up);
+            //Camera.Instance.SetUpIs(UpIs.Up);
             EventManager.Instance.Load(this);
             SpriteManager.Instance.Clear();
             HUD.Instance.RefreshHUD();
 
-            AudioManager.Instance.StopAllSounds(Microsoft.Xna.Framework.Audio.AudioStopOptions.AsAuthored);
+            AudioManager.Instance.StopAllSounds(AudioStopOptions.AsAuthored);
             this.PlayRandomAmbience();
 
             try
             {
-                using (XmlReader reader = XmlReader.Create(Defines.Level(LevelID)))
+                using (XmlReader reader = XmlReader.Create(Defines.Level(levelID)))
                 {
                     this._level = IntermediateSerializer.Deserialize<Level>(reader, null);
                 }
             }
             catch (FileNotFoundException e)
             {
-                MessageBox.Show("Something went wrong when trying to load level: '" + LevelID + "'\nThe level wasn't found.");
-                ErrorReport.GenerateReport("The level " + LevelID + " could not be found.\n" + e.ToString(), null);
+                MessageBox.Show("Something went wrong when trying to load level: '" + levelID + "'\nThe level wasn't found.");
+                ErrorReport.GenerateReport("The level " + levelID + " could not be found.\n" + e.ToString(), null);
                 ScreenManager.Game.Exit();
-            }
-            catch (InvalidContentException e)
-            {
-                MessageBox.Show("Something went wrong deserializing level: '" + LevelID + "'.\nInvalid Content");
-                string value = "Invalid Content declared.\n" + e.ToString();
-                ErrorReport.GenerateReport(value, null);
             }
 
             try
@@ -365,7 +346,7 @@ namespace GameLibrary.GameLogic.Screens
             {
                 string error = e.InnerException.ToString();
 
-                MessageBox.Show("Something went wrong loading level " + LevelID + ".\n" + error);
+                MessageBox.Show("Something went wrong loading level " + levelID + ".\n" + error);
                 ErrorReport.GenerateReport(error, null);
             }
 
@@ -378,9 +359,9 @@ namespace GameLibrary.GameLogic.Screens
 
         }
 
-        void DrawObjects(SpriteBatch spriteBatch, SpriteSortMode sortMode, BlendState blendState, bool drawDecals, bool shadowPass)
+        private void DrawObjects(SpriteBatch spriteBatch, SpriteSortMode sortMode, BlendState blendState, bool drawDecals, bool shadowPass)
         {
-            Matrix cameraTransform = Camera.Instance.TransformMatrix();
+            Matrix cameraTransform = Camera.Instance.GetTransformMatrix();
             NodeObject obj = new NodeObject();
             GraphicsDevice graphics = this.ScreenManager.GraphicsDevice;
 
@@ -421,7 +402,7 @@ namespace GameLibrary.GameLogic.Screens
             this._level.GetObjectsToRemove().Add(obj);
         }
 
-        void PlayRandomAmbience()
+        private void PlayRandomAmbience()
         {
             for (int i = 0; i < 4; i++)
             {
@@ -454,6 +435,16 @@ namespace GameLibrary.GameLogic.Screens
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Only for use for forcefully setting a level, 
+        /// bypassing features like saving and loading.
+        /// </summary>
+        /// <param name="levelID"></param>
+        public void SetLevel(int levelID)
+        {
+            GameSettings.Instance.CurrentLevel = levelID;
         }
 #endif
     }

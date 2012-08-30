@@ -109,7 +109,6 @@ namespace GameLibrary.Graphics.Drawing
             }
             set
             {
-                value = MathHelper.Clamp(value, 0.1f, 0.99f);
                 _zLayer = value;
             }
         }
@@ -170,7 +169,7 @@ namespace GameLibrary.Graphics.Drawing
             this._decalAsset = assetLoc;
             this._zLayer = 0.8f;
             this._flip = SpriteEffects.None;
-            this._tint = Color.White * 1.0f;
+            this._tint = Color.White;
         }
 
         public void Load(ContentManager Content)
@@ -183,15 +182,14 @@ namespace GameLibrary.Graphics.Drawing
                 this.Width = this._decalTexture.Width;
                 this.Height = this._decalTexture.Height;
             }
-#else
-
 #endif
         }
 
         public void Draw(SpriteBatch sb)
         {
-            sb.Draw(this._decalTexture, this._position, new Rectangle(0,0,(int)this._width, (int)this._height), this._tint, this._rotation, new Vector2(_width * 0.5f, _height * 0.5f), 
-                this._scale, this._flip, this._zLayer);
+            sb.Draw(_decalTexture, _position, new Rectangle(0,0,(int)_width, (int)_height), 
+                    _tint, _rotation, new Vector2(_width * 0.5f, _height * 0.5f), 
+                    _scale, _flip, _zLayer);
         }
 
         #region Private Methods

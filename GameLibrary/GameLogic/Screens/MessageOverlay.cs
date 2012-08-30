@@ -63,7 +63,7 @@ namespace GameLibrary.GameLogic.Screens
             this._closeText = new TextString(" to close.");
             this._closeText.Load(content);
             this._closeText.TextAlignment = TextAlignment.Left;
-            this._closeText.ButtonType = ButtonIcon.Action1;
+            this._closeText.ButtonType = (ButtonIcon)1;
             this._closeText.Position = new Vector2(this.ScreenManager.GraphicsDevice.Viewport.Height * 0.03f, this.ScreenManager.GraphicsDevice.Viewport.Height * 0.96f);
 
             this._texture = content.Load<Texture2D>(Defines.NOTE_DIRECTORY + "Note_Empty");
